@@ -12,3 +12,11 @@
 - 2026-09-20: The player can open and shut doors and carry one object at a time. Carrying is not the inventory.
 - 2026-09-20: The player cannot step up ledges: CharacterController stepOffset 0.1, skinWidth 0.035. Every staircase gets a collider-only sloped box (StairRamp) over its treads. Reason: with stepOffset 0.3 the capsule slid up over edges between 0.35 and 0.65 m when moving sideways, so hop-only obstacles could be climbed without jumping. Chosen over a code guard that would have left a 0.3 m snag. Full rule is in PLAN.md under Rules and Tips.
 - 2026-09-20: Sprint speed is 5.5 m/s, raised from 4.5 after testing.
+- 2026-09-20: A carried object is set down on a flat surface under the crosshair, or dropped with physics when there is none. No prompt for drop. Loose objects are Rigidbodies and the player can shove them.
+- 2026-09-20: The player can throw a carried object with right mouse or gamepad right trigger. Owner request outside the plan, built and tested.
+- 2026-09-20: The crosshair dot is on. It was turned off and then back on at the owner's request.
+- 2026-09-20: UI is uGUI with the built-in legacy Text font. TextMeshPro is not used, because it needs its Essential Resources imported into Assets and the owner has not approved that.
+- 2026-09-20: Player settings that persist between sessions live in a JSON file in persistentDataPath, separate from the PlayerTuning asset.
+- 2026-09-20: Feel numbers live in Assets/Settings/PlayerTuning.asset and can be changed during Play mode.
+- 2026-09-20: Main visual inspiration is Fears to Fathom: a VHS tape look first, with a soft low-resolution picture. PS1 effects (vertex jitter, affine textures) stay off unless added later. This replaces the earlier PS1/PSX visual style line.
+- 2026-09-20: All filters and shaders are written for this project. No kits.
