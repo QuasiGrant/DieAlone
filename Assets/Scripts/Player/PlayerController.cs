@@ -91,6 +91,11 @@ public class PlayerController : MonoBehaviour
             ? look * tuning.mouseSensitivity
             : look * tuning.gamepadLookSpeed * Time.deltaTime;
 
+        // Player settings: sensitivity multiplier and invert, chosen in the pause menu.
+        var settings = PlayerSettings.Current;
+        delta *= settings.lookSensitivity;
+        if (settings.invertLook) delta.y = -delta.y;
+
         transform.Rotate(0f, delta.x, 0f);
         pitch = Mathf.Clamp(pitch - delta.y, -tuning.pitchLimit, tuning.pitchLimit);
         cameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
