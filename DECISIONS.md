@@ -10,3 +10,5 @@
 - 2026-09-20: Tasks live in PLAN.md. Code does one task at a time from it, and each finished task is committed and pushed.
 - 2026-09-20: The player can sprint, crouch, and jump. Jump is a small hop of about 0.6 m. Sprint and crouch are hold, not toggle.
 - 2026-09-20: The player can open and shut doors and carry one object at a time. Carrying is not the inventory.
+- 2026-09-20: The player cannot step up ledges: CharacterController stepOffset 0.1, skinWidth 0.035. Every staircase gets a collider-only sloped box (StairRamp) over its treads. Reason: with stepOffset 0.3 the capsule slid up over edges between 0.35 and 0.65 m when moving sideways, so hop-only obstacles could be climbed without jumping. Chosen over a code guard that would have left a 0.3 m snag. Full rule is in PLAN.md under Rules and Tips.
+- 2026-09-20: Sprint speed is 5.5 m/s, raised from 4.5 after testing.
