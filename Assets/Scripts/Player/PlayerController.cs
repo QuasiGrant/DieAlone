@@ -14,6 +14,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float sprintSpeed = 5.5f;
     [SerializeField] private float gravity = 20f;
 
+    [Header("Crouch")]
+    [SerializeField] private float crouchSpeed = 1.5f;
+    [SerializeField] private float standHeight = 1.8f;
+    [SerializeField] private float crouchHeight = 1.0f;
+    [SerializeField] private float standEyeHeight = 1.6f;
+    [SerializeField] private float crouchEyeHeight = 0.8f;
+    [SerializeField] private float crouchTransitionSpeed = 6f;
+
     [Header("Look")]
     [SerializeField] private Transform cameraPivot;
     [Tooltip("Degrees per mouse pixel.")]
@@ -26,6 +34,8 @@ public class PlayerController : MonoBehaviour
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction sprintAction;
+    private InputAction crouchAction;
+    private bool isCrouching;
     private float pitch;
     private float verticalVelocity;
     private bool lockedLastFrame;
@@ -38,6 +48,7 @@ public class PlayerController : MonoBehaviour
         moveAction = map.FindAction("Move", throwIfNotFound: true);
         lookAction = map.FindAction("Look", throwIfNotFound: true);
         sprintAction = map.FindAction("Sprint", throwIfNotFound: true);
+        crouchAction = map.FindAction("Crouch", throwIfNotFound: true);
     }
 
     private void OnEnable()
@@ -45,6 +56,7 @@ public class PlayerController : MonoBehaviour
         moveAction.Enable();
         lookAction.Enable();
         sprintAction.Enable();
+        crouchAction.Enable();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -54,6 +66,7 @@ public class PlayerController : MonoBehaviour
         moveAction.Disable();
         lookAction.Disable();
         sprintAction.Disable();
+        crouchAction.Disable();
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -61,6 +74,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         Look();
+        Crouch();
         Move();
     }
 
@@ -90,6 +104,38 @@ public class PlayerController : MonoBehaviour
         cameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
 
+    private void Crouch()
+    {
+        bool wantCrouch = crouchAction.IsPressed();
+
+        if (wantCrouch != isCrouching)
+        {
+            // Standing up needs clear space above the crouched capsule.
+            if (wantCrouch || HasHeadroom()) isCrouching = wantCrouch;
+        }
+
+        float targetHeight = isCrouching ? crouchHeight : standHeight;
+        float step = crouchTransitionSpeed * Time.deltaTime;
+        float h = Mathf.MoveTowards(controller.height, targetHeight, step);
+        controller.height = h;
+        controller.center = new Vector3(0f, h * 0.5f, 0f);
+
+        float targetEye = isCrouching ? crouchEyeHeight : standEyeHeight;
+        Vector3 camPos = cameraPivot.localPosition;
+        camPos.y = Mathf.MoveTowards(camPos.y, targetEye, step);
+        cameraPivot.localPosition = camPos;
+    }
+
+    // Sphere-casts up from the top of the crouched capsule to the standing height.
+    // The cast starts inside our own CharacterController, which SphereCast ignores.
+    private bool HasHeadroom()
+    {
+        float r = controller.radius - 0.05f;
+        Vector3 origin = transform.position + Vector3.up * (crouchHeight - controller.radius);
+        float distance = standHeight - crouchHeight;
+        return !Physics.SphereCast(origin, r, Vector3.up, out _, distance, ~0, QueryTriggerInteraction.Ignore);
+    }
+
     private void Move()
     {
         Vector2 input = moveAction.ReadValue<Vector2>();
@@ -99,7 +145,7 @@ public class PlayerController : MonoBehaviour
         if (controller.isGrounded && verticalVelocity < 0f) verticalVelocity = -2f;
         verticalVelocity -= gravity * Time.deltaTime;
 
-        float speed = sprintAction.IsPressed() ? sprintSpeed : walkSpeed;
+        float speed = isCrouching ? crouchSpeed : (sprintAction.IsPressed() ? sprintSpeed : walkSpeed);
         Vector3 velocity = planar * speed + Vector3.up * verticalVelocity;
         controller.Move(velocity * Time.deltaTime);
     }
