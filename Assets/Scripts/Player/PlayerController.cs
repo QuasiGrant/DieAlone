@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 2.5f;
-    [SerializeField] private float sprintSpeed = 4.5f;
+    [SerializeField] private float sprintSpeed = 5.5f;
     [SerializeField] private float gravity = 20f;
 
     [Header("Look")]
