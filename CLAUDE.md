@@ -18,3 +18,10 @@ PS1/PSX-style horror game. Unity 6000.3.24f1, URP. Solo project; the owner has n
 - Run `unity status` before touching a scene, prefab, or asset. State "ready" means an Editor is connected: drive it through the unity-editor-mcp tools or `unity command`. Never hand-edit .unity, .prefab, or .asset files while an Editor is reachable.
 - If `unity status` shows nothing, check `unity pipeline list` for Safe Mode (compile errors) before assuming the Editor is closed.
 - Never commit Library/, Temp/, obj/, Logs/, or Build/.
+
+## Plan
+- PLAN.md is the task list. Cowork writes it. You may tick boxes and add lines under Rules and Tips. Do not add, remove, reorder, or reword tasks.
+- When I say "next task", do only the first unchecked task in PLAN.md. If it is unclear or blocked by an open decision, stop and say so.
+- Read Rules and Tips before starting a task.
+- When the task's done-check passes: tick its box, commit the work and PLAN.md together with a one-line message, push, then stop and report.
+- If you learned something later tasks need, add one line under Rules and Tips in the same commit.
