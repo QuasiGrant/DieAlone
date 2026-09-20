@@ -14,6 +14,7 @@ public class PlayerInteractor : MonoBehaviour
     [SerializeField] private InteractPromptUI promptUI;
 
     private InputAction interactAction;
+    private InputAction throwAction;
     private Interactable current;
     private PlayerCarry carry;
 
@@ -25,11 +26,12 @@ public class PlayerInteractor : MonoBehaviour
     {
         var map = inputActions.FindActionMap("Player", throwIfNotFound: true);
         interactAction = map.FindAction("Interact", throwIfNotFound: true);
+        throwAction = map.FindAction("Throw", throwIfNotFound: true);
         carry = GetComponent<PlayerCarry>();
     }
 
-    private void OnEnable() => interactAction.Enable();
-    private void OnDisable() => interactAction.Disable();
+    private void OnEnable() { interactAction.Enable(); throwAction.Enable(); }
+    private void OnDisable() { interactAction.Disable(); throwAction.Disable(); }
 
     private void Update()
     {
@@ -38,6 +40,12 @@ public class PlayerInteractor : MonoBehaviour
         if (carry != null && carry.IsCarrying)
         {
             current = null;
+            if (throwAction.WasPressedThisFrame())
+            {
+                carry.Throw();
+                if (promptUI != null) promptUI.SetPrompt(null);
+                return;
+            }
             bool canPlace = carry.CanSetDown();
             if (promptUI != null) promptUI.SetPrompt(canPlace ? "Set down" : null);
             if (pressed)

@@ -59,4 +59,8 @@ public class PlayerTuning : ScriptableObject
     public float dropForwardSpeed = 1f;
     [Tooltip("How hard the player shoves loose physics objects when walking into them.")]
     public float pushPower = 2f;
+    [Tooltip("Speed of a thrown object along the look direction, in m/s.")]
+    public float throwSpeed = 7f;
+    [Tooltip("Extra upward speed added to a throw, in m/s, for a slight arc.")]
+    public float throwLift = 1.5f;
 }

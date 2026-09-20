@@ -59,7 +59,18 @@ public class PlayerCarry : MonoBehaviour
         Release(held.transform.position, held.transform.rotation, velocity);
     }
 
-    private void Release(Vector3 pos, Quaternion rot, Vector3 velocity)
+    /// Fling the object along the look direction with a little lift.
+    public void Throw()
+    {
+        if (held == null) return;
+        Vector3 velocity = (controller != null ? controller.velocity : Vector3.zero)
+                         + eye.forward * tuning.throwSpeed
+                         + Vector3.up * tuning.throwLift;
+        Release(held.transform.position, held.transform.rotation, velocity);
+    }
+
+    private void Release(
+Vector3 pos, Quaternion rot, Vector3 velocity)
     {
         held.transform.SetParent(null, true);
         held.transform.SetPositionAndRotation(pos, rot);
