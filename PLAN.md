@@ -49,5 +49,5 @@ Event deck and tracks, chapters and endings, voices, scrapbook, inventory, map, 
 
 Lessons from finished tasks that later tasks need. One line each, newest at the bottom.
 - Editor eval (eval_file / unity command eval) wraps code in a method body: no `using` lines, use fully qualified names like UnityEditor.SceneManagement.EditorSceneManager. Screenshot save_path lands under Assets/, so save to the scratchpad copy and delete the Assets/Temp asset through the Editor afterward.
-- Play mode does not tick while the Editor is unfocused. During bridge-driven play checks, eval `UnityEngine.Application.runInBackground = true` (runtime only, not saved) before waiting on frames. Two URP package errors ("Host type is not matching any asset type", AutodeskInteractive.shadergraph and TraceVirtualOffset.urtshader) print on every domain reload; pre-existing, not from project code.
+- Play mode does not tick while the Editor is unfocused. During bridge-driven play checks, eval `UnityEngine.Application.runInBackground = true` (runtime only, not saved) before waiting on frames.
 - Deleting scripts through the Editor triggers a domain reload that drops the bridge mid-batch; wait for editor_status ready and retry the remaining calls. Build-list edits stay in memory until `UnityEditor.AssetDatabase.SaveAssets()` writes ProjectSettings/EditorBuildSettings.asset.
