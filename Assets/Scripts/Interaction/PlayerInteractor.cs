@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// Looks along the eye for an Interactable within reach, shows its prompt,
-/// and calls Use on it when the Interact action is pressed.
+/// and calls Use on it when the Interact action is pressed. While the player
+/// is carrying something, Interact sets it down instead.
 public class PlayerInteractor : MonoBehaviour
 {
     [SerializeField] private PlayerTuning tuning;
@@ -14,6 +15,7 @@ public class PlayerInteractor : MonoBehaviour
 
     private InputAction interactAction;
     private Interactable current;
+    private PlayerCarry carry;
 
     /// The usable object under the crosshair this frame, or null.
     public Interactable Current => current;
@@ -23,6 +25,7 @@ public class PlayerInteractor : MonoBehaviour
     {
         var map = inputActions.FindActionMap("Player", throwIfNotFound: true);
         interactAction = map.FindAction("Interact", throwIfNotFound: true);
+        carry = GetComponent<PlayerCarry>();
     }
 
     private void OnEnable() => interactAction.Enable();
@@ -30,10 +33,21 @@ public class PlayerInteractor : MonoBehaviour
 
     private void Update()
     {
+        bool pressed = interactAction.WasPressedThisFrame();
+
+        if (carry != null && carry.IsCarrying)
+        {
+            current = null;
+            bool canPlace = carry.CanSetDown();
+            if (promptUI != null) promptUI.SetPrompt(canPlace ? "Set down" : null);
+            if (canPlace && pressed) carry.SetDown();
+            return;
+        }
+
         current = FindTarget();
         if (promptUI != null) promptUI.SetPrompt(current != null ? current.Prompt : null);
 
-        if (current != null && interactAction.WasPressedThisFrame())
+        if (current != null && pressed)
             current.Use(this);
     }
 

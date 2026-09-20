@@ -1407,6 +1407,7 @@ GameObject:
   - component: {fileID: 184211141}
   - component: {fileID: 184211140}
   - component: {fileID: 184211143}
+  - component: {fileID: 184211144}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1489,6 +1490,24 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   promptUI: {fileID: 265406087}
+--- !u!114 &184211144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184211139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6af170e2cddeea342a3cfd2b80a5a0fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCarry
+  tuning: {fileID: 11400000, guid: 6cf375fa09cef254a8a55d3921b0a9db, type: 2}
+  eye: {fileID: 1386406979}
+  holdPoint: {fileID: 294692437}
+  mask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &185675398
 GameObject:
   m_ObjectHideFlags: 0
@@ -2359,6 +2378,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 285214429}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &294692436
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 294692437}
+  m_Layer: 0
+  m_Name: HoldPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &294692437
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 294692436}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.3, y: -0.25, z: 0.7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1386406979}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &298580581
 GameObject:
   m_ObjectHideFlags: 0
@@ -5134,6 +5184,7 @@ GameObject:
   - component: {fileID: 689549987}
   - component: {fileID: 689549986}
   - component: {fileID: 689549985}
+  - component: {fileID: 689549988}
   m_Layer: 0
   m_Name: Loose_Brick
   m_TagString: Untagged
@@ -5234,6 +5285,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 689549983}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &689549988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 689549983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37287607673f5514ab146af1223faa80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Carryable
+  prompt: Pick up
 --- !u!1 &700121529
 GameObject:
   m_ObjectHideFlags: 0
@@ -10955,7 +11019,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 294692437}
   m_Father: {fileID: 184211142}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!81 &1386406980
@@ -12314,6 +12379,7 @@ GameObject:
   - component: {fileID: 1572284691}
   - component: {fileID: 1572284690}
   - component: {fileID: 1572284689}
+  - component: {fileID: 1572284692}
   m_Layer: 0
   m_Name: Loose_Tin
   m_TagString: Untagged
@@ -12414,6 +12480,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1572284687}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1572284692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1572284687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37287607673f5514ab146af1223faa80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Carryable
+  prompt: Pick up
 --- !u!1 &1633069727
 GameObject:
   m_ObjectHideFlags: 0
@@ -17260,6 +17339,7 @@ GameObject:
   - component: {fileID: 2102392693}
   - component: {fileID: 2102392692}
   - component: {fileID: 2102392691}
+  - component: {fileID: 2102392694}
   m_Layer: 0
   m_Name: Loose_Cube
   m_TagString: Untagged
@@ -17360,6 +17440,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2102392689}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2102392694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102392689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37287607673f5514ab146af1223faa80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Carryable
+  prompt: Pick up
 --- !u!1 &2116602435
 GameObject:
   m_ObjectHideFlags: 0

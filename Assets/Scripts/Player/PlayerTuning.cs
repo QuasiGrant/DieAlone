@@ -45,4 +45,14 @@ public class PlayerTuning : ScriptableObject
     public float doorOpenAngle = 90f;
     [Tooltip("Degrees per second.")]
     public float doorSwingSpeed = 150f;
+
+    [Header("Carry")]
+    [Tooltip("Where the carried object sits, relative to the camera: right, down, forward.")]
+    public Vector3 carryHoldOffset = new Vector3(0.3f, -0.25f, 0.7f);
+    [Tooltip("How quickly the carried object follows the camera. Higher is stiffer.")]
+    public float carryFollowSpeed = 14f;
+    [Tooltip("How far away the player can set an object down, in metres.")]
+    public float placeReach = 2f;
+    [Tooltip("How level a surface must be to set an object on it. 1 is flat, 0 allows walls.")]
+    [Range(0f, 1f)] public float placeMinUpNormal = 0.7f;
 }
