@@ -8,3 +8,5 @@
 - 2026-09-20: Off-machine backup is a public GitHub repo: https://github.com/QuasiGrant/DieAlone
 - 2026-09-20: Workflow: Cowork plans and verifies, and edits only PLAN.md and DECISIONS.md. Code builds and changes everything else. One agent changes the Unity project at a time.
 - 2026-09-20: Tasks live in PLAN.md. Code does one task at a time from it, and each finished task is committed and pushed.
+- 2026-09-20: The player can sprint, crouch, and jump. Jump is a small hop of about 0.6 m. Sprint and crouch are hold, not toggle.
+- 2026-09-20: The player can open and shut doors and carry one object at a time. Carrying is not the inventory.
