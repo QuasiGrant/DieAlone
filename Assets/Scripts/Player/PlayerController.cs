@@ -26,6 +26,8 @@ public class PlayerController : MonoBehaviour
     private InputAction lookAction;
     private float pitch;
     private float verticalVelocity;
+    private bool lockedLastFrame;
+    private int lockSettleFrames;
 
     private void Awake()
     {
@@ -63,6 +65,17 @@ public class PlayerController : MonoBehaviour
 
         // Mouse delta is already per-frame pixels. Stick input is -1..1 and needs time scaling.
         bool fromPointer = lookAction.activeControl != null && lookAction.activeControl.device is Pointer;
+
+        // Locking warps the cursor to screen center, which shows up as one huge delta.
+        // Ignore mouse look while unlocked and for a couple of frames after locking.
+        bool locked = Cursor.lockState == CursorLockMode.Locked;
+        if (locked && !lockedLastFrame) lockSettleFrames = 2;
+        lockedLastFrame = locked;
+        if (fromPointer)
+        {
+            if (!locked) return;
+            if (lockSettleFrames > 0) { lockSettleFrames--; return; }
+        }
         Vector2 delta = fromPointer
             ? look * mouseSensitivity
             : look * gamepadLookSpeed * Time.deltaTime;
