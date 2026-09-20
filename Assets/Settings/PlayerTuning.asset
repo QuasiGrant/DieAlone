@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bd690b2f0843f049974b0021dfc5d3d, type: 3}
+  m_Name: PlayerTuning
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerTuning
+  walkSpeed: 2.5
+  sprintSpeed: 5.5
+  crouchSpeed: 1.5
+  gravity: 20
+  jumpHeight: 0.6
+  coyoteTime: 0.1
+  standHeight: 1.8
+  crouchHeight: 1
+  standEyeHeight: 1.6
+  crouchEyeHeight: 0.8
+  crouchTransitionSpeed: 6
+  mouseSensitivity: 0.1
+  gamepadLookSpeed: 120
+  pitchLimit: 85
+  capsuleRadius: 0.35
+  stepOffset: 0.1
+  skinWidth: 0.035
+  interactReach: 2
+  doorOpenAngle: 90
+  doorSwingSpeed: 150

@@ -1426,22 +1426,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b59d7e330562934cba4333f8a61a590, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  tuning: {fileID: 11400000, guid: 6cf375fa09cef254a8a55d3921b0a9db, type: 2}
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  walkSpeed: 2.5
-  sprintSpeed: 4.5
-  gravity: 20
-  jumpHeight: 0.6
-  coyoteTime: 0.1
-  crouchSpeed: 1.5
-  standHeight: 1.8
-  crouchHeight: 1
-  standEyeHeight: 1.6
-  crouchEyeHeight: 0.8
-  crouchTransitionSpeed: 6
   cameraPivot: {fileID: 1386406979}
-  mouseSensitivity: 0.1
-  gamepadLookSpeed: 120
-  pitchLimit: 85
 --- !u!143 &184211141
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1495,9 +1482,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bff5de9063dbb245a27711d14fb6603, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
+  tuning: {fileID: 11400000, guid: 6cf375fa09cef254a8a55d3921b0a9db, type: 2}
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   eye: {fileID: 1386406979}
-  reach: 2
   mask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -1905,9 +1892,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Door
   prompt: Open
+  tuning: {fileID: 11400000, guid: 6cf375fa09cef254a8a55d3921b0a9db, type: 2}
   panel: {fileID: 700202087}
-  openAngle: 90
-  swingSpeed: 150
   blockers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -3852,9 +3838,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Door
   prompt: Open
+  tuning: {fileID: 11400000, guid: 6cf375fa09cef254a8a55d3921b0a9db, type: 2}
   panel: {fileID: 1687981610}
-  openAngle: 90
-  swingSpeed: 150
   blockers:
     serializedVersion: 2
     m_Bits: 4294967295

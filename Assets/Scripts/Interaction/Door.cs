@@ -5,10 +5,8 @@ using UnityEngine;
 /// player is in the way, so it can never shove or trap them.
 public class Door : Interactable
 {
+    [SerializeField] private PlayerTuning tuning;
     [SerializeField] private BoxCollider panel;
-    [SerializeField] private float openAngle = 90f;
-    [Tooltip("Degrees per second.")]
-    [SerializeField] private float swingSpeed = 150f;
     [SerializeField] private LayerMask blockers = ~0;
 
     private bool isOpen;
@@ -28,17 +26,17 @@ public class Door : Interactable
             return;
         }
 
-        // Swing away from the user. The hinge's forward is the closed panel's normal.
+        // Swing away from the user. The hinge forward is the closed panel normal.
         Vector3 toUser = user.transform.position - transform.position;
         float side = Vector3.Dot(transform.forward, toUser);
-        targetAngle = side >= 0f ? openAngle : -openAngle;
+        targetAngle = side >= 0f ? tuning.doorOpenAngle : -tuning.doorOpenAngle;
     }
 
     private void Update()
     {
         if (Mathf.Approximately(currentAngle, targetAngle)) return;
 
-        float next = Mathf.MoveTowardsAngle(currentAngle, targetAngle, swingSpeed * Time.deltaTime);
+        float next = Mathf.MoveTowardsAngle(currentAngle, targetAngle, tuning.doorSwingSpeed * Time.deltaTime);
         if (WouldHitPlayer(next)) return;   // hold this frame, try again next frame
 
         currentAngle = next;
@@ -49,7 +47,7 @@ public class Door : Interactable
     {
         Quaternion parentRot = transform.parent != null ? transform.parent.rotation : Quaternion.identity;
         Quaternion rot = parentRot * Quaternion.Euler(0f, angle, 0f);
-        Vector3 center = transform.position + rot * Vector3.Scale(panel.transform.localPosition + panel.center, Vector3.one);
+        Vector3 center = transform.position + rot * (panel.transform.localPosition + panel.center);
         Vector3 half = Vector3.Scale(panel.size, panel.transform.localScale) * 0.5f;
 
         var hits = Physics.OverlapBox(center, half, rot, blockers, QueryTriggerInteraction.Ignore);

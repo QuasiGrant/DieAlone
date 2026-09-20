@@ -5,10 +5,10 @@ using UnityEngine.InputSystem;
 /// and calls Use on it when the Interact action is pressed.
 public class PlayerInteractor : MonoBehaviour
 {
+    [SerializeField] private PlayerTuning tuning;
     [SerializeField] private InputActionAsset inputActions;
     [Tooltip("Ray origin and direction. Normally the player camera.")]
     [SerializeField] private Transform eye;
-    [SerializeField] private float reach = 2f;
     [SerializeField] private LayerMask mask = ~0;
     [SerializeField] private InteractPromptUI promptUI;
 
@@ -39,7 +39,7 @@ public class PlayerInteractor : MonoBehaviour
 
     private Interactable FindTarget()
     {
-        if (!Physics.Raycast(eye.position, eye.forward, out RaycastHit hit, reach, mask, QueryTriggerInteraction.Ignore))
+        if (!Physics.Raycast(eye.position, eye.forward, out RaycastHit hit, tuning.interactReach, mask, QueryTriggerInteraction.Ignore))
             return null;
 
         var target = hit.collider.GetComponentInParent<Interactable>();

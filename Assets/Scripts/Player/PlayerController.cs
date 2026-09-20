@@ -1,40 +1,15 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// First-person walk and look. Reads Move and Look from the Player map in the
-/// project's InputActionAsset so keyboard/mouse and gamepad both work.
+/// First-person walk, sprint, crouch, jump and look. Reads actions from the Player map
+/// in the project's InputActionAsset so keyboard/mouse and gamepad both work.
+/// All feel numbers come from the PlayerTuning asset.
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("Input")]
+    [SerializeField] private PlayerTuning tuning;
     [SerializeField] private InputActionAsset inputActions;
-
-    [Header("Movement")]
-    [SerializeField] private float walkSpeed = 2.5f;
-    [SerializeField] private float sprintSpeed = 5.5f;
-    [SerializeField] private float gravity = 20f;
-
-    [Header("Jump")]
-    [Tooltip("Apex height of the hop in metres.")]
-    [SerializeField] private float jumpHeight = 0.6f;
-    [Tooltip("Seconds after leaving the ground during which a jump still counts.")]
-    [SerializeField] private float coyoteTime = 0.1f;
-
-    [Header("Crouch")]
-    [SerializeField] private float crouchSpeed = 1.5f;
-    [SerializeField] private float standHeight = 1.8f;
-    [SerializeField] private float crouchHeight = 1.0f;
-    [SerializeField] private float standEyeHeight = 1.6f;
-    [SerializeField] private float crouchEyeHeight = 0.8f;
-    [SerializeField] private float crouchTransitionSpeed = 6f;
-
-    [Header("Look")]
     [SerializeField] private Transform cameraPivot;
-    [Tooltip("Degrees per mouse pixel.")]
-    [SerializeField] private float mouseSensitivity = 0.1f;
-    [Tooltip("Degrees per second at full stick deflection.")]
-    [SerializeField] private float gamepadLookSpeed = 120f;
-    [SerializeField] private float pitchLimit = 85f;
 
     private CharacterController controller;
     private InputAction moveAction;
@@ -52,6 +27,12 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+        controller.radius = tuning.capsuleRadius;
+        controller.stepOffset = tuning.stepOffset;
+        controller.skinWidth = tuning.skinWidth;
+        controller.height = tuning.standHeight;
+        controller.center = new Vector3(0f, tuning.standHeight * 0.5f, 0f);
+
         var map = inputActions.FindActionMap("Player", throwIfNotFound: true);
         moveAction = map.FindAction("Move", throwIfNotFound: true);
         lookAction = map.FindAction("Look", throwIfNotFound: true);
@@ -107,11 +88,11 @@ public class PlayerController : MonoBehaviour
             if (lockSettleFrames > 0) { lockSettleFrames--; return; }
         }
         Vector2 delta = fromPointer
-            ? look * mouseSensitivity
-            : look * gamepadLookSpeed * Time.deltaTime;
+            ? look * tuning.mouseSensitivity
+            : look * tuning.gamepadLookSpeed * Time.deltaTime;
 
         transform.Rotate(0f, delta.x, 0f);
-        pitch = Mathf.Clamp(pitch - delta.y, -pitchLimit, pitchLimit);
+        pitch = Mathf.Clamp(pitch - delta.y, -tuning.pitchLimit, tuning.pitchLimit);
         cameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
 
@@ -125,13 +106,13 @@ public class PlayerController : MonoBehaviour
             if (wantCrouch || HasHeadroom()) isCrouching = wantCrouch;
         }
 
-        float targetHeight = isCrouching ? crouchHeight : standHeight;
-        float step = crouchTransitionSpeed * Time.deltaTime;
+        float targetHeight = isCrouching ? tuning.crouchHeight : tuning.standHeight;
+        float step = tuning.crouchTransitionSpeed * Time.deltaTime;
         float h = Mathf.MoveTowards(controller.height, targetHeight, step);
         controller.height = h;
         controller.center = new Vector3(0f, h * 0.5f, 0f);
 
-        float targetEye = isCrouching ? crouchEyeHeight : standEyeHeight;
+        float targetEye = isCrouching ? tuning.crouchEyeHeight : tuning.standEyeHeight;
         Vector3 camPos = cameraPivot.localPosition;
         camPos.y = Mathf.MoveTowards(camPos.y, targetEye, step);
         cameraPivot.localPosition = camPos;
@@ -142,8 +123,8 @@ public class PlayerController : MonoBehaviour
     private bool HasHeadroom()
     {
         float r = controller.radius - 0.05f;
-        Vector3 origin = transform.position + Vector3.up * (crouchHeight - controller.radius);
-        float distance = standHeight - crouchHeight;
+        Vector3 origin = transform.position + Vector3.up * (tuning.crouchHeight - controller.radius);
+        float distance = tuning.standHeight - tuning.crouchHeight;
         return !Physics.SphereCast(origin, r, Vector3.up, out _, distance, ~0, QueryTriggerInteraction.Ignore);
     }
 
@@ -159,16 +140,16 @@ public class PlayerController : MonoBehaviour
             if (verticalVelocity < 0f) verticalVelocity = -2f;
         }
 
-        bool canJump = Time.time - lastGroundedTime <= coyoteTime;
+        bool canJump = Time.time - lastGroundedTime <= tuning.coyoteTime;
         if (canJump && jumpAction.WasPressedThisFrame())
         {
-            verticalVelocity = Mathf.Sqrt(2f * gravity * jumpHeight);
+            verticalVelocity = Mathf.Sqrt(2f * tuning.gravity * tuning.jumpHeight);
             lastGroundedTime = -999f;
         }
 
-        verticalVelocity -= gravity * Time.deltaTime;
+        verticalVelocity -= tuning.gravity * Time.deltaTime;
 
-        float speed = isCrouching ? crouchSpeed : (sprintAction.IsPressed() ? sprintSpeed : walkSpeed);
+        float speed = isCrouching ? tuning.crouchSpeed : (sprintAction.IsPressed() ? tuning.sprintSpeed : tuning.walkSpeed);
         Vector3 velocity = planar * speed + Vector3.up * verticalVelocity;
         controller.Move(velocity * Time.deltaTime);
     }
