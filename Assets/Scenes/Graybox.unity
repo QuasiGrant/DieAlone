@@ -1426,7 +1426,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   walkSpeed: 2.5
+  sprintSpeed: 4.5
   gravity: 20
+  jumpHeight: 0.6
+  coyoteTime: 0.1
+  crouchSpeed: 1.5
+  standHeight: 1.8
+  crouchHeight: 1
+  standEyeHeight: 1.6
+  crouchEyeHeight: 0.8
+  crouchTransitionSpeed: 6
   cameraPivot: {fileID: 1386406979}
   mouseSensitivity: 0.1
   gamepadLookSpeed: 120
@@ -1453,7 +1462,7 @@ CharacterController:
   m_Radius: 0.35
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_SkinWidth: 0.035
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!4 &184211142
@@ -4354,8 +4363,8 @@ Transform:
   m_GameObject: {fileID: 641373077}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -17, y: 0.2, z: -14}
-  m_LocalScale: {x: 3, y: 0.4, z: 1}
+  m_LocalPosition: {x: -17, y: 0.25, z: -14}
+  m_LocalScale: {x: 3, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 219363677}
@@ -15997,8 +16006,8 @@ Transform:
   m_GameObject: {fileID: 2092198000}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -17, y: 0.2, z: -10}
-  m_LocalScale: {x: 0.4, y: 1.5, z: 0.4}
+  m_LocalPosition: {x: -17, y: 0.25, z: -10}
+  m_LocalScale: {x: 0.5, y: 1.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 219363677}
