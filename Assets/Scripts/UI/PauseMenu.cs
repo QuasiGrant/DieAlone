@@ -41,26 +41,44 @@ public class PauseMenu : MonoBehaviour
         panel.SetActive(false);
     }
 
+    private bool subscribed;
+
     private void OnEnable()
     {
         pauseAction.Enable();
         pauseAction.performed += OnPausePerformed;
-        if (GamePause.Instance != null)
-        {
-            GamePause.Instance.Paused += Show;
-            GamePause.Instance.Resumed += Hide;
-        }
+        Subscribe();
     }
+
+    // Start runs after every Awake in the scene, so GamePause.Instance is set by then
+    // even when this object initializes first.
+    private void Start() => Subscribe();
 
     private void OnDisable()
     {
         pauseAction.performed -= OnPausePerformed;
         pauseAction.Disable();
+        Unsubscribe();
+    }
+
+    private void Subscribe()
+    {
+        if (subscribed || GamePause.Instance == null) return;
+        GamePause.Instance.Paused += Show;
+        GamePause.Instance.Resumed += Hide;
+        subscribed = true;
+        if (GamePause.Instance.IsPaused) Show();
+    }
+
+    private void Unsubscribe()
+    {
+        if (!subscribed) return;
         if (GamePause.Instance != null)
         {
             GamePause.Instance.Paused -= Show;
             GamePause.Instance.Resumed -= Hide;
         }
+        subscribed = false;
     }
 
     private void OnPausePerformed(InputAction.CallbackContext ctx)
