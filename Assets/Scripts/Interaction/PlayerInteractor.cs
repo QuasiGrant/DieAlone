@@ -39,7 +39,7 @@ public class PlayerInteractor : MonoBehaviour
         {
             current = null;
             bool canPlace = carry.CanSetDown();
-            if (promptUI != null) promptUI.SetPrompt(canPlace ? "Set down" : "Drop");
+            if (promptUI != null) promptUI.SetPrompt(canPlace ? "Set down" : null);
             if (pressed)
             {
                 if (canPlace) carry.SetDown();
