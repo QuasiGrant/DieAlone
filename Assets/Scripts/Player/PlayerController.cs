@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 2.5f;
+    [SerializeField] private float sprintSpeed = 4.5f;
     [SerializeField] private float gravity = 20f;
 
     [Header("Look")]
@@ -24,6 +25,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private InputAction moveAction;
     private InputAction lookAction;
+    private InputAction sprintAction;
     private float pitch;
     private float verticalVelocity;
     private bool lockedLastFrame;
@@ -35,12 +37,14 @@ public class PlayerController : MonoBehaviour
         var map = inputActions.FindActionMap("Player", throwIfNotFound: true);
         moveAction = map.FindAction("Move", throwIfNotFound: true);
         lookAction = map.FindAction("Look", throwIfNotFound: true);
+        sprintAction = map.FindAction("Sprint", throwIfNotFound: true);
     }
 
     private void OnEnable()
     {
         moveAction.Enable();
         lookAction.Enable();
+        sprintAction.Enable();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -49,6 +53,7 @@ public class PlayerController : MonoBehaviour
     {
         moveAction.Disable();
         lookAction.Disable();
+        sprintAction.Disable();
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -94,7 +99,8 @@ public class PlayerController : MonoBehaviour
         if (controller.isGrounded && verticalVelocity < 0f) verticalVelocity = -2f;
         verticalVelocity -= gravity * Time.deltaTime;
 
-        Vector3 velocity = planar * walkSpeed + Vector3.up * verticalVelocity;
+        float speed = sprintAction.IsPressed() ? sprintSpeed : walkSpeed;
+        Vector3 velocity = planar * speed + Vector3.up * verticalVelocity;
         controller.Move(velocity * Time.deltaTime);
     }
 }
