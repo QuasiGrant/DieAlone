@@ -1,7 +1,8 @@
 using UnityEngine;
 
-/// Holds one Carryable in front of the camera and sets it down on the surface
-/// the player is looking at. Not an inventory: one object, always visible.
+/// Holds one Carryable in front of the camera. Interact sets it down on the surface
+/// the player is looking at, or drops it to fall with physics when there is no
+/// valid surface. Not an inventory: one object, always visible.
 public class PlayerCarry : MonoBehaviour
 {
     [SerializeField] private PlayerTuning tuning;
@@ -11,18 +12,24 @@ public class PlayerCarry : MonoBehaviour
     [SerializeField] private Transform holdPoint;
     [SerializeField] private LayerMask mask = ~0;
 
+    private CharacterController controller;
     private Carryable held;
     private Collider heldCollider;
+    private Rigidbody heldBody;
 
     public bool IsCarrying => held != null;
     public Carryable Held => held;
+
+    private void Awake() => controller = GetComponent<CharacterController>();
 
     public void PickUp(Carryable item)
     {
         if (held != null || item == null) return;
         held = item;
         heldCollider = item.GetComponent<Collider>();
+        heldBody = item.GetComponent<Rigidbody>();
         if (heldCollider != null) heldCollider.enabled = false;
+        if (heldBody != null) heldBody.isKinematic = true;
         item.transform.SetParent(holdPoint, true);
     }
 
@@ -37,14 +44,35 @@ public class PlayerCarry : MonoBehaviour
 
     public bool CanSetDown() => held != null && TryFindPlacement(out _, out _);
 
+    /// Place the object on the surface under the crosshair. Does nothing if there is none.
     public void SetDown()
     {
         if (held == null || !TryFindPlacement(out Vector3 pos, out Quaternion rot)) return;
+        Release(pos, rot, Vector3.zero);
+    }
+
+    /// Let go where it is. It keeps the player's motion plus a small forward push and falls.
+    public void Drop()
+    {
+        if (held == null) return;
+        Vector3 velocity = (controller != null ? controller.velocity : Vector3.zero) + eye.forward * tuning.dropForwardSpeed;
+        Release(held.transform.position, held.transform.rotation, velocity);
+    }
+
+    private void Release(Vector3 pos, Quaternion rot, Vector3 velocity)
+    {
         held.transform.SetParent(null, true);
         held.transform.SetPositionAndRotation(pos, rot);
         if (heldCollider != null) heldCollider.enabled = true;
+        if (heldBody != null)
+        {
+            heldBody.isKinematic = false;
+            heldBody.linearVelocity = velocity;
+            heldBody.angularVelocity = Vector3.zero;
+        }
         held = null;
         heldCollider = null;
+        heldBody = null;
     }
 
     // A spot is valid when the look ray hits a mostly-upward surface within reach and

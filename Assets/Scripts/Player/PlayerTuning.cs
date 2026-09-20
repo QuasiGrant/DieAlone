@@ -55,4 +55,8 @@ public class PlayerTuning : ScriptableObject
     public float placeReach = 2f;
     [Tooltip("How level a surface must be to set an object on it. 1 is flat, 0 allows walls.")]
     [Range(0f, 1f)] public float placeMinUpNormal = 0.7f;
+    [Tooltip("Forward speed given to a dropped object, in m/s, on top of the player's own motion.")]
+    public float dropForwardSpeed = 1f;
+    [Tooltip("How hard the player shoves loose physics objects when walking into them.")]
+    public float pushPower = 2f;
 }

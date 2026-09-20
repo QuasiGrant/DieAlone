@@ -153,4 +153,15 @@ public class PlayerController : MonoBehaviour
         Vector3 velocity = planar * speed + Vector3.up * verticalVelocity;
         controller.Move(velocity * Time.deltaTime);
     }
+
+    // Shove loose physics objects aside instead of being blocked by them.
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        Rigidbody body = hit.rigidbody;
+        if (body == null || body.isKinematic) return;
+        if (hit.moveDirection.y < -0.3f) return;   // standing on it, not walking into it
+
+        Vector3 push = new Vector3(hit.moveDirection.x, 0f, hit.moveDirection.z);
+        body.linearVelocity = push * tuning.pushPower;
+    }
 }
