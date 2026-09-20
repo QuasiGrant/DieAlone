@@ -14,6 +14,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float sprintSpeed = 5.5f;
     [SerializeField] private float gravity = 20f;
 
+    [Header("Jump")]
+    [Tooltip("Apex height of the hop in metres.")]
+    [SerializeField] private float jumpHeight = 0.6f;
+    [Tooltip("Seconds after leaving the ground during which a jump still counts.")]
+    [SerializeField] private float coyoteTime = 0.1f;
+
     [Header("Crouch")]
     [SerializeField] private float crouchSpeed = 1.5f;
     [SerializeField] private float standHeight = 1.8f;
@@ -35,6 +41,8 @@ public class PlayerController : MonoBehaviour
     private InputAction lookAction;
     private InputAction sprintAction;
     private InputAction crouchAction;
+    private InputAction jumpAction;
+    private float lastGroundedTime = -999f;
     private bool isCrouching;
     private float pitch;
     private float verticalVelocity;
@@ -49,6 +57,7 @@ public class PlayerController : MonoBehaviour
         lookAction = map.FindAction("Look", throwIfNotFound: true);
         sprintAction = map.FindAction("Sprint", throwIfNotFound: true);
         crouchAction = map.FindAction("Crouch", throwIfNotFound: true);
+        jumpAction = map.FindAction("Jump", throwIfNotFound: true);
     }
 
     private void OnEnable()
@@ -57,6 +66,7 @@ public class PlayerController : MonoBehaviour
         lookAction.Enable();
         sprintAction.Enable();
         crouchAction.Enable();
+        jumpAction.Enable();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -67,6 +77,7 @@ public class PlayerController : MonoBehaviour
         lookAction.Disable();
         sprintAction.Disable();
         crouchAction.Disable();
+        jumpAction.Disable();
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -142,7 +153,19 @@ public class PlayerController : MonoBehaviour
         Vector3 planar = transform.right * input.x + transform.forward * input.y;
         if (planar.sqrMagnitude > 1f) planar.Normalize();
 
-        if (controller.isGrounded && verticalVelocity < 0f) verticalVelocity = -2f;
+        if (controller.isGrounded)
+        {
+            lastGroundedTime = Time.time;
+            if (verticalVelocity < 0f) verticalVelocity = -2f;
+        }
+
+        bool canJump = Time.time - lastGroundedTime <= coyoteTime;
+        if (canJump && jumpAction.WasPressedThisFrame())
+        {
+            verticalVelocity = Mathf.Sqrt(2f * gravity * jumpHeight);
+            lastGroundedTime = -999f;
+        }
+
         verticalVelocity -= gravity * Time.deltaTime;
 
         float speed = isCrouching ? crouchSpeed : (sprintAction.IsPressed() ? sprintSpeed : walkSpeed);
