@@ -20,3 +20,4 @@
 - 2026-09-20: Feel numbers live in Assets/Settings/PlayerTuning.asset and can be changed during Play mode.
 - 2026-09-20: Main visual inspiration is Fears to Fathom: a VHS tape look first, with a soft low-resolution picture. PS1 effects (vertex jitter, affine textures) stay off unless added later. This replaces the earlier PS1/PSX visual style line.
 - 2026-09-20: All filters and shaders are written for this project. No kits.
+- 2026-09-22: Third-party textures are allowed if CC0 (ambientCG, Poly Haven). Each one is listed with its source in Assets/Textures/SOURCES.md.
