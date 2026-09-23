@@ -13,4 +13,19 @@ MonoBehaviour:
   m_Name: LookTuning
   m_EditorClassIdentifier: Assembly-CSharp::LookTuning
   filterEnabled: 1
-  lowResHeight: 480
+  lowResHeight: 351
+  colorBleed: 0.442
+  washOut: 0.191
+  crushBlacks: 0.616
+  grainStrength: 0.067
+  grainSpeed: 7.7
+  noiseBandStrength: 0
+  noiseBandSpeed: 0.6
+  noiseBandInterval: 6
+  scanLines: 0.3
+  blur: 0.109
+  darkCorners: 0.789
+  fogEnabled: 1
+  fogColor: {r: 0.02, g: 0.03, b: 0.05, a: 1}
+  fogStart: 6
+  fogEnd: 40

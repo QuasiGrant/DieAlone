@@ -40,4 +40,14 @@ public class LookTuning : ScriptableObject
     [Range(0f, 1f)] public float blur = 0.3f;
     [Tooltip("How dark the corners of the picture go. 0 is off.")]
     [Range(0f, 1f)] public float darkCorners = 0.4f;
+
+    [Header("Fog and darkness")]
+    [Tooltip("Master switch for distance fog.")]
+    public bool fogEnabled = true;
+    [Tooltip("Color things fade into. The sky takes this color too, so the far end blends away.")]
+    public Color fogColor = new Color(0.02f, 0.03f, 0.05f);
+    [Tooltip("Distance in metres where fog starts.")]
+    [Range(0f, 100f)] public float fogStart = 6f;
+    [Tooltip("Distance in metres where things are fully hidden.")]
+    [Range(1f, 200f)] public float fogEnd = 40f;
 }
