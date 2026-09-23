@@ -1203,6 +1203,7 @@ GameObject:
   - component: {fileID: 6986519031593078324}
   - component: {fileID: 526309689661366472}
   - component: {fileID: 464396613331062166}
+  - component: {fileID: 5099930884943251396}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -1252,6 +1253,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LookEnvironment
   tuning: {fileID: 11400000, guid: 4b4b646b05244b54780bf9cb1ce01712, type: 2}
   targetCamera: {fileID: 0}
+--- !u!114 &5099930884943251396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5510617267920196485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99825499a84547741a7cf94d4962593f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DevMenu
 --- !u!1 &5554892151104424347
 GameObject:
   m_ObjectHideFlags: 0
