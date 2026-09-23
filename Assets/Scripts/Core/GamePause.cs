@@ -18,6 +18,18 @@ public class GamePause : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        // Prefab fallback: when the list was not wired in the scene, find the player behaviours.
+        bool anyWired = false;
+        if (gameplayBehaviours != null) foreach (var b in gameplayBehaviours) if (b != null) anyWired = true;
+        if (!anyWired)
+        {
+            var found = new System.Collections.Generic.List<Behaviour>();
+            var pc = FindFirstObjectByType<PlayerController>();
+            var pi = FindFirstObjectByType<PlayerInteractor>();
+            if (pc != null) found.Add(pc);
+            if (pi != null) found.Add(pi);
+            gameplayBehaviours = found.ToArray();
+        }
     }
 
     private void OnDestroy()

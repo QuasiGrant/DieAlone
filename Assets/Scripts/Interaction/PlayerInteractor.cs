@@ -28,6 +28,8 @@ public class PlayerInteractor : MonoBehaviour
         interactAction = map.FindAction("Interact", throwIfNotFound: true);
         throwAction = map.FindAction("Throw", throwIfNotFound: true);
         carry = GetComponent<PlayerCarry>();
+        // Prefab fallback: the HUD lives in another prefab, so find it when not wired.
+        if (promptUI == null) promptUI = FindFirstObjectByType<InteractPromptUI>();
     }
 
     private void OnEnable() { interactAction.Enable(); throwAction.Enable(); }
