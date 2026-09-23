@@ -68,6 +68,11 @@ public class LookFilterFeature : ScriptableRendererFeature
 
             renderGraph.AddBlitPass(source, low, Vector2.one, Vector2.zero, passName: "Look Downsample");
 
+            material.SetFloat("_ColorBleed", tuning.colorBleed);
+            material.SetFloat("_WashOut", tuning.washOut);
+            material.SetFloat("_CrushBlacks", tuning.crushBlacks);
+            material.SetVector("_LookTexel", new Vector4(1f / width, 1f / height, width, height));
+
             var upsample = new RenderGraphUtils.BlitMaterialParameters(low, source, material, 0);
             renderGraph.AddBlitPass(upsample, passName: "Look Filter");
         }
