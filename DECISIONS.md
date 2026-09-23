@@ -21,3 +21,8 @@
 - 2026-09-20: Main visual inspiration is Fears to Fathom: a VHS tape look first, with a soft low-resolution picture. PS1 effects (vertex jitter, affine textures) stay off unless added later. This replaces the earlier PS1/PSX visual style line.
 - 2026-09-20: All filters and shaders are written for this project. No kits.
 - 2026-09-22: Third-party textures are allowed if CC0 (ambientCG, Poly Haven). Each one is listed with its source in Assets/Textures/SOURCES.md.
+- 2026-09-23: UpgradeLog.htm is ignored by git (Visual Studio writes it). shot.png at the project root is deleted.
+- 2026-09-23: Graybox is kept as the permanent test scene. New scenes are added beside it, never by changing it.
+- 2026-09-23: Scene setup (prefabs, a scene recipe, a dev menu) is its own milestone before the first real scene. The day loop moves to Milestone 6.
+- 2026-09-23: The dev menu exists only in the Editor and development builds. It is compiled out of release builds.
+- 2026-09-23: Plan files written by Cowork are read back from disk before Cowork reports them done, and Code diffs them against head before committing. Cowork's rules live in the claude.ai Project doc "Cowork workflow". Code's rules live in CLAUDE.md.

@@ -39,13 +39,28 @@ Main inspiration is Fears to Fathom: a VHS tape look first, with a soft low-reso
 - [x] 3.6 Fog and darkness. Distance fog tuned so the far end of the test course fades out, with fog color and distance as numbers. The fog must work together with the filter. Done when: no errors, screenshots, and the owner has confirmed it at night from the top of the tower and on the test course.
 - [x] 3.7 Tuning pass. The owner tunes every look number by eye from the three camera spots, with Fears to Fathom screenshots open beside the game. Code helps on request and changes no code unless something is broken. Done when: the owner says the look is right, the final values are saved in the LookTuning asset, and final screenshots from the three spots are committed under `Docs/Look`.
 
-## Milestone 4: One full day of the loop, no events
+## Milestone 4: Scene setup
+
+Make it safe and repeatable to add scenes. Graybox is kept as the permanent test scene. In every task below, "no errors" means no console errors from project code.
+
+- [ ] 4.1 Housekeeping. Add `UpgradeLog.htm` to .gitignore and delete `shot.png` from the project root. Done when: `git status` is clean and the commit is pushed.
+- [ ] 4.2 Tag the Graybox state. Create the git tag `graybox-m3` on commit 31fa880 and push it. Done when: the tag is visible on GitHub.
+- [ ] 4.3 Prefabs. List the objects in Graybox that make up the player, the game systems, the HUD and pause menu, and the night lighting rig, then wait for the owner's yes. Turn each into a prefab under `Assets/Prefabs/` and make Graybox use the prefabs. Done when: no errors, and the owner has played Graybox and confirmed it plays exactly as before (walk, sprint, crouch, jump, doors, carry, pause menu, VHS look).
+- [ ] 4.4 New scene recipe. One documented way to make a new scene that starts with the prefabs, night lighting, fog, the look filter, and a place in the build list. Before building, say whether Unity's built-in Scene Template feature does this in 6000.3, confirm it exists in this version, and if it does not fit, propose an Editor menu item instead. Write the recipe as one line under Rules and Tips. Done when: no errors, and a throwaway scene `Assets/Scenes/Throwaway.unity` made from the recipe plays with the player, pause menu, and VHS look working. Keep Throwaway until 4.6 is done.
+- [ ] 4.5 Dev menu. F1 toggles a dev panel that lists every scene in the build list, and picking one loads it. The player and pause menu keep working after the switch. Same uGUI approach as the pause menu. The dev menu must not exist in release builds: compile it out with `#if UNITY_EDITOR || DEVELOPMENT_BUILD`, and prove it by making a non-development build and showing that F1 does nothing in it. Done when: no errors, the owner has jumped from Graybox to Throwaway and back in Play mode, and the release build check passed.
+- [ ] 4.6 Clean up. Delete `Assets/Scenes/Throwaway.unity` and its .meta through the Editor and remove it from the build list. Done when: no errors, Graybox still plays, and the build list holds only real scenes.
+
+## Milestone 5: New scene
+
+The first real scene beyond Graybox. Contents to be decided by the owner before this milestone is broken into tasks.
+
+## Milestone 6: One full day of the loop, no events
 
 Wake, chores, check the fire, report, maintain the Ward, sleep. HP, MIND, and WARD working. Autosave at sleep.
 
 ## Later, from DESIGN.md
 
-Main menu with New run and Continue comes after Milestone 4, since it depends on saving. Volume, graphics, and control rebinding settings come once there is sound and the VHS look to adjust.
+Main menu with New run and Continue comes after Milestone 6, since it depends on saving. Volume, graphics, and control rebinding settings come once there is sound and the VHS look to adjust.
 
 Event deck and tracks, chapters and endings, voices, scrapbook, inventory, map, and Ward as physical objects, Ahmee, minigames.
 

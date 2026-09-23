@@ -25,3 +25,4 @@ PS1/PSX-style horror game. Unity 6000.3.24f1, URP. Solo project; the owner has n
 - Read Rules and Tips before starting a task.
 - When the task's done-check passes: tick its box, commit the work and PLAN.md together with a one-line message, push, then stop and report.
 - If you learned something later tasks need, add one line under Rules and Tips in the same commit.
+- Before committing PLAN.md or DECISIONS.md written by Cowork, diff against head. If anything other than the expected edit is removed, stop and report instead of committing.
