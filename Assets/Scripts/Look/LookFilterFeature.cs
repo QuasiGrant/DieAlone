@@ -73,6 +73,13 @@ public class LookFilterFeature : ScriptableRendererFeature
             material.SetFloat("_CrushBlacks", tuning.crushBlacks);
             material.SetVector("_LookTexel", new Vector4(1f / width, 1f / height, width, height));
 
+            material.SetFloat("_GrainStrength", tuning.grainStrength);
+            material.SetFloat("_GrainSpeed", tuning.grainSpeed);
+            material.SetFloat("_BandStrength", tuning.noiseBandStrength);
+            material.SetFloat("_BandSpeed", tuning.noiseBandSpeed);
+            material.SetFloat("_BandInterval", tuning.noiseBandInterval);
+            material.SetFloat("_LookTime", Time.unscaledTime);
+
             var upsample = new RenderGraphUtils.BlitMaterialParameters(low, source, material, 0);
             renderGraph.AddBlitPass(upsample, passName: "Look Filter");
         }

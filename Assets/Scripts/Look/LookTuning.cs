@@ -20,4 +20,16 @@ public class LookTuning : ScriptableObject
     [Range(0f, 1f)] public float washOut = 0.35f;
     [Tooltip("How much shadow detail collapses into flat black. 0 is off.")]
     [Range(0f, 1f)] public float crushBlacks = 0.3f;
+
+    [Header("Grain and tape noise")]
+    [Tooltip("Strength of the moving grain over the whole picture. 0 is off.")]
+    [Range(0f, 1f)] public float grainStrength = 0.35f;
+    [Tooltip("How many times per second the grain pattern changes.")]
+    [Range(1f, 60f)] public float grainSpeed = 24f;
+    [Tooltip("How strong the noise band is when it appears. 0 turns bands off.")]
+    [Range(0f, 1f)] public float noiseBandStrength = 0.7f;
+    [Tooltip("How fast the band rolls up the screen, in screen heights per second.")]
+    [Range(0.1f, 3f)] public float noiseBandSpeed = 0.6f;
+    [Tooltip("Average seconds between bands.")]
+    [Range(1f, 60f)] public float noiseBandInterval = 6f;
 }
