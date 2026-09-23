@@ -78,6 +78,9 @@ public class LookFilterFeature : ScriptableRendererFeature
             material.SetFloat("_BandStrength", tuning.noiseBandStrength);
             material.SetFloat("_BandSpeed", tuning.noiseBandSpeed);
             material.SetFloat("_BandInterval", tuning.noiseBandInterval);
+            material.SetFloat("_ScanLines", tuning.scanLines);
+            material.SetFloat("_Blur", tuning.blur);
+            material.SetFloat("_DarkCorners", tuning.darkCorners);
             material.SetFloat("_LookTime", Time.unscaledTime);
 
             var upsample = new RenderGraphUtils.BlitMaterialParameters(low, source, material, 0);

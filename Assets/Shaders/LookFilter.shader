@@ -27,6 +27,9 @@ Shader "DieAlone/LookFilter"
             float _BandStrength;   // 0..1
             float _BandSpeed;      // screen heights per second
             float _BandInterval;   // seconds between bands
+            float _ScanLines;      // 0..1
+            float _Blur;           // 0..1, sideways softness
+            float _DarkCorners;    // 0..1, vignette
             float _LookTime;       // seconds, unscaled
             float4 _LookTexel;     // xy = 1/size of the low-res picture, zw = size
 
@@ -82,7 +85,13 @@ Shader "DieAlone/LookFilter"
                 float band = BandMask(uv.y, tear);
                 uv.x += tear * _LookTexel.x;
 
-                float3 sharp = SampleColor(uv);
+                // Blur: sideways box blur on top of the low resolution.
+                float blurPixels = _Blur * 2.5;
+                float3 sharp = 0;
+                [unroll]
+                for (int b = -2; b <= 2; b++)
+                    sharp += SampleColor(uv + float2(b * blurPixels / 2.0 * _LookTexel.x, 0));
+                sharp /= 5.0;
                 float luma = dot(sharp, LUMA);
 
                 // Color bleed: keep brightness sharp, average the color part over a sideways span.
@@ -117,6 +126,15 @@ Shader "DieAlone/LookFilter"
                 // Noise band: static mixed in where the band is.
                 float staticNoise = Hash(cell + float2(floor(_LookTime * 120.0) * 13.0, 977.0));
                 gammaColor = lerp(gammaColor, staticNoise.xxx * 0.9 + 0.05, band * _BandStrength);
+
+                // Scan lines: one dark line per picture row.
+                float rowWave = 0.5 + 0.5 * sin(uv.y * _LookTexel.w * 6.28318);
+                gammaColor *= 1.0 - _ScanLines * 0.35 * rowWave;
+
+                // Dark corners: smooth falloff from the center.
+                float2 fromCenter = (uv - 0.5) * float2(1.0, 0.85);
+                float corner = smoothstep(0.3, 0.85, length(fromCenter) * 1.3);
+                gammaColor *= 1.0 - _DarkCorners * 0.85 * corner;
 
                 color = SRGBToLinear(saturate(gammaColor));
                 return float4(color, 1.0);

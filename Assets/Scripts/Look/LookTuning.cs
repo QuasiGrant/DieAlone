@@ -32,4 +32,12 @@ public class LookTuning : ScriptableObject
     [Range(0.1f, 3f)] public float noiseBandSpeed = 0.6f;
     [Tooltip("Average seconds between bands.")]
     [Range(1f, 60f)] public float noiseBandInterval = 6f;
+
+    [Header("Scan lines, blur, dark corners")]
+    [Tooltip("Darkening of every other picture row. 0 is off.")]
+    [Range(0f, 1f)] public float scanLines = 0.3f;
+    [Tooltip("Sideways softness on top of the low resolution. 0 is off.")]
+    [Range(0f, 1f)] public float blur = 0.3f;
+    [Tooltip("How dark the corners of the picture go. 0 is off.")]
+    [Range(0f, 1f)] public float darkCorners = 0.4f;
 }
