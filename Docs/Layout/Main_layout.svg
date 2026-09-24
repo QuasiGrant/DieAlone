@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="860" viewBox="0 0 900 860" font-family="Segoe UI, Arial, sans-serif">
+  <!-- Main scene layout. Scale: 2 px = 1 m. Map is 400 x 400 m. North is up. y_svg = 820 - 2*y_m, x_svg = 60 + 2*x_m -->
+  <defs>
+    <pattern id="cliffHatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#3a3a3a" stroke-width="3"/>
+    </pattern>
+    <radialGradient id="fireGlow" cx="0" cy="0.5" r="1">
+      <stop offset="0" stop-color="#ff7a1a" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#ff7a1a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0" y="0" width="900" height="860" fill="#111"/>
+  <!-- Terrain 400 x 400 m -->
+  <rect x="60" y="20" width="800" height="800" fill="#1f3a22" stroke="#6b8f6b" stroke-width="2"/>
+
+  <!-- Grid every 50 m -->
+  <g stroke="#2e4f31" stroke-width="1">
+    <line x1="160" y1="20" x2="160" y2="820"/><line x1="260" y1="20" x2="260" y2="820"/><line x1="360" y1="20" x2="360" y2="820"/><line x1="460" y1="20" x2="460" y2="820"/><line x1="560" y1="20" x2="560" y2="820"/><line x1="660" y1="20" x2="660" y2="820"/><line x1="760" y1="20" x2="760" y2="820"/>
+    <line x1="60" y1="120" x2="860" y2="120"/><line x1="60" y1="220" x2="860" y2="220"/><line x1="60" y1="320" x2="860" y2="320"/><line x1="60" y1="420" x2="860" y2="420"/><line x1="60" y1="520" x2="860" y2="520"/><line x1="60" y1="620" x2="860" y2="620"/><line x1="60" y1="720" x2="860" y2="720"/>
+  </g>
+  <g fill="#6b8f6b" font-size="11">
+    <text x="62" y="834">0</text><text x="156" y="834">50</text><text x="254" y="834">100</text><text x="354" y="834">150</text><text x="454" y="834">200</text><text x="554" y="834">250</text><text x="654" y="834">300</text><text x="754" y="834">350</text><text x="838" y="834">400 m</text>
+    <text x="40" y="824">0</text><text x="34" y="724">50</text><text x="28" y="624">100</text><text x="28" y="524">150</text><text x="28" y="424">200</text><text x="28" y="324">250</text><text x="28" y="224">300</text><text x="28" y="124">350</text>
+  </g>
+
+  <!-- Valley and burning ridge, west of the cliff (off the walkable terrain) -->
+  <rect x="60" y="20" width="80" height="800" fill="#3d2a1a"/>
+  <rect x="60" y="20" width="160" height="800" fill="url(#fireGlow)"/>
+  <text x="70" y="60" fill="#ffb070" font-size="13" font-weight="bold">BURNING RIDGE</text>
+  <text x="70" y="76" fill="#ffb070" font-size="11">distant, across the valley</text>
+  <text x="70" y="90" fill="#ffb070" font-size="11">glow + smoke, not walkable</text>
+
+  <!-- Cliff line at x = 40 m, running north to south -->
+  <rect x="134" y="20" width="12" height="800" fill="url(#cliffHatch)"/>
+  <text x="150" y="760" fill="#cfcfcf" font-size="11" transform="rotate(-90 150 760)">CLIFF EDGE x = 40 m, drop to valley</text>
+
+  <!-- Ward overlook: flat ledge 50 x 40 m -->
+  <ellipse cx="190" cy="180" rx="50" ry="40" fill="#556b55"/>
+  <g fill="#c9c2b6" stroke="#333" stroke-width="1">
+    <circle cx="172" cy="168" r="5"/><circle cx="188" cy="158" r="6"/><circle cx="205" cy="166" r="5"/><circle cx="212" cy="184" r="6"/><circle cx="198" cy="196" r="5"/><circle cx="178" cy="192" r="6"/>
+  </g>
+  <text x="150" y="132" fill="#fff" font-size="14" font-weight="bold">THE WARD</text>
+  <text x="150" y="146" fill="#ddd" font-size="11">6 standing stones, 8 to 15 m tall</text>
+  <text x="150" y="234" fill="#ddd" font-size="11">ledge 50 x 40 m at (65, 320)</text>
+
+  <!-- Path A: Ward to camp, winding, about 255 m -->
+  <polyline points="210,190 280,220 320,280 290,340 340,390 410,370 460,420 510,430 536,450" fill="none" stroke="#c9a66b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="300" y="262" fill="#f0d9a8" font-size="13" font-weight="bold">PATH A</text>
+  <text x="300" y="277" fill="#f0d9a8" font-size="11">about 255 m, 100 s at walking speed</text>
+  <text x="300" y="291" fill="#f0d9a8" font-size="11">dense forest both sides, no line of sight</text>
+
+  <!-- Camp clearing 30 m -->
+  <circle cx="560" cy="460" r="32" fill="#4b5f3a"/>
+  <rect x="540" y="430" width="22" height="16" fill="#8a6a3a" stroke="#000"/>
+  <text x="566" y="443" fill="#fff" font-size="11">cabin (start)</text>
+  <circle cx="580" cy="472" r="6" fill="#ff8a2a"/>
+  <text x="590" y="476" fill="#fff" font-size="11">fire pit + log seats</text>
+  <rect x="520" y="420" width="8" height="8" fill="#888" stroke="#000"/>
+  <text x="470" y="418" fill="#fff" font-size="11">generator</text>
+  <rect x="514" y="398" width="12" height="12" fill="#5a7a8a" stroke="#000"/>
+  <text x="440" y="396" fill="#fff" font-size="11">firewatch tower</text>
+  <text x="596" y="510" fill="#fff" font-size="14" font-weight="bold">CAMP</text>
+  <text x="596" y="524" fill="#ddd" font-size="11">clearing 30 m across at (250, 180)</text>
+
+  <!-- Path B trunk and branches -->
+  <polyline points="570,484 590,530 600,560" fill="none" stroke="#c9a66b" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="600" cy="560" r="5" fill="#f0d9a8"/>
+  <text x="612" y="558" fill="#f0d9a8" font-size="12" font-weight="bold">PATH B fork</text>
+  <polyline points="600,560 650,564 684,572" fill="none" stroke="#c9a66b" stroke-width="5" stroke-linecap="round"/>
+  <polyline points="600,560 576,604 552,644" fill="none" stroke="#c9a66b" stroke-width="5" stroke-linecap="round"/>
+  <polyline points="600,560 640,620 684,670 704,700" fill="none" stroke="#c9a66b" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Campsites -->
+  <circle cx="694" cy="574" r="14" fill="#4b5f3a"/><text x="712" y="578" fill="#fff" font-size="12">Campsite 1: tent, 42 m from fork</text>
+  <circle cx="548" cy="650" r="14" fill="#4b5f3a"/><text x="470" y="678" fill="#fff" font-size="12">Campsite 2: lean-to, 48 m from fork</text>
+  <circle cx="708" cy="704" r="14" fill="#4b5f3a"/><text x="726" y="708" fill="#fff" font-size="12">Campsite 3: bare fire ring, 88 m from fork</text>
+  <text x="612" y="760" fill="#ddd" font-size="11">campsites 65 to 80 m apart, 80 m or more from the camp</text>
+
+  <!-- Legend and scale -->
+  <g transform="translate(560,40)">
+    <rect x="0" y="0" width="290" height="126" fill="#000" fill-opacity="0.55" stroke="#888"/>
+    <text x="10" y="18" fill="#fff" font-size="13" font-weight="bold">MAIN, Modern era, top-down</text>
+    <line x1="10" y1="34" x2="110" y2="34" stroke="#fff" stroke-width="3"/><text x="116" y="38" fill="#fff" font-size="11">50 m</text>
+    <text x="10" y="56" fill="#ddd" font-size="11">Terrain 400 x 400 m. North is up.</text>
+    <text x="10" y="72" fill="#ddd" font-size="11">Dark green: dense forest, not walkable off-path</text>
+    <text x="10" y="88" fill="#ddd" font-size="11">Tan: terrain-painted trails, 3 m wide</text>
+    <text x="10" y="104" fill="#ddd" font-size="11">Hatched: cliff. Player start: cabin door</text>
+    <text x="10" y="120" fill="#ddd" font-size="11">Straight-line Ward to camp: 230 m, forest between</text>
+  </g>
+  <polygon points="830,70 822,90 838,90" fill="#fff"/><text x="822" y="108" fill="#fff" font-size="11">N</text>
+</svg>
