@@ -113,3 +113,11 @@ InitTestScene*.unity*
 
 # Cowork working notes, not part of the project
 /Claude outputs/
+
+# Asset Store packs: licensed, never committed. Listed in Assets/SOURCES.md.
+/Assets/Celestia_Studio/
+/Assets/Celestia_Studio.meta
+/Assets/Revolving Pizza Games/
+/Assets/Revolving Pizza Games.meta
+/Assets/suffercord/
+/Assets/suffercord.meta
