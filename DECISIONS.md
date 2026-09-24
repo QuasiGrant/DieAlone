@@ -26,3 +26,10 @@
 - 2026-09-23: Scene setup (prefabs, a scene recipe, a dev menu) is its own milestone before the first real scene. The day loop moves to Milestone 6.
 - 2026-09-23: The dev menu exists only in the Editor and development builds. It is compiled out of release builds.
 - 2026-09-23: Plan files written by Cowork are read back from disk before Cowork reports them done, and Code diffs them against head before committing. Cowork's rules live in the claude.ai Project doc "Cowork workflow". Code's rules live in CLAUDE.md.
+- 2026-09-24: Asset Store packs are allowed. The repo stays public, so pack folders are git-ignored and never committed. Each pack is listed in Assets/SOURCES.md with its store link and folder. Restoring the project needs the repo plus a re-import from the owner's Unity account.
+- 2026-09-24: Packs bought: PSX Modular Complete Pack (Celestia Studio), Campsite and Cabin In The Woods (Revolving Pizza Games), PSX Autumn Forest Pack (Suffercord). UHFPS was considered and dropped: it is a full game template that would replace systems already built.
+- 2026-09-24: ProBuilder is the blockout tool. Unity Terrain is used for ground, grass, and tree placement. Unique assets (the Ward stones, the tower) stay as blockout until an art pass.
+- 2026-09-24: Two eras, Early and Modern, as variants of the same area. Main is built as the Modern era with era-specific objects under an Era_Modern parent. This replaces the single mid-17th century setting in DESIGN.md; DESIGN.md is updated once the eras are settled.
+- 2026-09-24: There are other characters, at three small campsites off the camp. This changes the "alone" premise in DESIGN.md.
+- 2026-09-24: The Ward is a cluster of huge rune-covered standing stones on a cliff edge, not a single stone.
+- 2026-09-24: Main scene default lighting is sunset, with the night rig kept as a switch.
