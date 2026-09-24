@@ -1,12 +1,20 @@
 using UnityEngine;
 
-/// Applies the scene-side parts of the look from LookTuning every frame:
-/// distance fog and the matching sky color. Lives on the Game object.
-/// Add future scene-level look settings (ambient, exposure) here the same way.
+/// Applies the scene-side parts of the look every frame: distance fog and the
+/// matching sky color. Lives on the Game object. Values come from LookTuning unless
+/// this scene ticks Override Fog, which is how a sunset scene keeps a warm fog while
+/// a night scene keeps a dark one from the same tuning asset.
 public class LookEnvironment : MonoBehaviour
 {
     [SerializeField] private LookTuning tuning;
     [SerializeField] private Camera targetCamera;
+
+    [Header("Per-scene override")]
+    [Tooltip("Use the fog values below for this scene instead of LookTuning.")]
+    [SerializeField] private bool overrideFog;
+    [SerializeField] private Color fogColor = new Color(0.02f, 0.03f, 0.05f);
+    [SerializeField] private float fogStart = 6f;
+    [SerializeField] private float fogEnd = 40f;
 
     private void OnEnable() => Apply();
     private void Update() => Apply();
@@ -14,15 +22,20 @@ public class LookEnvironment : MonoBehaviour
     private void Apply()
     {
         if (tuning == null) return;
-        RenderSettings.fog = tuning.fogEnabled;
-        if (tuning.fogEnabled)
+        bool enabled = tuning.fogEnabled;
+        Color color = overrideFog ? fogColor : tuning.fogColor;
+        float start = overrideFog ? fogStart : tuning.fogStart;
+        float end = overrideFog ? fogEnd : tuning.fogEnd;
+
+        RenderSettings.fog = enabled;
+        if (enabled)
         {
             RenderSettings.fogMode = FogMode.Linear;
-            RenderSettings.fogColor = tuning.fogColor;
-            RenderSettings.fogStartDistance = tuning.fogStart;
-            RenderSettings.fogEndDistance = Mathf.Max(tuning.fogEnd, tuning.fogStart + 0.1f);
+            RenderSettings.fogColor = color;
+            RenderSettings.fogStartDistance = start;
+            RenderSettings.fogEndDistance = Mathf.Max(end, start + 0.1f);
         }
         var cam = targetCamera != null ? targetCamera : Camera.main;
-        if (cam != null && tuning.fogEnabled) cam.backgroundColor = tuning.fogColor;
+        if (cam != null && enabled) cam.backgroundColor = color;
     }
 }

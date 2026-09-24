@@ -15,12 +15,12 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 0.02, g: 0.03, b: 0.05, a: 1}
+  m_FogColor: {r: 0.62, g: 0.36, b: 0.22, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
-  m_LinearFogStart: 20
-  m_LinearFogEnd: 200
-  m_AmbientSkyColor: {r: 0.32, g: 0.22, b: 0.2, a: 1}
+  m_LinearFogStart: 25
+  m_LinearFogEnd: 220
+  m_AmbientSkyColor: {r: 0.45, g: 0.32, b: 0.28, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
@@ -129,15 +129,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 425874292377613022, guid: b8062305b84fe784d9e458bb582e17ff, type: 3}
       propertyPath: m_Color.b
-      value: 0.3
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 425874292377613022, guid: b8062305b84fe784d9e458bb582e17ff, type: 3}
       propertyPath: m_Color.g
-      value: 0.55
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 425874292377613022, guid: b8062305b84fe784d9e458bb582e17ff, type: 3}
       propertyPath: m_Intensity
-      value: 1.2
+      value: 1.6
       objectReference: {fileID: 0}
     - target: {fileID: 709309726965323080, guid: b8062305b84fe784d9e458bb582e17ff, type: 3}
       propertyPath: m_Name
@@ -193,19 +193,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8232099935383852035, guid: b8062305b84fe784d9e458bb582e17ff, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.57180834
+      value: -0.5693011
       objectReference: {fileID: 0}
     - target: {fileID: 8232099935383852035, guid: b8062305b84fe784d9e458bb582e17ff, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.045002297
+      value: -0.06990139
       objectReference: {fileID: 0}
     - target: {fileID: 8232099935383852035, guid: b8062305b84fe784d9e458bb582e17ff, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.8166269
+      value: 0.8130462
       objectReference: {fileID: 0}
     - target: {fileID: 8232099935383852035, guid: b8062305b84fe784d9e458bb582e17ff, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.06426994
+      value: -0.099829525
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -566,6 +566,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 464396613331062166, guid: 9b5fddfd9a12e3b4d932831e4f834b16, type: 3}
+      propertyPath: fogEnd
+      value: 220
+      objectReference: {fileID: 0}
+    - target: {fileID: 464396613331062166, guid: 9b5fddfd9a12e3b4d932831e4f834b16, type: 3}
+      propertyPath: fogStart
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 464396613331062166, guid: 9b5fddfd9a12e3b4d932831e4f834b16, type: 3}
+      propertyPath: fogColor.b
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 464396613331062166, guid: 9b5fddfd9a12e3b4d932831e4f834b16, type: 3}
+      propertyPath: fogColor.g
+      value: 0.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 464396613331062166, guid: 9b5fddfd9a12e3b4d932831e4f834b16, type: 3}
+      propertyPath: fogColor.r
+      value: 0.62
+      objectReference: {fileID: 0}
+    - target: {fileID: 464396613331062166, guid: 9b5fddfd9a12e3b4d932831e4f834b16, type: 3}
+      propertyPath: overrideFog
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3707874514029442330, guid: 9b5fddfd9a12e3b4d932831e4f834b16, type: 3}
       propertyPath: m_Name
       value: GameSystems
@@ -623,6 +647,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 458992192215676941, guid: 2b942f08d6a7b014394ed01a92eff3e1, type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 458992192215676941, guid: 2b942f08d6a7b014394ed01a92eff3e1, type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 458992192215676941, guid: 2b942f08d6a7b014394ed01a92eff3e1, type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0.62
+      objectReference: {fileID: 0}
     - target: {fileID: 2122113005258358770, guid: 2b942f08d6a7b014394ed01a92eff3e1, type: 3}
       propertyPath: m_Name
       value: Player
