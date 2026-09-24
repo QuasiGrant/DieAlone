@@ -8449,6 +8449,7 @@ GameObject:
   m_Component:
   - component: {fileID: 968377726}
   - component: {fileID: 968377727}
+  - component: {fileID: 968377728}
   m_Layer: 0
   m_Name: CabinLight
   m_TagString: Untagged
@@ -8536,6 +8537,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &968377728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 968377725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1001 &997398210
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11702,6 +11732,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1372609929}
   - component: {fileID: 1372609930}
+  - component: {fileID: 1372609931}
   m_Layer: 0
   m_Name: FireLight
   m_TagString: Untagged
@@ -11789,6 +11820,35 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &1372609931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1372609928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1 &1380931815
 GameObject:
   m_ObjectHideFlags: 0
@@ -17346,10 +17406,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4916194868740580069, guid: 13f71a6d8ee9c0a4dbaa6cd28385bbad, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1905296130}
+      addedObject: {fileID: 1905296129}
     - targetCorrespondingSourceObject: {fileID: 4916194868740580069, guid: 13f71a6d8ee9c0a4dbaa6cd28385bbad, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1905296129}
+      addedObject: {fileID: 1905296133}
   m_SourcePrefab: {fileID: 100100000, guid: 13f71a6d8ee9c0a4dbaa6cd28385bbad, type: 3}
 --- !u!4 &1905296127 stripped
 Transform:
@@ -17380,7 +17440,7 @@ MonoBehaviour:
   - {fileID: 1853710752}
   - {fileID: 1372609928}
   startsLit: 1
---- !u!65 &1905296130
+--- !u!65 &1905296133
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -17399,8 +17459,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.6721191, y: 0.22217178, z: 1.6013794}
-  m_Center: {x: -0.017822266, y: 0.11108589, z: 0.013381958}
+  m_Size: {x: 1.4, y: 0.9, z: 1.4}
+  m_Center: {x: 0, y: 0.45, z: 0}
 --- !u!1001 &1917868495
 PrefabInstance:
   m_ObjectHideFlags: 0
