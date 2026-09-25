@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" font-family="Arial, sans-serif">
+  <rect width="900" height="900" fill="#1b1f1a"/>
+  <!-- world 400 x 400 m mapped to 800 x 800 px at offset 50; y flipped so north is up -->
+  <g transform="translate(50,850) scale(2,-2)">
+    <!-- valley and cliff -->
+    <rect x="0" y="0" width="40" height="400" fill="#4a2a1c"/>
+    <rect x="40" y="0" width="360" height="400" fill="#243322"/>
+    <line x1="40" y1="0" x2="40" y2="400" stroke="#e0b070" stroke-width="1.5" stroke-dasharray="4 2"/>
+    <!-- clearings -->
+    <circle cx="250" cy="180" r="17" fill="#6b5a3a"/>
+    <circle cx="312" cy="124" r="8" fill="#6b5a3a"/>
+    <circle cx="246" cy="88" r="8" fill="#6b5a3a"/>
+    <circle cx="322" cy="60" r="8" fill="#6b5a3a"/>
+    <circle cx="54" cy="322" r="15" fill="#6b5a3a"/>
+    <!-- existing trails -->
+    <polyline points="58,323 75,315 110,300 130,270 115,240 140,215 175,225 200,200 225,195 238,185" fill="none" stroke="#d9c39a" stroke-width="2"/>
+    <polyline points="255,168 265,145 270,130" fill="none" stroke="#d9c39a" stroke-width="2"/>
+    <polyline points="270,130 295,128 312,124" fill="none" stroke="#d9c39a" stroke-width="2"/>
+    <polyline points="270,130 258,108 246,88" fill="none" stroke="#d9c39a" stroke-width="2"/>
+    <polyline points="270,130 290,100 312,75 322,60" fill="none" stroke="#d9c39a" stroke-width="2"/>
+    <!-- proposed trails and road -->
+    <polyline points="266,178 300,176 340,174 388,174" fill="none" stroke="#f0a050" stroke-width="3" stroke-dasharray="5 3"/>
+    <polyline points="258,108 245,106 234,104" fill="none" stroke="#f0a050" stroke-width="2" stroke-dasharray="4 3"/>
+    <polyline points="305,176 314,212 306,248 300,262" fill="none" stroke="#f0a050" stroke-width="2" stroke-dasharray="4 3"/>
+    <!-- proposed fence at the map's east edge -->
+    <line x1="388" y1="120" x2="388" y2="240" stroke="#c0c0c0" stroke-width="2"/>
+    <rect x="386" y="170" width="4" height="8" fill="#ffd060"/>
+    <!-- proposed office, parking, pond, cave -->
+    <rect x="364" y="160" width="16" height="12" fill="#b08060" stroke="#f0a050"/>
+    <rect x="362" y="184" width="22" height="14" fill="#555" stroke="#f0a050"/>
+    <path d="M 232,104 C 236,120 222,134 200,136 C 178,138 168,128 150,132 C 130,136 118,122 122,104 C 124,90 112,78 124,66 C 138,52 160,60 176,54 C 194,48 214,58 220,74 C 224,86 228,94 232,104 Z" fill="#2a4a6a" stroke="#f0a050"/>
+    <circle cx="300" cy="272" r="10" fill="#3a3a3a" stroke="#f0a050"/>
+    <!-- existing landmarks -->
+    <rect x="242" y="188" width="6" height="4" fill="#e0c090"/>
+    <circle cx="251.5" cy="182.5" r="1.8" fill="#ff7030"/>
+    <rect x="232" y="196" width="8" height="8" fill="none" stroke="#e0c090" stroke-width="1.5"/>
+    <g fill="#40e0c0"><rect x="41.5" y="338.5" width="2" height="2"/><rect x="42" y="335" width="2.5" height="2.5"/><rect x="41.5" y="331.5" width="2" height="2"/></g>
+  </g>
+  <!-- labels (screen space) -->
+  <g fill="#f4efe6" font-size="14">
+    <text x="60" y="80">N ▲   1 px = 0.5 m   dashed orange = proposed</text>
+    <text x="70" y="140" fill="#e0b070">burning ridge / valley</text>
+    <text x="150" y="200" fill="#40e0c0">WARD (stones on ledge)</text>
+    <text x="560" y="470" fill="#e0c090">CAMP: cabin, fire, tower</text>
+    <text x="600" y="330" fill="#f0a050">spur north off the entrance road to CAVE (300,272)</text>
+    <text x="640" y="560" fill="#e0c090">Campsite 1 → 4 tents + fire (312,124)</text>
+    <text x="440" y="650" fill="#e0c090">Campsite 2 → small cabin (246,88)</text>
+    <text x="660" y="720" fill="#e0c090">Campsite 3 → long cabin (322,60)</text>
+    <text x="120" y="720" fill="#6ab0f0">LAKE about 110 x 80 m, dock on east shore (230,104)</text>
+    <text x="660" y="440" fill="#f0a050">road → GATE (388,174)</text>
+    <text x="690" y="500" fill="#f0a050">office (372,166)</text>
+    <text x="690" y="530" fill="#f0a050">parking (373,191)</text>
+    <text x="640" y="300" fill="#c0c0c0">fence x 388 = map edge</text>
+  </g>
+</svg>
