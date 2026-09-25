@@ -42,6 +42,11 @@ public class LookEnvironment : MonoBehaviour
         }
 
         var cam = targetCamera != null ? targetCamera : Camera.main;
+        if (sunset)
+        {
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+            RenderSettings.ambientLight = tuning.sunsetAmbient;
+        }
         if (sunset && skyMaterial != null)
         {
             skyMaterial.SetColor(TopId, tuning.skyTop);

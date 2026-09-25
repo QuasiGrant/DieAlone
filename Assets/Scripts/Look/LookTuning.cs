@@ -56,6 +56,8 @@ public class LookTuning : ScriptableObject
     public Color sunsetFogColor = new Color(0.62f, 0.36f, 0.22f);
     [Range(0f, 200f)] public float sunsetFogStart = 25f;
     [Range(1f, 600f)] public float sunsetFogEnd = 320f;
+    [Tooltip("Flat ambient light for sunset scenes. Lifts the forest floor under the canopy where the low sun never reaches.")]
+    public Color sunsetAmbient = new Color(0.5f, 0.34f, 0.28f);
 
     [Header("Sunset sky")]
     public Color skyTop = new Color(0.22f, 0.11f, 0.10f);
