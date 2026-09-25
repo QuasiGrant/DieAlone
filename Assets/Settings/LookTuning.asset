@@ -42,3 +42,5 @@ MonoBehaviour:
   fireGlowIntensity: 2
   fireSmoke: 1
   fireEmbers: 1
+  fireFlicker: 0.3
+  fireFlickerSpeed: 0.8

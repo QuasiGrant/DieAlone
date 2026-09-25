@@ -31,12 +31,16 @@ public class HorizonFire : MonoBehaviour
     private void Update()
     {
         if (tuning == null) return;
-        foreach (var r in glowStrips)
+        float t = Time.time * tuning.fireFlickerSpeed;
+        for (int i = 0; i < glowStrips.Length; i++)
         {
+            var r = glowStrips[i];
             if (r == null) continue;
+            // Each strip breathes on its own slow noise curve so the ridge does not pulse as one.
+            float flicker = 1f + tuning.fireFlicker * (Mathf.PerlinNoise(t + i * 3.7f, i * 1.3f) * 2f - 1f);
             r.GetPropertyBlock(block);
             block.SetColor(ColorId, tuning.fireGlowColor);
-            block.SetFloat(IntensityId, tuning.fireGlowIntensity);
+            block.SetFloat(IntensityId, tuning.fireGlowIntensity * flicker);
             r.SetPropertyBlock(block);
             r.enabled = tuning.fireGlowIntensity > 0.001f;
         }

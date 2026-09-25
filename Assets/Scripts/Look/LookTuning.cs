@@ -75,4 +75,8 @@ public class LookTuning : ScriptableObject
     [Range(0f, 2f)] public float fireSmoke = 1.0f;
     [Tooltip("Embers and ash drifting over the ridge. 0 is none, 1 is the built amount.")]
     [Range(0f, 2f)] public float fireEmbers = 1.0f;
+    [Tooltip("How much each glow patch breathes around its set brightness. 0 is a steady glow.")]
+    [Range(0f, 1f)] public float fireFlicker = 0.3f;
+    [Tooltip("Speed of that breathing. Low is a slow smoulder.")]
+    [Range(0.1f, 5f)] public float fireFlickerSpeed = 0.8f;
 }
