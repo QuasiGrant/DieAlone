@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: LookTuning
   m_EditorClassIdentifier: Assembly-CSharp::LookTuning
   filterEnabled: 1
-  lowResHeight: 351
-  colorBleed: 0.442
-  washOut: 0.191
-  crushBlacks: 0.45
+  lowResHeight: 875
+  colorBleed: 0.508
+  washOut: 0.068
+  crushBlacks: 0.382
   grainStrength: 0.067
   grainSpeed: 7.7
   noiseBandStrength: 0
