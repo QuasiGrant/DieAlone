@@ -12,6 +12,12 @@ public class Door : Interactable
     private bool isOpen;
     private float currentAngle;
     private float targetAngle;
+    private Quaternion closedRotation = Quaternion.identity;   // hinge's own local rotation when shut, so doors on any wall swing from where they stand
+
+    private void Awake()
+    {
+        closedRotation = transform.localRotation;
+    }
 
     public bool IsOpen => isOpen;
     public float CurrentAngle => currentAngle;
@@ -40,13 +46,13 @@ public class Door : Interactable
         if (WouldHitPlayer(next)) return;   // hold this frame, try again next frame
 
         currentAngle = next;
-        transform.localRotation = Quaternion.Euler(0f, currentAngle, 0f);
+        transform.localRotation = closedRotation * Quaternion.Euler(0f, currentAngle, 0f);
     }
 
     private bool WouldHitPlayer(float angle)
     {
         Quaternion parentRot = transform.parent != null ? transform.parent.rotation : Quaternion.identity;
-        Quaternion rot = parentRot * Quaternion.Euler(0f, angle, 0f);
+        Quaternion rot = parentRot * closedRotation * Quaternion.Euler(0f, angle, 0f);
         Vector3 center = transform.position + rot * (panel.transform.localPosition + panel.center);
         Vector3 half = Vector3.Scale(panel.size, panel.transform.localScale) * 0.5f;
 
