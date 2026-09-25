@@ -50,4 +50,27 @@ public class LookTuning : ScriptableObject
     [Range(0f, 100f)] public float fogStart = 6f;
     [Tooltip("Distance in metres where things are fully hidden.")]
     [Range(1f, 200f)] public float fogEnd = 40f;
+
+    [Header("Fog (sunset scenes)")]
+    [Tooltip("Haze color for scenes set to the Sunset fog set. The far ridge fades into this.")]
+    public Color sunsetFogColor = new Color(0.62f, 0.36f, 0.22f);
+    [Range(0f, 200f)] public float sunsetFogStart = 25f;
+    [Range(1f, 600f)] public float sunsetFogEnd = 320f;
+
+    [Header("Sunset sky")]
+    public Color skyTop = new Color(0.22f, 0.11f, 0.10f);
+    public Color skyHorizon = new Color(0.85f, 0.40f, 0.18f);
+    public Color skyGround = new Color(0.30f, 0.16f, 0.10f);
+    public Color sunGlowColor = new Color(1.0f, 0.55f, 0.25f);
+    [Tooltip("Higher is a tighter glow around the sun.")]
+    [Range(2f, 200f)] public float sunGlowSize = 24f;
+
+    [Header("Horizon fire")]
+    public Color fireGlowColor = new Color(1.0f, 0.42f, 0.10f);
+    [Tooltip("Brightness of the glow strips along the burning ridge. 0 hides them.")]
+    [Range(0f, 6f)] public float fireGlowIntensity = 2.0f;
+    [Tooltip("Smoke columns over the ridge. 0 is none, 1 is the built amount.")]
+    [Range(0f, 2f)] public float fireSmoke = 1.0f;
+    [Tooltip("Embers and ash drifting over the ridge. 0 is none, 1 is the built amount.")]
+    [Range(0f, 2f)] public float fireEmbers = 1.0f;
 }
