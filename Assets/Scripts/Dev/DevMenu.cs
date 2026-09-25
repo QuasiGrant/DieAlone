@@ -109,12 +109,34 @@ public class DevMenu : MonoBehaviour
         AddLabel(list.transform, font, "Scenes in build list:", 16);
 
         int count = UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings;
+        string active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
         for (int i = 0; i < count; i++)
         {
             string path = UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i);
             string name = System.IO.Path.GetFileNameWithoutExtension(path);
             AddButton(list.transform, font, name, () => LoadScene(path));
+            if (path != active) continue;
+            // Warp points: children of a "DevWarps" object in the open scene, listed under it.
+            var warps = GameObject.Find("DevWarps");
+            if (warps == null) continue;
+            foreach (Transform w in warps.transform)
+            {
+                var target = w;
+                AddButton(list.transform, font, "    > " + w.name, () => Warp(target));
+            }
         }
+    }
+
+    private void Warp(Transform target)
+    {
+        var pc = FindFirstObjectByType<PlayerController>();
+        if (pc == null) return;
+        var cc = pc.GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = false;
+        pc.transform.position = target.position;
+        pc.transform.rotation = Quaternion.Euler(0f, target.eulerAngles.y, 0f);
+        if (cc != null) cc.enabled = true;
+        Close();
     }
 
     private static void AddLabel(Transform parent, Font font, string text, int size)
