@@ -1,6 +1,6 @@
 # DieAlone
 
-PS1/PSX-style horror game. Unity 6000.3.24f1, URP. Solo project; the owner has never written code.
+VHS-look first-person horror game. Unity 6000.3.24f1, URP. Solo project; the owner has never written code.
 
 ## Working rules
 - One task at a time. Touch only the files the task needs. Ask before adding packages, assets, or plugins.
