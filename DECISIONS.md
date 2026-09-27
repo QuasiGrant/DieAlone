@@ -47,3 +47,11 @@
 - 2026-09-27: Unused template packages (ai.navigation, multiplayer.center, timeline, visualscripting, collab-proxy) and the unused template volume profiles (DefaultVolumeProfile, SampleSceneProfile) are removed.
 - 2026-09-27: Rebuild scripts live in the repo under Tools/Recipes. New recipes are saved there in the same commit as the work they built, never only in the scratchpad.
 - 2026-09-27: DESIGN.md is brought in line with earlier decisions: VHS presentation (2026-09-20), two eras with the Modern era built first (2026-09-24). CLAUDE.md line one says VHS look, not PS1.
+- 2026-09-27: Milestone 6 loop: every week the player climbs the tower to look for problems and files a report in the logbook. These two beats are mandatory.
+- 2026-09-27: Needs. Food, Water and Warmth are each a yes or no per week. Each one unmet costs 1 HP at sleep. Meeting a need never restores HP.
+- 2026-09-27: Safety (a problem found and written in the log) and Social (talked to one of the six other people, possibly through a minigame) are each a yes or no per week. Each one unmet costs 1 MIND at sleep. Meeting one never restores MIND.
+- 2026-09-27: No stockpile system. Nothing in the cabin is counted or depleted.
+- 2026-09-27: No fixed run length. A run always ends by HP, MIND or WARD bottoming out. The economy is built so the world takes more each week than the player can put back; how long the player survives is the measure.
+- 2026-09-27: Events can add to or block any need for that week.
+- 2026-09-27: A pet the player must also feed is a later addition to raise difficulty.
+- 2026-09-27: The design reference for the loop is the Project doc "design-loop-and-comparables". Cowork refers to it when planning Milestones 6 to 10.
