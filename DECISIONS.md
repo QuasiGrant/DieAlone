@@ -33,3 +33,17 @@
 - 2026-09-24: There are other characters, at three small campsites off the camp. This changes the "alone" premise in DESIGN.md.
 - 2026-09-24: The Ward is a cluster of huge rune-covered standing stones on a cliff edge, not a single stone.
 - 2026-09-24: Main scene default lighting is sunset, with the night rig kept as a switch.
+- 2026-09-25: Path A keeps its full length. Shortening it is dropped.
+- 2026-09-25: The Ward sits uphill on a plateau, hidden from the tower, stones on the cliff edge to one side of the approach, no sign. The Ward path is meant to be closed until night.
+- 2026-09-25: Main gains six locations: a lake, three campsites (a tent site and two cabin variants), a front office with gate and fence as the map edge, and a cave. Layout in Docs/Layout/Main_layout_v2.svg. This replaces the 2026-09-24 line about three small campsites.
+- 2026-09-25: The cave trail leaves the entrance road, not the camp, so it never shares a side with the Ward path.
+- 2026-09-25: Main.unity is scene version 1.0, frozen at tag main-scene-1.0. Main2.unity is version 2.0 with its own terrain data and is the working scene. The dev menu switches between them.
+- 2026-09-25: Trees thinned by a tenth from the dense pass. The forest floor is green off trails and clearings.
+- 2026-09-27: Milestone 6 is reworked with the owner before tasks are written. The core loop in DESIGN.md is superseded until then.
+- 2026-09-27: Correction to 2026-09-22: sources for textures and packs are listed in Assets/SOURCES.md. Assets/Textures/SOURCES.md no longer exists.
+- 2026-09-27: Screen Space Ambient Occlusion is off. It came from the URP template, was never tuned or measured, and does not suit the VHS look.
+- 2026-09-27: PC render scale is 0.5 with two shadow cascades. The VHS filter downsamples anyway.
+- 2026-09-27: companyName is QuasiReal Publishing, productName DieAlone. This sets the persistent data folder; the old DefaultCompany folder is abandoned.
+- 2026-09-27: Unused template packages (ai.navigation, multiplayer.center, timeline, visualscripting, collab-proxy) and the unused template volume profiles (DefaultVolumeProfile, SampleSceneProfile) are removed.
+- 2026-09-27: Rebuild scripts live in the repo under Tools/Recipes. New recipes are saved there in the same commit as the work they built, never only in the scratchpad.
+- 2026-09-27: DESIGN.md is brought in line with earlier decisions: VHS presentation (2026-09-20), two eras with the Modern era built first (2026-09-24). CLAUDE.md line one says VHS look, not PS1.

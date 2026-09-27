@@ -63,11 +63,11 @@ The first real scene, `Assets/Scenes/Main.unity`, made from the scene recipe. Th
 - [x] 5.7 Camp. Cabin from the Cabin pack with a door on the existing Door system, a bunk and a table inside. Fire pit and seating from the Campsite pack. A generator (from the packs if 5.1 found one, otherwise a blockout box). Campground props. The firewatch tower rebuilt from the Graybox tower pattern with pack materials, beside or behind the cabin, stairs following the STAIRS RULE. Cabin door, fire pit, generator, and the tower's top room usable with the existing interact prompt. Everything modern under `Era_Modern`. Done when: no errors, and the owner has entered the cabin, climbed the tower, and used each prompt.
 - [x] 5.8 Three campsites. Off path B, each a small clearing with Campsite pack props laid out differently (one tent, one lean-to, one bare fire ring, for example). Empty of characters. Each has one usable object as a stand-in for the future character interaction. Done when: no errors, and the owner has visited all three and back.
 - [x] 5.9 Horizon fire and sky. A distant burning ridge across the valley: orange glow, haze, slow smoke, ash particles if the packs include them, otherwise Unity's built-in particle system. Sunset sky and light as the scene default, with the Night rig from the prefab kept disabled as a switch. Fog from LookTuning tuned so the far ridge reads through the haze. Numbers for glow, smoke, and haze go in LookTuning. Done when: no errors, and the owner has looked at the fire from the ledge and from the tower top and confirmed it reads as a wildfire.
-- [ ] 5.10 Walkthrough. The owner wakes in the cabin, walks to the Ward, back to camp, out to all three campsites, and back, with the VHS look on. Fix anything that blocks, traps, or breaks the look. Record three camera spots (the ledge facing the fire, the camp from path A, the tower top) under Rules and Tips and commit screenshots under `Docs/Look/Main`. Done when: the owner says the scene is right for now.
+- [ ] 5.10 Walkthrough of Main 2.0 (`Assets/Scenes/Main2.unity`). The owner wakes in the cabin, walks to the Ward, back to camp, along the road to the gate and office, to the lake, to the three campsites, to the cave, and back, with the VHS look on. Fix anything that blocks, traps, or breaks the look. Record three camera spots (the ledge facing the fire, the camp from path A, the tower top) under Rules and Tips and commit screenshots under `Docs/Look/Main`. Done when: the owner says the scene is right for now.
 
-## Milestone 6: One full day of the loop, no events
+## Milestone 6: The daily loop (rework pending)
 
-Wake, chores, check the fire, report, maintain the Ward, sleep. HP, MIND, and WARD working. Autosave at sleep.
+Flagged by the owner 2026-09-27: the loop as written in DESIGN.md is no longer the plan. Milestone 6 is reworked with the owner before any task is written. Previous headline, kept for reference: wake, chores, check the fire, report, maintain the Ward, sleep, with HP, MIND, and WARD working and autosave at sleep.
 
 ## Later, from DESIGN.md
 
@@ -77,7 +77,12 @@ Event deck and tracks, chapters and endings, voices, scrapbook, inventory, map, 
 
 ## Open decisions (owner)
 
-- Level blocking tool: Unity's built-in shapes or the ProBuilder package. Needed before the real tower area is blocked out. Not needed for Milestone 1.
+- The shape of the daily loop (Milestone 6 rework).
+- Lake and cave are open from the start; DESIGN.md says such locations unlock through events.
+- The player wakes in the camp cabin; DESIGN.md says the tower.
+- Other campers are implied by the campsites and cars; DESIGN.md says the player is alone.
+- Whether first playable means the full 15 to 20 event tracks or a smaller cut first.
+- Sound and ambience before or after the daily loop.
 
 ## Rules and Tips
 
