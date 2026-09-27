@@ -12,7 +12,7 @@ You are a Wardkeeper. You volunteered to have your memory wiped and be stationed
 4. Replayable. Random event deck, chained stages, multiple endings, 4-6 hours per full run.
 
 ## Setting
-Firewatch tower and a fixed, hand-built surrounding area (Fears to Fathom scale, not open world). Nearby: the Ward, forage spots, a creek, forest edge. Fire visible on the horizon, rust-orange haze, falling ash. Some locations only exist once an event track unlocks them (meadow, black lake, cave, grave, shrine, pipes, cliffs). Fantasy world of Ancerra, mid-17th century tech.
+Firewatch tower and a fixed, hand-built surrounding area (Fears to Fathom scale, not open world). Nearby: the Ward, forage spots, a creek, forest edge. Fire visible on the horizon, rust-orange haze, falling ash. Some locations only exist once an event track unlocks them (meadow, black lake, cave, grave, shrine, pipes, cliffs). Fantasy world of Ancerra. Two eras, Early and Modern, as variants of the same area; the Modern era is built first.
 
 ## Time
 One wake-up = one week. A run is roughly a year (45-60 wake-ups). Each wake-up draws one event from the deck; that event's current stage plays out during the day.
@@ -45,7 +45,7 @@ Mix, weighted toward the psychological: the Ward's hunger (meat smell, cocoon, r
 Mirrors the book. Ending is chosen by which stats bottomed out across the three chapters (Mind, Ward, Health, Everything), each with a neutral and bad variant, plus Ahmee / letter / A-Spades conditions. There are no good endings. The true ending is the "Everything, neutral" ending: you walk away from the fire. You can never go home, but you can't stay here. It still feels like losing, but not really. Losing is shown, not told (the Ward eats you, the fire takes the tower). New run reframed as the memory wipe.
 
 ## Presentation
-PS1/PSX: low-poly, vertex jitter, affine textures, low-res render, dithering, limited palette. First person. Controller and keyboard/mouse.
+VHS tape look first (Fears to Fathom): soft low-resolution picture, colour bleed, grain, scan lines. PS1 effects (vertex jitter, affine textures) stay off unless added later. Low-poly assets. First person. Controller and keyboard/mouse.
 
 ## Scope, first playable
 - Tower + immediate area, daily loop complete end to end.
