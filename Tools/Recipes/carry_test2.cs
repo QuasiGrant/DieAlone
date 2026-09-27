@@ -1,0 +1,22 @@
+var p = UnityEngine.GameObject.Find("Player");
+var cc = p.GetComponent<UnityEngine.CharacterController>();
+var it = p.GetComponent<PlayerInteractor>();
+var carry = p.GetComponent<PlayerCarry>();
+var cam = p.transform.Find("Main Camera");
+var hold = cam.Find("HoldPoint");
+var held = carry.Held;
+string a = "held=" + (held != null ? held.name : "none") + " distToHold=" + (held != null ? UnityEngine.Vector3.Distance(held.transform.position, hold.position).ToString("F3") : "n/a") + " parent=" + (held != null && held.transform.parent != null ? held.transform.parent.name : "none");
+// Face the shelf from 1.2 m south and look at its upper board (y 1.0, z 8.0).
+var shelfHigh = UnityEngine.GameObject.Find("TestCourse/Shelf/ShelfHigh").transform;
+cc.enabled = false; p.transform.position = new UnityEngine.Vector3(shelfHigh.position.x, 0f, shelfHigh.position.z - 1.2f); cc.enabled = true;
+p.transform.rotation = UnityEngine.Quaternion.identity;
+var target = shelfHigh.position + new UnityEngine.Vector3(0f, 0.02f, -0.02f);
+var dir = target - cam.position;
+float pitch = -UnityEngine.Mathf.Atan2(dir.y, new UnityEngine.Vector2(dir.x, dir.z).magnitude) * UnityEngine.Mathf.Rad2Deg;
+cam.localRotation = UnityEngine.Quaternion.Euler(pitch, 0f, 0f);
+typeof(PlayerController).GetField("pitch", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(p.GetComponent<PlayerController>(), pitch);
+UnityEngine.Physics.SyncTransforms();
+bool can = carry.CanSetDown();
+if (can) carry.SetDown();
+var cube = UnityEngine.GameObject.Find("TestCourse/Table/Loose_Cube") ?? UnityEngine.GameObject.Find("Loose_Cube");
+return a + " | atShelf: canSetDown=" + can + " carryingAfter=" + carry.IsCarrying + " cubePos=" + cube.transform.position.ToString("F2") + " shelfTop=" + (shelfHigh.position.y + 0.015f).ToString("F3") + " colliderEnabled=" + cube.GetComponent<UnityEngine.Collider>().enabled + " parent=" + (cube.transform.parent != null ? cube.transform.parent.name : "root");

@@ -1,0 +1,26 @@
+UnityEngine.Application.runInBackground = true;
+var p = UnityEngine.GameObject.Find("Player");
+var cc = p.GetComponent<UnityEngine.CharacterController>();
+var it = p.GetComponent<PlayerInteractor>();
+var carry = p.GetComponent<PlayerCarry>();
+var cam = p.transform.Find("Main Camera");
+var cube = UnityEngine.GameObject.Find("Loose_Cube");
+var brick = UnityEngine.GameObject.Find("Loose_Brick");
+var tin = UnityEngine.GameObject.Find("Loose_Tin");
+var sb = new System.Text.StringBuilder();
+sb.Append("rest: cubeY=" + cube.transform.position.y.ToString("F3") + " brickY=" + brick.transform.position.y.ToString("F3") + " tinY=" + tin.transform.position.y.ToString("F3") + " (table top 0.775, shelf 1.015) | ");
+// Pick up the cube, stand in the open, look level at the horizon: no surface in reach.
+carry.PickUp(cube.GetComponent<Carryable>());
+cc.enabled = false; p.transform.position = new UnityEngine.Vector3(-4f, 0f, -20f); cc.enabled = true;
+p.transform.rotation = UnityEngine.Quaternion.Euler(0f, 180f, 0f);
+cam.localRotation = UnityEngine.Quaternion.identity;
+typeof(PlayerController).GetField("pitch", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).SetValue(p.GetComponent<PlayerController>(), 0f);
+UnityEngine.Physics.SyncTransforms();
+typeof(PlayerInteractor).GetMethod("Update", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(it, null);
+var label = UnityEngine.GameObject.Find("HUD").GetComponentInChildren<UnityEngine.UI.Text>(true);
+sb.Append("carrying=" + carry.IsCarrying + " canSetDown=" + carry.CanSetDown() + " prompt='" + label.text + "' | ");
+carry.Drop();
+var rb = cube.GetComponent<UnityEngine.Rigidbody>();
+sb.Append("afterDrop: carrying=" + carry.IsCarrying + " kinematic=" + rb.isKinematic + " vel=" + rb.linearVelocity.ToString("F2") + " y=" + cube.transform.position.y.ToString("F2") + " frame=" + UnityEngine.Time.frameCount);
+UnityEditor.SessionState.SetString("dropStart", sb.ToString());
+return sb.ToString();

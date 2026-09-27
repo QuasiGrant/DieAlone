@@ -1,0 +1,20 @@
+var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+if (scene.path != "Assets/Scenes/Graybox.unity") return "wrong scene";
+var game = UnityEngine.GameObject.Find("Game");
+if (game == null) return "no Game object";
+if (game.GetComponent<LookEnvironment>() != null) return "already wired";
+var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning.asset");
+var env = game.AddComponent<LookEnvironment>();
+var so = new UnityEditor.SerializedObject(env);
+so.FindProperty("tuning").objectReferenceValue = tuning;
+so.FindProperty("targetCamera").objectReferenceValue = UnityEngine.Camera.main;
+so.ApplyModifiedPropertiesWithoutUndo();
+// Apply once now so the saved scene carries the fog settings too.
+UnityEngine.RenderSettings.fog = tuning.fogEnabled;
+UnityEngine.RenderSettings.fogMode = UnityEngine.FogMode.Linear;
+UnityEngine.RenderSettings.fogColor = tuning.fogColor;
+UnityEngine.RenderSettings.fogStartDistance = tuning.fogStart;
+UnityEngine.RenderSettings.fogEndDistance = tuning.fogEnd;
+UnityEngine.Camera.main.backgroundColor = tuning.fogColor;
+bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
+return "saved=" + saved + " fog=" + UnityEngine.RenderSettings.fog + " " + UnityEngine.RenderSettings.fogStartDistance + ".." + UnityEngine.RenderSettings.fogEndDistance + " color=" + UnityEngine.RenderSettings.fogColor.ToString("F3");

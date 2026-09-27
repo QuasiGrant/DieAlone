@@ -1,0 +1,15 @@
+const string path = "Assets/InputSystem_Actions.inputactions";
+var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.InputSystem.InputActionAsset>(path);
+if (asset == null) return "asset not found";
+bool wasEnabled = asset.enabled; asset.Disable();
+var map = asset.FindActionMap("Player", true);
+if (map.FindAction("Pause") != null) return "Pause already exists";
+var action = UnityEngine.InputSystem.InputActionSetupExtensions.AddAction(map, "Pause", UnityEngine.InputSystem.InputActionType.Button);
+UnityEngine.InputSystem.InputActionSetupExtensions.AddBinding(action, "<Keyboard>/escape", groups: "Keyboard&Mouse");
+UnityEngine.InputSystem.InputActionSetupExtensions.AddBinding(action, "<Gamepad>/start", groups: "Gamepad");
+System.IO.File.WriteAllText(path, asset.ToJson());
+UnityEditor.AssetDatabase.ImportAsset(path);
+if (wasEnabled) asset.Enable();
+var reloaded = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.InputSystem.InputActionAsset>(path);
+var check = reloaded.FindActionMap("Player").FindAction("Pause");
+return "added Pause bindings=" + check.bindings.Count + " [" + check.bindings[0].path + ", " + check.bindings[1].path + "]";
