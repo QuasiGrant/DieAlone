@@ -6,12 +6,13 @@ Last updated 2026-09-28.
 
 ## Next step
 
-Session 2026-09-28 ended with:
-1. Sable: revision 4 of DailyLoop.md, DailyLoop_flow.svg, Main3.md, Main3_map.svg (Grant's road note: the road ends at the gate, the lot, office and store are inside the fence; day one looks normal until the Ward; Marlow, Rook, Vesper, Hollis and Quill fixes). If it is not committed, rerun it from those notes.
-2. Rook: task 6.1, the plan check hook. Next in his queue: 6.2 to 6.5, then 7.1 to 7.3 (6.6 waits on Grant approving DailyLoop.md).
-3. Grant, with Sable's redraw: comments on the drawings; day timed by the keeper's watch; Ward feeding (1 holds, 2 raises); all five needs sometimes met on a quiet day; ignored anomalies closing a place; wildfire hidden or ordinary before the day-one reveal.
+As of the end of 2026-09-28:
+1. Done today: Milestone 5 closed (Main2 archived, tag main-scene-2.0). Milestone 6 tasks 6.1 to 6.5 done (plan check hook, carry tuning, test setup, Cowork retired in CLAUDE.md, scene facts in Docs/Scenes/Main2.md). DailyLoop.md and Main3.md at revision 5 (DRAFT, committed).
+2. Running when the session ended: Rook on 7.1 game state, 7.2 run simulator, 7.3 versioned save. If PLAN.md shows them unticked, rerun from the task lines.
+3. Grant, next: comment on the revision 5 drawings (Docs/Design/Main3_map.svg, DailyLoop_flow.svg) and answer: day timed by the keeper's watch; Ward feeding (1 holds, 2 raises); all five needs sometimes met on a quiet day; an open anomaly costs 1 MIND a night and after three days 1 WARD; the day-one fire as an ordinary far-off forest fire; the unsigned cave trail as the one exception to the junction check.
 4. Grant, any time: buy packs from Docs/Design/PackShortlist.md after checking screenshots; confirm bought-pack shaders get swapped for ours.
 5. 2026-09-29: story session, Grant and Quill, prep in Docs/Private/SessionPrep.md.
+6. After Grant approves DailyLoop.md: task 6.6 (DESIGN.md in line), then Milestone 7 design lines into DECISIONS.md, then Milestone 8 blockout tasks.
 
 Drafts to review: Docs/Design (Style, PackShortlist, DialogueFormats, Sound, UI), Docs/Process/PreCommitHook.md.
 
