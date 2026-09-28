@@ -77,3 +77,12 @@
 - 2026-09-28: The Ward ledge look pass happens inside Milestone 11, not as its own milestone.
 - 2026-09-28: The one playable week (Milestone 10) is built in the gray Main3 blockout, not in Graybox.
 - 2026-09-28: The Main3 paper design starts now, ahead of the rest of Milestone 7, with Milestone 6 housekeeping running alongside.
+- 2026-09-28: One wake-up is one day. The tower check and the report happen every day, and Food, Water, Warmth, Safety and Social are met or missed each day. This replaces "per week" in the 2026-09-27 lines and "one wake-up = one week" in DESIGN.md.
+- 2026-09-28: The daily loop: wake, climb the tower, look at each location except the cultist cave. The game marks each one SAFE or not, from that day's event; the player only has to look. A location that is not safe goes into the logbook and the objective, and the player goes there on foot. Then survival chores, then filing the report, which asks to confirm that it ends the day. Then night.
+- 2026-09-28: Safety is met by resolving that day's event or anomaly on foot. Spotting anomalies as a skill belongs to a minigame, not the main loop.
+- 2026-09-28: Food comes from the store or from foraging. Both are options.
+- 2026-09-28: Main3 has six locations, each with one resident: the lake, three campsites, the cultist cave and the office. It also has the road, a fence, a parking lot, a small store, and things to do at the campsites. The map is bigger than 200 x 200 m; size is set in the design. This replaces the seven-place line of 2026-09-28.
+- 2026-09-28: The cultist cave is hidden from the tower, like the Ward, and is not part of the daily check.
+- 2026-09-28: Two states, day and night. Day is the burning sunset from waking until the report is filed, with the sun fixed. Night is dark except for the fire glow. This replaces the four lighting states.
+- 2026-09-28: At night the only thing the player can do is go to the Ward and offer it HP or MIND. If the player ignores it, WARD goes down. WARD bottoming out means the barrier falls and the world burns.
+- 2026-09-28: The loop is written in Docs/Design/DailyLoop.md, with drawings Grant can see and comment on.

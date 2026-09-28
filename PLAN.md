@@ -74,7 +74,7 @@ Bring the docs and tools in line with how the team works now, before any design 
 
 ## Milestone 7: Loop and economy design
 
-The warden's week and its costs as one ledger (the old loop and stats milestones merged). The Main3 paper brief starts first and runs alongside Milestone 6. Duties, which are mandatory, minutes per week, every drain and restore for HP, MIND and WARD, feeding rates capped at 1 for 1, what chapters mean now that a run ends at the first bottom-out, lighting states (wake, day, dusk, night), the logbook spec (Pim), and the end-of-day resource screen where stats show on screen. Ending conditions stay open slots until Milestone 12. The Main3 space brief on paper: what each of the seven places is for, which need it serves, walk times as costs, sightlines from the tower, signed by Grant. Grant and Quill hold the story session. Vesper and Rook shortlist Asset Store packs for the Ward, giant trees, burning ridge and cave for Grant to buy. Alongside, Rook builds test setup, a plain C# game state with a week simulator, and a versioned save. Output: Docs/Design/DailyLoop.md, Docs/Design/UI/Logbook.md, Docs/Design/Main3.md. Done when the simulator shows every run ends and no stat holds steady, and Grant confirms the decision lines.
+The warden's day and its costs as one ledger (the old loop and stats milestones merged). The Main3 paper brief starts first and runs alongside Milestone 6. Duties, which are mandatory, minutes per day, every drain and restore for HP, MIND and WARD, feeding rates capped at 1 for 1, what chapters mean now that a run ends at the first bottom-out, day and night states, the logbook spec (Pim), and the end-of-day resource screen where stats show on screen. Ending conditions stay open slots until Milestone 12. The Main3 space brief on paper: what each of the six locations and the front zone is for, which need it serves, walk times as costs, sightlines from the tower, drawn so Grant can comment on it. Grant and Quill hold the story session. Vesper and Rook shortlist Asset Store packs for the Ward, giant trees, burning ridge and cave for Grant to buy. Alongside, Rook builds test setup, a plain C# game state with a run simulator, and a versioned save. Output: Docs/Design/DailyLoop.md, Docs/Design/UI/Logbook.md, Docs/Design/Main3.md. Done when the simulator shows every run ends and no stat holds steady, and Grant confirms the decision lines.
 
 ## Milestone 8: Main3 blockout
 
@@ -94,11 +94,11 @@ Packs in, then one location per task: structures kitbashed from the packs, set d
 
 ## Milestone 12: The other characters
 
-Who is at each campsite, what they want, what they know, how they change across a run, built on the story session. Output: Docs/Design/Characters.md, drafts under Docs/Private.
+Who lives at each of the six locations, what they want, what they know, how they change across a run, built on the story session. Output: Docs/Design/Characters.md, drafts under Docs/Private.
 
 ## Milestone 13: Content format and dialogue
 
-Quill drafts sample lines (a logbook week, a notice board sheet, one campsite exchange). Rook tests them in candidate formats and one format is chosen for both dialogue and events. Pim and Vesper set how text looks on screen. Output: Docs/Design/Dialogue.md.
+Quill drafts sample lines (a logbook day, a notice board sheet, one campsite exchange). Rook tests them in candidate formats and one format is chosen for both dialogue and events. Pim and Vesper set how text looks on screen. Output: Docs/Design/Dialogue.md.
 
 ## Milestone 14: Events
 
@@ -106,7 +106,7 @@ The event grammar first (an event can block, add or replace a need, cost a stat,
 
 ## Later
 
-Main menu with New run and Continue. Volume, graphics and control rebinding settings. Chapters and endings built, voices, scrapbook, inventory, map, Ward as physical objects, Ahmee, scares, minigames, a pet to feed, the cave as an event location, art pass.
+Main menu with New run and Continue. Volume, graphics and control rebinding settings. Chapters and endings built, voices, scrapbook, inventory, map, Ward as physical objects, Ahmee, scares, minigames, a pet to feed, art pass.
 
 ## Open decisions (owner)
 
