@@ -1,0 +1,2 @@
+- [Main3 location lights](project_main3_lights.md) — rev 3 per-place light colours, my conditions, Style.md 2.3
+- [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions

@@ -1,0 +1,1 @@
+- [UI daily-loop spec drafts](project_ui_specs_2026-09-28.md) — 2026-09-28 drafts, open [GAP:] markers, input binding facts

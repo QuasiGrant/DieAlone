@@ -1,0 +1,1 @@
+- [Parallel work is Tully's job](feedback_parallel_work.md) — at every planning point or idle agent, tell Wren what starts now vs truly waits; Grant sees only his decisions
