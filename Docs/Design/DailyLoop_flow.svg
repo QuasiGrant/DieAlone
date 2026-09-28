@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="800" viewBox="0 0 960 800" font-family="Arial, Helvetica, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="820" viewBox="0 0 960 820" font-family="Arial, Helvetica, sans-serif">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
     </marker>
   </defs>
-  <rect x="0" y="0" width="960" height="800" fill="#f6f3ec"/>
-  <text x="60" y="30" font-size="16" font-weight="bold" fill="#222">Daily loop. DRAFT 2026-09-28, Sable. Nothing here is decided.</text>
+  <rect x="0" y="0" width="960" height="820" fill="#f6f3ec"/>
+  <text x="60" y="30" font-size="16" font-weight="bold" fill="#222">Daily loop. DRAFT revision 4, 2026-09-28, Sable. Nothing here is decided.</text>
   <text x="60" y="50" font-size="11" fill="#444">One wake-up is one day. Numbers provisional. Full rules in DailyLoop.md.</text>
 
   <text x="230" y="72" text-anchor="middle" font-size="13" font-weight="bold" fill="#b5733a">DAY (sunset, sun fixed)</text>
@@ -29,18 +29,18 @@
     <text x="230" y="177" font-weight="bold">2. Climb the tower to the lectern</text>
     <text x="230" y="242" font-weight="bold">3. Look at 5 locations, 2 s each</text>
     <text x="230" y="258" font-size="11">binoculars; the game stamps SAFE or CHECK</text>
-    <text x="230" y="272" font-size="11">(cave never checked)</text>
+    <text x="230" y="272" font-size="11">(cave never checked; day 1 all SAFE)</text>
     <text x="230" y="344" font-weight="bold">Any CHECK?</text>
     <text x="145" y="423" font-weight="bold">4a. Go there on foot</text>
     <text x="145" y="439" font-size="11">resolve it: Safety met</text>
-    <text x="145" y="453" font-size="10">left open: -1 MIND, gets worse</text>
+    <text x="145" y="453" font-size="10">left open: -1 MIND a night</text>
     <text x="325" y="423" font-weight="bold">4b. All safe</text>
     <text x="325" y="439" font-size="11">Safety met</text>
     <text x="230" y="513" font-weight="bold">5. Chores and visits, any order</text>
     <text x="230" y="529" font-size="11">Food (store, forage, Camp 1 meal), Water (pump,</text>
     <text x="230" y="543" font-size="11">creek, barrel), Warmth (stove, Camp 3), Social (talk)</text>
-    <text x="230" y="602" font-weight="bold">6. File the report at the cabin desk</text>
-    <text x="230" y="618" font-size="11">"Filing the report ends your day."</text>
+    <text x="230" y="602" font-weight="bold">6. File the report from the logbook</text>
+    <text x="230" y="618" font-size="11">anywhere: "Filing the report ends your day."</text>
     <text x="230" y="632" font-size="11">lists unmet needs; [Not yet] focused, [File]</text>
     <text x="230" y="646" font-size="10">locked until all 5 tower stamps are done</text>
     <text x="230" y="691" font-size="11" font-weight="bold">Duty clock: 9 hours on the watch</text>
@@ -56,8 +56,8 @@
     <line x1="230" y1="124" x2="230" y2="148"/>
     <line x1="230" y1="194" x2="230" y2="218"/>
     <line x1="230" y1="280" x2="230" y2="304"/>
-    <path d="M120,340 L145,340 L145,398" />
-    <path d="M340,340 L325,340 L325,398" />
+    <path d="M120,340 L145,340 L145,398"/>
+    <path d="M340,340 L325,340 L325,398"/>
     <line x1="160" y1="460" x2="190" y2="488"/>
     <line x1="310" y1="460" x2="280" y2="488"/>
     <line x1="230" y1="550" x2="230" y2="578"/>
@@ -72,58 +72,66 @@
   <!-- night boxes -->
   <g fill="#2f3440" stroke="#1d2129" stroke-width="1.5">
     <rect x="560" y="80" width="340" height="50" rx="6"/>
-    <rect x="560" y="280" width="220" height="92" rx="6"/>
-    <rect x="800" y="280" width="100" height="92" rx="6"/>
-    <rect x="560" y="410" width="340" height="72" rx="6"/>
+    <rect x="560" y="272" width="160" height="66" rx="6"/>
+    <rect x="740" y="272" width="160" height="66" rx="6"/>
+    <rect x="560" y="370" width="340" height="92" rx="6"/>
+    <rect x="560" y="488" width="340" height="72" rx="6"/>
   </g>
-  <polygon points="730,166 850,200 730,234 610,200" fill="#fff" stroke="#2f3440" stroke-width="1.5"/>
-  <polygon points="730,500 850,534 730,568 610,534" fill="#fff" stroke="#2f3440" stroke-width="1.5"/>
-  <rect x="740" y="600" width="160" height="58" rx="6" fill="#7a1e08" stroke="#4a1204"/>
+  <polygon points="730,166 830,200 730,234 630,200" fill="#fff" stroke="#2f3440" stroke-width="1.5"/>
+  <polygon points="730,580 850,614 730,648 610,614" fill="#fff" stroke="#2f3440" stroke-width="1.5"/>
+  <rect x="760" y="670" width="140" height="50" rx="6" fill="#7a1e08" stroke="#4a1204"/>
 
   <g font-size="12" fill="#fff" text-anchor="middle">
     <text x="730" y="101" font-weight="bold">7. Night falls. The J gate opens.</text>
     <text x="730" y="118" font-size="11">objective: Go to the Ward (3 s)</text>
-    <text x="670" y="300" font-weight="bold">8a. The Ward screen</text>
-    <text x="670" y="316" font-size="11">stats on screen, only here</text>
-    <text x="670" y="332" font-size="11">offer nothing: WARD -1</text>
-    <text x="670" y="347" font-size="11">offer 1 HP or MIND: holds</text>
-    <text x="670" y="362" font-size="11">offer 2: WARD +1</text>
-    <text x="850" y="302" font-weight="bold">8b. Bunk</text>
-    <text x="850" y="320" font-size="11">counts as</text>
-    <text x="850" y="334" font-size="11">nothing:</text>
-    <text x="850" y="348" font-size="11">WARD -1,</text>
-    <text x="850" y="362" font-size="11">no stats</text>
-    <text x="730" y="432" font-weight="bold">9. Sleep, autosave</text>
-    <text x="730" y="449" font-size="11">unmet Food, Water, Warmth: -1 HP each</text>
-    <text x="730" y="465" font-size="11">unmet Social, Safety: -1 MIND each</text>
-    <text x="820" y="624" font-weight="bold">Run ends</text>
-    <text x="820" y="642" font-size="10">WARD 0: the world burns</text>
+    <text x="640" y="294" font-weight="bold">Walk to the Ward</text>
+    <text x="640" y="310" font-size="11">the reveal: magic</text>
+    <text x="640" y="325" font-size="11">and the wildfire</text>
+    <text x="820" y="294" font-weight="bold">Walk to the Ward</text>
+    <text x="820" y="310" font-size="11">or lie in the bunk</text>
+    <text x="820" y="325" font-size="11">(same screen, a dream)</text>
+    <text x="730" y="392" font-weight="bold">8. The Ward screen: stats shown here only</text>
+    <text x="730" y="410" font-size="11">Give nothing: WARD -1</text>
+    <text x="730" y="425" font-size="11">Give 1 HP or MIND: WARD holds</text>
+    <text x="730" y="440" font-size="11">Give 2: WARD +1</text>
+    <text x="730" y="455" font-size="10">the Ward always takes 1 point</text>
+    <text x="730" y="510" font-weight="bold">9. Sleep, autosave</text>
+    <text x="730" y="527" font-size="11">unmet Food, Water, Warmth: -1 HP each</text>
+    <text x="730" y="543" font-size="11">unmet Social: -1 MIND; each open CHECK: -1 MIND</text>
+    <text x="830" y="692" font-weight="bold">Run ends</text>
+    <text x="830" y="709" font-size="10">WARD 0: the world burns</text>
   </g>
   <g font-size="12" fill="#222" text-anchor="middle">
-    <text x="730" y="204" font-weight="bold">Go to the Ward?</text>
-    <text x="730" y="538" font-weight="bold">HP, MIND or WARD at 0?</text>
+    <text x="730" y="204" font-weight="bold">Night 1?</text>
+    <text x="730" y="618" font-weight="bold">HP, MIND or WARD at 0?</text>
   </g>
   <g font-size="10" fill="#555">
-    <text x="620" y="252">yes</text>
-    <text x="835" y="252">no, go to bed</text>
-    <text x="832" y="590">yes</text>
-    <text x="570" y="522">no: next day</text>
+    <text x="600" y="254">yes: bunk locked</text>
+    <text x="820" y="254">no</text>
+    <text x="840" y="660">yes</text>
+    <text x="545" y="605">no: next day</text>
   </g>
 
   <!-- night arrows -->
   <g stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#arr)">
     <line x1="730" y1="130" x2="730" y2="164"/>
-    <path d="M610,200 L640,200 L640,278"/>
-    <path d="M850,200 L850,278"/>
-    <line x1="670" y1="372" x2="690" y2="408"/>
-    <line x1="850" y1="372" x2="820" y2="408"/>
-    <line x1="730" y1="482" x2="730" y2="498"/>
-    <path d="M820,558 L820,598"/>
-    <path d="M610,534 H500 V62 H230 V78"/>
+    <path d="M630,200 L640,200 L640,270"/>
+    <path d="M830,200 L820,200 L820,270"/>
+    <line x1="640" y1="338" x2="680" y2="368"/>
+    <line x1="820" y1="338" x2="780" y2="368"/>
+    <line x1="730" y1="462" x2="730" y2="486"/>
+    <line x1="730" y1="560" x2="730" y2="578"/>
+    <path d="M830,640 L830,668"/>
+    <path d="M610,614 H500 V62 H230 V78"/>
   </g>
 
-  <!-- events -->
-  <rect x="60" y="734" width="840" height="46" rx="6" fill="#fff" stroke="#7b2d6b" stroke-width="1.5" stroke-dasharray="6 4"/>
-  <text x="480" y="754" text-anchor="middle" font-size="12" font-weight="bold" fill="#7b2d6b">Events (Milestone 14) can break any step</text>
-  <text x="480" y="771" text-anchor="middle" font-size="11" fill="#7b2d6b">block a step (fog on the tower), block or add a need option, add a location, hijack the night, or open a minigame</text>
+  <!-- day 1 and events -->
+  <rect x="60" y="740" width="410" height="64" rx="6" fill="#fff" stroke="#b5733a" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="265" y="760" text-anchor="middle" font-size="12" font-weight="bold" fill="#8a4f1c">Day 1 is Firewatch</text>
+  <text x="265" y="777" text-anchor="middle" font-size="11" fill="#8a4f1c">all SAFE, residents ordinary, no chant, no weirdness;</text>
+  <text x="265" y="792" text-anchor="middle" font-size="11" fill="#8a4f1c">the fire is a far-off forest fire until the Ward</text>
+  <rect x="490" y="740" width="410" height="64" rx="6" fill="#fff" stroke="#7b2d6b" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="695" y="760" text-anchor="middle" font-size="12" font-weight="bold" fill="#7b2d6b">Events (Milestone 14) can break any step</text>
+  <text x="695" y="777" text-anchor="middle" font-size="11" fill="#7b2d6b">block a step, block or add a need option,</text>
+  <text x="695" y="792" text-anchor="middle" font-size="11" fill="#7b2d6b">add a location, hijack the night, open a minigame</text>
 </svg>

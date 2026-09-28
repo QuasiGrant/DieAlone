@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="1000" viewBox="0 0 1140 1000" font-family="Arial, Helvetica, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="1190" height="1000" viewBox="0 0 1190 1000" font-family="Arial, Helvetica, sans-serif">
   <defs>
     <linearGradient id="fire" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0" stop-color="#e2552a" stop-opacity="0.85"/>
@@ -7,8 +7,8 @@
   </defs>
 
   <!-- background and title -->
-  <rect x="0" y="0" width="1140" height="1000" fill="#f6f3ec"/>
-  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 3, 2026-09-28, Sable. Nothing here is decided.</text>
+  <rect x="0" y="0" width="1190" height="1000" fill="#f6f3ec"/>
+  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 4, 2026-09-28, Sable. Nothing here is decided.</text>
   <text x="60" y="47" font-size="11" fill="#444">400 x 300 m at 2.5 px per m. Origin south-west, x east, z north. Heights absolute. Walk times at 2.5 m/s. The loop is in DailyLoop.md.</text>
 
   <!-- map area -->
@@ -17,7 +17,7 @@
   <!-- fire, west -->
   <rect x="0" y="70" width="60" height="750" fill="url(#fire)"/>
   <text transform="translate(26,445) rotate(-90)" text-anchor="middle" font-size="13" font-weight="bold" fill="#7a1e08">FIRE: burning ridge 300 to 500 m WEST</text>
-  <text transform="translate(44,445) rotate(-90)" text-anchor="middle" font-size="10" fill="#7a1e08">wind from the west, smoke and ash drift east</text>
+  <text transform="translate(44,445) rotate(-90)" text-anchor="middle" font-size="10" fill="#7a1e08">day 1: reads as an ordinary far-off forest fire until the Ward</text>
   <rect x="60" y="70" width="25" height="750" fill="#d6c6b0"/>
   <line x1="85" y1="70" x2="85" y2="820" stroke="#4d3d2d" stroke-width="3"/>
   <text transform="translate(76,700) rotate(-90)" text-anchor="middle" font-size="9" fill="#5a4a3a">valley -40 m, cliff x 10</text>
@@ -29,34 +29,54 @@
   <text transform="translate(326,150) rotate(-63)" font-size="9" fill="#6a5436">crest 34 m</text>
 
   <!-- cave ravine -->
-  <polygon points="110,770 260,757 297,695 245,670 235,665 135,682" fill="#c3cad3" stroke="#6d7886" stroke-width="1"/>
-  <polyline points="135,682 235,665 245,670 297,695" fill="none" stroke="#3f4752" stroke-width="3"/>
-  <text x="140" y="700" font-size="9" fill="#3f4752">rim 14 m</text>
+  <polygon points="110,770 260,757 297,695 245,670 235,665 135,682" fill="#cfcfcf" stroke="#777" stroke-width="1"/>
+  <polyline points="135,682 235,665 245,670 297,695" fill="none" stroke="#444" stroke-width="3"/>
+  <text x="140" y="700" font-size="9" fill="#444">rim 14 m</text>
 
-  <!-- front zone -->
-  <rect x="930" y="70" width="130" height="750" fill="#e4e1db"/>
-  <rect x="993" y="70" width="15" height="750" fill="#a29d94"/>
-  <line x1="1000.5" y1="72" x2="1000.5" y2="818" stroke="#f2efe6" stroke-width="1" stroke-dasharray="10 10"/>
-  <rect x="962" y="350" width="75" height="100" fill="#c2bdb3" stroke="#8c877e"/>
-  <rect x="1000" y="295" width="30" height="20" fill="#7d8a93" stroke="#444"/>
-  <line x1="1030" y1="300" x2="1030" y2="262" stroke="#333" stroke-width="2"/>
-  <rect x="1000" y="482" width="20" height="15" fill="#b98a4a" stroke="#444"/>
-  <line x1="930" y1="70" x2="930" y2="392" stroke="#555" stroke-width="2" stroke-dasharray="4 3"/>
-  <line x1="930" y1="408" x2="930" y2="820" stroke="#555" stroke-width="2" stroke-dasharray="4 3"/>
-  <rect x="988" y="72" width="25" height="4" fill="#c0282d"/>
-  <rect x="988" y="814" width="25" height="4" fill="#c0282d"/>
+  <!-- front zone: inside the gate -->
+  <rect x="910" y="70" width="140" height="750" fill="#e4e1db"/>
+  <rect x="942" y="345" width="75" height="100" fill="#c2bdb3" stroke="#8c877e"/>
+  <text x="980" y="400" text-anchor="middle" font-size="10" font-weight="bold" fill="#333">PARKING</text>
+  <rect x="945" y="310" width="30" height="20" fill="#7d8a93" stroke="#444"/>
+  <text x="960" y="302" text-anchor="middle" font-size="9" font-weight="bold" fill="#222">OFFICE</text>
+  <line x1="975" y1="310" x2="975" y2="270" stroke="#333" stroke-width="2"/>
+  <circle cx="975" cy="268" r="4" fill="#d0202a"/>
+  <text x="981" y="266" font-size="8" fill="#a01a20">mast, red lamp</text>
+  <rect x="990" y="313" width="20" height="14" fill="#b98a4a" stroke="#444"/>
+  <text x="1000" y="342" text-anchor="middle" font-size="9" font-weight="bold" fill="#222">STORE</text>
+  <line x1="1017" y1="395" x2="1050" y2="395" stroke="#9a958c" stroke-width="8"/>
+  <text x="1034" y="420" text-anchor="middle" font-size="8" fill="#555">drive</text>
+  <text x="980" y="520" text-anchor="middle" font-size="11" font-weight="bold" fill="#555">FRONT ZONE</text>
+  <text x="980" y="534" text-anchor="middle" font-size="9" fill="#555">inside the gate</text>
+  <text x="980" y="546" text-anchor="middle" font-size="9" fill="#555">mains hum only here</text>
+
+  <!-- fence and gate: the map edge -->
+  <line x1="1050" y1="70" x2="1050" y2="385" stroke="#333" stroke-width="3" stroke-dasharray="5 3"/>
+  <line x1="1050" y1="405" x2="1050" y2="820" stroke="#333" stroke-width="3" stroke-dasharray="5 3"/>
+  <rect x="1046" y="379" width="8" height="6" fill="#333"/>
+  <rect x="1046" y="405" width="8" height="6" fill="#333"/>
+  <text transform="translate(1044,240) rotate(-90)" text-anchor="middle" font-size="9" fill="#333">FENCE = MAP EDGE</text>
+  <text x="1056" y="376" font-size="10" font-weight="bold" fill="#222">GATE</text>
+
+  <!-- road, outside the gate, off-map -->
+  <rect x="1054" y="387" width="136" height="16" fill="#8f8a81"/>
+  <line x1="1054" y1="395" x2="1190" y2="395" stroke="#f2efe6" stroke-width="1" stroke-dasharray="10 8"/>
+  <text x="1120" y="425" text-anchor="middle" font-size="10" font-weight="bold" fill="#222">ROAD</text>
+  <text x="1120" y="438" text-anchor="middle" font-size="9" fill="#444">from off-map,</text>
+  <text x="1120" y="450" text-anchor="middle" font-size="9" fill="#444">silent, never walked</text>
+  <polygon points="1186,395 1174,388 1174,402" fill="#444"/>
 
   <!-- tower fire view -->
   <polygon points="470,405 85,350 85,790" fill="#f08a3a" fill-opacity="0.09"/>
-  <text x="95" y="600" font-size="9" fill="#a0521c">tower fire view W to SW: glow and smoke, base hidden</text>
+  <text x="95" y="600" font-size="9" fill="#a0521c">tower fire view W to SW: smoke and glow over the far ridge, base hidden</text>
 
   <!-- tower sightline cones -->
   <g fill="#f2cf3c" fill-opacity="0.28" stroke="#c9a41c" stroke-width="0.6">
     <polygon points="470,405 626.7,712.2 693.3,667.8"/>
     <polygon points="470,405 804.1,289.0 725.9,161.0"/>
-    <polygon points="470,405 777.6,577.3 802.4,522.7"/>
-    <polygon points="470,405 248.0,424.8 262.0,485.2"/>
-    <polygon points="470,405 1020.4,334.5 1009.6,275.5"/>
+    <polygon points="470,405 769.4,595.6 810.6,504.4"/>
+    <polygon points="470,405 281.9,443.4 288.1,466.6"/>
+    <polygon points="470,405 964.3,344.6 955.7,295.4"/>
   </g>
 
   <!-- creek -->
@@ -70,39 +90,46 @@
   <!-- clearings -->
   <g stroke="#b9ab86" stroke-width="1.2">
     <circle cx="485" cy="420" r="45" fill="#f8f4e4"/>
-    <circle cx="765" cy="225" r="75" fill="#faf1cf"/>
-    <circle cx="790" cy="550" r="30" fill="#b7b1a6"/>
-    <circle cx="790" cy="550" r="15" fill="#eef1f5"/>
+    <circle cx="765" cy="225" r="75" fill="#f4f4ec"/>
+    <circle cx="790" cy="550" r="50" fill="#d9d6ce"/>
+    <circle cx="790" cy="550" r="15" fill="#8b8274"/>
     <circle cx="255" cy="455" r="31" fill="#cfdcc4"/>
     <circle cx="140" cy="175" r="30" fill="#efe2cc"/>
     <circle cx="660" cy="690" r="19" fill="#f8f4e4" fill-opacity="0.6"/>
     <circle cx="320" cy="305" r="12" fill="#f8f4e4"/>
     <circle cx="380" cy="645" r="10" fill="#f8f4e4"/>
     <circle cx="715" cy="390" r="8" fill="#f8f4e4"/>
-    <circle cx="190" cy="735" r="12" fill="#9fb0c4"/>
+    <circle cx="910" cy="395" r="8" fill="#f8f4e4"/>
+    <circle cx="190" cy="735" r="12" fill="#9a9a9a"/>
   </g>
   <circle cx="255" cy="455" r="20" fill="none" stroke="#6f8a5f" stroke-width="1" stroke-dasharray="3 3"/>
+  <circle cx="285" cy="455" r="5" fill="#fbfbf6" stroke="#666" stroke-width="1.2"/>
+  <line x1="765" y1="225" x2="765" y2="190" stroke="#8a6a4a" stroke-width="3"/>
 
   <!-- trails -->
   <g fill="none" stroke="#7a4a2a" stroke-width="3.5" stroke-linecap="round">
     <path d="M485,420 Q520,500 535,580"/>
     <path d="M535,580 Q640,590 660,690"/>
     <path d="M660,690 Q760,660 790,550"/>
-    <path d="M790,550 Q880,500 930,400"/>
+    <path d="M790,550 Q870,500 910,395"/>
     <path d="M485,420 C560,340 640,460 715,390"/>
-    <path d="M715,390 C780,330 860,460 930,400"/>
+    <path d="M715,390 C780,330 850,450 910,395"/>
     <path d="M485,420 C420,360 330,500 255,455"/>
     <path d="M535,580 Q450,590 380,645"/>
     <path d="M380,645 Q300,560 255,455"/>
     <path d="M485,420 Q400,330 320,305"/>
+  </g>
+  <!-- walking across the lot -->
+  <g fill="none" stroke="#7a4a2a" stroke-width="2" stroke-dasharray="3 3">
+    <path d="M910,395 L942,395"/>
+    <path d="M942,370 L960,330"/>
+    <path d="M1000,345 L1000,327"/>
   </g>
   <!-- dead-end spurs -->
   <g fill="none" stroke="#b0703a" stroke-width="3" stroke-dasharray="10 3" stroke-linecap="round">
     <path d="M715,390 Q720,300 765,225"/>
     <path d="M380,645 C330,700 270,660 190,735"/>
   </g>
-  <!-- road apron to the lot -->
-  <line x1="930" y1="400" x2="993" y2="400" stroke="#8c877e" stroke-width="5"/>
   <!-- Ward climb, night only -->
   <polyline points="320,305 335,250 305,215 250,200 215,170 175,185 140,175" fill="none" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4" stroke-linejoin="round"/>
 
@@ -111,8 +138,8 @@
   <line x1="287.5" y1="286.8" x2="115" y2="175" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
   <line x1="470" y1="405" x2="245" y2="670" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/>
   <line x1="245" y1="670" x2="190" y2="735" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
-  <text transform="translate(385,350) rotate(33)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">Ward hidden by the Tor, 6.4 m</text>
-  <text transform="translate(360,540) rotate(-49.7)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">cave hidden by the rim, 8.3 m</text>
+  <text transform="translate(385,350) rotate(33)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">Ward hidden by the Tor</text>
+  <text transform="translate(360,540) rotate(-49.7)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">cave hidden by the rim</text>
 
   <!-- Tor -->
   <circle cx="250" cy="262" r="45" fill="#8b8274" stroke="#5a5348" stroke-width="1.5"/>
@@ -132,9 +159,9 @@
 
   <!-- points of interest -->
   <g fill="#333">
-    <circle cx="515" cy="500" r="3.5"/><circle cx="619" cy="612" r="3.5"/><circle cx="742" cy="640" r="3.5"/><circle cx="870" cy="488" r="3.5"/>
-    <circle cx="567" cy="393" r="3.5"/><circle cx="786" cy="380" r="3.5"/><circle cx="872" cy="411" r="3.5"/><circle cx="730" cy="304" r="3.5"/>
-    <circle cx="295" cy="458" r="3.5"/><circle cx="454" cy="601" r="3.5"/><circle cx="347" cy="607" r="3.5"/><circle cx="295" cy="534" r="3.5"/>
+    <circle cx="515" cy="500" r="3.5"/><circle cx="619" cy="612" r="3.5"/><circle cx="742" cy="640" r="3.5"/><circle cx="860" cy="486" r="3.5"/>
+    <circle cx="567" cy="393" r="3.5"/><circle cx="785" cy="378" r="3.5"/><circle cx="880" cy="410" r="3.5"/><circle cx="730" cy="304" r="3.5"/>
+    <circle cx="300" cy="458" r="3.5"/><circle cx="454" cy="601" r="3.5"/><circle cx="347" cy="607" r="3.5"/><circle cx="295" cy="534" r="3.5"/>
     <circle cx="327" cy="676" r="3.5"/><circle cx="265" cy="690" r="3.5"/><circle cx="401" cy="346" r="3.5"/><circle cx="322" cy="312" r="3.5"/>
     <circle cx="290" cy="211" r="3.5"/><circle cx="175" cy="185" r="3.5"/>
   </g>
@@ -145,16 +172,16 @@
     <text x="507" y="498" text-anchor="end">water tank</text>
     <text x="611" y="608" text-anchor="end">rowboat</text>
     <text x="734" y="636" text-anchor="end">phone pole</text>
-    <text x="862" y="484" text-anchor="end">food lockers</text>
+    <text x="852" y="482" text-anchor="end">food lockers</text>
     <text x="567" y="384" text-anchor="middle">Hollow Giant</text>
-    <text x="786" y="371" text-anchor="middle">Gate Tree</text>
-    <text x="872" y="428" text-anchor="middle">fence, machine hum</text>
+    <text x="785" y="369" text-anchor="middle">Gate Tree</text>
+    <text x="876" y="428" text-anchor="middle">first sight of the lot</text>
     <text x="722" y="300" text-anchor="end">latrine shed</text>
-    <text x="300" y="472">log steps</text>
+    <text x="306" y="474">log steps</text>
     <text x="446" y="597" text-anchor="end">truck</text>
     <text x="355" y="603">footbridge</text>
     <text x="287" y="530" text-anchor="end">camper trailer</text>
-    <text x="335" y="690">rope rail, chant</text>
+    <text x="335" y="690">rope rail, chant 1</text>
     <text x="257" y="686" text-anchor="end">charms</text>
     <text x="409" y="342">burn-map board</text>
     <text x="330" y="320">plank bridge, creek water</text>
@@ -162,6 +189,7 @@
     <text x="170" y="198" text-anchor="end">last bend, silence</text>
     <text x="668" y="430" fill="#3d7a2a">forage A</text>
     <text x="424" y="424" fill="#3d7a2a">forage B</text>
+    <text x="292" y="444">the Snag</text>
   </g>
 
   <!-- leg lengths -->
@@ -169,15 +197,16 @@
     <text x="524" y="532">80 m / 32 s</text>
     <text x="630" y="596">84 m / 34 s</text>
     <text x="752" y="664">95 m / 38 s</text>
-    <text x="862" y="500" text-anchor="end">98 m / 39 s</text>
+    <text x="892" y="520" text-anchor="middle">94 m / 38 s</text>
     <text x="600" y="362">125 m / 50 s</text>
-    <text x="822" y="446" text-anchor="middle">116 m / 46 s</text>
+    <text x="830" y="448" text-anchor="middle">105 m / 42 s</text>
     <text x="740" y="320">83 m / 33 s, dead end</text>
     <text x="360" y="452" text-anchor="end">126 m / 50 s</text>
     <text x="455" y="624" text-anchor="middle">80 m / 32 s</text>
     <text x="318" y="572" text-anchor="end">114 m / 46 s</text>
-    <text x="300" y="716" text-anchor="middle">109 m / 44 s, dead end</text>
+    <text x="300" y="716" text-anchor="middle">109 m / 44 s, dead end, unsigned</text>
     <text x="415" y="316">96 m / 38 s</text>
+    <text x="926" y="385" font-size="9">T</text>
   </g>
   <g font-size="10" font-weight="bold" fill="#7b2d6b" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">
     <text x="345" y="236">Ward climb 130 m / 52 s</text>
@@ -187,48 +216,36 @@
   <!-- place labels -->
   <g fill="#222" text-anchor="middle">
     <text x="498" y="432" font-size="11" font-weight="bold">KEEPER'S CAMP</text>
-    <text x="498" y="445" font-size="9">knoll 8 m, stove, report desk</text>
+    <text x="498" y="445" font-size="9">knoll 8 m, stove (Warmth)</text>
 
     <text x="545" y="660" font-size="12" font-weight="bold">LAKE</text>
     <text x="545" y="674" font-size="9">pump on the dock (Water)</text>
     <text x="545" y="686" font-size="9">resident: boathouse on stilts</text>
 
-    <text x="765" y="215" font-size="12" font-weight="bold">CAMP 1, big</text>
-    <text x="765" y="229" font-size="9">60 m, dense, warm yellow lights</text>
-    <text x="765" y="241" font-size="9">cookfire meal (Food, some days)</text>
+    <text x="765" y="215" font-size="12" font-weight="bold">CAMP 1, big by kit</text>
+    <text x="765" y="229" font-size="9">one tent, sprawling workshop, 60 m</text>
+    <text x="765" y="241" font-size="9">pale harsh light, spar with bulbs</text>
+    <text x="765" y="253" font-size="9">cookfire meal (Food, some days)</text>
 
-    <text x="826" y="542" text-anchor="start" font-size="12" font-weight="bold">CAMP 2, tiny</text>
-    <text x="826" y="555" text-anchor="start" font-size="9">tent on a 12 m rock stack</text>
-    <text x="826" y="567" text-anchor="start" font-size="9">cold white lamp, rain barrel</text>
+    <text x="845" y="600" text-anchor="start" font-size="12" font-weight="bold">CAMP 2, tiny</text>
+    <text x="845" y="613" text-anchor="start" font-size="9">tent on a 20 m granite stack</text>
+    <text x="845" y="625" text-anchor="start" font-size="9">amber lamp, rain barrel</text>
 
     <text x="218" y="438" text-anchor="end" font-size="12" font-weight="bold">CAMP 3, sunken</text>
-    <text x="218" y="451" text-anchor="end" font-size="9">hollow -4 m, green light</text>
+    <text x="218" y="451" text-anchor="end" font-size="9">hollow -4 m, green-glass lantern</text>
     <text x="218" y="463" text-anchor="end" font-size="9">sit at the fire (Warmth)</text>
 
     <text x="150" y="128" font-size="11" font-weight="bold">WARD LEDGE</text>
-    <text x="150" y="140" font-size="9">36 m, night only, stats screen</text>
+    <text x="150" y="140" font-size="9">36 m, night only, the reveal</text>
 
     <text x="190" y="790" font-size="11" font-weight="bold">CULTIST CAVE</text>
-    <text x="190" y="802" font-size="9">ravine -6 m, the cold place, not checked</text>
+    <text x="190" y="802" font-size="9">ravine -6 m, the grey cold place, not checked</text>
   </g>
   <g fill="#222" font-size="9" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">
     <text x="304" y="296" text-anchor="end" font-weight="bold">J, pale cairn</text>
     <text x="392" y="660">W1, chant spot 2</text>
     <text x="700" y="382" text-anchor="end" font-weight="bold">Jg</text>
-    <text x="926" y="388" text-anchor="end" font-weight="bold">gate</text>
     <text x="547" y="592">pump</text>
-  </g>
-  <g fill="#222" font-size="10">
-    <text x="1066" y="300" font-weight="bold">OFFICE</text>
-    <text x="1066" y="312" font-size="9">mast 30 m</text>
-    <text x="1066" y="402" font-weight="bold">PARKING</text>
-    <text x="1066" y="492" font-weight="bold">STORE</text>
-    <text x="1066" y="504" font-size="9">Food, sure</text>
-    <text x="1066" y="140" font-weight="bold">ROAD</text>
-    <text x="1066" y="152" font-size="9">straight</text>
-    <text x="1066" y="600" font-weight="bold">FRONT</text>
-    <text x="1066" y="612" font-weight="bold">ZONE</text>
-    <text x="1066" y="624" font-size="9">52 m strip</text>
   </g>
 
   <!-- ticks -->
@@ -240,8 +257,8 @@
   </g>
 
   <!-- north arrow -->
-  <polygon points="900,90 888,124 900,116 912,124" fill="#333"/>
-  <text x="900" y="86" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">N</text>
+  <polygon points="880,100 868,134 880,126 892,134" fill="#333"/>
+  <text x="880" y="96" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">N</text>
 
   <!-- legend -->
   <g font-size="10" fill="#222">
@@ -249,20 +266,20 @@
     <rect x="185" y="858" width="125" height="8" fill="#fff" stroke="#333"/>
     <text x="60" y="880" text-anchor="middle">0</text><text x="185" y="880" text-anchor="middle">50</text><text x="310" y="880" text-anchor="middle">100 m</text>
 
-    <line x1="350" y1="862" x2="390" y2="862" stroke="#7a4a2a" stroke-width="3.5"/><text x="396" y="866">trail</text>
+    <line x1="350" y1="862" x2="390" y2="862" stroke="#7a4a2a" stroke-width="3.5"/><text x="396" y="866">trail (routes stay on trails)</text>
     <line x1="350" y1="882" x2="390" y2="882" stroke="#b0703a" stroke-width="3" stroke-dasharray="10 3"/><text x="396" y="886">dead-end spur</text>
     <line x1="350" y1="902" x2="390" y2="902" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4"/><text x="396" y="906">Ward climb, night only</text>
-    <rect x="350" y="916" width="40" height="8" fill="#a29d94"/><text x="396" y="926">straight road</text>
+    <line x1="350" y1="922" x2="390" y2="922" stroke="#333" stroke-width="3" stroke-dasharray="5 3"/><text x="396" y="926">fence with gate: the map edge</text>
     <circle cx="370" cy="942" r="3.5" fill="#333"/><text x="396" y="946">point of interest, 30 s check</text>
     <circle cx="370" cy="962" r="5" fill="#3d7a2a"/><text x="396" y="966">forage patch (Food, about 60 percent)</text>
 
-    <polygon points="600,856 640,850 640,872" fill="#f2cf3c" fill-opacity="0.45" stroke="#c9a41c" stroke-width="0.6"/><text x="646" y="866">tower sightline to a checked location</text>
-    <line x1="600" y1="886" x2="640" y2="886" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/><text x="646" y="890">tower line blocked (Ward by the Tor, cave by the rim)</text>
-    <rect x="600" y="900" width="40" height="12" fill="#dccfb8" stroke="#a08c6c"/><text x="646" y="910">spur high ground</text>
-    <rect x="600" y="920" width="40" height="12" fill="#c3cad3" stroke="#6d7886"/><text x="646" y="930">cave ravine</text>
-    <rect x="600" y="940" width="40" height="12" fill="#e4e1db" stroke="#8c877e"/><text x="646" y="950">front zone (man-made strip)</text>
-    <rect x="600" y="960" width="40" height="12" fill="url(#fire)"/><text x="646" y="970">fire direction (west)</text>
+    <polygon points="640,856 680,850 680,872" fill="#f2cf3c" fill-opacity="0.45" stroke="#c9a41c" stroke-width="0.6"/><text x="686" y="866">tower sightline to a checked location</text>
+    <line x1="640" y1="886" x2="680" y2="886" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/><text x="686" y="890">tower line blocked (Ward by the Tor, cave by the rim)</text>
+    <rect x="640" y="900" width="40" height="12" fill="#dccfb8" stroke="#a08c6c"/><text x="686" y="910">spur high ground</text>
+    <rect x="640" y="920" width="40" height="12" fill="#cfcfcf" stroke="#777"/><text x="686" y="930">cave ravine</text>
+    <rect x="640" y="940" width="40" height="12" fill="#e4e1db" stroke="#8c877e"/><text x="686" y="950">front zone, inside the gate</text>
+    <rect x="640" y="960" width="40" height="12" fill="url(#fire)"/><text x="686" y="970">fire direction (west)</text>
 
-    <text x="60" y="990" fill="#444">Camp to the Ward at night: 226 m, 90 s. Camp to the office: 307 m. Giant tops at most 50 m absolute (42 m tall on the knoll).</text>
+    <text x="60" y="990" fill="#444">Camp to the Ward at night: 226 m, 90 s. Camp to the office: 270 m. Giant tops at most 50 m absolute. Day 1: everything reads ordinary until the Ward.</text>
   </g>
 </svg>
