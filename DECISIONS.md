@@ -91,3 +91,4 @@
 - 2026-09-28: The player carries the logbook. Its main job is tracking questions and notes. Settings live in it too, and later inventory, memories and achievements or collectibles if those are added.
 - 2026-09-28: As WARD gets low, the fire gets louder and the world gets weird.
 - 2026-09-28: The first day plays as a very normal job, like Firewatch, until the player reaches the Ward and sees the magic and the wildfire. That is when the player learns it is a horror fantasy game.
+- 2026-09-28: Clarifies the tower line above: the tower sees every Main3 location except the Ward and the cultist cave, as the cave line says.
