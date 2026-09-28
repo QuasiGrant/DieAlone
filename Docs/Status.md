@@ -8,7 +8,7 @@ Last updated 2026-09-28.
 
 As of the end of 2026-09-28:
 1. Done today: Milestone 5 closed (Main2 archived, tag main-scene-2.0). Milestone 6 tasks 6.1 to 6.5 done (plan check hook, carry tuning, test setup, Cowork retired in CLAUDE.md, scene facts in Docs/Scenes/Main2.md). DailyLoop.md and Main3.md at revision 5 (DRAFT, committed).
-2. Running when the session ended: Rook on 7.1 game state, 7.2 run simulator, 7.3 versioned save. If PLAN.md shows them unticked, rerun from the task lines.
+2. Done: 7.1 game state (Assets/Scripts/Core, LoopTuning.asset, 23 tests), 7.2 run simulator (DieAlone > Simulate Runs), 7.3 versioned save (31 tests pass). Simulator on draft numbers, median and max day a run ends: gives nothing 12 and 12 (WARD ends it); idle 4 and 4 (HP); gives 1 12 and 16 (HP mostly); gives 2 9 and 11 (HP); balanced 16 and 20 (WARD). Every run ends. A save from another version is refused; no migrations yet.
 3. Grant, next: comment on the revision 5 drawings (Docs/Design/Main3_map.svg, DailyLoop_flow.svg) and answer: day timed by the keeper's watch; Ward feeding (1 holds, 2 raises); all five needs sometimes met on a quiet day; an open anomaly costs 1 MIND a night and after three days 1 WARD; the day-one fire as an ordinary far-off forest fire; the unsigned cave trail as the one exception to the junction check.
 4. Grant, any time: buy packs from Docs/Design/PackShortlist.md after checking screenshots; confirm bought-pack shaders get swapped for ours.
 5. 2026-09-29: story session, Grant and Quill, prep in Docs/Private/SessionPrep.md.
