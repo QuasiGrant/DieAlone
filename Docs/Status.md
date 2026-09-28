@@ -6,10 +6,9 @@ Last updated 2026-09-28.
 
 ## Next step
 
-1. Rook: 5.11 archive Main2 (tag main-scene-2.0, off the build list, delete Assets/_Recovery). Closes Milestone 5.
-2. Grant: yes or no on the milestone order 5 to 14, the playable week in the Main3 blockout, and the Ward look pass inside Milestone 11.
-3. Wren writes Milestone 6 housekeeping tasks; Tully checks them.
-4. Main2 team review: Docs/Review/2026-09-28-Main2/TeamReview.md. Main3 decisions in DECISIONS.md 2026-09-28.
+1. In progress, docs only: Sable (DailyLoop.md with flow drawing, Main3 map redraw), Vesper (Style.md, PackShortlist.md), Pim (tower check, report confirm, Ward night, objective specs), Hollis (sourcing, mixer, day and night sound), Quill (story session prep in Docs/Private), Marlow (stress test of the 2026-09-28 loop lines), Rook (DialogueFormats.md research).
+2. Grant: Milestone 6 task list, menus now or later, story session date, twist text rule, pack purchase after the shortlist, comments on Sable's drawings.
+3. Rook's Unity queue once Milestone 6 tasks are approved: PlayerTuning carry fields, pre-commit hook, test assembly, GameState, versioned save.
 
 ## How we work now (2026-09-28)
 
@@ -32,4 +31,4 @@ Last updated 2026-09-28.
 
 ## Private
 
-Docs/Private is empty: there is no story bible yet. Grant and Quill hold a story session before Milestone 10.
+Docs/Private holds Main3 story placeholders and Quill's session prep. There is no story bible yet. Grant and Quill hold a story session during Milestone 7.
