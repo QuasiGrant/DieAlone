@@ -55,3 +55,11 @@
 - 2026-09-27: Events can add to or block any need for that week.
 - 2026-09-27: A pet the player must also feed is a later addition to raise difficulty.
 - 2026-09-27: The design reference for the loop is the Project doc "design-loop-and-comparables". Cowork refers to it when planning Milestones 6 to 10.
+- 2026-09-28: Workflow: nine named agents in .claude/agents. Wren (chief of staff) writes PLAN.md tasks and DECISIONS.md lines after Grant confirms; Rook (coder) builds; one agent changes the Unity project at a time. This replaces the Cowork lines of 2026-09-20 and 2026-09-23. The loop reference is Docs/Design/LoopAndComparables.md, replacing the Project doc named on 2026-09-27.
+- 2026-09-28: Plan order: close Milestone 5, housekeeping, loop and economy design (with a week simulator), sound groundwork, one playable week in Graybox, characters, content format and dialogue, events. This replaces the design milestone order in LoopAndComparables.md Part 3.
+- 2026-09-28: Characters come before the dialogue format. One data format serves both dialogue and events. Ending conditions stay open until the characters exist.
+- 2026-09-28: Stats show on screen only during the end-of-day resource phase, where the player decides whether to feed the Ward or let it decay. The rest of the time they are in the logbook only.
+- 2026-09-28: Main.unity (scene 1.0) leaves the build list. It is archived, never deleted: the scene, its terrain data and the tag main-scene-1.0 stay.
+- 2026-09-28: The repo stays public. Story text the game needs may be committed even if it reveals the twist.
+- 2026-09-28: A git pre-commit script runs the plan checks (em dashes, tick count, Rules and Tips count).
+- 2026-09-28: Grant and Quill hold a story session before the characters milestone.

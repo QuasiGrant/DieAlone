@@ -1,8 +1,8 @@
 # Plan
 
 How this file works:
-- Cowork writes and orders the tasks. Code does them one at a time, top to bottom.
-- Code may tick a box and add lines under Rules and Tips. Code does not add, remove, reorder, or reword tasks.
+- Wren (chief of staff) writes and orders the tasks. Rook (coder) does them one at a time, top to bottom.
+- Rook may tick a box and add lines under Rules and Tips. Rook does not add, remove, reorder, or reword tasks.
 - A task is finished when its done-check passes, its box is ticked, and the work is committed and pushed.
 - Only the current milestone is broken into tasks. Later milestones stay as headlines until they are next.
 
@@ -63,26 +63,48 @@ The first real scene, `Assets/Scenes/Main.unity`, made from the scene recipe. Th
 - [x] 5.7 Camp. Cabin from the Cabin pack with a door on the existing Door system, a bunk and a table inside. Fire pit and seating from the Campsite pack. A generator (from the packs if 5.1 found one, otherwise a blockout box). Campground props. The firewatch tower rebuilt from the Graybox tower pattern with pack materials, beside or behind the cabin, stairs following the STAIRS RULE. Cabin door, fire pit, generator, and the tower's top room usable with the existing interact prompt. Everything modern under `Era_Modern`. Done when: no errors, and the owner has entered the cabin, climbed the tower, and used each prompt.
 - [x] 5.8 Three campsites. Off path B, each a small clearing with Campsite pack props laid out differently (one tent, one lean-to, one bare fire ring, for example). Empty of characters. Each has one usable object as a stand-in for the future character interaction. Done when: no errors, and the owner has visited all three and back.
 - [x] 5.9 Horizon fire and sky. A distant burning ridge across the valley: orange glow, haze, slow smoke, ash particles if the packs include them, otherwise Unity's built-in particle system. Sunset sky and light as the scene default, with the Night rig from the prefab kept disabled as a switch. Fog from LookTuning tuned so the far ridge reads through the haze. Numbers for glow, smoke, and haze go in LookTuning. Done when: no errors, and the owner has looked at the fire from the ledge and from the tower top and confirmed it reads as a wildfire.
-- [ ] 5.10 Walkthrough of Main 2.0 (`Assets/Scenes/Main2.unity`). The owner wakes in the cabin, walks to the Ward, back to camp, along the road to the gate and office, to the lake, to the three campsites, to the cave, and back, with the VHS look on. Fix anything that blocks, traps, or breaks the look. Record three camera spots (the ledge facing the fire, the camp from path A, the tower top) under Rules and Tips and commit screenshots under `Docs/Look/Main`. Done when: the owner says the scene is right for now.
+- [ ] 5.9a Archive Main 1.0. Remove `Assets/Scenes/Main.unity` from the build list so the dev menu lists only Graybox and Main2. Archive, never delete: keep the scene file, its terrain data, and the tag main-scene-1.0. Done when: no errors, the build list holds Graybox and Main2, and Main.unity still opens from the Project window.
+- [ ] 5.9b Machine walk of Main2. Rook rebuilds the walk recipes in Tools/Recipes into one script that first checks Main2 is the open scene, walks the full 5.10 route from the cabin and back as one joined path (no teleport between legs), uses Main2 positions only, and crouches under the fallen trunk on path A. Marlow runs it and reports. Out of scope: fixing the scene; blockers go to 5.10. Done when: one run shows the command and its output with no STUCK, or Marlow's report lists every blocker with its position.
+- [ ] 5.9c Look check. Rook shoots the three Main camera spots (Rules and Tips, MAIN CAMERA SPOTS) in Main2 with the current LookTuning and commits them under `Docs/Look/Main`. Vesper compares them with the VHS brief and the Fears to Fathom references and writes a short list of look changes for Grant (resolution, noise band, crush, forest darkness, fire polish) in `Docs/Look/Main/LookNotes.md`. No code or asset changes. Done when: the screenshots and LookNotes.md are committed.
+- [ ] 5.10 Walkthrough of Main 2.0 (`Assets/Scenes/Main2.unity`). The owner wakes in the cabin, walks to the Ward, back to camp, along the road to the gate and office, to the lake, to the three campsites, to the cave, and back, with the VHS look on. Fix anything that blocks, traps, or breaks the look. Grant tunes the look from `Docs/Look/Main/LookNotes.md` in the same walk, then Rook re-shoots the three Main camera spots and commits them under `Docs/Look/Main`. Out of scope: new locations or new objects; if the work grows, stop and report. Done when: the owner says the scene is right for now.
 
-## Milestone 6: The daily loop (rework pending)
+## Milestone 6: Housekeeping
 
-Flagged by the owner 2026-09-27: the loop as written in DESIGN.md is no longer the plan. Milestone 6 is reworked with the owner before any task is written. Previous headline, kept for reference: wake, chores, check the fire, report, maintain the Ward, sleep, with HP, MIND, and WARD working and autosave at sleep.
+Bring the docs and tools in line with how the team works now, before any design work. Retire Cowork in CLAUDE.md for Wren and the named agents. Bring DESIGN.md in line with DECISIONS.md (VHS not PS1, not alone, no tower start, no fixed run length). Move scene facts out of Rules and Tips into Docs/Scenes/Main2.md and repoint scratchpad lines to Tools/Recipes. Vesper writes Docs/Design/Style.md. Hollis sets the audio sourcing rule and mixer groups. A git pre-commit script runs the plan checks (em dashes, tick count, Rules and Tips count). Fix the missing carry fields in PlayerTuning.asset.
 
-## Later, from DESIGN.md
+## Milestone 7: Loop and economy design
 
-Main menu with New run and Continue comes after Milestone 6, since it depends on saving. Volume, graphics, and control rebinding settings come once there is sound and the VHS look to adjust.
+The warden's week and its costs as one ledger (the old loop and stats milestones merged). Duties, which are mandatory, minutes per week, every drain and restore for HP, MIND and WARD, feeding rates capped at 1 for 1, chapter end and run end, lighting states (wake, day, dusk, night), the logbook spec (Pim), and the end-of-day resource screen where stats show on screen. Ending conditions stay open slots until Milestone 10. Alongside, Rook builds test setup, a plain C# game state with a week simulator, and a versioned save. Output: Docs/Design/DailyLoop.md and Docs/Design/UI/Logbook.md. Done when the simulator shows every run ends and no stat holds steady, and Grant confirms the decision lines.
 
-Event deck and tracks, chapters and endings, voices, scrapbook, inventory, map, and Ward as physical objects, Ahmee, minigames.
+## Milestone 8: Sound groundwork
+
+Mixer with five groups, an AudioTuning asset, footsteps, the fire pit loop, and an ambience bed for path A. Done when Grant walks path A with sound and says the long walk works.
+
+## Milestone 9: One playable week
+
+In Graybox: wake, tower, logbook, needs, the end-of-day resource screen with feeding the Ward, sleep, stats and autosave, with one placeholder conversation for Social. All numbers in a tuning asset. Done when Grant has played several weeks and a run has ended.
+
+## Milestone 10: The other characters
+
+Starts with a story session between Grant and Quill. Who is at each campsite, what they want, what they know, how they change across chapters. Output: Docs/Design/Characters.md, drafts under Docs/Private.
+
+## Milestone 11: Content format and dialogue
+
+Quill drafts sample lines (a logbook week, a notice board sheet, one campsite exchange). Rook tests them in candidate formats and one format is chosen for both dialogue and events. Pim and Vesper set how text looks on screen. Output: Docs/Design/Dialogue.md.
+
+## Milestone 12: Events
+
+The event grammar first (an event can block, add or replace a need, cost a stat, open a location), a rule for an empty deck, about five tracks for first playable, and a sound cue per event. Output: Docs/Design/Events.md.
+
+## Later
+
+A look pass on the Ward ledge (stones, ridge silhouettes, rune palette) right after Milestone 9. Main menu with New run and Continue. Volume, graphics and control rebinding settings. Chapters and endings built, voices, scrapbook, inventory, map, Ward as physical objects, Ahmee, scares, minigames, a pet to feed, art pass.
 
 ## Open decisions (owner)
 
-- The shape of the daily loop (Milestone 6 rework).
+- Run end: does the first bottom-out end the run, or does each bottom-out end a chapter with the third ending the run?
 - Lake and cave are open from the start; DESIGN.md says such locations unlock through events.
 - The player wakes in the camp cabin; DESIGN.md says the tower.
-- Other campers are implied by the campsites and cars; DESIGN.md says the player is alone.
-- Whether first playable means the full 15 to 20 event tracks or a smaller cut first.
-- Sound and ambience before or after the daily loop.
 
 ## Rules and Tips
 

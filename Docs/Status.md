@@ -6,17 +6,17 @@ Last updated 2026-09-28.
 
 ## Next step
 
-1. Team check: Wren briefs every agent on where the project stands and each reports one thing they would raise first. Grant reads the roll call.
-2. Grant: yes or no on Milestones 6 to 10 as headlines in PLAN.md (Docs/Design/LoopAndComparables.md, Part 3).
-3. Grant: walk Main 2.0 and say whether the scene is right for now (closes 5.10).
-4. Milestone 6 design session, from LoopAndComparables.md Part 4 open items: Ward feeding rates, every drain and restore per stat, which route covers which needs, minutes per week.
+1. Grant: run end rule (open decision in PLAN.md). Needed before Milestone 7.
+2. Rook: 5.9a archive Main 1.0, then 5.9b machine walk (Marlow runs and reports), then 5.9c look check (Vesper writes Docs/Look/Main/LookNotes.md).
+3. Grant: 5.10 walk of Main2 with the look notes. Closes Milestone 5.
+4. Milestone 6 housekeeping tasks get written when 5.10 closes.
 
 ## How we work now (2026-09-28)
 
 - Nine named agents in .claude/agents. Wren runs the team, settles disagreements, reports to Grant. Grant confirms every decision; nothing is decided until it is a dated line in DECISIONS.md and he has said yes.
 - Tully checks every task before it is written and every commit before it lands.
 - Marlow checks every task after it is marked done and before Grant is asked to look.
-- Quill works under Grant on story. Anything carrying the ending twist lives in Docs/Private (git-ignored), never in a committed file.
+- Quill works under Grant on story. Drafts live in Docs/Private (git-ignored). Story text the game needs may be committed (2026-09-28).
 - Grant batches yeses against numbered lists. Routine commits report hash and clean status only.
 - Rules for editing PLAN.md and DECISIONS.md: start from head, edit by script, check no em dashes and unchanged tick and Rules and Tips counts, read back after saving, diff against head before committing.
 
@@ -32,4 +32,4 @@ Last updated 2026-09-28.
 
 ## Private
 
-The story twist is not in any committed file. Quill keeps it in Docs/Private/StoryBible.md.
+Docs/Private is empty: there is no story bible yet. Grant and Quill hold a story session before Milestone 10.
