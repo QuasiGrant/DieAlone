@@ -6,10 +6,10 @@ Last updated 2026-09-28.
 
 ## Next step
 
-1. Grant: run end rule (open decision in PLAN.md). Needed before Milestone 7.
-2. Rook: 5.9a archive Main 1.0, then 5.9b machine walk (Marlow runs and reports), then 5.9c look check (Vesper writes Docs/Look/Main/LookNotes.md).
-3. Grant: 5.10 walk of Main2 with the look notes. Closes Milestone 5.
-4. Milestone 6 housekeeping tasks get written when 5.10 closes.
+1. Rook: 5.11 archive Main2 (tag main-scene-2.0, off the build list, delete Assets/_Recovery). Closes Milestone 5.
+2. Grant: yes or no on the milestone order 5 to 14, the playable week in the Main3 blockout, and the Ward look pass inside Milestone 11.
+3. Wren writes Milestone 6 housekeeping tasks; Tully checks them.
+4. Main2 team review: Docs/Review/2026-09-28-Main2/TeamReview.md. Main3 decisions in DECISIONS.md 2026-09-28.
 
 ## How we work now (2026-09-28)
 
