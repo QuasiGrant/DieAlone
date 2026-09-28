@@ -22,6 +22,9 @@ public class GameState
 
     [NonSerialized] private LoopTuning tuning;
 
+    /// Raised when Sleep finishes, including a sleep that ended the run. Saves hook here.
+    [field: NonSerialized] public event Action<GameState> Slept;
+
     public int Day => day;
     public DayPhase Phase => phase;
     public int Hp => hp;
@@ -136,18 +139,40 @@ public class GameState
         RequirePhase(DayPhase.Night);
         if (!gaveTonight) throw new InvalidOperationException("The Ward screen comes before sleep.");
 
-        if (Change(Stat.Hp, -SleepHpCost())) return;
-        if (Change(Stat.Mind, -SleepMindCost())) return;
-        if (AgeChecks()) return;
+        if (!PayNight()) StartNextDay(rng);
+        Slept?.Invoke(this);
+    }
 
+    /// Reattaches the tuning after the state was rebuilt from a save. Returns false when
+    /// the saved arrays do not match the tuning (for example a changed location list).
+    internal bool Bind(LoopTuning loopTuning)
+    {
+        if (loopTuning == null) throw new ArgumentNullException(nameof(loopTuning));
+        if (choresMet == null || choresMet.Length != ChoreCount) return false;
+        if (locations == null || locations.Length != loopTuning.checkedLocations.Length) return false;
+        foreach (var location in locations) if (location == null) return false;
+        tuning = loopTuning;
+        return true;
+    }
+
+    // ---------- Rules ----------
+
+    /// Returns true when paying the night ended the run.
+    private bool PayNight()
+    {
+        if (Change(Stat.Hp, -SleepHpCost())) return true;
+        if (Change(Stat.Mind, -SleepMindCost())) return true;
+        return AgeChecks();
+    }
+
+    private void StartNextDay(System.Random rng)
+    {
         day++;
         phase = DayPhase.Day;
         gaveTonight = false;
         Array.Clear(choresMet, 0, choresMet.Length);
         DrawAnomalies(rng);
     }
-
-    // ---------- Rules ----------
 
     /// Returns true when an open CHECK ending on its own ended the run.
     private bool AgeChecks()
