@@ -1,6 +1,6 @@
 # Main3 paper brief
 
-**DRAFT, revision 4, 2026-09-28, Sable. Nothing here is decided.** The loop lives in Docs/Design/DailyLoop.md and is not repeated here. Map: Docs/Design/Main3_map.svg. Numbers provisional until the Milestone 7 simulator.
+**DRAFT, revision 5, 2026-09-28, Sable. Nothing here is decided.** The loop lives in Docs/Design/DailyLoop.md and is not repeated here. Map: Docs/Design/Main3_map.svg. Numbers provisional until the Milestone 7 simulator.
 
 Coordinates in metres, origin south-west, x east, z north. Heights absolute (metres above map base 0). Walk times at 2.5 m/s, grounded horizontal distance (DailyLoop.md 1.1).
 
@@ -18,7 +18,7 @@ Coordinates in metres, origin south-west, x east, z north. Heights absolute (met
 5. Centre: the keeper's camp on an 8 m knoll with the tower; the lake south; Camp 3 in a hollow west.
 6. East: Camp 1 and Camp 2 in the forest, then the front zone.
 7. **The fence and gate are the map edge.** Chain-link along x 396, the full height of the map. The gate at (396, 170). The road comes from off-map to the gate and never enters. Inside the gate: a gravel drive, the parking lot, the office and the store.
-8. Giant trees: emergents 40 to 50 m tall, trunks 6 to 10 m. Tops never above 50 m absolute; on the knoll at most 42 m tall; on the spur tops below 55 m (under the tower eye, Rook).
+8. Giant trees: emergents 40 to 50 m tall, trunks 6 to 10 m. Tops never above 50 m absolute; on the knoll at most 42 m tall; on the spur tops below 55 m (under the tower eye, Rook). One stated exemption: the Snag at Camp 3, top 54 m, 3.6 m under the tower eye. It stands in no other location's cone and is itself Camp 3's landmark.
 9. Routes stay on trails (DailyLoop.md 1.2).
 
 ## 3. Places
@@ -32,7 +32,7 @@ Six locations with one resident each, plus the keeper's camp and the Ward. Every
 | Camp 1 | (282, 238), ground 5 m | big by kit, one tent: a sprawling workshop camp, 60 m, pale harsh light | cookfire meal (Food, some days); talk; anomaly | a lashed timber spar 24 m with a string of bulbs | pots |
 | Camp 2 | (292, 108), ground 4 m | tiny: one tent on top of a 20 m granite stack in a 40 m boulder field, ladder up, dim amber tent lamp | rain barrel (Water, some days); talk; anomaly | the granite stack | wind |
 | Camp 3 | (78, 146), hollow floor -4 m | sunk 8 m below its rim, 25 m across, dense, green-glass lantern | sit at the fire (Warmth, some days); talk; anomaly | the Snag: a bleached dead giant on the east rim, top 54 m | creek through the hollow, a low fire |
-| Office | (360, 200), front zone, ground 3 m | prefab ranger office on the north side of the lot; store 16 m east at (376, 200) | talk; anomaly; store (Food) | steel lattice mast 30 m with a red lamp | mains hum, radio static with no words |
+| Office | (360, 200), front zone, ground 3 m | prefab ranger office on the north side of the lot; store 16 m east at (376, 200) | talk; anomaly; store (Food) | steel lattice mast 30 m with a red lamp | mains hum; radio with ordinary chatter on day 1, going to static after the reveal |
 | Cultist cave | mouth (52, 34), ravine floor -6 m, mouth 4 m tall | the one cold place: grey rock, no sunset colour | placeholder (story session) | hidden (5.5) | chant from night 1, heard only at two trail spots |
 | Ward ledge | (32, 258), ground 36 m | stones on the cliff edge facing west, 25 m clearing | night only: the Ward screen | hidden (5.4) | silence from the last bend |
 
@@ -43,7 +43,7 @@ Six locations with one resident each, plus the keeper's camp and the Ward. Every
 
 ### 3.1 Front zone
 1. The strip inside the gate, x 340 to 396. The only man-made ground.
-2. Road: outside the gate, off-map to the east. Silent: no traffic, ever. The silence is the wrongness (Hollis).
+2. Road: outside the gate, off-map to the east. Day 1: ordinary distant traffic. After the night 1 reveal it goes quiet as WARD drops; the silence becomes the wrongness (Hollis, with Grant's day 1 direction overriding the always-silent road). DailyLoop.md 6.
 3. Gate (396, 170), chained. Gravel drive 10 m to the lot.
 4. Parking lot 30 x 40 m centred (368, 170). Trailhead T at its west side (340, 170).
 5. Office (360, 200) and store (376, 200), side by side on the lot's north side, 16 m apart. Store: small, unstaffed, a lit cooler sign.
@@ -71,7 +71,7 @@ Shapes differ on purpose: winding trails, a west loop, dead-end spurs, and a str
 | J to Ward | switchbacks, night only | 130 | 52 | 0: pale cairn and chain; 50: rune post; 90: Tor base; 110: last bend, silence; 130: stones |
 
 1. Two points of interest are giant trees (Hollow Giant, Gate Tree), plus the Snag landmark. All three are scene objects with mesh colliders (Rook).
-2. **The cave spur is unsigned at W1 on purpose.** The cave is hidden and unchecked; finding it is the player's choice. Chant spot 2 is W1 itself.
+2. **The cave spur is unsigned at W1 on purpose.** The cave is hidden and unchecked; finding it is the player's choice. This is the one proposed exception to the pass check "next destination visible at every junction", pending Grant. Chant spot 2 is W1 itself, from night 1 on; on day 1 the cave is not heard.
 3. Every leg walked eastward has one bend turning the player west for a glimpse of the glow (Vesper). The fire is loudest at the three west glimpses: W1, the Camp 3 rim, the Camp to J bend (Hollis).
 4. Creek: spring by J, through the Camp 3 hollow, to the lake inlet at W1.
 5. Loops: east ring (Camp, pump, boathouse, Camp 2, T, Jg, Camp) 583 m; west loop (Camp, pump, W1, Camp 3, Camp) 400 m.

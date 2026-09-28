@@ -1,6 +1,6 @@
 # Daily loop
 
-**DRAFT, revision 4, 2026-09-28, Sable. Nothing here is decided.** This is the single source for the loop (DECISIONS 2026-09-28). Main3.md and DESIGN.md point here. Drawing: Docs/Design/DailyLoop_flow.svg. Numbers are provisional until the Milestone 7 simulator runs. Places, routes and walk times are in Main3.md.
+**DRAFT, revision 5, 2026-09-28, Sable. Nothing here is decided.** This is the single source for the loop (DECISIONS 2026-09-28). Main3.md and DESIGN.md point here. Drawing: Docs/Design/DailyLoop_flow.svg. Numbers are provisional until the Milestone 7 simulator runs. Places, routes and walk times are in Main3.md.
 
 Binding: DECISIONS.md, all 2026-09-28 lines. One wake-up is one day. A run ends the first time HP, MIND or WARD reaches 0. No stockpile. Stats on screen only at the Ward. The Ward screen has Give nothing. The player carries the logbook. As WARD drops, the fire gets louder and the world gets weird. Day 1 plays as a very normal job. Feeding at no better than 1 for 1 is a Milestone 7 headline, not a decision; this draft proposes it (question 2).
 
@@ -20,8 +20,9 @@ Day is the burning sunset, sun fixed, from waking until the report is filed.
 1. The sun does not move, so time is kept by the keeper's watch, on the logbook page and the wrist (question 1).
 2. A day holds 9 duty hours. One duty hour is 60 walk-seconds. The watch counts grounded horizontal distance, 1 s per 2.5 m, everywhere including inside camp, plus a fixed cost per action. Sprinting saves real time, not duty time.
 3. The tower visit is one fixed cost (100 s, cabin to lectern and back, five looks). Its stairs are not counted again.
-4. An action can start only if its whole cost fits in the duty left. If not, its prompt reads "No time" and does nothing.
-5. At the end of duty every chore, talk and anomaly prompt closes and the objective becomes "File the report" ("Climb the tower" first if the stamps are not done).
+4. The clock never blocks the tower check, stamping or filing. It only blocks optional actions (chores, talks, resolving anomalies).
+5. An optional action can start only if its whole cost fits in the duty left. If not, its prompt reads "No time" and does nothing.
+6. At the end of duty every optional prompt closes and the objective becomes "File the report" ("Climb the tower" first if the stamps are not done). The tower and the File button always stay open.
 
 ### 1.2 Staying on the trails
 Routes are kept to the trails by the ground itself: giant root walls, deadfall, fern thickets and slopes. No off-trail line may save more than 10 percent on any leg; Marlow tests this in the blockout. The watch counts real distance anyway, so any shortcut that slips through is paid for honestly.
@@ -72,7 +73,7 @@ Routes are kept to the trails by the ground itself: giant root walls, deadfall, 
 4. Each anomaly belongs to one resident (Quill).
 
 ### 3.2 Edge rules
-1. **Skipping the tower:** impossible. No stamps, no report; no report, no night.
+1. **Skipping the tower:** impossible. No stamps, no report; no report, no night. The clock never closes the tower or File (1.1.4), so this can never soft-lock.
 2. **Filing first thing:** the earliest filing is right after the tower. It costs every chore: -3 HP, -1 MIND for Social, -1 MIND per open CHECK, then the Ward's 1.
 3. **HP or MIND at 0 by day:** stats move by day only through events. If one reaches 0, the run ends on the spot.
 
@@ -97,19 +98,20 @@ Routes are kept to the trails by the ground itself: giant root walls, deadfall, 
 ## 5. Variety
 
 1. Location state is data, one record per location per day (Rook): SAFE or CHECK, anomaly id and stage, resident state, option flags (cooking, barrel full, creek clean, store stocked).
-2. Anomaly odds per checked location per day: 0 on day 1, 10 percent on day 2, plus 2 points a day, cap 50 percent. At most two open CHECKs. Chance of an all-SAFE day: about 59 percent on day 2, 19 percent on day 10, 4 percent on day 20.
+2. Anomaly odds per checked location per day: 0 on day 1, 10 percent on day 2, plus 2 points a day, cap 50 percent. At most two open CHECKs. Chance of an all-SAFE day: about 59 percent on day 2, 22 percent on day 10, 5 percent on day 20.
 3. Each location has its own odds and anomaly pool (tuning asset).
-4. **WARD sets the weirdness** (DECISIONS 2026-09-28), proposed bands: WARD 9 to 12 normal; 6 to 8 the fire is louder and ash falls in daylight; 3 to 5 small wrong things in familiar places; 1 to 2 the world leans on you (Vesper and Hollis to fill). The fire is loudest at the three west glimpses (Hollis).
+4. **WARD sets the weirdness** (DECISIONS 2026-09-28), from day 2 only, proposed bands: WARD 9 to 12 normal; 6 to 8 the fire is louder and ash falls in daylight; 3 to 5 small wrong things in familiar places; 1 to 2 the world leans on you (Vesper and Hollis to fill). The fire is loudest at the three west glimpses (Hollis).
 5. The cultist cave has its own event deck and is never checked. Its chant, from night 1 on, carries to two trail spots at two volumes, rising down the spur (Hollis).
 
 ## 6. Day 1 and night 1
 
 Day 1 is Firewatch: a very normal job (DECISIONS 2026-09-28).
-1. All five locations stamp SAFE. Every resident is home and ordinary. No chant, no weirdness, no anomaly.
+1. All five locations stamp SAFE. Every resident is home and ordinary. No anomaly, no weirdness. The road carries ordinary distant traffic. The office radio has ordinary chatter. The cave is not visited or heard.
 2. The tower shows a plain lookout's view: forest, the lake, camp smoke, the office mast, and far to the west an ordinary distant forest fire, a smoke column and a glow over the far ridge (question 5). Nothing magic, nothing held back.
 3. The objective lines teach the loop: tower, chores, a talk, the report.
 4. **Night 1 is the reveal.** The bunk is not an option; "Go to the Ward" is the only objective. At the ledge the runes wake, the valley opens below, and the fire is shown at its true scale, pressed against a line it cannot cross. The first Ward screen explains the choice once.
 5. From day 2 the odds start (5.2).
+6. The wrongness cues (the silent road, the radio gone to static, the chant, section 5.4) begin only after the night 1 reveal and grow as WARD drops. Grant's direction overrides the always-silent road for day 1.
 
 ## 7. What fills a quiet day
 
@@ -122,7 +124,7 @@ Day 1 is Firewatch: a very normal job (DECISIONS 2026-09-28).
 
 ## 8. What breaks the routine
 
-Events (Milestone 14) can block a step (fog on the tower: every location unknown and stamped only on foot), block or add a need option, add a location, replace a step, hijack the night, or drop the player into a minigame, the only place where spotting is a skill.
+Events (Milestone 14) can block a step (fog on the tower: every location unknown and stamped only on foot; stamping on foot stays open after duty ends, so File always unlocks), block or add a need option, add a location, replace a step, hijack the night, or drop the player into a minigame, the only place where spotting is a skill.
 
 ## 9. What none of the comparables do
 
