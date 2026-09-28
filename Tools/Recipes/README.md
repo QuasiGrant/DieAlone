@@ -96,3 +96,9 @@ Copied from the scratchpad on 2026-09-27. Later scripts supersede earlier ones f
 | shoot_camp*.cs, shoot_campsites.cs, shoot_signs*.cs, shoot_forest.cs, shoot_horizon*.cs, shoot_ward*.cs, shoot_lake.cs, shoot_office.cs, shoot_cave.cs, shoot_cabins.cs, shoot_tents*.cs, shoot_beats.cs | Reference shots of each area after its build. |
 | walk_routes*.cs, walk_A.cs, walk_B.cs, walk_C.cs | Automated walks of the cabin to Ward, Ward to camp and campsite routes. |
 | walk_office.cs, walk_lake.cs, walk_cabins.cs, walk_cave.cs, walk_loops.cs, walk_tents2.cs, walk_trunk.cs | Automated walks of the road, lake spur, cabin doors, cave spur, loop trails, new tent branch and path A up to the trunk. |
+
+## Loop and economy (Milestone 7)
+
+| File | Builds or does |
+|---|---|
+| create_loop_tuning.cs | Creates Assets/Settings/LoopTuning.asset with the draft loop numbers (task 7.1). |
