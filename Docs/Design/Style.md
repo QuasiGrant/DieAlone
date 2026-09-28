@@ -1,0 +1,164 @@
+# Style guide
+
+**DRAFT, 2026-09-28, Vesper. Nothing here is decided until it is a line in DECISIONS.md and Grant has confirmed it.** Every later review of Main3 checks against this file. Values marked **P** are proposals for Grant. Values marked **now** are what LookTuning.asset holds today. Rook sets LookTuning; I only propose.
+
+Binding inputs: DECISIONS.md 2026-09-20 (VHS first, Fears to Fathom, PS1 effects off, own shaders only), 2026-09-27 (SSAO off, render scale 0.5), 2026-09-28 (two states day and night, sun fixed, pass checks, packs for hero pieces).
+
+## 1. Tone
+
+1. Words: dread, routine, worn, lived-in, abandoned mid-task, heat, ash, hush, patient, wrong.
+2. The camp is the only warm, safe-looking place. Everywhere else looks like someone just stopped what they were doing.
+3. Wrongness is one detail, not ten. A site is normal except for one thing.
+4. The monster is punctuation. Nothing in the dressing is a monster tease by default.
+5. Reference: Fears to Fathom, Ironbark Lookout (Rayll, 2023): a fire lookout, same tape look, same everyday-object horror. Read it for density of props and how little light it uses at night.
+
+## 2. Palette
+
+sRGB hex. Day and night only (DECISIONS 2026-09-28: two states).
+
+### 2.1 Day: the burning sunset
+
+| Role | Hex | Source |
+|---|---|---|
+| Sky top | #381C1A | now (skyTop) |
+| Sky horizon | #D9662E | now (skyHorizon) |
+| Sky below horizon | #4D291A | now (skyGround) |
+| Sun glow | #FF8C40 | now (sunGlowColor) |
+| Fire glow on the ridge | #FF6B1A | now (fireGlowColor) |
+| Haze (far fog) | #9E5C38 | now (sunsetFogColor) |
+| Ambient fill | #9E705C now, **#734D42 P** | now is too bright, see 5.3 |
+| Ash, falling and settled | #8A8078 | P |
+| Char, burnt wood, deepest shadow | #1E1916 | P |
+| Rust, metal | #8B4A2B | P |
+| Weathered wood | #5C4632 | P |
+| Granite (Ward, Tor, rock) | #6E6660 | P |
+| Canvas, paper, bone (brightest surface allowed) | #D8CCB4 | P |
+| Forest floor green, dulled | #4F4A2C | P |
+
+### 2.2 Night: dark except the fire glow
+
+| Role | Hex | Source |
+|---|---|---|
+| Night fog and sky | #05080D | now (fogColor) |
+| Fire glow on the horizon | #FF6B1A | now, same as day |
+| Practical light (lantern, cab, stove) | #FFA860 | P |
+| Ward runes, lit | #B8481C | P, dim ember, never above the lantern |
+
+### 2.3 Location lights (Main3.md rev 3, section 3)
+
+One light colour per place so no two read alike. All **P**.
+
+| Place | Light | Hex | Rule |
+|---|---|---|---|
+| Keeper's camp | stove, lantern, cab | #FFA860 | the warmest, softest light on the map |
+| Camp 1 | festoon string, tungsten | #E8B840 | paler and harsher than the keeper's camp; two or three bulbs dead |
+| Camp 2 | lamp, cold white | #DEDCD4 | neutral cold, never blue |
+| Camp 3 | green glass lantern | #6F8436 | olive, never emerald or neon |
+| Office | sodium lot lights | #F08A2A | plus one red mast lamp #B0201C so the mast reads against the haze |
+| Cave | cold ambient, no sunset | fill #4A5058, light #9AA3AD | grey-blue, desaturated, no glow |
+
+### 2.4 Palette rules
+
+1. Warm owns the frame. Cool allowed only in: the night sky and fog, the cave, the Camp 2 lamp. All cool stays desaturated.
+2. Saturated colour is reserved for light sources: fire, sun, lanterns, one warning object per site (Mast's red rag and lamp). Surfaces stay dull.
+3. Nothing brighter than #D8CCB4 on a surface. Pure white exists only in the sun and fire cores.
+4. Greens are olive and dulled, never grass green.
+
+## 3. VHS look targets
+
+The brief (DESIGN.md, Presentation): soft low-resolution picture, colour bleed, grain, scan lines. LookTuning has drifted towards a clean HD picture: the Main2 review found filter on and off nearly identical (shots 02 and 20).
+
+| Setting | now | Target **P** | Why |
+|---|---|---|---|
+| lowResHeight | 875 | 360 | Brief says low-resolution. 875 is near 1080p. See note 1. |
+| colorBleed | 0.51 | 0.5 | On brief. Keep. |
+| washOut | 0.07 | 0.25 | Tape is washed; 0.07 is almost off. |
+| crushBlacks | 0.38 | 0.3 | Keep near; night needs some shadow detail near light. |
+| grainStrength | 0.07 | 0.2 | Grain is in the brief; 0.07 is invisible after downsample. |
+| grainSpeed | 7.7 | 24 | Slow grain reads as a crawling texture on the world, not tape. |
+| noiseBandStrength | 0 (off) | 0.35 | Tape artefact is part of the look. Off entirely is drift. |
+| noiseBandInterval | 6 | 20 | Rare band reads as wrongness; frequent reads as broken build. |
+| scanLines | 0.3 | 0.3 | Keep. |
+| blur | 0.11 | 0.3 | Soft picture is the brief. |
+| darkCorners | 0.6 | 0.45 | 0.6 eats the edges where wayfinding cues sit. |
+
+Notes:
+1. The filter clamps lowResHeight to the camera target height (LookFilterFeature.cs line 61). With render scale 0.5 (DECISIONS 2026-09-27) a 1080p screen likely renders 540 rows, so 875 does nothing and the real picture is set by render scale. Unverified whether that descriptor is post-scale; Rook to confirm. Either way the look must be set in LookTuning, not by accident of render scale.
+2. Test for every look change: the same shot with filter on and off must differ at a glance. If they do not, the filter is too weak.
+3. PS1 effects (vertex jitter, affine textures) stay off. SSAO stays off. No bloom halos, lens flare, chromatic aberration beyond colour bleed, or film grain from a second source.
+
+## 4. Materials and texel density
+
+1. Import Max Size 512 for everything. Hero pieces (Ward stones, giant trunks, Tor) may use 1024 **P**. Pack textures at 2K or 4K are capped on import, never shipped raw.
+2. Texel density **P**: 128 px per metre for anything the player can pick up or stand within 2 m of; 64 px per metre for buildings, ground and trunks; 32 px per metre allowed on surfaces taller than 10 m. After the 360-row filter, finer detail is invisible; coarser shows as smear.
+3. No stretched textures. ProBuilder faces use world-space or per-face auto UVs at the density above. A plank or brick should read at the size it is in the world.
+4. One material per surface type across the map (one bark, one granite, one rust metal). No two structures share silhouette and material (DECISIONS 2026-09-28).
+5. Pack materials are converted to URP Lit and retinted to the palette. Pack showcase colours (bright blue roofs, clean paint) are repainted or rejected.
+6. Emission only on light sources and lit runes. Emission intensity on runes never exceeds the nearest practical light.
+7. Ground: no bare flat dirt within 10 m of the camera in any dressed shot **P**. Break it with litter, roots, ash drift, needles, grass tufts, stones.
+
+## 5. Structure quality bar
+
+A structure passes a dressing review when all are true:
+1. Silhouette identifies it at 20 m with the filter on. Test by squinting at a 360-row capture.
+2. It has three height bands: a base that meets the ground (steps, footing, debris), a body, a top (roof overhang, chimney, mast, sheet).
+3. No plain box faces larger than 3 x 3 m without trim, frame, openings or props against them.
+4. Nothing floats. Every object has ground contact or visible support.
+5. It shows use: at least one object mid-task (an axe in the block, a pot on a cold fire, a door ajar).
+6. A clearing holds 15 or more props **P**, grouped in two or three clusters, not scattered evenly.
+7. No untextured primitive in a dressed location. Primitives are for blockout only.
+8. Trees never on a grid. Giants spaced at least 30 m apart **P**, small trees clustered. Giant tops at most 50 m absolute, 42 m tall on the knoll (Main3.md 2.7).
+
+## 6. Lighting
+
+### 6.1 Day (waking until the report is filed)
+1. One fixed sun, low in the west, the fire side. Glow means west (Main3.md 5.7). Elevation 6 degrees **P**, colour #FF8C40.
+2. Shadows long and eastward. Two cascades (DECISIONS 2026-09-27).
+3. Value structure in every frame: sky brightest, haze mid, foreground darkest. The flat single value of Main2 is the failure to avoid.
+4. Ambient low (#734D42 **P**) so the forest floor under canopy goes dark and clearings read as pools of light.
+5. Warm practical lights mark points of interest even by day (Pim's rule): lit cabin desk, pump lantern.
+6. Haze is heavy enough that far landmarks rise out of it; height fog is Rook's open item (Main3.md 5.6).
+7. Fire glimpses on the ground (W1 shore, west bends, Camp 3 rim) need a planned gap in the cliff-edge giant band, not luck.
+
+### 6.2 Night
+1. No sun, no moon. Ambient near black.
+2. The fire glow is the only large light: a faint warm fill from the west **P**, enough to show silhouettes against the sky, not surfaces.
+3. Practical lights only: cab light, cabin window, lanterns, the cairn lamp. Each is a destination or a marker.
+4. Night fog closes in. Fog 8 to 60 m **P** (now 20 to 200 m, which is day-far).
+5. Ward runes glow dim ember (#B8481C), readable at 10 m, not at 50 m.
+
+## 7. UI type (Vesper owns type, Pim owns reading and layout)
+
+1. One font: the built-in legacy Text font (DECISIONS 2026-09-20). No second face.
+2. Sizes at a 1080-row reference **P**: body 28, headings 36, small print 22. Nothing under 22.
+3. Colour #D8CCB4 on a #1E1916 plate at 80 percent opacity **P**. No pure white text.
+4. Sentence case. Short. Prompts one line, at most two. No exclamation marks, no emoji, no em dashes.
+5. Layout: prompts lower centre, stats screen only in the end-of-day phase (DECISIONS 2026-09-28). Nothing permanent on screen except the crosshair dot.
+6. Diegetic first: logbook, notice board, map, labels on objects carry information before any HUD does.
+7. Whether UI draws over or under the tape filter is unverified; Rook to confirm. Target **P**: UI over the filter, legible, but in palette.
+
+## 8. Forbidden
+
+1. Neon, cyan, teal or blue glow anywhere. The Main2 Ward runes are the example.
+2. Saturated blue or bright-painted surfaces (Main2 blue roofs).
+3. Untextured primitives or stretched textures in a dressed location.
+4. Bare flat ground filling the lower half of the frame.
+5. Trees in rows or on a grid; ordinary pines standing in for the giant trees.
+6. Flat cone or triangle mountains for the burning ridge.
+7. A monster or creature silhouette placed as set dressing.
+8. Gore as decoration. Blood only where an event puts it.
+9. Jokey, meme or modern-internet text in any in-world writing.
+10. PS1 vertex jitter, affine textures, SSAO, lens flare, bloom halos, unless Grant decides otherwise.
+11. Pack assets used as-is with their showcase lighting or colours.
+12. Anything that looks new and clean, except one deliberate wrong object.
+
+## 9. Reference boards
+
+Per-location boards wait for Main3.md (draft rev 3) to be confirmed. Global boards to assemble for Grant's look, in Docs/Design/Boards when started:
+1. Sunset and haze: value structure, fixed low sun, rust haze.
+2. Night: fire glow only, practical lights as markers.
+3. Giant trees: trunk scale against a person, bark, how light falls between them.
+4. The Ward: carved standing stones on a cliff edge, weathered, ember runes.
+5. Lived-in camp: props per clearing, abandoned mid-task.
+
+Vesper

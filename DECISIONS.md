@@ -87,3 +87,7 @@
 - 2026-09-28: At night the only thing the player can do is go to the Ward and offer it HP or MIND. If the player ignores it, WARD goes down. WARD bottoming out means the barrier falls and the world burns.
 - 2026-09-28: The loop is written in Docs/Design/DailyLoop.md, with drawings Grant can see and comment on.
 - 2026-09-28: Twist rule, narrowing the public-repo line above: story and design notes that carry the twist stay in Docs/Private. Only text the game itself needs may be committed.
+- 2026-09-28: The night Ward screen has a "Give nothing" option. Giving nothing is a valid, hopeless choice.
+- 2026-09-28: The player carries the logbook. Its main job is tracking questions and notes. Settings live in it too, and later inventory, memories and achievements or collectibles if those are added.
+- 2026-09-28: As WARD gets low, the fire gets louder and the world gets weird.
+- 2026-09-28: The first day plays as a very normal job, like Firewatch, until the player reaches the Ward and sees the magic and the wildfire. That is when the player learns it is a horror fantasy game.

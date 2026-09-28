@@ -1,0 +1,118 @@
+# The Ward at night: offering screen
+
+**DRAFT, 2026-09-28, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (stats on screen only at the end-of-day Ward phase; at night the only action is going to the Ward and offering HP or MIND; ignoring it lowers WARD; WARD at 0 means the barrier falls; a run ends the first time HP, MIND or WARD reaches 0). DESIGN.md: stats 0 to 12, never above 12. Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. Colours **[GAP: Style]**.
+
+## 1. Purpose
+
+The one place the player sees HP, MIND and WARD as numbers, and the one choice of the night: give the Ward HP, give it MIND, or give it nothing. Once the player kneels, there is no way back out without choosing.
+
+## 2. How it opens
+
+1. Night only. At the stones the prompt is `Kneel`. By day the stones have no prompt.
+2. `E` / `Y` on the prompt. The camera eases over 1.0 s to a fixed framing: facing the stones, looking west, the fire behind them (Main3.md 2.7.3). Mouse and stick look are off; the cursor shows.
+3. The stat rows fill in left to right over 0.8 s. Input is locked until they finish.
+
+## 3. Wireframe
+
+```
++--------------------------------------------------------------+
+|                                                              |
+|                 |     ||      |                              |
+|                 |     ||      |      (stones, fire behind)   |
+|                 |     ||      |                              |
+|                                                              |
+|   HP    # # # # # # # . . . . .    7                         |
+|   MIND  # # # # # # # # # . . .    9                         |
+|   WARD  # # # # x . . . . . . .    4                         |
+|                                                              |
+|    [ Give HP ]      [ Give MIND ]      [ Give nothing ]      |
+|     ^ focus                                                  |
+|    [====------]  hold to give                                |
+|                                                              |
++--------------------------------------------------------------+
+```
+
+1. Lower half of the screen only. The stones stay visible above.
+2. Each row: label, 12 pips, the number. `#` lit pip, `.` dark pip, `x` cracked pip (section 6.4).
+3. Pips are uGUI Images, not font glyphs. The built-in font's coverage of block characters is unverified, and Images survive the VHS filter better.
+4. The number is kept beside the pips because 12 pips are hard to count at a glance through the filter.
+5. The hold bar sits under the focused button and fills while the button is held.
+
+## 4. The choice
+
+1. Three buttons: `Give HP`, `Give MIND`, `Give nothing`.
+2. Each needs a 1.0 s hold. Release early and the bar drains; nothing happens. No button is safe, so no default can be safe; the hold is the guard.
+3. Default focus: `Give HP` (leftmost). Not a recommendation, just the reading order.
+4. Rate and amount **[GAP: DailyLoop]**. Draft assumes one point per night at 1 for 1 (PLAN Milestone 7: feeding capped at 1 for 1). If more than one point is allowed, the screen asks again after each gift until the player holds `Enough`, which replaces `Give nothing` after the first gift.
+5. No back-out. This screen has no cancel. `B` and UI Cancel do nothing, and the player cannot walk away. `Esc` and `Start` open the pause menu; the Ward screen waits underneath and comes back as it was on Resume (section 8).
+6. Focus change mid-hold: moving focus (D-pad, stick, arrow keys, `A` / `D`, or the pointer leaving the button) while a hold is running cancels the hold. The bar drains in 0.2 s and nothing is given. The newly focused button does not start filling until Submit is released and pressed again, so a hold can never slide from one gift onto another.
+7. Holding with two devices at once (for example `Enter` held while clicking) counts as one hold on the focused button; releasing either input cancels it.
+
+## 5. What happens on each choice
+
+| Choice | Sequence (about 2.5 s) |
+|---|---|
+| Give HP | The last lit HP pip flickers and goes dark. 0.4 s later the next WARD pip lights. A rune on the stones brightens in the world. |
+| Give MIND | Same, from the MIND row. |
+| Give nothing | WARD drops (section 6). |
+
+After the sequence the rows hold for 1.5 s, then fade to black and the night ends **[GAP: DailyLoop]** (Main3.md 3.1.4 has the player sleep at the ledge and wake in the cabin).
+
+## 6. What the player sees when WARD drops
+
+1. The last lit WARD pip cracks (`x`), flickers twice and goes dark.
+2. In the world, one rune on the stones goes dark and stays dark.
+3. The look filter rolls one noise band up the screen (LookFilter already has a band; Rook to add a scripted trigger).
+4. A line under the rows for 2 s: `The stones go quiet.`
+5. Sound: a low crack, then the silence of the ledge drops further (Hollis).
+6. If the player never came to the Ward that night, WARD drops at sleep with no screen. On the next visit that pip shows cracked (`x`) instead of plain dark, once, so the loss is seen late.
+7. The drop sequence plays through without input, except Pause. Pausing freezes the sequence where it is; Resume continues it.
+
+## 7. States
+
+| State | What shows |
+|---|---|
+| Day at the stones | No prompt. No screen. |
+| Night, at the stones | Prompt `Kneel`. |
+| Opening (input lock, about 1.8 s) | Camera eases, rows fill. Every press is ignored except Pause, which freezes the easing and fill until Resume. A Submit held down when the lock ends does not count; it must be released and pressed again. |
+| Choosing | Rows, three buttons, focus on one. |
+| Holding | Bar fills under the focused button. Focus change cancels it (section 4.6). |
+| Result: gift | Section 5. |
+| Result: WARD drop | Section 6. |
+| A stat at 1 | Its last pip pulses slowly. No warning text. Giving it is allowed. |
+| A stat reaches 0 | Run ends. The screen hands to the ending sequence **[GAP: Milestone 7 endings]**. |
+| WARD at 12 | Give buttons disabled with `The stones are fed.`; only `Give nothing` (renamed `Rise`) remains. Whether WARD still drops then **[GAP: DailyLoop]**. |
+| Owed tonight (proposal) | If need costs are taken at sleep after this screen **[GAP: DailyLoop]**, pips owed tonight show hollow and flickering so the player can decide knowing them. |
+| Pause pressed (any phase) | Pause menu opens over the Ward screen, which waits underneath, frozen. Resume returns to the same phase. A running hold is reset; a Submit still held at Resume must be released and pressed again. |
+| Window loses focus mid-hold | The hold cancels, as a focus change. |
+
+## 8. Input paths
+
+Keyboard and mouse:
+1. At the stones, `E` to kneel.
+2. Arrow keys or `A` / `D` move focus.
+3. Hold `Enter` 1.0 s to give. (`Space` as Submit unverified.)
+4. Mouse: press and hold on a button 1.0 s. Hover moves focus.
+5. `Esc` opens the pause menu. It never cancels the screen.
+
+Gamepad:
+1. At the stones, `Y` to kneel.
+2. D-pad or left stick left and right move focus.
+3. Hold `A` 1.0 s to give.
+4. `B` does nothing.
+5. `Start` opens the pause menu.
+
+Requirements for Rook:
+1. **Pause goes through here.** Unlike the day-end confirm (DayEndConfirm.md section 8, the only card that suppresses pause), this screen does not set the "modal open" flag. `Esc` and `Start` reach GamePause as usual. `Esc` is also UI Cancel; the screen ignores Cancel so only the pause fires. While paused, the Ward screen does not take input and its sequences stop: easing, fill and result sequences run on scaled time so timeScale 0 freezes them. The hold resets on pause.
+2. **Player action map off** from the `Kneel` press until the fade to black ends, then back on (or handed to the next scene state **[GAP: DailyLoop]**). Otherwise the screen's keys fire gameplay underneath: `Enter` is Attack, `A` (south) is Jump, `B` (east) is Crouch, D-pad left and right are Previous and Next, `WASD` is Move. Only the UI map is live.
+3. The Ward screen component goes in GamePause's gameplay list so it sleeps while paused.
+
+## 9. Open questions
+
+1. Is `Give nothing` on the screen, or must a player who kneels give HP or MIND? Draft keeps it, so the stats can be read without paying.
+2. Rate, amount per night, and the WARD at 12 case **[GAP: DailyLoop]**.
+3. Night clock or blackout before reaching the Ward (Main3.md 3.1.5) **[GAP: DailyLoop]**.
+4. Order of costs: are the day's unmet needs taken before this screen (so the rows already show them) or at sleep after it?
+5. Closed 2026-09-28 (Wren accepted): Pause goes through on this screen; only the day-end confirm suppresses it.
+
+Pim
