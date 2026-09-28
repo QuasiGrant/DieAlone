@@ -16,7 +16,7 @@ Head file: `git show HEAD:PLAN.md`. Staged file: `git show :PLAN.md`. Staged lis
 ## Checks (any failure blocks the commit)
 1. Em dash: in staged PLAN.md, DECISIONS.md, DESIGN.md, CLAUDE.md, `.claude/agents/*`, and any staged `.md` or `.svg` under `Docs/`. Whole staged content. Out of scope: `.claude/skills/` (vendored, has em dashes) and code.
 2. Ticks: count of `^- \[x\] ` in PLAN.md, staged must be >= head.
-3. Rules and Tips: count of `^- ` lines from `## Rules and Tips` to the next `## ` or end of file, staged must be >= head.
+3. Rules and Tips: count of `^- ` lines from `## Rules and Tips` to the next `## ` or end of file, staged must be >= head. Blocked unless the message has a line starting `Tips-edit:`.
 4. Task lines: lines matching `^- \[[ x]\] [0-9]+\.[0-9a-z]+ ` with the box normalised to `[ ]`. Every head task line must appear unchanged in staged. Blocked unless the message has a line starting `Plan-edit:`.
 5. DECISIONS.md: every head line must still exist in staged. Blocked unless the message has a line starting `Decisions-edit:`.
 6. Forbidden paths staged: `Docs/Private/`, `Library/`, `Temp/`, `Logs/`, `Build/`, `obj/`, and every pack folder listed in the `# Asset Store packs` block of `.gitignore` (read the block, do not hardcode, so a new pack is covered by its ignore line).
@@ -25,7 +25,7 @@ Head file: `git show HEAD:PLAN.md`. Staged file: `git show :PLAN.md`. Staged lis
 One line per failure, then a summary. No colour codes.
 - `plan-check BLOCKED em-dash: Docs/Status.md line 12`
 - `plan-check BLOCKED ticks: 37 at head, 36 staged`
-- `plan-check BLOCKED tips: 60 at head, 59 staged`
+- `plan-check BLOCKED tips: 60 at head, 59 staged (add Tips-edit: if intended)`
 - `plan-check BLOCKED task-line: "6.2 ..." removed or reworded (add Plan-edit: to the message if intended)`
 - `plan-check BLOCKED decisions: line 58 removed or changed (add Decisions-edit: if intended)`
 - `plan-check BLOCKED path: Docs/Private/Twist.md`
@@ -38,7 +38,7 @@ One line per failure, then a summary. No colour codes.
 1. Clean doc edit commits and prints ok.
 2. Em dash in Docs/Status.md blocks; em dash in a `.claude/skills` file passes.
 3. Unticking a box blocks.
-4. Deleting a Rules and Tips line blocks.
+4. Deleting a Rules and Tips line blocks; same change with `Tips-edit:` passes.
 5. Rewording task text blocks; same change with `Plan-edit:` passes.
 6. Ticking a box (only change) passes.
 7. Removing a DECISIONS.md line blocks; with `Decisions-edit:` passes.
