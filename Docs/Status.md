@@ -6,9 +6,14 @@ Last updated 2026-09-28.
 
 ## Next step
 
-1. In progress, docs only: Sable (DailyLoop.md with flow drawing, Main3 map redraw), Vesper (Style.md, PackShortlist.md), Pim (tower check, report confirm, Ward night, objective specs), Hollis (sourcing, mixer, day and night sound), Quill (story session prep in Docs/Private), Marlow (stress test of the 2026-09-28 loop lines), Rook (DialogueFormats.md research).
-2. Grant: Milestone 6 task list, comments on Sable's drawings. Story session with Quill planned for 2026-09-29. Pack purchase once the shortlist is ready.
-3. Rook's Unity queue once Milestone 6 tasks are approved: PlayerTuning carry fields, pre-commit hook, test assembly, GameState, versioned save.
+Session 2026-09-28 ended with:
+1. Sable: revision 4 of DailyLoop.md, DailyLoop_flow.svg, Main3.md, Main3_map.svg (Grant's road note: the road ends at the gate, the lot, office and store are inside the fence; day one looks normal until the Ward; Marlow, Rook, Vesper, Hollis and Quill fixes). If it is not committed, rerun it from those notes.
+2. Rook: task 6.1, the plan check hook. Next in his queue: 6.2 to 6.5, then 7.1 to 7.3 (6.6 waits on Grant approving DailyLoop.md).
+3. Grant, with Sable's redraw: comments on the drawings; day timed by the keeper's watch; Ward feeding (1 holds, 2 raises); all five needs sometimes met on a quiet day; ignored anomalies closing a place; wildfire hidden or ordinary before the day-one reveal.
+4. Grant, any time: buy packs from Docs/Design/PackShortlist.md after checking screenshots; confirm bought-pack shaders get swapped for ours.
+5. 2026-09-29: story session, Grant and Quill, prep in Docs/Private/SessionPrep.md.
+
+Drafts to review: Docs/Design (Style, PackShortlist, DialogueFormats, Sound, UI), Docs/Process/PreCommitHook.md.
 
 ## How we work now (2026-09-28)
 
@@ -32,3 +37,7 @@ Last updated 2026-09-28.
 ## Private
 
 Docs/Private holds Main3 story placeholders and Quill's session prep. There is no story bible yet. Grant and Quill hold a story session during Milestone 7.
+
+## Setup
+
+- Once per clone: `git config core.hooksPath Tools/Hooks` turns on the plan check hook (Docs/Process/PreCommitHook.md).
