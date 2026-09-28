@@ -63,3 +63,4 @@
 - 2026-09-28: The repo stays public. Story text the game needs may be committed even if it reveals the twist.
 - 2026-09-28: A git pre-commit script runs the plan checks (em dashes, tick count, Rules and Tips count).
 - 2026-09-28: Grant and Quill hold a story session before the characters milestone.
+- 2026-09-28: A run ends the first time HP, MIND or WARD reaches 0. This replaces the book's three strikes (DESIGN.md: a bottom-out ends a chapter, the third ends the run). Chapters and endings are redesigned around one strike in Milestone 7.

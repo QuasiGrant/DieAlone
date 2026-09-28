@@ -74,7 +74,7 @@ Bring the docs and tools in line with how the team works now, before any design 
 
 ## Milestone 7: Loop and economy design
 
-The warden's week and its costs as one ledger (the old loop and stats milestones merged). Duties, which are mandatory, minutes per week, every drain and restore for HP, MIND and WARD, feeding rates capped at 1 for 1, chapter end and run end, lighting states (wake, day, dusk, night), the logbook spec (Pim), and the end-of-day resource screen where stats show on screen. Ending conditions stay open slots until Milestone 10. Alongside, Rook builds test setup, a plain C# game state with a week simulator, and a versioned save. Output: Docs/Design/DailyLoop.md and Docs/Design/UI/Logbook.md. Done when the simulator shows every run ends and no stat holds steady, and Grant confirms the decision lines.
+The warden's week and its costs as one ledger (the old loop and stats milestones merged). Duties, which are mandatory, minutes per week, every drain and restore for HP, MIND and WARD, feeding rates capped at 1 for 1, what chapters mean now that a run ends at the first bottom-out, lighting states (wake, day, dusk, night), the logbook spec (Pim), and the end-of-day resource screen where stats show on screen. Ending conditions stay open slots until Milestone 10. Alongside, Rook builds test setup, a plain C# game state with a week simulator, and a versioned save. Output: Docs/Design/DailyLoop.md and Docs/Design/UI/Logbook.md. Done when the simulator shows every run ends and no stat holds steady, and Grant confirms the decision lines.
 
 ## Milestone 8: Sound groundwork
 
@@ -102,7 +102,6 @@ A look pass on the Ward ledge (stones, ridge silhouettes, rune palette) right af
 
 ## Open decisions (owner)
 
-- Run end: does the first bottom-out end the run, or does each bottom-out end a chapter with the third ending the run?
 - Lake and cave are open from the start; DESIGN.md says such locations unlock through events.
 - The player wakes in the camp cabin; DESIGN.md says the tower.
 
