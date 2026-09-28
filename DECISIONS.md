@@ -64,3 +64,12 @@
 - 2026-09-28: A git pre-commit script runs the plan checks (em dashes, tick count, Rules and Tips count).
 - 2026-09-28: Grant and Quill hold a story session before the characters milestone.
 - 2026-09-28: A run ends the first time HP, MIND or WARD reaches 0. This replaces the book's three strikes (DESIGN.md: a bottom-out ends a chapter, the third ends the run). Chapters and endings are redesigned around one strike in Milestone 7.
+- 2026-09-28: Main2 is reworked from scratch as a new scene, Main3, after the Milestone 7 design. Main2 is archived (tag main-scene-2.0, off the build list, files kept). The Main2 walk, look check and walkthrough (5.9b, 5.9c, 5.10) are dropped. Team review in Docs/Review/2026-09-28-Main2/TeamReview.md.
+- 2026-09-28: Main3 is about 200 x 200 m with seven places, each with one job: camp (logbook, tower, Warmth), lake (Water), forage ground (Food), three lived-in sites (Social, Safety), and the Ward ledge. You cannot meet every need in one week. The gate, office and cave are not in Main3; the cave may return as an event location.
+- 2026-09-28: The tower sees every Main3 location except the Ward. The Ward sits higher, hidden from the tower. This replaces the 5.3 rule that no location is visible from another.
+- 2026-09-28: Giant trees, as in DESIGN.md. The tower is raised above them.
+- 2026-09-28: Main3 is built in gates, each signed before the next: space brief on paper (Grant), Style.md with reference boards (Vesper, Grant looks), gray blockout (Marlow walk, Tully, Grant walks), sound groundwork, dressing one location per task (Vesper), look pass (Grant). One ordered recipe per location, no patch chains.
+- 2026-09-28: Main3 pass checks: never more than 30 s of walking without a point of interest identifiable at 20 m with the filter on; the next destination is visible at every junction; no two structures share silhouette and material; every location has an action tied to a loop need.
+- 2026-09-28: Hero pieces (Ward, giant trees, burning ridge, cave) come from bought Asset Store packs. Vesper and Rook shortlist, Grant buys. Owned packs are kitbashed first. No Blender modelling.
+- 2026-09-28: The story session with Quill happens during Milestone 7, before any Main3 dressing.
+- 2026-09-28: Assets/_Recovery (Unity crash backup) is deleted through the Editor.

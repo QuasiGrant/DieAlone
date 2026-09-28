@@ -64,45 +64,53 @@ The first real scene, `Assets/Scenes/Main.unity`, made from the scene recipe. Th
 - [x] 5.8 Three campsites. Off path B, each a small clearing with Campsite pack props laid out differently (one tent, one lean-to, one bare fire ring, for example). Empty of characters. Each has one usable object as a stand-in for the future character interaction. Done when: no errors, and the owner has visited all three and back.
 - [x] 5.9 Horizon fire and sky. A distant burning ridge across the valley: orange glow, haze, slow smoke, ash particles if the packs include them, otherwise Unity's built-in particle system. Sunset sky and light as the scene default, with the Night rig from the prefab kept disabled as a switch. Fog from LookTuning tuned so the far ridge reads through the haze. Numbers for glow, smoke, and haze go in LookTuning. Done when: no errors, and the owner has looked at the fire from the ledge and from the tower top and confirmed it reads as a wildfire.
 - [x] 5.9a Archive Main 1.0. Remove `Assets/Scenes/Main.unity` from the build list so the dev menu lists only Graybox and Main2. Archive, never delete: keep the scene file, its terrain data, and the tag main-scene-1.0. Done when: no errors, the build list holds Graybox and Main2, and Main.unity still opens from the Project window.
-- [ ] 5.9b Machine walk of Main2. Rook rebuilds the walk recipes in Tools/Recipes into one script that first checks Main2 is the open scene, walks the full 5.10 route from the cabin and back as one joined path (no teleport between legs), uses Main2 positions only, and crouches under the fallen trunk on path A. Marlow runs it and reports. Out of scope: fixing the scene; blockers go to 5.10. Done when: one run shows the command and its output with no STUCK, or Marlow's report lists every blocker with its position.
-- [ ] 5.9c Look check. Rook shoots the three Main camera spots (Rules and Tips, MAIN CAMERA SPOTS) in Main2 with the current LookTuning and commits them under `Docs/Look/Main`. Vesper compares them with the VHS brief and the Fears to Fathom references and writes a short list of look changes for Grant (resolution, noise band, crush, forest darkness, fire polish) in `Docs/Look/Main/LookNotes.md`. No code or asset changes. Done when: the screenshots and LookNotes.md are committed.
-- [ ] 5.10 Walkthrough of Main 2.0 (`Assets/Scenes/Main2.unity`). The owner wakes in the cabin, walks to the Ward, back to camp, along the road to the gate and office, to the lake, to the three campsites, to the cave, and back, with the VHS look on. Fix anything that blocks, traps, or breaks the look. Grant tunes the look from `Docs/Look/Main/LookNotes.md` in the same walk, then Rook re-shoots the three Main camera spots and commits them under `Docs/Look/Main`. Out of scope: new locations or new objects; if the work grows, stop and report. Done when: the owner says the scene is right for now.
+- [ ] 5.11 Archive Main2. Tag the current commit `main-scene-2.0` and push the tag. Remove `Assets/Scenes/Main2.unity` from the build list. Archive, never delete: keep the scene, its terrain data and all Main2 assets. Delete the crash leftover `Assets/_Recovery` and its .meta through the Editor. Done when: no errors, the build list holds Graybox only, Graybox plays, `git ls-remote --tags origin main-scene-2.0` shows the tag on GitHub, and Main2.unity still opens from the Project window.
+
+Milestone 5 closes with Main2 archived (team review 2026-09-28, Docs/Review/2026-09-28-Main2/TeamReview.md). The planned Main2 walk, look check and walkthrough (old 5.9b, 5.9c, 5.10) are dropped. The map is redone as Main3 after Milestone 7.
 
 ## Milestone 6: Housekeeping
 
-Bring the docs and tools in line with how the team works now, before any design work. Retire Cowork in CLAUDE.md for Wren and the named agents. Bring DESIGN.md in line with DECISIONS.md (VHS not PS1, not alone, no tower start, no fixed run length). Move scene facts out of Rules and Tips into Docs/Scenes/Main2.md and repoint scratchpad lines to Tools/Recipes. Vesper writes Docs/Design/Style.md. Hollis sets the audio sourcing rule and mixer groups. A git pre-commit script runs the plan checks (em dashes, tick count, Rules and Tips count). Fix the missing carry fields in PlayerTuning.asset.
+Bring the docs and tools in line with how the team works now, before any design work. Retire Cowork in CLAUDE.md for Wren and the named agents. Bring DESIGN.md in line with DECISIONS.md (VHS not PS1, not alone, no tower start, no fixed run length). Move scene facts out of Rules and Tips into Docs/Scenes/Main2.md and repoint scratchpad lines to Tools/Recipes. Vesper writes Docs/Design/Style.md with reference boards per location for Grant to look at. Hollis sets the audio sourcing rule and mixer groups. A git pre-commit script runs the plan checks (em dashes, tick count, Rules and Tips count). Fix the missing carry fields in PlayerTuning.asset.
 
 ## Milestone 7: Loop and economy design
 
-The warden's week and its costs as one ledger (the old loop and stats milestones merged). Duties, which are mandatory, minutes per week, every drain and restore for HP, MIND and WARD, feeding rates capped at 1 for 1, what chapters mean now that a run ends at the first bottom-out, lighting states (wake, day, dusk, night), the logbook spec (Pim), and the end-of-day resource screen where stats show on screen. Ending conditions stay open slots until Milestone 10. Alongside, Rook builds test setup, a plain C# game state with a week simulator, and a versioned save. Output: Docs/Design/DailyLoop.md and Docs/Design/UI/Logbook.md. Done when the simulator shows every run ends and no stat holds steady, and Grant confirms the decision lines.
+The warden's week and its costs as one ledger (the old loop and stats milestones merged). Duties, which are mandatory, minutes per week, every drain and restore for HP, MIND and WARD, feeding rates capped at 1 for 1, what chapters mean now that a run ends at the first bottom-out, lighting states (wake, day, dusk, night), the logbook spec (Pim), and the end-of-day resource screen where stats show on screen. Ending conditions stay open slots until Milestone 12. The Main3 space brief on paper: what each of the seven places is for, which need it serves, walk times as costs, sightlines from the tower, signed by Grant. Grant and Quill hold the story session. Vesper and Rook shortlist Asset Store packs for the Ward, giant trees, burning ridge and cave for Grant to buy. Alongside, Rook builds test setup, a plain C# game state with a week simulator, and a versioned save. Output: Docs/Design/DailyLoop.md, Docs/Design/UI/Logbook.md, Docs/Design/Main3.md. Done when the simulator shows every run ends and no stat holds steady, and Grant confirms the decision lines.
 
-## Milestone 8: Sound groundwork
+## Milestone 8: Main3 blockout
 
-Mixer with five groups, an AudioTuning asset, footsteps, the fire pit loop, and an ambience bed for path A. Done when Grant walks path A with sound and says the long walk works.
+A fresh `Assets/Scenes/Main3.unity` from the scene recipe, built from Docs/Design/Main3.md in gray, one location per task, each built by one ordered recipe in Tools/Recipes (no patch chains). Includes a top-down map image. Checked by Marlow's machine walk against the pass checks in DECISIONS.md and by Tully, then Grant walks it.
 
-## Milestone 9: One playable week
+## Milestone 9: Sound groundwork
 
-In Graybox: wake, tower, logbook, needs, the end-of-day resource screen with feeding the Ward, sleep, stats and autosave, with one placeholder conversation for Social. All numbers in a tuning asset. Done when Grant has played several weeks and a run has ended.
+In the Main3 blockout: mixer with five groups, an AudioTuning asset, footsteps, the fire pit loop, and one ambience bed per zone with an edge where it changes. Done when Grant walks the routes with sound and says the walk lengths work.
 
-## Milestone 10: The other characters
+## Milestone 10: One playable week
 
-Starts with a story session between Grant and Quill. Who is at each campsite, what they want, what they know, how they change across chapters. Output: Docs/Design/Characters.md, drafts under Docs/Private.
+In the Main3 blockout: wake, tower, logbook, needs, the end-of-day resource screen with feeding the Ward, sleep, stats and autosave, with one placeholder conversation for Social. All numbers in a tuning asset. Done when Grant has played several weeks and a run has ended.
 
-## Milestone 11: Content format and dialogue
+## Milestone 11: Main3 dressing and look
+
+Packs in, then one location per task: structures kitbashed from the packs, set dressing, story traces from the story session, lights. Vesper signs each location from fixed camera spots. Ends with a look pass Grant signs.
+
+## Milestone 12: The other characters
+
+Who is at each campsite, what they want, what they know, how they change across a run, built on the story session. Output: Docs/Design/Characters.md, drafts under Docs/Private.
+
+## Milestone 13: Content format and dialogue
 
 Quill drafts sample lines (a logbook week, a notice board sheet, one campsite exchange). Rook tests them in candidate formats and one format is chosen for both dialogue and events. Pim and Vesper set how text looks on screen. Output: Docs/Design/Dialogue.md.
 
-## Milestone 12: Events
+## Milestone 14: Events
 
 The event grammar first (an event can block, add or replace a need, cost a stat, open a location), a rule for an empty deck, about five tracks for first playable, and a sound cue per event. Output: Docs/Design/Events.md.
 
 ## Later
 
-A look pass on the Ward ledge (stones, ridge silhouettes, rune palette) right after Milestone 9. Main menu with New run and Continue. Volume, graphics and control rebinding settings. Chapters and endings built, voices, scrapbook, inventory, map, Ward as physical objects, Ahmee, scares, minigames, a pet to feed, art pass.
+Main menu with New run and Continue. Volume, graphics and control rebinding settings. Chapters and endings built, voices, scrapbook, inventory, map, Ward as physical objects, Ahmee, scares, minigames, a pet to feed, the cave as an event location, art pass.
 
 ## Open decisions (owner)
 
-- Lake and cave are open from the start; DESIGN.md says such locations unlock through events.
+- The lake is open from the start; DESIGN.md says such locations unlock through events.
 - The player wakes in the camp cabin; DESIGN.md says the tower.
 
 ## Rules and Tips
