@@ -73,3 +73,5 @@
 - 2026-09-28: Hero pieces (Ward, giant trees, burning ridge, cave) come from bought Asset Store packs. Vesper and Rook shortlist, Grant buys. Owned packs are kitbashed first. No Blender modelling.
 - 2026-09-28: The story session with Quill happens during Milestone 7, before any Main3 dressing.
 - 2026-09-28: Assets/_Recovery (Unity crash backup) is deleted through the Editor.
+- 2026-09-28: Milestone order: 5 close, 6 housekeeping, 7 loop and economy design with the Main3 paper brief, 8 Main3 blockout, 9 sound groundwork, 10 one playable week, 11 Main3 dressing and look, 12 characters, 13 content format and dialogue, 14 events.
+- 2026-09-28: The Ward ledge look pass happens inside Milestone 11, not as its own milestone.
