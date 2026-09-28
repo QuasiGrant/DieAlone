@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c101d3e6d0652b94780fbc0c589042c1, type: 3}
+  m_Name: SimulatorTuning
+  m_EditorClassIdentifier: DieAlone::SimulatorTuning
+  loop: {fileID: 11400000, guid: 7a949c975b92cfa4eb535d9b4cb308c1, type: 2}
+  runsPerStrategy: 1000
+  seed: 1
+  maxDays: 500
+  freeSeconds: 420
+  waterSeconds: 60
+  warmthSeconds: 48
+  socialSeconds: 100
+  forageSeconds: 80
+  forageRetrySeconds: 40
+  forageChance: 0.6
+  storeSeconds: 180
+  resolveSeconds: 90
+  resolveWalkSeconds: 60
+  resolveSecondsPerStage: 30

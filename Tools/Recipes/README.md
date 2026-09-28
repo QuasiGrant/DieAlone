@@ -102,3 +102,4 @@ Copied from the scratchpad on 2026-09-27. Later scripts supersede earlier ones f
 | File | Builds or does |
 |---|---|
 | create_loop_tuning.cs | Creates Assets/Settings/LoopTuning.asset with the draft loop numbers (task 7.1). |
+| create_simulator_tuning.cs | Creates Assets/Settings/SimulatorTuning.asset pointing at LoopTuning (task 7.2). |
