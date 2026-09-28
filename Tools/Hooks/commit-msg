@@ -1,0 +1,130 @@
+#!/usr/bin/env bash
+# Plan check hook. Spec: Docs/Process/PreCommitHook.md.
+# Runs as git's commit-msg hook so the task-line check can read the message.
+# Install once per clone: git config core.hooksPath Tools/Hooks
+
+msg_file="$1"
+failures=0
+
+block() {
+    echo "plan-check BLOCKED $1"
+    failures=$((failures + 1))
+}
+
+# Read a blob and strip carriage returns.
+staged_file() { git show ":$1" 2>/dev/null | sed 's/\r$//'; }
+head_file() { git show "HEAD:$1" 2>/dev/null | sed 's/\r$//'; }
+
+msg_has() { sed 's/\r$//' "$msg_file" | grep -q "^$1"; }
+
+has_head=0
+git rev-parse --verify -q HEAD >/dev/null && has_head=1
+
+staged_list=$(git diff --cached --name-only --diff-filter=ACMR)
+
+is_staged() { printf '%s\n' "$staged_list" | grep -qxF "$1"; }
+
+in_head() { [ "$has_head" = 1 ] && git cat-file -e "HEAD:$1" 2>/dev/null; }
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+# 1. Em dash in staged docs.
+em_dash=$'\xe2\x80\x94'
+while IFS= read -r path; do
+    [ -z "$path" ] && continue
+    case "$path" in
+        PLAN.md|DECISIONS.md|DESIGN.md|CLAUDE.md|.claude/agents/*|Docs/*.md|Docs/*.svg) ;;
+        *) continue ;;
+    esac
+    while IFS=: read -r line _; do
+        block "em-dash: $path line $line"
+    done < <(git show ":$path" | LC_ALL=C grep -nF "$em_dash")
+done <<< "$staged_list"
+
+# Rules and Tips: count "- " lines from "## Rules and Tips" to the next "## " or end.
+tips_count() {
+    sed -n '/^## Rules and Tips/,$p' "$1" | sed '1d' | sed '/^## /,$d' | grep -c '^- '
+}
+
+# Task lines with the box normalised to [ ].
+task_lines() {
+    grep -E '^- \[[ x]\] [0-9]+\.[0-9a-z]+ ' "$1" | sed 's/^- \[x\] /- [ ] /'
+}
+
+plan_note=""
+if is_staged PLAN.md; then
+    staged_file PLAN.md > "$tmp/plan_staged"
+    s_ticks=$(grep -c '^- \[x\] ' "$tmp/plan_staged")
+    s_tips=$(tips_count "$tmp/plan_staged")
+    if in_head PLAN.md; then
+        head_file PLAN.md > "$tmp/plan_head"
+        h_ticks=$(grep -c '^- \[x\] ' "$tmp/plan_head")
+        h_tips=$(tips_count "$tmp/plan_head")
+
+        # 2. Ticks.
+        if [ "$s_ticks" -lt "$h_ticks" ]; then
+            block "ticks: $h_ticks at head, $s_ticks staged"
+        fi
+
+        # 3. Rules and Tips.
+        if [ "$s_tips" -lt "$h_tips" ] && ! msg_has 'Tips-edit:'; then
+            block "tips: $h_tips at head, $s_tips staged (add Tips-edit: if intended)"
+        fi
+
+        # 4. Task lines.
+        if ! msg_has 'Plan-edit:'; then
+            task_lines "$tmp/plan_head" > "$tmp/tasks_head"
+            task_lines "$tmp/plan_staged" > "$tmp/tasks_staged"
+            while IFS= read -r task; do
+                id=$(printf '%s\n' "$task" | sed -E 's/^- \[ \] ([0-9]+\.[0-9a-z]+) .*/\1/')
+                block "task-line: \"$id ...\" removed or reworded (add Plan-edit: to the message if intended)"
+            done < <(grep -vxF -f "$tmp/tasks_staged" "$tmp/tasks_head")
+        fi
+        plan_note=" (ticks $h_ticks -> $s_ticks, tips $h_tips -> $s_tips)"
+    fi
+fi
+
+# 5. DECISIONS.md lines.
+if is_staged DECISIONS.md && in_head DECISIONS.md && ! msg_has 'Decisions-edit:'; then
+    staged_file DECISIONS.md > "$tmp/dec_staged"
+    head_file DECISIONS.md > "$tmp/dec_head"
+    while IFS=: read -r line _; do
+        block "decisions: line $line removed or changed (add Decisions-edit: if intended)"
+    done < <(grep -nvxF -f "$tmp/dec_staged" "$tmp/dec_head")
+fi
+
+# 6. Forbidden paths. Pack folders come from the "# Asset Store packs" block of .gitignore.
+forbidden="Docs/Private/
+Library/
+Temp/
+Logs/
+Build/
+obj/"
+if [ -f .gitignore ]; then
+    packs=$(sed 's/\r$//' .gitignore | sed -n '/^# Asset Store packs/,/^$/p' | grep -v '^#' | grep -v '^$' | sed 's|^/||')
+    [ -n "$packs" ] && forbidden="$forbidden
+$packs"
+fi
+while IFS= read -r path; do
+    [ -z "$path" ] && continue
+    while IFS= read -r pattern; do
+        [ -z "$pattern" ] && continue
+        case "$pattern" in
+            */) match=0; [ "${path#"$pattern"}" != "$path" ] && match=1 ;;
+            *) match=0; [ "$path" = "$pattern" ] && match=1 ;;
+        esac
+        if [ "$match" = 1 ]; then
+            block "path: $path"
+            break
+        fi
+    done <<< "$forbidden"
+done <<< "$staged_list"
+
+if [ "$failures" -gt 0 ]; then
+    echo "plan-check: $failures failure(s), commit blocked. Bypass is Grant's call only (see Docs/Process/PreCommitHook.md)."
+    exit 1
+fi
+
+echo "plan-check ok$plan_note"
+exit 0
