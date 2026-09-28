@@ -11,6 +11,7 @@ Copied from the scratchpad on 2026-09-27. Later scripts supersede earlier ones f
 | build_graybox.cs | Graybox: 50 m ground, the tall tower box and six scale boxes, one directional light. |
 | build_player.cs | Player object with CharacterController, camera pivot and PlayerController; removes the standalone camera. |
 | build_tuning.cs | Creates Assets/Settings/PlayerTuning.asset and wires it to the player scripts. |
+| fill_carry_tuning.cs | Writes the carry fields PlayerTuning.asset was missing, with the class default values (task 6.2). |
 | pt_head.cs, pt_body.cs, pc_body.cs, lt_body.cs | Text of PlayerTuning, PlayerController and LookTuning written through the bridge (script bodies). |
 | build_course.cs | Graybox test course: sprint lane, tunnel, step, log, fence, ramp, stairs, test room. |
 | build_tower.cs | Graybox firewatch tower: legs, deck, four stair flights with landings, top room. |

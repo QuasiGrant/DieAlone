@@ -32,3 +32,11 @@ MonoBehaviour:
   interactReach: 2
   doorOpenAngle: 90
   doorSwingSpeed: 150
+  carryHoldOffset: {x: 0.3, y: -0.25, z: 0.7}
+  carryFollowSpeed: 14
+  placeReach: 2
+  placeMinUpNormal: 0.7
+  dropForwardSpeed: 1
+  pushPower: 2
+  throwSpeed: 7
+  throwLift: 1.5
