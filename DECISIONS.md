@@ -86,3 +86,4 @@
 - 2026-09-28: Two states, day and night. Day is the burning sunset from waking until the report is filed, with the sun fixed. Night is dark except for the fire glow. This replaces the four lighting states.
 - 2026-09-28: At night the only thing the player can do is go to the Ward and offer it HP or MIND. If the player ignores it, WARD goes down. WARD bottoming out means the barrier falls and the world burns.
 - 2026-09-28: The loop is written in Docs/Design/DailyLoop.md, with drawings Grant can see and comment on.
+- 2026-09-28: Twist rule, narrowing the public-repo line above: story and design notes that carry the twist stay in Docs/Private. Only text the game itself needs may be committed.

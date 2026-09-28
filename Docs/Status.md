@@ -7,7 +7,7 @@ Last updated 2026-09-28.
 ## Next step
 
 1. In progress, docs only: Sable (DailyLoop.md with flow drawing, Main3 map redraw), Vesper (Style.md, PackShortlist.md), Pim (tower check, report confirm, Ward night, objective specs), Hollis (sourcing, mixer, day and night sound), Quill (story session prep in Docs/Private), Marlow (stress test of the 2026-09-28 loop lines), Rook (DialogueFormats.md research).
-2. Grant: Milestone 6 task list, menus now or later, story session date, twist text rule, pack purchase after the shortlist, comments on Sable's drawings.
+2. Grant: Milestone 6 task list, comments on Sable's drawings. Story session with Quill planned for 2026-09-29. Pack purchase once the shortlist is ready.
 3. Rook's Unity queue once Milestone 6 tasks are approved: PlayerTuning carry fields, pre-commit hook, test assembly, GameState, versioned save.
 
 ## How we work now (2026-09-28)
