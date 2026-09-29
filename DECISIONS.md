@@ -109,3 +109,8 @@
 - 2026-09-29: Main3 map change: the tower should see more of the office and parking lot.
 - 2026-09-29: From the approved routine: the lake is open from the start, and the player wakes in the camp cabin.
 - 2026-09-29: Story session round 1 held. Grant's story canon (premise, the six residents, the hidden seventh, the endings) is recorded in Docs/Private/StoryBible.md, which is not committed. His manuscript Cinderedge is the source; Quill reads it from his copy.
+- 2026-09-29: Main3 map revision 7 is approved, pending where the story places the residents and a possible second road (Quill's round 2).
+- 2026-09-29: The game saves only when the player sleeps. Quitting mid-day loses that day.
+- 2026-09-29: Logbook stats show the reading from the last Ward visit, not live values. Provisional; to be checked in playtesting.
+- 2026-09-29: Pack vegetation stays still, with no wind. One new project shader, DieAlone/Smoke, replaces the pack smoke shaders (Docs/Design/ShaderSwap.md).
+- 2026-09-29: Grant sees the proposed starting look from Docs/Design/Style.md in the game before it is adopted.
