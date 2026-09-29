@@ -86,9 +86,11 @@ foreach (var guid in UnityEditor.AssetDatabase.FindAssets("t:Material", new[] { 
 }
 
 // ---------------- 3. the shared night look ----------------
-look.filterEnabled = true; look.lowResHeight = dayOne.lowResHeight; look.colorBleed = dayOne.colorBleed; look.washOut = dayOne.washOut; look.crushBlacks = dayOne.crushBlacks;
+// crushed blacks and dark corners are the night's own (8.9g brightened day one only; night keeps the 8.9f values)
+const float nightCrushBlacks = 0.3f, nightDarkCorners = 0.45f;
+look.filterEnabled = true; look.lowResHeight = dayOne.lowResHeight; look.colorBleed = dayOne.colorBleed; look.washOut = dayOne.washOut; look.crushBlacks = nightCrushBlacks;
 look.grainStrength = dayOne.grainStrength; look.grainSpeed = dayOne.grainSpeed; look.noiseBandStrength = dayOne.noiseBandStrength; look.noiseBandSpeed = dayOne.noiseBandSpeed;
-look.noiseBandInterval = dayOne.noiseBandInterval; look.scanLines = dayOne.scanLines; look.blur = dayOne.blur; look.darkCorners = dayOne.darkCorners;
+look.noiseBandInterval = dayOne.noiseBandInterval; look.scanLines = dayOne.scanLines; look.blur = dayOne.blur; look.darkCorners = nightDarkCorners;
 // smoke at night: no sun on it, so its body sinks toward char and the fire lights its underside (Style.md 2.3: #6B2A12 lit
 // underside, near-black sky); by day the day looks keep their own smoke colours
 const float nightSmokeBody = 0.3f, nightSmokeFire = 1.6f;

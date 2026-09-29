@@ -446,7 +446,12 @@ void SetLook(string path, string sun, float elev, float inten, string amb, strin
     t.sunColor = Hex(sun); t.sunElevation = elev; t.sunBearing = 270f; t.sunIntensity = inten; t.sunsetAmbient = Hex(amb);
     t.skyTop = Hex(skyT); t.skyHorizon = Hex(skyH); t.sunsetFogColor = Hex(fogC); t.sunsetFogStart = fogS; t.sunsetFogEnd = fogE; UnityEditor.EditorUtility.SetDirty(t);
 }
-SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 14f, 1.1f, "#6E6658", "#5E6878", "#E3A968", "#A8A08E", 40f, 600f);
+// day one brightened in 8.9g (Vesper): sun 14 to 28, fill #6E6658 to #998A73, crushed blacks 0.3 to 0.15, dark corners 0.45 to 0.3
+SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 28f, 1.1f, "#998A73", "#5E6878", "#E3A968", "#A8A08E", 40f, 600f);
+{
+    var dayOneLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayOne.asset");
+    if (dayOneLook != null) { dayOneLook.crushBlacks = 0.15f; dayOneLook.darkCorners = 0.3f; UnityEditor.EditorUtility.SetDirty(dayOneLook); }
+}
 SetLook("Assets/Settings/LookTuning_DayTwo.asset", "#FF8C40", 6f, 1.2f, "#734D42", "#381C1A", "#D9662E", "#9E5C38", 25f, 420f);
 
 UnityEditor.AssetDatabase.SaveAssets();
