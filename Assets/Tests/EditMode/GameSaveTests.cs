@@ -40,7 +40,7 @@ public class GameSaveTests
         {
             state.MeetNeed(Need.Water);
             state.FileReport();
-            state.GiveToWard(1, 1);
+            state.GiveToWard(0, 1);
             state.Sleep(rng);
         }
         state.MeetNeed(Need.Food);
@@ -64,10 +64,7 @@ public class GameSaveTests
         Assert.AreEqual(state.OpenChecks, loaded.OpenChecks);
         Assert.Greater(loaded.OpenChecks, 0);
         for (int i = 0; i < state.LocationCount; i++)
-        {
             Assert.AreEqual(state.GetLocation(i).Status, loaded.GetLocation(i).Status);
-            Assert.AreEqual(state.GetLocation(i).Stage, loaded.GetLocation(i).Stage);
-        }
         foreach (Need need in System.Enum.GetValues(typeof(Need)))
             Assert.AreEqual(state.IsNeedMet(need), loaded.IsNeedMet(need), need.ToString());
         Assert.AreSame(tuning, loaded.Tuning);
@@ -91,6 +88,19 @@ public class GameSaveTests
         LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("version 0"));
         Assert.AreEqual(GameSave.LoadResult.UnsupportedVersion, GameSave.Load(path, tuning, out var loaded));
         Assert.IsNull(loaded);
+    }
+
+    [Test]
+    public void VersionOne_MigratesAndLoads()
+    {
+        var state = PlayedState();
+        GameSave.Save(state, path);
+        string json = File.ReadAllText(path).Replace(
+            $"\"version\": {GameSave.CurrentVersion}", "\"version\": 1");
+        File.WriteAllText(path, json);
+
+        Assert.AreEqual(GameSave.LoadResult.Loaded, GameSave.Load(path, tuning, out var loaded));
+        Assert.AreEqual(JsonUtility.ToJson(state), JsonUtility.ToJson(loaded));
     }
 
     [Test]

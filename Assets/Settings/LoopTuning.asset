@@ -15,12 +15,19 @@ MonoBehaviour:
   startHp: 12
   startMind: 12
   startWard: 12
+  statMax: 12
   foodMissHp: 1
   waterMissHp: 1
   warmthMissHp: 1
   socialMissMind: 1
-  openCheckMind: 1
-  wardChangeByPointsGiven: ffffffff0000000001000000
+  safetyMissMind: 1
+  hungerStart: 1
+  hungerRisePerWeek: 1
+  daysPerWeek: 7
+  wardPerPointGiven: 1
+  maxPointsGiven: 3
+  firstBunkNight: 2
+  recoveryCapPerDay: 1
   checkedLocations:
   - Lake
   - Camp 1
@@ -32,5 +39,3 @@ MonoBehaviour:
   anomalyChancePerDay: 0.02
   anomalyChanceCap: 0.5
   maxOpenChecks: 2
-  checkLastStage: 3
-  expiredCheckWard: 1

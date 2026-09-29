@@ -16,14 +16,11 @@ MonoBehaviour:
   runsPerStrategy: 1000
   seed: 1
   maxDays: 500
-  freeSeconds: 420
-  waterSeconds: 60
-  warmthSeconds: 48
-  socialSeconds: 100
-  forageSeconds: 80
-  forageRetrySeconds: 40
-  forageChance: 0.6
-  storeSeconds: 180
-  resolveSeconds: 90
-  resolveWalkSeconds: 60
-  resolveSecondsPerStage: 30
+  choreChance: 0.85
+  socialChance: 0.7
+  resolveChance: 0.75
+  unresolvedCheckCost: 1
+  dayEndingEventChance: 0.05
+  dayEndingEventCost: 1
+  dayEndPaysNeedsChance: 0.5
+  recoveryOffered: 1

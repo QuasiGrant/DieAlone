@@ -8,7 +8,7 @@ using UnityEngine;
 public static class GameSave
 {
     /// Bump when the saved fields change, and add a migration in Migrate.
-    public const int CurrentVersion = 1;
+    public const int CurrentVersion = 2;
     public const string FileName = "run.json";
 
     public enum LoadResult { Loaded, Missing, Corrupt, UnsupportedVersion, TuningMismatch }
@@ -67,7 +67,12 @@ public static class GameSave
         return LoadResult.Loaded;
     }
 
-    /// Brings an older file up to CurrentVersion. There are no older formats yet, so
-    /// any other version is refused.
-    private static bool Migrate(SaveFile file) => file.version == CurrentVersion;
+    /// Brings an older file up to CurrentVersion. Any version without a step is refused.
+    private static bool Migrate(SaveFile file)
+    {
+        // 1 to 2 (task 7.5): CHECK stages were dropped; the new fields (needs waived,
+        // recovered today) read as false and 0, which is right at sleep.
+        if (file.version == 1) file.version = 2;
+        return file.version == CurrentVersion;
+    }
 }

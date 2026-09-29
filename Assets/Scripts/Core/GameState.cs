@@ -3,8 +3,11 @@ using UnityEngine;
 
 /// The whole state of one run and the rules that move it: HP, MIND, WARD, the day's
 /// needs, day and night, and the checked locations. Plain C#, no scene access.
-/// A run ends the first time any stat reaches 0 (DECISIONS 2026-09-28).
-/// Day order: MeetNeed / ResolveCheck, FileReport, GiveToWard, Sleep.
+/// Rules from Docs/Design/DailyLoop.md revision 6. A run ends the first time any stat
+/// reaches 0 (DECISIONS 2026-09-28); the Ward's weekly hunger makes every run end.
+/// Day order: MeetNeed / ResolveCheck, then FileReport or EndDayByEvent; at night
+/// GiveToWard then Sleep, or SleepInBunk. Events apply their own costs and recovery
+/// through ApplyEventCost and Restore at any time.
 [Serializable]
 public class GameState
 {
@@ -17,7 +20,9 @@ public class GameState
     [SerializeField] private int ward;
     [SerializeField] private bool[] choresMet;
     [SerializeField] private LocationState[] locations;
+    [SerializeField] private bool needsWaived;
     [SerializeField] private bool gaveTonight;
+    [SerializeField] private int recoveredToday;
     [SerializeField] private Stat endedBy;
 
     [NonSerialized] private LoopTuning tuning;
@@ -31,10 +36,16 @@ public class GameState
     public int Mind => mind;
     public int Ward => ward;
     public bool GaveTonight => gaveTonight;
+    /// True when an event ended the day and waived the unmet needs.
+    public bool NeedsWaived => needsWaived;
+    public int RecoveredToday => recoveredToday;
     public bool IsOver => endedBy != Stat.None;
     public Stat EndedBy => endedBy;
     public int LocationCount => locations.Length;
     public LoopTuning Tuning => tuning;
+
+    /// WARD the Ward takes tonight.
+    public int Hunger => tuning.Hunger(day);
 
     public static GameState NewRun(LoopTuning tuning)
     {
@@ -44,9 +55,9 @@ public class GameState
             tuning = tuning,
             day = 1,
             phase = DayPhase.Day,
-            hp = tuning.startHp,
-            mind = tuning.startMind,
-            ward = tuning.startWard,
+            hp = Mathf.Min(tuning.startHp, tuning.statMax),
+            mind = Mathf.Min(tuning.startMind, tuning.statMax),
+            ward = Mathf.Min(tuning.startWard, tuning.statMax),
             choresMet = new bool[ChoreCount],
             locations = new LocationState[tuning.checkedLocations.Length],
         };
@@ -68,6 +79,17 @@ public class GameState
 
     public bool IsNeedMet(Need need) =>
         need == Need.Safety ? OpenChecks == 0 : choresMet[(int)need];
+
+    public int GetStat(Stat stat)
+    {
+        switch (stat)
+        {
+            case Stat.Hp: return hp;
+            case Stat.Mind: return mind;
+            case Stat.Ward: return ward;
+            default: throw new ArgumentOutOfRangeException(nameof(stat));
+        }
+    }
 
     // ---------- Day ----------
 
@@ -94,53 +116,100 @@ public class GameState
         phase = DayPhase.Night;
     }
 
+    /// An event ended the day: the player wakes into night at the Ward and the report
+    /// counts as filed. Each event says whether the needs still unmet are paid.
+    public void EndDayByEvent(bool payUnmetNeeds)
+    {
+        RequirePhase(DayPhase.Day);
+        needsWaived = !payUnmetNeeds;
+        phase = DayPhase.Night;
+    }
+
+    // ---------- Events, any time ----------
+
+    /// An event's own cost. Reaching 0 ends the run on the spot.
+    public void ApplyEventCost(Stat stat, int amount)
+    {
+        RequireRunning();
+        if (amount < 0) throw new ArgumentException("A cost cannot be negative.", nameof(amount));
+        Change(stat, -amount);
+    }
+
+    /// Gives back up to the amount, within the daily recovery cap and the stat cap.
+    /// Returns the points actually restored.
+    public int Restore(Stat stat, int amount)
+    {
+        RequireRunning();
+        if (amount < 0) throw new ArgumentException("Recovery cannot be negative.", nameof(amount));
+        int room = tuning.statMax - GetStat(stat);
+        int granted = Mathf.Max(0, Mathf.Min(amount, Mathf.Min(tuning.recoveryCapPerDay - recoveredToday, room)));
+        recoveredToday += granted;
+        Change(stat, granted);
+        return granted;
+    }
+
     // ---------- Night ----------
 
-    /// The Ward screen. Give nothing is GiveToWard(0, 0). Giving a last point is
-    /// allowed and ends the run.
+    /// The most points the Ward screen accepts tonight: the nightly limit, and never a
+    /// point that would push WARD past the cap.
+    public int MostPointsAccepted
+    {
+        get
+        {
+            int room = tuning.statMax - ward + Hunger;
+            return Mathf.Clamp(room / tuning.wardPerPointGiven, 0, tuning.maxPointsGiven);
+        }
+    }
+
+    /// The Ward screen. Give nothing is GiveToWard(0, 0). WARD changes by the WARD the
+    /// points buy minus tonight's hunger. Giving a last point is allowed and ends the run.
     public void GiveToWard(int hpGiven, int mindGiven)
     {
         RequirePhase(DayPhase.Night);
         if (gaveTonight) throw new InvalidOperationException("The Ward was already answered tonight.");
         if (hpGiven < 0 || mindGiven < 0) throw new ArgumentException("Points given cannot be negative.");
         int total = hpGiven + mindGiven;
-        if (total > tuning.MaxPointsGiven)
-            throw new ArgumentException($"At most {tuning.MaxPointsGiven} points a night.");
+        if (total > MostPointsAccepted)
+            throw new ArgumentException($"The Ward accepts at most {MostPointsAccepted} points tonight.");
         if (hpGiven > hp || mindGiven > mind)
             throw new ArgumentException("Cannot give more than the stat holds.");
 
         gaveTonight = true;
         if (Change(Stat.Hp, -hpGiven)) return;
         if (Change(Stat.Mind, -mindGiven)) return;
-        Change(Stat.Ward, tuning.wardChangeByPointsGiven[total]);
+        Change(Stat.Ward, total * tuning.wardPerPointGiven - Hunger);
     }
 
-    public int SleepHpCost() =>
+    public int SleepHpCost() => needsWaived ? 0 :
         (choresMet[(int)Need.Food] ? 0 : tuning.foodMissHp)
         + (choresMet[(int)Need.Water] ? 0 : tuning.waterMissHp)
         + (choresMet[(int)Need.Warmth] ? 0 : tuning.warmthMissHp);
 
-    public int SleepMindCost() =>
+    public int SleepMindCost() => needsWaived ? 0 :
         (choresMet[(int)Need.Social] ? 0 : tuning.socialMissMind)
-        + OpenChecks * tuning.openCheckMind;
+        + (IsNeedMet(Need.Safety) ? 0 : tuning.safetyMissMind);
 
-    public int SleepWardCost()
-    {
-        int expiring = 0;
-        foreach (var location in locations)
-            if (location.IsOpenCheck && location.Stage >= tuning.checkLastStage) expiring++;
-        return expiring * tuning.expiredCheckWard;
-    }
-
-    /// Pays the day's missed needs, ages open CHECKs, and starts the next day with its
-    /// anomaly draw. The Ward must have been answered first.
+    /// Pays the day's missed needs and starts the next day with its anomaly draw.
+    /// The Ward must have been answered first.
     public void Sleep(System.Random rng)
     {
         RequirePhase(DayPhase.Night);
         if (!gaveTonight) throw new InvalidOperationException("The Ward screen comes before sleep.");
 
-        if (!PayNight()) StartNextDay(rng);
+        if (!PayNeeds()) StartNextDay(rng);
         Slept?.Invoke(this);
+    }
+
+    /// Lying in the bunk instead of going to the Ward: counts as Give nothing, then sleep.
+    /// Not allowed before tuning.firstBunkNight (night 1 is the reveal).
+    public void SleepInBunk(System.Random rng)
+    {
+        RequirePhase(DayPhase.Night);
+        if (day < tuning.firstBunkNight)
+            throw new InvalidOperationException($"The bunk is not an option before night {tuning.firstBunkNight}.");
+        GiveToWard(0, 0);
+        if (IsOver) return;
+        Sleep(rng);
     }
 
     /// Reattaches the tuning after the state was rebuilt from a save. Returns false when
@@ -157,12 +226,11 @@ public class GameState
 
     // ---------- Rules ----------
 
-    /// Returns true when paying the night ended the run.
-    private bool PayNight()
+    /// Returns true when paying the needs ended the run.
+    private bool PayNeeds()
     {
         if (Change(Stat.Hp, -SleepHpCost())) return true;
-        if (Change(Stat.Mind, -SleepMindCost())) return true;
-        return AgeChecks();
+        return Change(Stat.Mind, -SleepMindCost());
     }
 
     private void StartNextDay(System.Random rng)
@@ -170,27 +238,11 @@ public class GameState
         day++;
         phase = DayPhase.Day;
         gaveTonight = false;
+        needsWaived = false;
+        recoveredToday = 0;
         Array.Clear(choresMet, 0, choresMet.Length);
+        foreach (var location in locations) location.Clear();
         DrawAnomalies(rng);
-    }
-
-    /// Returns true when an open CHECK ending on its own ended the run.
-    private bool AgeChecks()
-    {
-        foreach (var location in locations)
-        {
-            if (!location.IsOpenCheck) continue;
-            if (location.Stage >= tuning.checkLastStage)
-            {
-                location.Clear();
-                if (Change(Stat.Ward, -tuning.expiredCheckWard)) return true;
-            }
-            else
-            {
-                location.Advance();
-            }
-        }
-        return false;
     }
 
     private void DrawAnomalies(System.Random rng)
@@ -214,25 +266,29 @@ public class GameState
         }
     }
 
-    /// Applies a change to one stat, clamped at 0. Returns true when it ended the run.
+    /// Applies a change to one stat, kept between 0 and the cap. Returns true when it ended the run.
     private bool Change(Stat stat, int delta)
     {
+        int value = Mathf.Clamp(GetStat(stat) + delta, 0, tuning.statMax);
         switch (stat)
         {
-            case Stat.Hp: hp = Mathf.Max(0, hp + delta); break;
-            case Stat.Mind: mind = Mathf.Max(0, mind + delta); break;
-            case Stat.Ward: ward = Mathf.Max(0, ward + delta); break;
-            default: throw new ArgumentOutOfRangeException(nameof(stat));
+            case Stat.Hp: hp = value; break;
+            case Stat.Mind: mind = value; break;
+            default: ward = value; break;
         }
-        int value = stat == Stat.Hp ? hp : stat == Stat.Mind ? mind : ward;
         if (value > 0) return false;
         endedBy = stat;
         return true;
     }
 
-    private void RequirePhase(DayPhase required)
+    private void RequireRunning()
     {
         if (IsOver) throw new InvalidOperationException($"The run is over ({endedBy} reached 0).");
+    }
+
+    private void RequirePhase(DayPhase required)
+    {
+        RequireRunning();
         if (phase != required) throw new InvalidOperationException($"Only allowed during {required}.");
     }
 }

@@ -1,55 +1,62 @@
-using System.Collections.Generic;
-
-/// The simulated player's day: spends the free duty seconds greedily, open CHECKs
-/// first (oldest stage first), then Water, Warmth, Food, Social. An action is taken
-/// only if its whole cost fits in the time left.
+/// The simulated player's day, from the tower check to its end: rounds by the player's
+/// style, then the report, or an event that ends the day early. There is no time
+/// budget (DECISIONS 2026-09-29). Events stay generic stand-ins until event content
+/// exists: each CHECK left open at day end costs its own points through the event hook.
 public class DayPlanner
 {
+    private static readonly Stat[] Stats = { Stat.Hp, Stat.Mind, Stat.Ward };
     private readonly SimulatorTuning tuning;
 
     public DayPlanner(SimulatorTuning tuning) => this.tuning = tuning;
 
-    public void PlayDay(GameState state, System.Random rng)
+    public void PlayDay(GameState state, PlayerStyle style, System.Random rng)
     {
-        int timeLeft = tuning.freeSeconds;
+        ResolveChecks(state, style, rng);
 
-        var checks = new List<int>();
+        bool eventsLive = state.Day >= state.Tuning.firstAnomalyDay;
+        if (style == PlayerStyle.Typical && eventsLive && rng.NextDouble() < tuning.dayEndingEventChance)
+        {
+            state.EndDayByEvent(rng.NextDouble() < tuning.dayEndPaysNeedsChance);
+            state.ApplyEventCost(RandomStat(rng), tuning.dayEndingEventCost);
+        }
+        else
+        {
+            MeetNeeds(state, style, rng);
+            state.FileReport();
+        }
+        PayOpenChecks(state, rng);
+    }
+
+    private void ResolveChecks(GameState state, PlayerStyle style, System.Random rng)
+    {
+        if (style == PlayerStyle.Idle) return;
         for (int i = 0; i < state.LocationCount; i++)
-            if (state.GetLocation(i).IsOpenCheck) checks.Add(i);
-        checks.Sort((a, b) => state.GetLocation(b).Stage.CompareTo(state.GetLocation(a).Stage));
-        foreach (int index in checks)
         {
-            int cost = tuning.ResolveCost(state.GetLocation(index).Stage);
-            if (cost > timeLeft) continue;
-            timeLeft -= cost;
-            state.ResolveCheck(index);
+            if (!state.GetLocation(i).IsOpenCheck) continue;
+            if (style == PlayerStyle.Perfect || rng.NextDouble() < tuning.resolveChance) state.ResolveCheck(i);
         }
-
-        TryChore(state, Need.Water, tuning.waterSeconds, ref timeLeft);
-        TryChore(state, Need.Warmth, tuning.warmthSeconds, ref timeLeft);
-        TryFood(state, rng, ref timeLeft);
-        TryChore(state, Need.Social, tuning.socialSeconds, ref timeLeft);
     }
 
-    private static void TryChore(GameState state, Need need, int cost, ref int timeLeft)
+    private void MeetNeeds(GameState state, PlayerStyle style, System.Random rng)
     {
-        if (cost > timeLeft) return;
-        timeLeft -= cost;
-        state.MeetNeed(need);
+        if (style == PlayerStyle.Idle) return;
+        TryNeed(state, Need.Food, tuning.choreChance, style, rng);
+        TryNeed(state, Need.Water, tuning.choreChance, style, rng);
+        TryNeed(state, Need.Warmth, tuning.choreChance, style, rng);
+        TryNeed(state, Need.Social, tuning.socialChance, style, rng);
     }
 
-    private void TryFood(GameState state, System.Random rng, ref int timeLeft)
+    private static void TryNeed(GameState state, Need need, float chance, PlayerStyle style, System.Random rng)
     {
-        if (tuning.forageSeconds <= timeLeft)
-        {
-            timeLeft -= tuning.forageSeconds;
-            if (rng.NextDouble() < tuning.forageChance) { state.MeetNeed(Need.Food); return; }
-            if (tuning.forageRetrySeconds <= timeLeft)
-            {
-                timeLeft -= tuning.forageRetrySeconds;
-                if (rng.NextDouble() < tuning.forageChance) { state.MeetNeed(Need.Food); return; }
-            }
-        }
-        TryChore(state, Need.Food, tuning.storeSeconds, ref timeLeft);
+        if (style == PlayerStyle.Perfect || rng.NextDouble() < chance) state.MeetNeed(need);
     }
+
+    private void PayOpenChecks(GameState state, System.Random rng)
+    {
+        int open = state.OpenChecks;
+        for (int i = 0; i < open && !state.IsOver; i++)
+            state.ApplyEventCost(RandomStat(rng), tuning.unresolvedCheckCost);
+    }
+
+    private static Stat RandomStat(System.Random rng) => Stats[rng.Next(Stats.Length)];
 }
