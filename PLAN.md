@@ -143,7 +143,7 @@ The seven residents' minigames and storylines from Docs/Private/Minigames.md (pr
 
 ## Later
 
-Main menu with New run and Continue. Volume, graphics and control rebinding settings. Chapters and endings built, voices, scrapbook, inventory, map, Ward as physical objects, Ahmee, scares, minigames, a pet to feed, art pass.
+Main menu with New run and Continue. Volume, graphics and control rebinding settings. Endings built, scrapbook, inventory, map, Ward as physical objects, scares, a pet to feed, art pass.
 
 ## Open decisions (owner)
 

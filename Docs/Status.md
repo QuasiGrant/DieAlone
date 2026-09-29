@@ -6,13 +6,13 @@ Last updated 2026-09-29.
 
 ## Next step
 
-As of 2026-09-29:
-1. Done: Milestone 6; Milestone 7 build work 7.1 to 7.8 (game state, simulator, save, packs in, pack shaders swapped, look preview, test build clean-up); Milestone 8 tasks 8.1 to 8.9 (Main3 gray blockout from Docs/Design/Main3.md revision 11, build notes in Docs/Design/Main3_BuildNotes.md, recipes and run order in Tools/Recipes/README.md).
-2. Running: 8.10, Marlow's machine walk of Main3 (report to Docs/Review/2026-09-29-Main3Walk.md), then Grant walks Main3. 7.9 (F1 dev panel) waits for Grant to try it.
-3. Next for Rook after the walk: one fix batch (Tully's recipe fixes, a one-step runner recipe, Hollow Giant crown blocking Camp 2, Camp 2 ladder, Ward stones set back 11.8 m from the cliff edge, cave ramp 17 degrees against 14, W-1 jump margin 0.9 m, shift walls, chain and cave board colliders, plus Marlow's walk findings).
-4. Grant decides: four minigame questions (Docs/Private/Minigames.md), voice acting, the Cultist's framing.
-5. Story canon lives only in Docs/Private (StoryBible.md, Minigames.md, ToneReference.md, SessionPrep.md). Grant's manuscript: his copy of Cinderedge.pdf.
-6. Design drafts in Docs/Design: DailyLoop (approved for now), Events, Main3 (rev 11), Style, LookBoards, ShaderSwap, PackShortlist, DialogueFormats, Sound (Sourcing, Mixer, DayNight, AudioTuning, Locations), UI (TowerCheck, DayEndConfirm, WardNight, Objective, Logbook, MainMenu, Settings, GateBooth), Text/DayOneSamples.
+As of 2026-09-29, late:
+1. Done: Milestones 5 and 6; Milestone 7 build work 7.1 to 7.8; Main3 gray blockout 8.1 to 8.9b, walked by Marlow and by Grant. Main3.md is at revision 13 (Grant's gray-box feedback). Recipes and run order in Tools/Recipes/README.md; runner Tools/Recipes/main3_rebuild.sh.
+2. Running: Rook on 7.9 (dev panel on screen, Grant to try) then 8.9c (higher knoll, spiral stair, bigger cabin, Ward lip and stand-in fire). Marlow's re-walk checklist is ready for after 8.9c. Sable rewriting the resident minigames (Docs/Private/Minigames.md). Vesper on Pony Island, Inscryption, Buckshot Roulette notes. Pim on Collectibles.md and ContentWarning.md. Hollis on the store loop sound. Quill on the Child pilot dialogue.
+3. Next: 8.10 closes when Grant walks the rebuilt Main3; then Milestone 9 (sound groundwork).
+4. Plan shape: Milestones 9 sound, 10 one playable week, 11 dressing and look, 12 characters, 13 content format and dialogue (Child minigame as pilot), 14 events, 15 resident minigames.
+5. Open for Grant: where the escape-room puzzle goes and where the roulette fits (after Vesper's notes).
+6. Story canon only in Docs/Private (StoryBible, Minigames, MinigameReview, ToneReference, SessionPrep, ChildDialogue, StoreSound, MullinsNotes).
 
 ## How we work now (2026-09-28)
 
