@@ -135,3 +135,7 @@
 - 2026-09-29: During a shift, trying to follow a car hits an invisible wall with the message "You can't abandon your post."
 - 2026-09-29: Main3 map revision 10 is approved for the gray blockout, for now.
 - 2026-09-29: Chases never lead into the cultist cave.
+- 2026-09-29: When a task's done-check needs another agent's check (a walk, a review) or Grant, the builder does not tick it; Wren ticks it after that check passes.
+- 2026-09-29: No voice acting. All speech is text; the cult chant has no words.
+- 2026-09-29: The hidden resident's storyline completes when he is calmed, not destroyed; his condition is never named.
+- 2026-09-29: Grant's gray-box feedback on Main3: the dev menu opens off screen; there are not nearly enough trees (fine for the gray box); the cabin is too small; the tower climb is too high and too long (consider starting it on a hill and stairs that wrap around; team to comment); the Ward clearing must look out off the ledge at the fire and into the distance, with the Ward itself off to one side.
