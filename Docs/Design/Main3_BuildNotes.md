@@ -64,3 +64,9 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 - Ramp legs: 3.3.2 "16 m legs at about 14 degrees" -> each leg slopes over 13 m (17 degrees) between level 3 m turns centred on x 52 and x 68, so the legs keep their 16 m spacing, the turns are level, and the east turn stays 1.5 m clear of the chamber (x 71). Walked mouth to chamber: 73 m of floor as in 3.3.4.
 - Entrance passage 3 m wide (the doc gives the legs' width; the entrance width is not stated), 4 m tall, running from the mouth face at z 37.4 to z 20.5.
 - Mouth: terrain hole of 35 cells, x 50.0 to 53.9, z 33.4 to 37.5; a rock block fills it above the passage ceiling. The day-one board (CLOSED, UNSAFE) has no collider until a day system exists.
+
+## 8.9 Sightline check
+
+- Report: Docs/Layout/Main3/Main3_sightlines.md. Every place is seen from the deck; the Ward (Tor) and the cave (rim and terrain) are hidden from all 64 eye points, also with eyes and targets raised 3 m.
+- Hidden margins (least-hidden line): W-1 4.2 m at eye height (5.0 from the deck centre, doc 6.4), 0.9 m at +3 m jump; C-1 9.2 m (9.3 from the centre, doc 8.3), 6.0 m at +3 m jump (doc about 5.3).
+- For Sable: the Hollow Giant (map (202, 140), a 40 to 50 m giant, top 50 here) stands 1.8 m outside the map's Camp 2 cone and its crown reaches into it: the stack top is seen from 37 of 64 eye points with 0.5 m margin from the deck centre (doc 3.8, cone rule 3), and the boulder field is not seen. The same crown hides the cab from the Camp 2 stack foot.
