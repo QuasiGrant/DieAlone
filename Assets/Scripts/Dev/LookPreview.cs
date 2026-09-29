@@ -1,7 +1,8 @@
 using UnityEngine;
 
-/// F2 cycles the whole look between the scene's own LookTuning and the preview looks listed
-/// here (day one, day two), in Play mode, without changing any asset or scene.
+/// Switches the whole look between the scene's own LookTuning and the preview looks listed
+/// here (day one, day two), in Play mode, without changing any asset or scene. The LOOK section
+/// of the F1 dev menu (DevMenu) calls Select; there is no key of its own.
 /// A daylight look forces the Sunset fog set and sky, turns the scene's directional lights off
 /// and adds a sun placed and coloured from that LookTuning; going back restores everything.
 /// Exists only in the Editor and development builds, like DevMenu: in a release build the
@@ -35,6 +36,7 @@ public class LookPreview : MonoBehaviour
     public int Count => looks != null ? looks.Length : 0;
     public int Current => current;
     public string CurrentLabel => Count > 0 ? looks[current].label : "";
+    public string Label(int i) => i >= 0 && i < Count ? looks[i].label : "";
 
     private void Awake()
     {
@@ -43,8 +45,6 @@ public class LookPreview : MonoBehaviour
 
     private void Update()
     {
-        var keyboard = UnityEngine.InputSystem.Keyboard.current;
-        if (keyboard != null && keyboard.f2Key.wasPressedThisFrame && Count > 0) Select((current + 1) % Count);
         if (sun != null) PlaceSun(looks[current].tuning);
     }
 
@@ -125,7 +125,7 @@ public class LookPreview : MonoBehaviour
     private void OnGUI()
     {
         if (current == 0 || Count == 0) return;
-        GUI.Label(new Rect(Screen.width - 260f, 10f, 250f, 24f), "Look preview: " + CurrentLabel + "  (F2)");
+        GUI.Label(new Rect(Screen.width - 260f, 10f, 250f, 24f), "Look preview: " + CurrentLabel + "  (F1 menu)");
     }
 #endif
 }

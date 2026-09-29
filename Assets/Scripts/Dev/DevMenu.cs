@@ -1,45 +1,65 @@
 using UnityEngine;
 
-/// F1 toggles a panel listing every scene in the build list; picking one loads it.
-/// Under the open scene it lists warp points (children of a "DevWarps" object).
+/// The one dev panel. F1 on the keyboard or View (Select) on a gamepad opens and closes it;
+/// B on a gamepad also closes it. Three labelled sections:
+/// SCENES every scene in the build list (picking one loads it),
+/// WARPS the open scene's warp points (children of a "DevWarps" object, shown with readable names),
+/// LOOK the looks listed on LookPreview (Current, Day one, Day two).
+/// Mouse clicks, arrow keys or WASD with Enter, and stick or d-pad with A all work.
 /// Exists only in the Editor and development builds. In a release build this class
-/// compiles to an empty component: no panel, no F1, nothing to find.
-/// The panel is built from code at runtime so the prefab carries no UI for it.
+/// compiles to an empty component: no panel, no keys, nothing to find.
+/// The panel is built from code each time it opens, so the prefab carries no UI for it.
 public class DevMenu : MonoBehaviour
 {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+    private const string WarpRootName = "DevWarps";
+
+    // Layout, in reference pixels at 1280 x 720.
+    private const float ColumnWidth = 360f;
+    private const float EdgeWidth = 3f;
+    private const float Margin = 18f;
+    private const float RowSpacing = 6f;
+    private const float SectionGap = 12f;
+    private const float WarpIndent = 22f;
+    private const int TitleSize = 26;
+    private const int HintSize = 13;
+    private const int HeaderSize = 13;
+    private const int RowSize = 17;
+    private const int SubRowSize = 15;
+    private const int SortingOrder = 100;
+
     private GameObject panel;
     private Behaviour[] gameplay;
     private bool open;
 
-    // Palette: near-black panel, bone text, one warm accent for the current scene.
+    // Palette: near-black panel, bone text, one warm accent for what is current.
     private static readonly Color PanelColor = new Color(0.06f, 0.06f, 0.07f, 0.94f);
     private static readonly Color EdgeColor = new Color(0.85f, 0.55f, 0.30f, 1f);
     private static readonly Color TextColor = new Color(0.92f, 0.88f, 0.80f, 1f);
     private static readonly Color DimColor = new Color(0.60f, 0.57f, 0.52f, 1f);
     private static readonly Color ButtonColor = new Color(0.16f, 0.16f, 0.18f, 1f);
-    private static readonly Color ButtonHover = new Color(0.26f, 0.24f, 0.22f, 1f);
+    private static readonly Color ButtonHover = new Color(0.30f, 0.27f, 0.24f, 1f);
     private static readonly Color AccentColor = new Color(0.55f, 0.32f, 0.16f, 1f);
     private static readonly Color AccentHover = new Color(0.70f, 0.42f, 0.22f, 1f);
     private static readonly Color SubColor = new Color(0.11f, 0.11f, 0.12f, 1f);
+    private static readonly Color RuleColor = new Color(0.85f, 0.55f, 0.30f, 0.35f);
 
     private void Update()
     {
         var keyboard = UnityEngine.InputSystem.Keyboard.current;
-        if (keyboard == null || !keyboard.f1Key.wasPressedThisFrame) return;
-        if (GamePause.Instance != null && GamePause.Instance.IsPaused) return;   // not over the pause menu
-        Toggle();
-    }
-
-    private void Toggle()
-    {
+        var gamepad = UnityEngine.InputSystem.Gamepad.current;
+        bool toggle = (keyboard != null && keyboard.f1Key.wasPressedThisFrame)
+                   || (gamepad != null && gamepad.selectButton.wasPressedThisFrame);
+        bool back = open && gamepad != null && gamepad.buttonEast.wasPressedThisFrame;
+        if (back) { Close(); return; }
+        if (!toggle) return;
+        if (!open && GamePause.Instance != null && GamePause.Instance.IsPaused) return;   // not over the pause menu
         if (open) Close(); else Open();
     }
 
     private void Open()
     {
-        if (panel == null) Build();
-        panel.SetActive(true);
+        Rebuild();
         open = true;
         gameplay = FindGameplay();
         foreach (var b in gameplay) if (b != null) b.enabled = false;
@@ -49,8 +69,11 @@ public class DevMenu : MonoBehaviour
 
     private void Close()
     {
-        if (panel != null) panel.SetActive(false);
+        if (panel != null) Destroy(panel);
+        panel = null;
         open = false;
+        var events = UnityEngine.EventSystems.EventSystem.current;
+        if (events != null) events.SetSelectedGameObject(null);
         if (gameplay != null) foreach (var b in gameplay) if (b != null) b.enabled = true;
         gameplay = null;
     }
@@ -88,29 +111,59 @@ public class DevMenu : MonoBehaviour
         Close();
     }
 
+    private void PickLook(LookPreview preview, int index)
+    {
+        preview.Select(index);
+        Close();
+    }
+
     /// Friendly names for the build-list scenes.
-    private static string DisplayName(string sceneName)
+    private static string SceneLabel(string sceneName)
     {
         switch (sceneName)
         {
             case "Main": return "Main 1.0  (saved version)";
-            case "Main2": return "Main 2.0  (current work)";
+            case "Main2": return "Main 2.0  (archived)";
             case "Graybox": return "Graybox  (test course)";
-            default: return sceneName;
+            default: return Readable(sceneName);
         }
     }
 
-    // ---- UI built from code: a dark left column with a title, the scene list, and warps under the open scene.
-
-    private void Build()
+    /// "Campsite_1_Tents" or "CaveMouth" becomes "Campsite 1 Tents" or "Cave Mouth".
+    private static string Readable(string name)
     {
+        var sb = new System.Text.StringBuilder(name.Length + 8);
+        for (int i = 0; i < name.Length; i++)
+        {
+            char c = name[i];
+            if (c == '_' || c == '-') { sb.Append(' '); continue; }
+            bool wordStart = i > 0 && char.IsUpper(c) && char.IsLower(name[i - 1]);
+            bool numberStart = i > 0 && char.IsDigit(c) && char.IsLetter(name[i - 1]);
+            if (wordStart || numberStart) sb.Append(' ');
+            sb.Append(c);
+        }
+        return System.Text.RegularExpressions.Regex.Replace(sb.ToString(), " {2,}", " ").Trim();
+    }
+
+    private static Transform FindWarpRoot()
+    {
+        foreach (var root in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+            if (root.name == WarpRootName) return root.transform;
+        return null;
+    }
+
+    // ---- UI built from code: a dark left column with a title and three labelled sections.
+
+    private void Rebuild()
+    {
+        if (panel != null) Destroy(panel);
         var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
         panel = new GameObject("DevMenuCanvas");
         panel.transform.SetParent(transform, false);
         var canvas = panel.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 100;
+        canvas.sortingOrder = SortingOrder;
         var scaler = panel.AddComponent<UnityEngine.UI.CanvasScaler>();
         scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1280f, 720f);
@@ -123,46 +176,77 @@ public class DevMenu : MonoBehaviour
         bgRect.anchorMin = new Vector2(0f, 0f); bgRect.anchorMax = new Vector2(0f, 1f);
         bgRect.pivot = new Vector2(0f, 0.5f);
         bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
-        bgRect.sizeDelta = new Vector2(340f, 0f);
+        bgRect.sizeDelta = new Vector2(ColumnWidth, 0f);
         var edge = Rect("Edge", bg.transform, EdgeColor).GetComponent<RectTransform>();
         edge.anchorMin = new Vector2(1f, 0f); edge.anchorMax = new Vector2(1f, 1f); edge.pivot = new Vector2(1f, 0.5f);
-        edge.offsetMin = Vector2.zero; edge.offsetMax = Vector2.zero; edge.sizeDelta = new Vector2(3f, 0f);
+        edge.offsetMin = Vector2.zero; edge.offsetMax = Vector2.zero; edge.sizeDelta = new Vector2(EdgeWidth, 0f);
 
         var list = new GameObject("List", typeof(RectTransform));
         list.transform.SetParent(bg.transform, false);
         var listRect = list.GetComponent<RectTransform>();
         listRect.anchorMin = new Vector2(0f, 0f); listRect.anchorMax = new Vector2(1f, 1f);
-        listRect.offsetMin = new Vector2(18f, 18f); listRect.offsetMax = new Vector2(-21f, -18f);
+        listRect.offsetMin = new Vector2(Margin, Margin); listRect.offsetMax = new Vector2(-Margin - EdgeWidth, -Margin);
         var layout = list.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
-        layout.spacing = 6f;
+        layout.spacing = RowSpacing;
         layout.childAlignment = TextAnchor.UpperLeft;
         layout.childControlWidth = true; layout.childControlHeight = true;
         layout.childForceExpandWidth = true; layout.childForceExpandHeight = false;
 
-        AddText(list.transform, font, "DEV MENU", 26, FontStyle.Bold, TextColor, 38f);
-        AddText(list.transform, font, "F1 closes.  Scenes load fresh; warps move the player.", 13, FontStyle.Normal, DimColor, 22f);
-        AddGap(list.transform, 10f);
-        AddText(list.transform, font, "SCENES", 12, FontStyle.Bold, DimColor, 20f);
+        AddText(list.transform, font, "DEV MENU", TitleSize, FontStyle.Bold, TextColor, 36f);
+        AddText(list.transform, font, "F1 or gamepad View opens and closes.  B closes.", HintSize, FontStyle.Normal, DimColor, 18f);
+        AddText(list.transform, font, "Mouse, arrows + Enter, or stick + A to pick.", HintSize, FontStyle.Normal, DimColor, 18f);
 
+        UnityEngine.UI.Selectable first = null;
+        void Keep(UnityEngine.UI.Selectable s) { if (first == null && s != null && s.interactable) first = s; }
+
+        // SCENES
+        AddSection(list.transform, font, "SCENES");
         int count = UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings;
         string active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().path;
         for (int i = 0; i < count; i++)
         {
             string path = UnityEngine.SceneManagement.SceneUtility.GetScenePathByBuildIndex(i);
-            string name = System.IO.Path.GetFileNameWithoutExtension(path);
             bool current = path == active;
-            AddButton(list.transform, font, (current ? "▶  " : "     ") + DisplayName(name), 17, 0f, current ? AccentColor : ButtonColor, current ? AccentHover : ButtonHover, current ? null : (UnityEngine.Events.UnityAction)(() => LoadScene(path)));
-            if (!current) continue;
-            var warps = GameObject.Find("DevWarps");
-            if (warps == null || warps.transform.childCount == 0) continue;
-            AddGap(list.transform, 4f);
-            AddText(list.transform, font, "WARP TO", 12, FontStyle.Bold, DimColor, 20f);
-            foreach (Transform w in warps.transform)
+            string label = SceneLabel(System.IO.Path.GetFileNameWithoutExtension(path)) + (current ? "   (reload)" : "");
+            Keep(AddButton(list.transform, font, label, RowSize, 0f, current ? AccentColor : ButtonColor, current ? AccentHover : ButtonHover, () => LoadScene(path)));
+        }
+
+        // WARPS
+        AddSection(list.transform, font, "WARPS");
+        var warps = FindWarpRoot();
+        if (warps == null || warps.childCount == 0)
+            AddText(list.transform, font, "No warp points in this scene.", SubRowSize, FontStyle.Italic, DimColor, 22f);
+        else
+            foreach (Transform w in warps)
             {
                 var target = w;
-                AddButton(list.transform, font, w.name, 15, 22f, SubColor, ButtonHover, () => Warp(target));
+                Keep(AddButton(list.transform, font, Readable(w.name), SubRowSize, WarpIndent, SubColor, ButtonHover, () => Warp(target)));
             }
-        }
+
+        // LOOK
+        AddSection(list.transform, font, "LOOK");
+        var preview = FindFirstObjectByType<LookPreview>();
+        if (preview == null || preview.Count == 0)
+            AddText(list.transform, font, "No look preview in this scene.", SubRowSize, FontStyle.Italic, DimColor, 22f);
+        else
+            for (int i = 0; i < preview.Count; i++)
+            {
+                int index = i;
+                bool current = i == preview.Current;
+                Keep(AddButton(list.transform, font, preview.Label(i), SubRowSize, WarpIndent, current ? AccentColor : SubColor, current ? AccentHover : ButtonHover, () => PickLook(preview, index)));
+            }
+
+        // Keyboard and gamepad start on the first row.
+        var events = UnityEngine.EventSystems.EventSystem.current;
+        if (events != null && first != null) events.SetSelectedGameObject(first.gameObject);
+    }
+
+    private static void AddSection(Transform parent, Font font, string title)
+    {
+        AddGap(parent, SectionGap);
+        AddText(parent, font, title, HeaderSize, FontStyle.Bold, EdgeColor, 18f);
+        var rule = Rect("Rule", parent, RuleColor);
+        rule.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight = 1f;
     }
 
     private static GameObject Rect(string name, Transform parent, Color color)
@@ -190,33 +274,32 @@ public class DevMenu : MonoBehaviour
         go.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight = height;
     }
 
-    private static void AddButton(Transform parent, Font font, string text, int size, float indent, Color normal, Color hover, UnityEngine.Events.UnityAction onClick)
+    private static UnityEngine.UI.Button AddButton(Transform parent, Font font, string text, int size, float indent, Color normal, Color hover, UnityEngine.Events.UnityAction onClick)
     {
         var go = new GameObject("Button_" + text, typeof(RectTransform));
         go.transform.SetParent(parent, false);
         var image = go.AddComponent<UnityEngine.UI.Image>();
         image.color = normal;
         var button = go.AddComponent<UnityEngine.UI.Button>();
+        // Tints multiply the image colour; hover and keyboard/gamepad focus share one tint.
+        var tint = new Color(hover.r / Mathf.Max(normal.r, 0.01f), hover.g / Mathf.Max(normal.g, 0.01f), hover.b / Mathf.Max(normal.b, 0.01f), 1f);
         var colors = button.colors;
-        colors.normalColor = Color.white; colors.highlightedColor = new Color(hover.r / Mathf.Max(normal.r, 0.01f), hover.g / Mathf.Max(normal.g, 0.01f), hover.b / Mathf.Max(normal.b, 0.01f), 1f);
-        colors.pressedColor = new Color(1.3f, 1.3f, 1.3f, 1f); colors.selectedColor = Color.white; colors.colorMultiplier = 1f;
+        colors.normalColor = Color.white; colors.highlightedColor = tint; colors.selectedColor = tint;
+        colors.pressedColor = new Color(1.3f, 1.3f, 1.3f, 1f); colors.colorMultiplier = 1f;
         button.colors = colors;
-        if (onClick != null) button.onClick.AddListener(onClick); else button.interactable = false;
+        var nav = button.navigation;
+        nav.mode = UnityEngine.UI.Navigation.Mode.Vertical;
+        button.navigation = nav;
+        button.onClick.AddListener(onClick);
         var le = go.AddComponent<UnityEngine.UI.LayoutElement>();
         le.preferredHeight = size + 16f;
-        if (indent > 0f)
-        {
-            // Indented rows leave a margin on the left so warps read as children of the scene row.
-            var pad = go.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
-            pad.padding = new RectOffset((int)indent + 10, 10, 0, 0); pad.childAlignment = TextAnchor.MiddleLeft;
-            pad.childControlWidth = true; pad.childControlHeight = true; pad.childForceExpandWidth = true; pad.childForceExpandHeight = true;
-        }
         var label = new GameObject("Text", typeof(RectTransform));
         label.transform.SetParent(go.transform, false);
         var t = label.AddComponent<UnityEngine.UI.Text>();
         t.font = font; t.fontSize = size; t.color = TextColor; t.text = text; t.alignment = TextAnchor.MiddleLeft; t.horizontalOverflow = HorizontalWrapMode.Overflow;
         var r = label.GetComponent<RectTransform>();
-        r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = new Vector2(indent > 0f ? 0f : 12f, 0f); r.offsetMax = new Vector2(-10f, 0f);
+        r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = new Vector2(12f + indent, 0f); r.offsetMax = new Vector2(-10f, 0f);
+        return button;
     }
 #endif
 }
