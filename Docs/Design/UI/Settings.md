@@ -1,6 +1,6 @@
 # Settings
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-20 (player settings persist in a JSON file in persistentDataPath, separate from PlayerTuning; input is controller plus keyboard and mouse; legacy Text font), 2026-09-28 (settings live in the carried logbook). Sources read: Assets/Scripts/Settings/PlayerSettings.cs and Assets/Scripts/UI/PauseMenu.cs (read only; today: look sensitivity 0.2 to 3, default 1, and invert look, both in the pause menu, file settings.json), Docs/Design/Sound/Mixer.md section 4 (four volume sliders, Hollis, **[Grant yes]** pending), PLAN.md Later (volume, graphics and control rebinding). Type per Style.md 7 (Vesper).
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-20 (player settings persist in a JSON file in persistentDataPath, separate from PlayerTuning; input is controller plus keyboard and mouse; legacy Text font), 2026-09-28 (settings live in the carried logbook). Sources read: Assets/Scripts/Settings/PlayerSettings.cs and Assets/Scripts/UI/PauseMenu.cs (read only; today: look sensitivity 0.2 to 3, default 1, and invert look, both in the pause menu, file settings.json), Docs/Design/Sound/Mixer.md section 4 (four volume sliders, Hollis, **[Grant yes]** pending), PLAN.md Later (volume, graphics and control rebinding). Type per Style.md 7 (Vesper). Revised 2026-09-29: Reduce flashing toggle (ContentWarning.md).
 
 ## 1. Purpose
 
@@ -25,6 +25,7 @@ One settings panel, built once, shown in three hosts:
 | Display | Resolution | stepper | the monitor's list; default native | both | PLAN Later |
 | Display | V-sync | toggle | on | both | PLAN Later |
 | Display | Brightness | slider | proposal only, see 2.5 | both | **[Vesper]** |
+| Display | Reduce flashing | toggle | off | both, and the content warning screen | ContentWarning.md 4 |
 | Controls | Rebind keys and buttons | list, later | defaults from InputSystem_Actions | main menu only | PLAN Later |
 | All | Reset section to defaults | button per section | | both (rebind: main menu) | |
 
@@ -35,6 +36,7 @@ One settings panel, built once, shown in three hosts:
 5. Brightness: a horror game usually offers it, but it moves the picture Vesper tunes. Draft: not built until Vesper says whether it exists and what it scales (exposure offset within a small range, never touching the filter). Listed so it is not forgotten.
 6. Rebinding is main menu only: rebinding mid-run can strand the player (for example unbinding the logbook button while the book is open). It gets its own spec when planned. Pause and the logbook show no rebinding row until then; rows that do not exist yet are hidden, not greyed.
 7. Display mode and Resolution apply at once and open a keep card (section 5).
+8. Reduce flashing applies at once, no keep card. What it changes is ContentWarning.md 4. One stored value, shared with the content warning screen.
 
 ## 3. Layout (same in all hosts)
 
@@ -54,6 +56,7 @@ One settings panel, built once, shown in three hosts:
 |    Display mode       < Borderless >            |
 |    Resolution         < 1920 x 1080 >           |
 |    V-sync             [x]                       |
+|    Reduce flashing    [ ]                       |
 |    Reset to defaults                            |
 |                                                 |
 |  [ Back ]      (pause and main menu hosts only) |
@@ -88,6 +91,8 @@ Requirements for Rook:
 5. Display: Screen.fullScreenMode, Screen.resolutions, Screen.SetResolution, QualitySettings.vSyncCount. Rook confirms each in 6000.3.24f1 before use (not verified here). Display settings are also stored in the settings JSON.
 6. While the panel is open in the pause host, `Esc` and `Start` go to Back, not Resume (modal flag, Logbook.md 10.3).
 7. Panel animations on unscaled time (pause host runs at timeScale 0).
+8. `reduceFlashing` and `warningSeen` fields in PlayerSettingsData (ContentWarning.md 7). Display Reset to defaults resets `reduceFlashing` to off; it never resets `warningSeen`.
+9. Homage finds are not settings: they live in profile.json (Collectibles.md 7), never in settings.json, and no reset here touches them.
 
 ## 5. Keep display card
 

@@ -1,6 +1,6 @@
 # Collectibles page
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (the player carries the logbook; later collectibles live in it), 2026-09-29 (the last page of the logbook is a collectible page of achievements that reference other games, for example the lamppost from The Beginner's Guide and the phone booth from Disco Elysium; a camp has a payphone as a Disco Elysium homage; unlocking the best ending is an achievement; the game saves only when the player sleeps). Host: Logbook.md. Type per Style.md 7 (Vesper). Which homages exist beyond the two named, and where they stand in Main3, is Vesper's list, not this spec.
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (the player carries the logbook; later collectibles live in it), 2026-09-29 (the last page of the logbook is a collectible page of achievements that reference other games, for example the lamppost from The Beginner's Guide and the phone booth from Disco Elysium; a camp has a payphone as a Disco Elysium homage; unlocking the best ending is an achievement; the game saves only when the player sleeps). Host: Logbook.md. Type per Style.md 7 (Vesper). The homage list is Vesper's (section 2); where each stands in Main3 is Vesper and Sable's, not this spec.
 
 ## 1. Purpose
 
@@ -8,21 +8,31 @@ A quiet page at the back of the logbook that keeps the homages the player has fo
 
 ## 2. What counts as a homage
 
-1. A world object that nods to another game: the payphone at a camp (Disco Elysium), a lamppost (The Beginner's Guide), more from Vesper.
-2. Each one is an ordinary object in the world first. It fits the place and passes Style.md; the nod is for players who know.
-3. Each has a stable ID (for example `homage_payphone`, `homage_lamppost`), a page drawing, a title and one line of text. Quill writes the words, Vesper draws.
-4. Placement: Vesper and Sable, in Main3 dressing (Milestone 11). The lamppost has no place in Main3.md yet **[GAP: placement]**.
+1. A world object that nods to another game. Each one is an ordinary object in the world first. It fits the place and passes Style.md; the nod is for players who know.
+2. Each has a stable ID, a page drawing, a title and one line of text. Quill writes the words, Vesper draws.
+3. The current list, Vesper's five (by object only; placements and reasons are in a private note, Vesper and Sable own them):
+
+| Frame | ID | Object | Find kind (draft) |
+|---|---|---|---|
+| 1 | `homage_lamppost` | A lit lamppost in the woods | Stand, in its light |
+| 2 | `homage_payphone` | The camp payphone | Use, lift the receiver |
+| 3 | `homage_pony` | A small plastic pony | Use, pick up and look |
+| 4 | `homage_squirrel` | A hand-drawn squirrel card | Seen, turned face up during an activity |
+| 5 | `homage_redshell` | One fired red shell | Use, pick up and look |
+
+4. More may be added; the page and the count grow with the list, no layout change.
 
 ## 3. Finding one in the world
 
-Two kinds of find. Each homage uses one.
+Three kinds of find. Each homage uses one.
 
 | Kind | What the player does | Prompt |
 |---|---|---|
 | Use | Interacts with it (for example lifts the payphone receiver). | The object's normal prompt, lower centre, for example `Lift the receiver`. Nothing says it is special. |
 | Stand | Stands in a spot (for example under the lamppost's light) for 2 s. | None. |
+| Seen | The object comes up during an activity (for example a card turned face up in a card game). It counts when it is face up on screen. | None; the activity's own input. |
 
-1. Keyboard and mouse: `E` for a Use find. Gamepad: `Y` (Interact, as today). Stand finds need no button.
+1. Keyboard and mouse: `E` for a Use find. Gamepad: `Y` (Interact, as today). Stand finds need no button. Seen finds use whatever the activity uses; the activity spec owns that path.
 2. On the first find of that homage, ever: one page sound (Hollis, UI group), and one line through the Objective.md queue: `Logbook: a page kept.` (Quill may change the words). Nothing else: no pop-up, no icon, no pause.
 3. Finding it again, in this run or a later one, does nothing extra. The object still does its normal thing.
 4. The first find ever also reveals the page (section 4.4).
@@ -39,19 +49,19 @@ The last tab of the logbook, after Settings. This follows DECISIONS 2026-09-29 (
 
 ```
 +-----------------------------+-----------------------------+
-|  KEPT                3 of 8 |  The receiver               |
+|  KEPT                3 of 5 |  The receiver               |
 |                             |                             |
 |  +-----+ +-----+ +-----+    |   +---------------------+   |
 |  | (1) | | (2) | |  3  |    |   |                     |   |
 |  |draw.| |draw.| |     |    |   |   (ink drawing of   |   |
 |  +-----+ +-----+ +-----+    |   |    the payphone)    |   |
-|  +-----+ +-----+ +-----+    |   |                     |   |
-|  |  4  | | (5) | |  6  |    |   +---------------------+   |
-|  |     | |draw.| |     |    |                             |
-|  +-----+ +-----+ +-----+    |   Someone is still on the   |
-|  +-----+ +-----+            |   line. Day 6.              |
-|  |  7  | |  8  |            |                             |
-|  +-----+ +-----+            |                             |
+|  +-----+ +-----+            |   |                     |   |
+|  |  4  | | (5) |            |   +---------------------+   |
+|  |     | |draw.|            |                             |
+|  +-----+ +-----+            |   (one line, Quill). Day 6. |
+|                             |                             |
+|                             |                             |
+|                             |                             |
 +-----------------------------+-----------------------------+
 ```
 
@@ -113,7 +123,7 @@ The platform is not chosen. Which store, and whether its achievement API works f
 5. The best-ending achievement (DECISIONS 2026-09-29) is a platform achievement. Draft: it is not a frame on this page, because this page is homages only and a frame for it would hint at the ending **[Grant]**.
 
 Requirements for Rook:
-1. A homage list asset: ID, frame number, find kind (Use or Stand), drawing, title key, text key. One component on each world object points to its ID.
+1. A homage list asset: ID, frame number, find kind (Use, Stand or Seen), drawing, title key, text key. One component on each world object points to its ID.
 2. Find records go through one call that writes the profile file, posts the Objective line and (later) calls the platform layer.
 3. The Stand kind uses a trigger volume and a 2 s dwell on scaled time, so pause stops it; it counts only while the Player map is live (not in the logbook, not in a minigame).
 4. The page is a logbook tab component; it reads the profile file when the book opens.
@@ -124,7 +134,7 @@ Requirements for Rook:
 |---|---|
 | Nothing found ever | No tab. |
 | Some found | Tab last; grid with drawings and numbered empty frames. |
-| All found | Every frame drawn; top line `8 of 8`. No extra reward on the page. |
+| All found | Every frame drawn; top line `5 of 5`. No extra reward on the page. |
 | Profile unreadable | As nothing found; file kept as profile.old.json. |
 | Night | Same page, read-only (nothing to choose anyway). |
 
@@ -134,6 +144,6 @@ Requirements for Rook:
 2. Should a find count before the player sleeps (draft: yes, profile file written at once)? Grant.
 3. Is the best-ending achievement a frame on this page, or platform only (draft)? Grant.
 4. Which platform, and when. Grant.
-5. The full homage list, placements and the lamppost's place in Main3. Vesper and Sable.
+5. Placements in Main3 dressing (Milestone 11), and whether a homage inside an activity that can be lost for good stays findable in a later run. Vesper and Sable.
 
 Pim

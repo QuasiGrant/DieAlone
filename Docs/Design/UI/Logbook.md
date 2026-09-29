@@ -1,6 +1,6 @@
 # Logbook
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (the player carries the logbook; its main job is tracking questions and notes; settings live in it, later inventory, memories and collectibles; stats show on screen only at the Ward, the rest of the time in the logbook only; at night the only action is the Ward), 2026-09-29 (the day ends by filing or by an event; no time budget; nothing forces the player to act; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Written after the four loop specs, per Tully's order. Colours and sizes follow Style.md section 7 (Vesper owns type). Settings content is Settings.md.
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (the player carries the logbook; its main job is tracking questions and notes; settings live in it, later inventory, memories and collectibles; stats show on screen only at the Ward, the rest of the time in the logbook only; at night the only action is the Ward), 2026-09-29 (the day ends by filing or by an event; no time budget; nothing forces the player to act; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Written after the four loop specs, per Tully's order. Revised 2026-09-29 to add the Kept tab after Settings (Collectibles.md). Colours and sizes follow Style.md section 7 (Vesper owns type). Settings content is Settings.md.
 
 Terms (Wren, 2026-09-29: the approved DailyLoop.md wins): the tower stamps `SAFE` or `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office, as in DailyLoop.md and Main3.md. On a narrow logbook column `CHECK ON FOOT` may be cut to `CHECK`; the full words show on the tower sheet, the binoculars and the map foot line.
 
@@ -50,12 +50,12 @@ Order is fixed. A tab that has no content yet is hidden, not greyed.
 | Today | always | duties, stamps, File, needs, last Ward reading, past days |
 | Questions | always | open and answered questions, notes under each |
 | Map | always | hand-drawn map, pins from the stamps |
-| Settings | always | Settings.md |
 | Inventory | reserved, hidden | later (DECISIONS 2026-09-28) |
 | Memories | reserved, hidden | later |
-| Collectibles | reserved, hidden | later |
+| Settings | always | Settings.md |
+| Kept | hidden until the first homage is found, ever | Collectibles.md |
 
-Reserved tabs get their own spec when their feature is planned. Their slots are between Map and Settings, so Settings stays last.
+Reserved tabs get their own spec when their feature is planned. Their slots are between Map and Settings. The collectibles tab (`Kept`) is the last page of the book (DECISIONS 2026-09-29), after Settings. Tabs do not wrap.
 
 The book always opens on the tab it was closed on, except: after waking it opens on Today once.
 
@@ -141,6 +141,10 @@ The main job of the book (DECISIONS 2026-09-28).
 
 Content, controls and saving: Settings.md. In the book it is drawn as a ruled page with the same controls. It is the same panel the pause menu and main menu use.
 
+## 7a. Kept tab
+
+The homage collectibles page: content, finds, the cross-run save (profile.json) and platform achievements are Collectibles.md. Read-only by day and night; nothing on it is choosable beyond focus.
+
 ## 8. Opening and closing
 
 ### 8.1 By day
@@ -155,7 +159,7 @@ Content, controls and saving: Settings.md. In the book it is drawn as a ruled pa
 
 1. Opens, read-only. DECISIONS 2026-09-28: at night the only action is the Ward; reading and settings are not actions in the world.
 2. Today shows the day as filed, plus one line at the top: `Night. Go to the Ward.` No choosable line on the page.
-3. Questions and Map read as by day. Settings work fully.
+3. Questions, Map and Kept read as by day. Settings work fully.
 4. Night 1: the same, with the top line `Night. The cairn path.` (section 4.4), so settings stay reachable on the reveal night.
 
 ### 8.3 Forced close
@@ -189,14 +193,14 @@ The book does not replace the pause menu. The pause menu stays the non-diegetic 
 Keyboard and mouse:
 1. `Tab` opens and closes the book.
 2. `Q` and `E` change tab. Clicking a tab opens it.
-3. Arrow keys or `W` / `S` move focus up and down. On Today, `A` / `D` or left and right arrows turn days; on Map they move between pins; on Settings they change the focused control.
+3. Arrow keys or `W` / `S` move focus up and down. On Today, `A` / `D` or left and right arrows turn days; on Map they move between pins; on Settings they change the focused control; on Kept they move between frames.
 4. `Enter` chooses. Mouse click chooses; hover moves focus. Mouse wheel scrolls a long Questions list.
 5. `Esc` closes the book.
 
 Gamepad:
 1. `View` (the small left centre button) opens and closes the book.
 2. `LB` and `RB` change tab.
-3. D-pad or left stick move focus. Left and right turn days on Today, move between pins on Map, change the control on Settings.
+3. D-pad or left stick move focus. Left and right turn days on Today, move between pins on Map, change the control on Settings, move between frames on Kept.
 4. `A` chooses.
 5. `B` or `Start` closes the book.
 

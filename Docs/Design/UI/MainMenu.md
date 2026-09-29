@@ -1,6 +1,6 @@
 # Main menu
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: PLAN.md Later ("Main menu with New run and Continue"), DECISIONS.md 2026-09-20 (settings JSON in persistentDataPath; legacy Text font), 2026-09-28 (a run ends the first time HP, MIND or WARD reaches 0), 2026-09-29 (day one is an ordinary lookout job; no fire visible before nightfall on day one). Save facts from Assets/Scripts/Core/GameSave.cs (read only): one file, run.json, version 1, written at sleep; Load returns Loaded, Missing, Corrupt, UnsupportedVersion or TuningMismatch and never throws. Type per Style.md 7 (Vesper).
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: PLAN.md Later ("Main menu with New run and Continue"), DECISIONS.md 2026-09-20 (settings JSON in persistentDataPath; legacy Text font), 2026-09-28 (a run ends the first time HP, MIND or WARD reaches 0), 2026-09-29 (day one is an ordinary lookout job; no fire visible before nightfall on day one). Save facts from Assets/Scripts/Core/GameSave.cs (read only): one file, run.json, version 1, written at sleep; Load returns Loaded, Missing, Corrupt, UnsupportedVersion or TuningMismatch and never throws. Type per Style.md 7 (Vesper). Revised 2026-09-29: Content warnings row and first-launch screen (ContentWarning.md, DECISIONS 2026-09-29 content warnings line).
 
 ## 1. Purpose
 
@@ -19,6 +19,7 @@ Start a run, go back to the saved run, change settings before playing, quit. Not
 |  [ Continue ]      Day 14                                    |
 |  [ New run ]                                                 |
 |  [ Settings ]                                                |
+|  [ Content warnings ]                                        |
 |  [ Quit ]                                                    |
 |                                                              |
 |                                               PLAY >  SP     |
@@ -29,7 +30,7 @@ Start a run, go back to the saved run, change settings before playing, quit. Not
 2. Title and list lower left, inside a 5 percent safe margin. One font, Style.md 7 sizes and colours.
 3. Bottom right: a tape OSD mark (`PLAY >`), static, same font. Vesper may drop it.
 4. `Day n` beside Continue is the day the saved run wakes into. Nothing else about the run is shown here (no stats: DECISIONS 2026-09-28).
-5. Rows, top to bottom: Continue, New run, Settings, Quit. Continue is not shown when there is nothing to continue (section 4).
+5. Rows, top to bottom: Continue, New run, Settings, Content warnings, Quit. Continue is not shown when there is nothing to continue (section 4).
 
 ## 3. Rows
 
@@ -38,6 +39,7 @@ Start a run, go back to the saved run, change settings before playing, quit. Not
 | Continue | Loads run.json and wakes the player in the cabin on the saved day. |
 | New run | Starts day 1. If a save exists, confirm first (section 5). |
 | Settings | The settings panel (Settings.md), full screen over the dimmed menu. Back returns here, focus on Settings. |
+| Content warnings | The content warning screen (ContentWarning.md) over the dimmed menu, with `Back` and the `Reduce flashing` toggle. Back returns here, focus on Content warnings. |
 | Quit | Quits. No confirm: nothing is lost at the menu. In the Editor it stops Play mode (PauseMenu.cs pattern). |
 
 Default focus: Continue if it is shown and loads, else New run.
@@ -75,15 +77,17 @@ Shown only when run.json exists (any result except Missing).
 
 1. Unreadable save: second line reads `The old save will be kept as run.old.json.` and the file is renamed, not deleted.
 2. Readable live save: the file is replaced by the new run's first save at the first sleep. Until then it stays on disk; quitting before the first sleep leaves it in place **[Rook to confirm this fits GameSave]**.
-3. `Not yet` is default focus. Input locked 0.4 s after opening (DayEndConfirm.md 5.3 pattern).
+3. New run never touches profile.json (homage finds, Collectibles.md 7) or settings.json.
+4. `Not yet` is default focus. Input locked 0.4 s after opening (DayEndConfirm.md 5.3 pattern).
 
 ## 6. States
 
 | State | What shows |
 |---|---|
-| First launch | New run (focus), Settings, Quit. |
-| Live save | Continue (focus), New run, Settings, Quit. |
-| Unreadable save | Continue dimmed with subline, New run (focus), Settings, Quit. |
+| First launch | The content warning screen first (ContentWarning.md 3); the menu and its background load after Continue. Then New run (focus), Settings, Content warnings, Quit. |
+| Live save | Continue (focus), New run, Settings, Content warnings, Quit. |
+| Unreadable save | Continue dimmed with subline, New run (focus), Settings, Content warnings, Quit. |
+| Content warnings | ContentWarning.md screen over the dimmed menu. |
 | New run confirm | Card over the dimmed menu. |
 | Settings | Settings.md panel. |
 | Loading | Menu fades to black 0.5 s; tape noise band on the fade (look filter). |
@@ -91,9 +95,9 @@ Shown only when run.json exists (any result except Missing).
 
 ## 7. Input paths
 
-Keyboard and mouse: arrow keys or `W` / `S` move focus; `Enter` chooses; click chooses, hover moves focus; `Esc` on the list does nothing, on the confirm card acts as `Not yet`, in Settings acts as Back.
+Keyboard and mouse: arrow keys or `W` / `S` move focus; `Enter` chooses; click chooses, hover moves focus; `Esc` on the list does nothing, on the confirm card acts as `Not yet`, in Settings and Content warnings acts as Back.
 
-Gamepad: D-pad or left stick up and down; `A` chooses; `B` on the list does nothing, on the confirm card acts as `Not yet`, in Settings acts as Back. `Start` does nothing.
+Gamepad: D-pad or left stick up and down; `A` chooses; `B` on the list does nothing, on the confirm card acts as `Not yet`, in Settings and Content warnings acts as Back. `Start` does nothing.
 
 Requirements for Rook:
 1. The menu uses only the UI map. The Player map is off in the menu scene.
