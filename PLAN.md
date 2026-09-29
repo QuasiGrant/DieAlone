@@ -131,11 +131,15 @@ Who lives at each of the six locations, what they want, what they know, how they
 
 ## Milestone 13: Content format and dialogue
 
-Quill drafts sample lines (a logbook day, a notice board sheet, one campsite exchange). Rook tests them in candidate formats and one format is chosen for both dialogue and events. Pim and Vesper set how text looks on screen. Output: Docs/Design/Dialogue.md.
+Quill drafts sample lines (a logbook day, a notice board sheet, one campsite exchange). Rook tests them in candidate formats and one format is chosen for both dialogue and events. The Child's minigame is built here as the pilot: talk, a three-way reply, flags and a MIND cost. Pim and Vesper set how text looks on screen. Output: Docs/Design/Dialogue.md.
 
 ## Milestone 14: Events
 
 The event grammar first (an event can block, add or replace a need, cost a stat, open a location), a rule for an empty deck, about five tracks for first playable, and a sound cue per event. Output: Docs/Design/Events.md.
+
+## Milestone 15: Resident minigames
+
+The seven residents' minigames and storylines from Docs/Private/Minigames.md (private), after Sable's revision and Grant's yes. Shared pieces first (resident record in the save, counter view, spot-the-change, beat input), then the games in Tully's order. Each loss traces to a choice or a visible failure, content varies between runs, warnings are subtle, and completing every storyline is hard. Includes the logbook's homage collectibles page.
 
 ## Later
 
