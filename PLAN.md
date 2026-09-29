@@ -148,6 +148,10 @@ The seven residents' minigames and storylines from Docs/Private/Minigames.md (pr
 
 Many more collectible references to other games, beyond the first five, placed through Main3 and listed on the logbook page. Each is a plain object found in the world, no logos or names; a trademark and fair-use check before release.
 
+## Milestone 17: Release
+
+Steam integration and achievements (collectibles and the best ending), the achievement wording, the trademark and fair-use check on homage references, store page needs, and any platform work.
+
 ## Later
 
 Main menu with New run and Continue. Volume, graphics and control rebinding settings. Endings built, scrapbook, inventory, map, Ward as physical objects, scares, a pet to feed, art pass.
