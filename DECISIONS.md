@@ -128,3 +128,8 @@
 - 2026-09-29: The Wardkeeper never goes beyond the fence to the main road. The proposed second road outside the fence is not accepted.
 - 2026-09-29: In the cultist cave, the chant slowly turns into bass as the player goes down into it.
 - 2026-09-29: The camp has an alternate version that shows up sometimes or in events, later in the game.
+- 2026-09-29: Gate minigame, option B: a booth just inside the gate; admitted cars drive up a gravel spur inside the fence to a closed campground loop behind a chain; refused cars turn and leave. The Wardkeeper stays inside the fence.
+- 2026-09-29: Cars keep arriving at the gate until the office resident's storyline ends (completed, or he dies); they do not thin out as WARD falls.
+- 2026-09-29: Talking to the office resident counts as Social and starts his minigame. The booth itself does not count as Social.
+- 2026-09-29: How many cars and days the gate minigame takes is set by playtesting. It must not last the whole game.
+- 2026-09-29: During a shift, trying to follow a car hits an invisible wall with the message "You can't abandon your post."

@@ -127,7 +127,7 @@ Main menu with New run and Continue. Volume, graphics and control rebinding sett
 
 ## Open decisions (owner)
 
-- The office minigame flow: where arrivals go after their papers are checked, inside the fence (team review under way).
+
 
 
 ## Rules and Tips
