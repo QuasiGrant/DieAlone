@@ -121,3 +121,10 @@
 - 2026-09-29: Endings get their own sessions later, once more of the story is worked out.
 - 2026-09-29: Hollis's slow-burn sound ramp is OK for now. When sounds drop out, creepy sounds replace them; the world does not go quiet.
 - 2026-09-29: Sound and music sources: our own recordings, Grant's music from the book, CC0, CC-BY or other licences that allow commercial use with credit, packs Grant owns, and Grant's Envato Elements account. Every file is listed in Assets/SOURCES.md with its licence, and credited in the game where the licence asks.
+- 2026-09-29: The look preview (7.7) is fine for now; Grant will judge the look again once it is fully designed.
+- 2026-09-29: Share-alike licences (CC-BY-SA) are not used.
+- 2026-09-29: The four files Rook's test build changed are put back to their committed state. Nothing is deleted: the recreated DefaultVolumeProfile.asset is archived outside Assets.
+- 2026-09-29: The dev menu is cleaned up: clearly labelled, easy to switch scenes and looks, and easy to warp around.
+- 2026-09-29: The Wardkeeper never goes beyond the fence to the main road. The proposed second road outside the fence is not accepted.
+- 2026-09-29: In the cultist cave, the chant slowly turns into bass as the player goes down into it.
+- 2026-09-29: The camp has an alternate version that shows up sometimes or in events, later in the game.
