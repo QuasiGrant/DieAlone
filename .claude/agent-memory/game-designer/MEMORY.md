@@ -1,0 +1,1 @@
+- [Grant on event pacing](grant_event_pacing.md) — pacing is Sable's call via playtest; vary events; Tuesday's timer is event-proof
