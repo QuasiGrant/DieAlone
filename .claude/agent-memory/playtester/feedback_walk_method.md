@@ -1,6 +1,6 @@
 ---
 name: walk-method-pitfalls
-description: Pitfalls found running Main3 machine walks (8.10) that produce false stuck spots or false sightline results
+description: Pitfalls in Main3 machine walks (8.10 to 8.9c): false stuck spots, false sightlines, screenshot tool writing into Assets, checks that miss return trips
 metadata:
   type: feedback
 ---
@@ -15,6 +15,9 @@ False results I hit in the 8.10 Main3 walk. Check these before reporting a stuck
 - The old "hop" (0.08 up for 8 steps) is not the real jump. Use gravity 20, v0 sqrt(2*20*0.6), jump on every landing, dt 0.02; with it the 8.9a hedges and wade boxes were climbable where the old hop and the fix check said they held. Also test crouch (1.0 m capsule) under chains and bars.
 - When reusing the first lines of a probe as a header, check they carry no side effects (one disabled the cave board for five probes and faked a board leak).
 - Joined-tour STUCK teleports use terrain height; never teleport into the cave (lands on the rim). Use explicit warps.
+- capture_game_view save_path must be inside the project and lands under Assets/ (it created Assets/Temp with .meta files). Never use it; render Camera.main to a RenderTexture in an eval and write the PNG to the scratchpad. If it happens, delete through AssetDatabase.DeleteAsset.
+- Rook's check recipes walk only the route he changed (8.9c: stair and Ward). Always walk every trail back INTO each place, not just out: the 8.9c knoll left all four camp trails in trenches a walker could not climb out of, and his check never saw it.
+- Test sprint-jumps sideways on stairs and landings; 1 m rails on sloped flights are clearable.
 
 **Why:** each of these made a first-pass report wrong until retested.
 **How to apply:** any Unity walk or sightline check from eval. Related: [[main3-blockout-state]]
