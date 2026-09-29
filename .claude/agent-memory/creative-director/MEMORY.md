@@ -1,2 +1,3 @@
 - [Main3 location lights](project_main3_lights.md) — rev 3 per-place light colours, my conditions, Style.md 2.3
+- [Main3 look boards](project_lookboards.md) — 2026-09-29 LookBoards.md draft; open: Camp 2 lamp, cave rave colours, tower legs
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions
