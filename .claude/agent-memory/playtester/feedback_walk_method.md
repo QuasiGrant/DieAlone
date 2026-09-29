@@ -12,6 +12,9 @@ False results I hit in the 8.10 Main3 walk. Check these before reporting a stuck
 - Fixed-step "push" tests slide along walls for up to 180 m; judge only the max reach, not the end point.
 - Linecasts from an eye inside a collider, or to target points inside a trunk/Tor/stack, read as hidden. Count a hit on the target object itself as seen, and move eye points off structures.
 - The play-mode walk ignores crown colliders; add temporary MeshColliders to Crown objects for sightline checks (play mode only).
+- The old "hop" (0.08 up for 8 steps) is not the real jump. Use gravity 20, v0 sqrt(2*20*0.6), jump on every landing, dt 0.02; with it the 8.9a hedges and wade boxes were climbable where the old hop and the fix check said they held. Also test crouch (1.0 m capsule) under chains and bars.
+- When reusing the first lines of a probe as a header, check they carry no side effects (one disabled the cave board for five probes and faked a board leak).
+- Joined-tour STUCK teleports use terrain height; never teleport into the cave (lands on the rim). Use explicit warps.
 
 **Why:** each of these made a first-pass report wrong until retested.
 **How to apply:** any Unity walk or sightline check from eval. Related: [[main3-blockout-state]]
