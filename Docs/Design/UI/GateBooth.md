@@ -1,6 +1,6 @@
 # Gate booth: the window, papers and stamps
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-29: gate minigame option B (a booth just inside the gate; admitted cars drive up a gravel spur inside the fence to a closed campground loop behind a chain; refused cars turn and leave; the Wardkeeper stays inside the fence); cars keep arriving until the office resident's storyline ends (completed, or he dies), and do not thin out as WARD falls; talking to the office resident counts as Social and starts his minigame, the booth itself does not count as Social; how many cars and days is set by playtest and must not last the whole game; during a shift, trying to follow a car hits an invisible wall with the message "You can't abandon your post." Also 2026-09-29: nothing forces the player to act; no time budget for the day. Terms follow the other UI specs: stamp words in capitals, the word never colour alone (TowerCheck.md 5). Colours and type per Style.md 7. Logbook layout is Logbook.md; the on-screen line is Objective.md 3.
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-29: gate minigame option B (a booth just inside the gate; admitted cars drive up a gravel spur inside the fence to a closed campground loop behind a chain; refused cars turn and leave; the Wardkeeper stays inside the fence); cars keep arriving until the office resident's storyline ends (completed, or he dies), and do not thin out as WARD falls; talking to the office resident counts as Social and starts his minigame, the booth itself does not count as Social; how many cars and days is set by playtest and must not last the whole game; during a shift, trying to follow a car hits an invisible wall with the message "You can't abandon your post." Also 2026-09-29: nothing forces the player to act; no time budget for the day. Terms follow the other UI specs: stamp words in capitals, the word never colour alone (TowerCheck.md 5). Colours and type per Style.md 7 and Fonts.md. Logbook layout is Logbook.md; the on-screen line is Objective.md 3. Revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Overpass for forms, dialogue and warnings; Patrick Hand for logbook handwriting): section 6.8.
 
 ## 1. Purpose
 
@@ -75,6 +75,18 @@ Fixed camera at the window, seated height. The upper third looks out through the
 5. Focus: on a gamepad, one item is focused at a time, shown by a drawn pencil bracket around it. With a mouse, a small dot cursor (uGUI Image) follows the pointer and hover sets focus. The system cursor stays hidden.
 6. Focus order, left to right: rule sheet, paper 1, paper 2, paper 3, ADMIT, REFUSE. Empty paper slots are skipped.
 7. The driver's lines, if any, show in the dialogue format **[GAP: DialogueFormats.md]**. They never cover the counter.
+8. Type: all text TextMeshPro.
+
+| Text | Font |
+|---|---|
+| Rule sheet (`RULES`, `DAY n`, rules, `NEW`) and the printed parts of papers | Overpass; headings caps SemiBold **P**, body Regular |
+| Anything a driver wrote on a paper | Not Patrick Hand (that is the keeper's hand only, Fonts.md 5.1). Printed Overpass, or drawn into the paper art **[Vesper]** |
+| Stamp faces and prints `ADMIT`, `REFUSE` | Images (art in Overpass caps), not text |
+| Driver's lines | Overpass (dialogue) |
+| Input hint, `Work the window` prompt, `You can't abandon your post.` | Overpass, as the interact prompt and Objective.md 3 |
+| Logbook `Gate` block (section 10) | Patrick Hand, as the rest of the Today page (Logbook.md 2.1) |
+
+No VT323.
 
 ## 7. Papers and stamps
 
@@ -126,7 +138,7 @@ Allowed. A player can stamp without lifting a paper. The game does not stop them
 
 1. During a shift, walls block the gate opening and the mouth of the gravel spur. They exist only for the length of the shift.
 2. Touching a wall shows the line `You can't abandon your post.`
-3. Style: exactly the Objective.md 3 line. Top left, 5 percent safe margin, same font, colour and 1 px shadow, fade in 0.3 s, hold 3 s, fade out 0.5 s. No `Logbook:` prefix, because the logbook does not change. No pencil sound (that sound means the logbook changed). Sound, if any: Hollis.
+3. Style: exactly the Objective.md 3 line. Top left, 5 percent safe margin, same font (Overpass), colour and 1 px shadow, fade in 0.3 s, hold 3 s, fade out 0.5 s. No `Logbook:` prefix, because the logbook does not change. No pencil sound (that sound means the logbook changed). Sound, if any: Hollis.
 4. It jumps the Objective queue: it shows at once, and any queued logbook line waits until it fades.
 5. It does not repeat while it is on screen, and not again until 5 s after it fades, however often the player pushes the wall.
 6. Outside a shift, the spur is closed by its chain and the gate by its chain, as world objects. No message.

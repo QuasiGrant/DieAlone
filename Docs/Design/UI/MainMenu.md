@@ -1,6 +1,20 @@
 # Main menu
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: PLAN.md Later ("Main menu with New run and Continue"), DECISIONS.md 2026-09-20 (settings JSON in persistentDataPath; legacy Text font), 2026-09-28 (a run ends the first time HP, MIND or WARD reaches 0), 2026-09-29 (day one is an ordinary lookout job; no fire visible before nightfall on day one). Save facts from Assets/Scripts/Core/GameSave.cs (read only): one file, run.json, version 1, written at sleep; Load returns Loaded, Missing, Corrupt, UnsupportedVersion or TuningMismatch and never throws. Type per Style.md 7 (Vesper). Revised 2026-09-29: Content warnings row and first-launch screen (ContentWarning.md, DECISIONS 2026-09-29 content warnings line).
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: PLAN.md Later ("Main menu with New run and Continue"), DECISIONS.md 2026-09-20 (settings JSON in persistentDataPath), 2026-09-28 (a run ends the first time HP, MIND or WARD reaches 0), 2026-09-29 (day one is an ordinary lookout job; no fire visible before nightfall on day one; UI text is TextMeshPro; fonts per role; the main menu is built in Milestone 10). Save facts from Assets/Scripts/Core/GameSave.cs (read only): one file, run.json, version 1, written at sleep; Load returns Loaded, Missing, Corrupt, UnsupportedVersion or TuningMismatch and never throws. Type per Style.md 7 and Fonts.md (Vesper). Revised 2026-09-29: Content warnings row and first-launch screen (ContentWarning.md, DECISIONS 2026-09-29 content warnings line). Revised 2026-09-29: TextMeshPro and fonts per role.
+
+**Build: Milestone 10** (DECISIONS 2026-09-29). The decision names New run, Continue, Settings and Quit; the Content warnings row comes from the content warning line and ContentWarning.md, also Milestone 10. Row order stays as section 2.
+
+## 0. Type
+
+All text is TextMeshPro (the TextMeshProUGUI component on a uGUI canvas). No legacy Text.
+
+| Text | Font | Weight **P** |
+|---|---|---|
+| Title `DieAlone` | Overpass | SemiBold |
+| Rows, `Day n`, sublines, confirm card | Overpass | Regular |
+| `PLAY >  SP` | VT323 | Regular, caps |
+
+Sizes and colour: Style.md 7. VT323 appears only in the tape mark, never in a row or line.
 
 ## 1. Purpose
 
@@ -27,8 +41,8 @@ Start a run, go back to the saved run, change settings before playing, quit. Not
 ```
 
 1. Background: a fixed camera in a menu scene or in Main3, day-one look (Style.md 2.0), never fire or runes, so the menu does not spoil night 1. The tape filter runs over it like the game.
-2. Title and list lower left, inside a 5 percent safe margin. One font, Style.md 7 sizes and colours.
-3. Bottom right: a tape OSD mark (`PLAY >`), static, same font. Vesper may drop it.
+2. Title and list lower left, inside a 5 percent safe margin. Overpass (section 0), Style.md 7 sizes and colours.
+3. Bottom right: a tape OSD mark (`PLAY >`), static, VT323. Vesper may drop it.
 4. `Day n` beside Continue is the day the saved run wakes into. Nothing else about the run is shown here (no stats: DECISIONS 2026-09-28).
 5. Rows, top to bottom: Continue, New run, Settings, Content warnings, Quit. Continue is not shown when there is nothing to continue (section 4).
 

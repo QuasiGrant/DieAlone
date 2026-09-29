@@ -1,6 +1,6 @@
 # Tower check: lectern and binoculars
 
-**DRAFT, 2026-09-28, revised 2026-09-29 (second pass), Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (daily loop, cave not checked, day and night states, night allows only the Ward), 2026-09-29 (the day ends by filing the report or by an event; no time budget, so no clock in the binocular view; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Terms (Wren, 2026-09-29): stamps are `SAFE` and `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office (DailyLoop.md, Main3.md). Colours and type per Style.md 7 (Vesper); the warning colour is still **[GAP: Style]**.
+**DRAFT, 2026-09-28, revised 2026-09-29 (second pass), Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (daily loop, cave not checked, day and night states, night allows only the Ward), 2026-09-29 (the day ends by filing the report or by an event; no time budget, so no clock in the binocular view; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Terms (Wren, 2026-09-29): stamps are `SAFE` and `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office (DailyLoop.md, Main3.md). Colours and type per Style.md 7 and Fonts.md (Vesper); the warning colour is still **[GAP: Style]**. Revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Overpass for forms, Patrick Hand for handwriting, VT323 only for the tape overlay): section 3.1.
 
 ## 1. Purpose
 
@@ -56,6 +56,20 @@ Binocular view (screen space overlay, full screen):
 3. Top centre: bearing readout, compass letters and degrees, updated as the player turns. Matches the letters on the tower sheet.
 4. Lower centre: the result line. Empty until a location is in the inner ring.
 5. Bottom: the exit hint, shown for the first 3 s of each use, then hidden. It shows the glyphs for the device used last: `[E] [RMB] lower` on keyboard and mouse, `(Y) (B) lower` on a gamepad, switching live if the player changes device. Glyphs are small uGUI Images: a rounded key cap with a letter for keys, a circle with a letter for pad buttons, drawn in code like the tent icon (no new asset pack). Face-button letters follow the Xbox layout; PlayStation glyphs are out of scope until Grant says otherwise.
+
+### 3.1 Type
+
+All text TextMeshPro. The tower sheet is a world-space canvas, so its text renders through the render scale and the tape filter; SDF keeps its edge better than legacy Text there (FontTech.md 4.3, look through the filter unverified).
+
+| Text | Font |
+|---|---|
+| Tower sheet printed parts: `TOWER SHEET`, `DAY`, location names, bearings, dot leaders | Overpass, caps; heading SemiBold, rows Regular |
+| Tower sheet stamps `SAFE`, `CHECK ON FOOT`, footer `Checked.` | Overpass caps, stamped (Fonts.md 3.2) |
+| Tower sheet pencil fill-in: the day number, the tick beside a stamped row | Patrick Hand |
+| Binocular bearing readout, result line (`LAKE . . .`, `CAMP 2    CHECK ON FOOT`, `All checked.`), exit hint letters | Overpass; the result line SemiBold **P** |
+| Lectern prompt `Use binoculars` | Overpass (interact prompt) |
+
+No VT323: the binocular readout is part of the binoculars, not the tape overlay.
 
 ## 4. How a location is checked (look-to-unlock)
 

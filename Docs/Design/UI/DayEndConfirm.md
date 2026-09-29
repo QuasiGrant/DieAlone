@@ -1,6 +1,6 @@
 # Day end confirm: "This ends your day"
 
-**DRAFT, 2026-09-28, revised 2026-09-29 (second pass), Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (filing the report asks to confirm that it ends the day; stats on screen only at the Ward; the player carries the logbook), 2026-09-29 (the day ends by filing the report or by an event; no time budget for the day; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Terms (Wren, 2026-09-29): stamps are `SAFE` and `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office. Day one rule (Quill): nothing names the Ward before the night 1 reveal. The logbook is Docs/Design/UI/Logbook.md. Type per Style.md 7; warning colour **[GAP: Style]**.
+**DRAFT, 2026-09-28, revised 2026-09-29 (second pass), Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (filing the report asks to confirm that it ends the day; stats on screen only at the Ward; the player carries the logbook), 2026-09-29 (the day ends by filing the report or by an event; no time budget for the day; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Terms (Wren, 2026-09-29): stamps are `SAFE` and `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office. Day one rule (Quill): nothing names the Ward before the night 1 reveal. The logbook is Docs/Design/UI/Logbook.md. Type per Style.md 7 and Fonts.md; warning colour **[GAP: Style]**. Revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Overpass for forms, menus and warnings): section 3 type note.
 
 ## 1. Purpose
 
@@ -37,6 +37,8 @@ Filing the report ends the day and starts the night. It cannot be undone. The co
 ```
 
 With nothing open, the list is replaced by one line: `Nothing left open.`
+
+Type: TextMeshPro, Overpass. The card is the game asking, not the keeper writing, so no handwriting on it even though it sits over the logbook page. Heading SemiBold **P**; lines and buttons Regular. The open lines are the warning and must be the most legible text on screen (Fonts.md 3.3).
 
 ## 4. Open lines
 

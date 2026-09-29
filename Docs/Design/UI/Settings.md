@@ -1,6 +1,6 @@
 # Settings
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-20 (player settings persist in a JSON file in persistentDataPath, separate from PlayerTuning; input is controller plus keyboard and mouse; legacy Text font), 2026-09-28 (settings live in the carried logbook). Sources read: Assets/Scripts/Settings/PlayerSettings.cs and Assets/Scripts/UI/PauseMenu.cs (read only; today: look sensitivity 0.2 to 3, default 1, and invert look, both in the pause menu, file settings.json), Docs/Design/Sound/Mixer.md section 4 (four volume sliders, Hollis, **[Grant yes]** pending), PLAN.md Later (volume, graphics and control rebinding). Type per Style.md 7 (Vesper). Revised 2026-09-29: Reduce flashing toggle (ContentWarning.md).
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-20 (player settings persist in a JSON file in persistentDataPath, separate from PlayerTuning; input is controller plus keyboard and mouse), 2026-09-28 (settings live in the carried logbook), 2026-09-29 (UI text is TextMeshPro; Overpass for settings; the main menu, whose Settings row hosts this panel, is built in Milestone 10). Sources read: Assets/Scripts/Settings/PlayerSettings.cs and Assets/Scripts/UI/PauseMenu.cs (read only; today: look sensitivity 0.2 to 3, default 1, and invert look, both in the pause menu, file settings.json), Docs/Design/Sound/Mixer.md section 4 (four volume sliders, Hollis, **[Grant yes]** pending), PLAN.md Later (volume, graphics and control rebinding). Type per Style.md 7 and Fonts.md (Vesper). Revised 2026-09-29: Reduce flashing toggle (ContentWarning.md). Revised 2026-09-29: TextMeshPro and Overpass (section 3 note 6).
 
 ## 1. Purpose
 
@@ -67,7 +67,8 @@ One settings panel, built once, shown in three hosts:
 2. Longer than the page in the logbook: the page scrolls to keep the focused row in view. Two logbook pages side by side (Controls and Sound left, Display right) if it fits at Style.md 7.2 sizes; Rook to check at 1080 rows.
 3. In the logbook host there is no Back row: the book's close does it. In pause and main menu hosts, `Back` is last.
 4. Values change live: sound as the slider moves, look sensitivity on the next frame.
-5. Legacy uGUI: Slider and Toggle exist. The stepper `< value >` is a Selectable that takes left and right (Rook builds it); no Dropdown, because a legacy Dropdown list is awkward on a pad.
+5. uGUI: Slider and Toggle exist. The stepper `< value >` is a Selectable that takes left and right (Rook builds it); no Dropdown (legacy or TMP_Dropdown), because a dropdown list is awkward on a pad.
+6. Type: all text TextMeshPro in Overpass, in every host, including the logbook host. The panel is printed, not handwritten, even on the ruled page. `SETTINGS` and section headings SemiBold **P**; rows, values, notes, `Back` and the keep card Regular. No Patrick Hand, no VT323.
 
 ## 4. Input paths
 

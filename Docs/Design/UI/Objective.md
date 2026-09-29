@@ -1,6 +1,6 @@
 # Objective: logbook day list and the on-screen line
 
-**DRAFT, 2026-09-28, revised 2026-09-29 (second pass), Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (daily loop; a location that is not safe goes into the logbook and the objective; stats in the logbook only outside the Ward; the player carries the logbook, which holds notes, questions and settings), 2026-09-29 (the day ends by filing the report or by an event; no time budget; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Terms (Wren, 2026-09-29): the tower stamps `SAFE` or `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office (DailyLoop.md, Main3.md). Day one rule (Quill): nothing names the Ward before the night 1 reveal. The full logbook is Docs/Design/UI/Logbook.md. Colours per Style.md 7.
+**DRAFT, 2026-09-28, revised 2026-09-29 (second pass), Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (daily loop; a location that is not safe goes into the logbook and the objective; stats in the logbook only outside the Ward; the player carries the logbook, which holds notes, questions and settings), 2026-09-29 (the day ends by filing the report or by an event; no time budget; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Terms (Wren, 2026-09-29): the tower stamps `SAFE` or `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office (DailyLoop.md, Main3.md). Day one rule (Quill): nothing names the Ward before the night 1 reveal. The full logbook is Docs/Design/UI/Logbook.md. Colours per Style.md 7. Type per Fonts.md; revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Overpass for the objective line; Patrick Hand for logbook handwriting): sections 2.7 and 3.1.
 
 ## 1. Purpose
 
@@ -17,6 +17,7 @@ Layout, past days, night and day 1 wording: Logbook.md section 4. Summary of the
 4. No clock, time-left line or duty timer anywhere (DECISIONS 2026-09-29).
 5. At night the list is read-only (Logbook.md 8.2).
 6. If an event ends the day early, today's page stays as the event left it: open lines stay open. The day counts as filed (DailyLoop.md 1.1.2).
+7. The day list is the keeper's hand: Patrick Hand (Logbook.md 2.1).
 
 ## 3. The on-screen line
 
@@ -30,7 +31,7 @@ Layout, past days, night and day 1 wording: Logbook.md section 4. Summary of the
 +--------------------------------------------------------------+
 ```
 
-1. Top left, inside a 5 percent safe margin. Same font and colour as the interact prompt, with a 1 px dark shadow for the VHS filter.
+1. Top left, inside a 5 percent safe margin. TextMeshPro, Overpass Regular, same size and colour as the interact prompt, with a 1 px dark shadow for the VHS filter (TMP underlay or shadow in the material, Rook's call). Printed, not handwritten, although it quotes the logbook. No VT323.
 2. Starts with `Logbook:` so the player knows where the full list lives.
 3. Fades in 0.3 s, holds 3 s (DailyLoop.md 1.1, 1.4, 2.1), fades out 0.5 s. A pencil-scratch sound on fade in (Hollis).
 4. One line at a time. Lines that fire together queue with 0.5 s between.

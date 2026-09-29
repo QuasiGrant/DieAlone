@@ -1,6 +1,8 @@
 # Content warning
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-29 (the game opens with content warnings; this is an adult game, resident deaths can be bloody and scary; the cultist cave has rave lights), 2026-09-20 (settings JSON in persistentDataPath; legacy Text font). Warning list checked against Docs/Private/StoryBible.md; nothing in this file names who, where or why. Photosensitivity: Vesper's flag (reported by Wren; not found in a committed file) and the moving beams in LookBoards.md section 9. Type per Style.md 7. Hosts: game start, and MainMenu.md.
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-29 (the game opens with content warnings; this is an adult game, resident deaths can be bloody and scary; the cultist cave has rave lights), 2026-09-29 (UI text is TextMeshPro; Overpass for warnings, menus and settings; the content warning screen is built in Milestone 10), 2026-09-20 (settings JSON in persistentDataPath). Warning list checked against Docs/Private/StoryBible.md; nothing in this file names who, where or why. Photosensitivity: Vesper's flag (reported by Wren; not found in a committed file) and the moving beams in LookBoards.md section 9. Type per Style.md 7 and Fonts.md. Hosts: game start, and MainMenu.md. Revised 2026-09-29: TextMeshPro and Overpass.
+
+**Build: Milestone 10** (DECISIONS 2026-09-29), with the main menu.
 
 Twist rule (DECISIONS 2026-09-28): every line here is committed text. It names subjects, never story.
 
@@ -68,11 +70,11 @@ When off, the game should still avoid full-screen strobing; the toggle removes w
 +--------------------------------------------------------------+
 ```
 
-1. Black background, text left-aligned inside a 5 percent safe margin, Style.md 7 sizes (heading 36, list 28). No plate needed on black.
+1. Black background, text left-aligned inside a 5 percent safe margin, Style.md 7 sizes (heading 36, list 28). No plate needed on black. All text TextMeshPro in Overpass: heading SemiBold, list, toggle label and button Regular **P** weights. No handwriting, no VT323 on this screen.
 2. The tape filter is off on this screen so the text is at its most legible and nothing can flash before the player has chosen.
 3. Heading line: `This game contains:` (Quill may change). No title card, no logo, no sound but the UI press sound.
 4. From the main menu, the button reads `Back` instead of `Continue`.
-5. A player who cannot read the screen is not covered by this draft; no screen reader in legacy uGUI (unverified that one exists for it).
+5. A player who cannot read the screen is not covered by this draft; no screen reader in uGUI with TextMeshPro (unverified that one exists for it).
 
 ## 6. Dismissing it
 

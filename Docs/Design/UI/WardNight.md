@@ -1,8 +1,8 @@
 # The Ward at night: offering screen
 
-**DRAFT, 2026-09-28, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (stats on screen only at the end-of-day Ward phase; at night the only action is going to the Ward and offering HP or MIND; ignoring it lowers WARD; WARD at 0 means the barrier falls; a run ends the first time HP, MIND or WARD reaches 0; the Ward screen has `Give nothing`), 2026-09-29 (the day ends by filing the report or by an event, for example a chase that catches the player, who then finds themselves at the Ward; no time budget for the day). DESIGN.md: stats 0 to 12, never above 12. Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. Colours **[GAP: Style]**.
+**DRAFT, 2026-09-28, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (stats on screen only at the end-of-day Ward phase; at night the only action is going to the Ward and offering HP or MIND; ignoring it lowers WARD; WARD at 0 means the barrier falls; a run ends the first time HP, MIND or WARD reaches 0; the Ward screen has `Give nothing`), 2026-09-29 (the day ends by filing the report or by an event, for example a chase that catches the player, who then finds themselves at the Ward; no time budget for the day). DESIGN.md: stats 0 to 12, never above 12. Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. Colours **[GAP: Style]**. Revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Overpass for menus and warnings; VT323 only for the tape overlay): section 3 notes 3 and 6.
 
-Terms check, 2026-09-29 (Wren: the approved DailyLoop.md wins): this spec uses no stamp or location names. Day one rule (Quill): the night 1 climb is led by the keeper's note and the lit cairn, never by naming the Ward (Logbook.md 4.4); the screen itself may name it, being the reveal. The **[GAP: DailyLoop]** items below (0 to 3 points in any mix, WARD cap, bunk from night 2, the night 1 explainer, the last-point warning) are answered by DailyLoop.md 2 and 6 and get folded in at the next revision.
+Terms check, 2026-09-29 (Wren: the approved DailyLoop.md wins): this spec uses no stamp or location names. Day one rule (Quill): the night 1 climb is led by the keeper's note and the lit cairn, never by naming the Ward (Logbook.md 4.4); the screen itself may name it, being the reveal. 0 to 3 points in any mix and the WARD cap are folded in (section 4.4 and 4.5, 2026-09-29). The other **[GAP: DailyLoop]** items below (bunk from night 2, the night 1 explainer, the last-point warning) are answered by DailyLoop.md 2 and 6 and get folded in at the next revision.
 
 ## 1. Purpose
 
@@ -37,19 +37,21 @@ The one place the player sees HP, MIND and WARD as numbers, and the one choice o
 
 1. Lower half of the screen only. The stones stay visible above.
 2. Each row: label, 12 pips, the number. `#` lit pip, `.` dark pip, `x` cracked pip (section 6.4).
-3. Pips are uGUI Images, not font glyphs. The built-in font's coverage of block characters is unverified, and Images survive the VHS filter better.
+3. Pips are uGUI Images, not font glyphs. Overpass's coverage of block characters is unverified, and Images survive the VHS filter better.
 4. The number is kept beside the pips because 12 pips are hard to count at a glance through the filter.
 5. The hold bar sits under the focused button and fills while the button is held.
+6. Type: all text TextMeshPro in Overpass (Fonts.md 3.3): labels `HP` `MIND` `WARD` and numbers SemiBold **P**; buttons, `hold to give` and the result lines (`The stones go quiet.`, `The stones are fed.`) Regular. No handwriting, no VT323. The `Kneel` prompt is the interact prompt, also Overpass.
 
 ## 4. The choice
 
 1. Three buttons: `Give HP`, `Give MIND`, `Give nothing`.
 2. Each needs a 1.0 s hold. Release early and the bar drains; nothing happens. No button is safe, so no default can be safe; the hold is the guard.
 3. Default focus: `Give HP` (leftmost). Not a recommendation, just the reading order.
-4. Rate and amount **[GAP: DailyLoop]**. Draft assumes one point per night at 1 for 1 (PLAN Milestone 7: feeding capped at 1 for 1). If more than one point is allowed, the screen asks again after each gift until the player holds `Enough`, which replaces `Give nothing` after the first gift.
-5. No back-out. This screen has no cancel. `B` and UI Cancel do nothing, and the player cannot walk away. `Esc` and `Start` open the pause menu; the Ward screen waits underneath and comes back as it was on Resume (section 8).
-6. Focus change mid-hold: moving focus (D-pad, stick, arrow keys, `A` / `D`, or the pointer leaving the button) while a hold is running cancels the hold. The bar drains in 0.2 s and nothing is given. The newly focused button does not start filling until Submit is released and pressed again, so a hold can never slide from one gift onto another.
-7. Holding with two devices at once (for example `Enter` held while clicking) counts as one hold on the focused button; releasing either input cancels it.
+4. Rate and amount (DailyLoop.md 2.3 and 2.4, approved for now): the player gives 0 to 3 points a night, HP or MIND in any mix. Each hold gives one point, and each point buys 1 WARD. After each gift the screen asks again, with `Enough` in place of `Give nothing`, until the player holds `Enough` or 3 points are given; after the third, the screen goes straight to the end of the night (section 5). Holding `Give nothing` before any gift gives 0.
+5. WARD cap: WARD never goes above 12. A Give button is disabled, with `The stones are fed.` under the rows, when one more point would push WARD past 12 (DailyLoop.md 2.4). Only `Give nothing` or `Enough` then remains. Whether tonight's hunger is taken before the cap is checked is **[GAP: DailyLoop]**.
+6. No back-out. This screen has no cancel. `B` and UI Cancel do nothing, and the player cannot walk away. `Esc` and `Start` open the pause menu; the Ward screen waits underneath and comes back as it was on Resume (section 8).
+7. Focus change mid-hold: moving focus (D-pad, stick, arrow keys, `A` / `D`, or the pointer leaving the button) while a hold is running cancels the hold. The bar drains in 0.2 s and nothing is given. The newly focused button does not start filling until Submit is released and pressed again, so a hold can never slide from one gift onto another.
+8. Holding with two devices at once (for example `Enter` held while clicking) counts as one hold on the focused button; releasing either input cancels it.
 
 ## 5. What happens on each choice
 
@@ -58,8 +60,9 @@ The one place the player sees HP, MIND and WARD as numbers, and the one choice o
 | Give HP | The last lit HP pip flickers and goes dark. 0.4 s later the next WARD pip lights. A rune on the stones brightens in the world. |
 | Give MIND | Same, from the MIND row. |
 | Give nothing | WARD drops (section 6). |
+| Enough | No sequence; ends the choosing. |
 
-After the sequence the rows hold for 1.5 s, then fade to black and the night ends **[GAP: DailyLoop]** (Main3.md 3.1.4 has the player sleep at the ledge and wake in the cabin).
+After a gift, if fewer than 3 points are given, the buttons return with `Enough` (section 4.4). When choosing ends, the rows hold for 1.5 s, then fade to black and the night ends **[GAP: DailyLoop]** (Main3.md 3.1.4 has the player sleep at the ledge and wake in the cabin).
 
 ## 6. What the player sees when WARD drops
 
@@ -80,12 +83,13 @@ After the sequence the rows hold for 1.5 s, then fade to black and the night end
 | Arrived by event | Fade up already kneeling (section 2.4), then Opening. |
 | Opening (input lock, about 1.8 s) | Camera eases, rows fill. Every press is ignored except Pause, which freezes the easing and fill until Resume. A Submit held down when the lock ends does not count; it must be released and pressed again. |
 | Choosing | Rows, three buttons, focus on one. |
-| Holding | Bar fills under the focused button. Focus change cancels it (section 4.6). |
+| Holding | Bar fills under the focused button. Focus change cancels it (section 4.7). |
 | Result: gift | Section 5. |
 | Result: WARD drop | Section 6. |
 | A stat at 1 | Its last pip pulses slowly. No warning text. Giving it is allowed. |
 | A stat reaches 0 | Run ends. The screen hands to the ending sequence **[GAP: Milestone 7 endings]**. |
-| WARD at 12 | Give buttons disabled with `The stones are fed.`; only `Give nothing` (renamed `Rise`) remains. Whether WARD still drops then **[GAP: DailyLoop]**. |
+| WARD cap reached | Give buttons disabled with `The stones are fed.`; only `Give nothing` or `Enough` remains (section 4.5). |
+| 3 points given | Choosing ends; no fourth ask. |
 | Owed tonight (proposal) | If need costs are taken at sleep after this screen **[GAP: DailyLoop]**, pips owed tonight show hollow and flickering so the player can decide knowing them. |
 | Pause pressed (any phase) | Pause menu opens over the Ward screen, which waits underneath, frozen. Resume returns to the same phase. A running hold is reset; a Submit still held at Resume must be released and pressed again. |
 | Window loses focus mid-hold | The hold cancels, as a focus change. |
@@ -114,7 +118,7 @@ Requirements for Rook:
 ## 9. Open questions
 
 1. Closed 2026-09-29 (DECISIONS 2026-09-28): `Give nothing` stays. It is a valid, hopeless choice.
-2. Rate, amount per night, and the WARD at 12 case **[GAP: DailyLoop]**.
+2. Closed 2026-09-29: 0 to 3 points a night, 1 WARD each, WARD capped at 12 (DailyLoop.md 2.4; section 4.4 and 4.5). Open: whether hunger is taken before the cap check.
 3. Night clock or blackout before reaching the Ward (Main3.md 3.1.5) **[GAP: DailyLoop]**.
 4. Order of costs: are the day's unmet needs taken before this screen (so the rows already show them) or at sleep after it?
 5. Closed 2026-09-28 (Wren accepted): Pause goes through on this screen; only the day-end confirm suppresses it.

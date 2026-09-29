@@ -1,6 +1,6 @@
 # Logbook
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (the player carries the logbook; its main job is tracking questions and notes; settings live in it, later inventory, memories and collectibles; stats show on screen only at the Ward, the rest of the time in the logbook only; at night the only action is the Ward), 2026-09-29 (the day ends by filing or by an event; no time budget; nothing forces the player to act; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Written after the four loop specs, per Tully's order. Revised 2026-09-29 to add the Kept tab after Settings (Collectibles.md). Colours and sizes follow Style.md section 7 (Vesper owns type). Settings content is Settings.md.
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (the player carries the logbook; its main job is tracking questions and notes; settings live in it, later inventory, memories and collectibles; stats show on screen only at the Ward, the rest of the time in the logbook only; at night the only action is the Ward), 2026-09-29 (the day ends by filing or by an event; no time budget; nothing forces the player to act; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Written after the four loop specs, per Tully's order. Revised 2026-09-29 to add the Kept tab after Settings (Collectibles.md). Colours and sizes follow Style.md section 7 and Fonts.md (Vesper owns type). Settings content is Settings.md. Revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Patrick Hand for logbook handwriting, Overpass for forms, menus and settings, VT323 only for the tape overlay): section 2.1.
 
 Terms (Wren, 2026-09-29: the approved DailyLoop.md wins): the tower stamps `SAFE` or `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office, as in DailyLoop.md and Main3.md. On a narrow logbook column `CHECK ON FOOT` may be cut to `CHECK`; the full words show on the tower sheet, the binoculars and the map foot line.
 
@@ -38,8 +38,25 @@ A screen-space uGUI overlay drawn as an open notebook, about 80 percent of scree
 ```
 
 1. Tab glyphs `[LB]` `[RB]` or `[Q]` `[E]` follow the last device used, as in TowerCheck.md 3.5. The hint line under the book shows for the first 3 s of each opening on days 1 to 3, then never.
-2. Legacy Text only. Tick boxes, stamps and pins are uGUI Images, not glyphs.
+2. TextMeshPro only (section 2.1). Tick boxes, stamps and pins are uGUI Images, not glyphs.
 3. No clock, hour or time-left anywhere in the book (DECISIONS 2026-09-29).
+
+### 2.1 Type
+
+Rule (Fonts.md 5.1): what the keeper wrote is Patrick Hand; what the game or an agency printed is Overpass. No VT323 anywhere in the book.
+
+| Text | Font |
+|---|---|
+| Page content on Today, Questions, Map: `DAY n`, duties, `File the report` and its locked line, location names, `At the Ward` reading and numbers, needs, past-day lines, `Back to today`, questions, notes, map labels, the map foot line, the day 1 note, night top lines | Patrick Hand Regular, body 32 **P** |
+| `SAFE`, `CHECK`, `___` beside a location | Stamp Images (art in Overpass caps, Vesper), not text |
+| Tab labels on the paper tabs, the hint line under the book | Overpass Regular |
+| Settings page | Overpass (Settings.md) |
+| Kept page | Collectibles.md |
+| Pause menu and its quit confirm (section 9) | Overpass; heading `Paused` SemiBold **P** |
+
+1. Handwriting gets no faux bold and no italics. Emphasis is by position, not weight.
+2. Done lines: dim to 50 percent and struck through with TMP `<s>` **P** (strikethrough was not possible on legacy Text; Vesper to confirm the look).
+3. Page headings in the book (`QUESTIONS`, `Answered`) are handwriting too: the keeper wrote them.
 
 ## 3. Tabs
 
@@ -67,7 +84,7 @@ The book always opens on the tab it was closed on, except: after waking it opens
 2. `Climb the tower` with a tick box. Under it one line per location in tower-sheet order: name, then `___` (not looked at), `SAFE`, or `CHECK` with its own tick box. A `CHECK` box ticks when resolved on foot. The word, never colour alone.
 3. `File the report`: the one choosable line on the page. Locked until all five locations are stamped (DailyLoop.md 1.6); while locked, the line under it reads `Climb the tower first.` and focus skips it. Choosing it opens DayEndConfirm.md.
 4. `Then the Ward.` plain line, no box. Day 1 only, section 4.4 replaces it.
-5. Done lines dim to 50 percent.
+5. Done lines dim to 50 percent and are struck through (section 2.1).
 
 ### 4.2 Right page
 
