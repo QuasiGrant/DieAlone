@@ -100,7 +100,7 @@ The tape filter's low resolution is the test (Style.md 7.7). Sizes at the 1080-r
 
 Rules, as Collectibles.md keeps its own:
 1. Only the keeper's writing is a font (Patrick Hand). Every other person's writing is texture art drawn by Vesper: labels, letters, cards, painted words, names on objects.
-2. It is never set in Patrick Hand, and never in Overpass as a stand-in. GateBooth.md 6 (a driver's writing on a paper "printed Overpass, or drawn into the paper art") should drop the Overpass option to match.
+2. It is never set in Patrick Hand, and never in Overpass as a stand-in. GateBooth.md 6 follows this (driver's writing is paper art).
 3. It is read through the lifted view (3.2) or, mid-talk, through Dialogue.md 3.4, at the size rules of 3.3.
 4. Handwriting that changes during play (a name added, a word crossed out) is a texture swap or a layered texture, not text. Vesper and Rook to size the art count per content.
 5. A word written in another person's hand that the player must understand to act is also given, word for word, in the keeper's logbook line or an Examine line, so the words never rest on art legibility alone. Quill writes that line.

@@ -80,7 +80,7 @@ Fixed camera at the window, seated height. The upper third looks out through the
 | Text | Font |
 |---|---|
 | Rule sheet (`RULES`, `DAY n`, rules, `NEW`) and the printed parts of papers | Overpass; headings caps SemiBold **P**, body Regular |
-| Anything a driver wrote on a paper | Not Patrick Hand (that is the keeper's hand only, Fonts.md 5.1). Printed Overpass, or drawn into the paper art **[Vesper]** |
+| Anything a driver wrote on a paper | Texture, drawn into the paper art **[Vesper]**. Never Patrick Hand (the keeper's hand only) and never Overpass as a stand-in (Examine.md 5). |
 | Stamp faces and prints `ADMIT`, `REFUSE` | Images (art in Overpass caps), not text |
 | Driver's lines | Overpass (dialogue) |
 | Input hint, `Work the window` prompt, `You can't abandon your post.` | Overpass, as the interact prompt and Objective.md 3 |
