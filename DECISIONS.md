@@ -143,3 +143,5 @@
 - 2026-09-29: Each minigame session and storyline has its own dialogue.
 - 2026-09-29: Warnings before a resident is lost are subtle, never overt.
 - 2026-09-29: A resident whose storyline is completed stays for the rest of the run, and counts toward the ending.
+- 2026-09-29: This is an adult game. Resident deaths can be bloody and scary; only the cat's and the child's are kept subtle.
+- 2026-09-29: The team's suggested horror devices are noted, none adopted yet (Docs/Private/MinigameReview.md).
