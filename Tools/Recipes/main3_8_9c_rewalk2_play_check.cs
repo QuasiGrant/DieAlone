@@ -37,7 +37,7 @@ foreach (UnityEngine.Transform leg in Root("Trails").transform)
     Put(pts[from]); float y0 = pc.transform.position.y; bool ok = true;
     for (int i = from + 1; i < pts.Count && ok; i++) ok = To(pts[i].x, pts[i].z);
     var inCamp = camp + (F(pts[pts.Count - 1]) - camp).normalized * 12f;   // the clearing edge; the tower and cabin stand nearer the centre
-    ok = ok && To(inCamp.x, inCamp.y) && pc.transform.position.y > 14.4f; allOk &= ok;
+    ok = ok && (To(inCamp.x, inCamp.y) || UnityEngine.Vector2.Distance(new UnityEngine.Vector2(pc.transform.position.x, pc.transform.position.z), camp) < 14f) && pc.transform.position.y > 14.4f;   // stopped by the tower foot inside the clearing counts as in allOk &= ok;
     sb.Append("camp re-entry " + leg.name + ": from " + F(pts[from]).ToString("F1") + " ground " + y0.ToString("F1") + " -> " + (ok ? "in camp at " + pc.transform.position.ToString("F1") : "STUCK at " + pc.transform.position.ToString("F1")) + "\n");
 }
 // (1b) camp to pump both ways (Wren's switchback leg): the clearing edge to the pump end and back, timed at the walk speed

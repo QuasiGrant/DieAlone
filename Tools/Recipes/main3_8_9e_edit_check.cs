@@ -42,4 +42,25 @@ foreach (var kv in sets)
     sb.Append(kv.Value.Count + " at (" + c.x.ToString("F0") + ", " + c.y.ToString("F0") + ") " + UnityEngine.Vector2.Distance(c, tower).ToString("F0") + " m; ");
 }
 sb.Append("\ngroves of 4 or more: " + groves);
+// longest straight view down each trail (Marlow's measure for Main3.md 2.11, about 60 m): from each point, the farthest
+// point with every point before it in sight, eye 1.6 m, target 0.3 m over the trail, terrain, giants and structures only
+// (the Ignore Raycast walls do not count); both walking directions
+sb.Append("\nLongest straight views:\n");
+foreach (UnityEngine.Transform leg in Root("Trails").transform)
+{
+    var m = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform t in leg) m.Add(t.position);
+    float best = 0f; UnityEngine.Vector3 bf = default, bt = default;
+    foreach (var rev in new[] { false, true })
+    {
+        var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(m); if (rev) pts.Reverse();
+        for (int i = 0; i < pts.Count; i++)
+        {
+            var eye = pts[i] + UnityEngine.Vector3.up * 1.6f; int j = i;
+            for (int k = i + 1; k < pts.Count; k++) { var tg = pts[k] + UnityEngine.Vector3.up * 0.3f; if (UnityEngine.Physics.Linecast(eye, tg, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) break; j = k; }
+            float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(pts[i].x, pts[i].z), new UnityEngine.Vector2(pts[j].x, pts[j].z));
+            if (d > best) { best = d; bf = pts[i]; bt = pts[j]; }
+        }
+    }
+    sb.Append("  " + leg.name + ": " + best.ToString("F0") + " m, " + bf.ToString("F0") + " to " + bt.ToString("F0") + (best > 60f ? "  OVER 60" : "") + "\n");
+}
 return sb.ToString();

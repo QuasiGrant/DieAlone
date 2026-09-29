@@ -24,6 +24,10 @@ float LakeRe(UnityEngine.Vector2 p) { var q = p - lakeC; return UnityEngine.Math
 
 // ---------- legs: map control points (world metres), target length (table 4), points of interest ----------
 // poi kind: "on" = the trail passes through it; "side" = stands beside the trail
+// sight-break boulders (8.9e re-walk): 2.5 m round, 4 m over the ground, on the four legs whose straight views passed 60 m
+const float boulderR = 2.5f, boulderH = 4f;
+const float sideLevelTol = 0.5f;   // side pieces: ground differences under this count as level
+const float sideWalkTol = 1.5f;    // side pieces this far above or below their trail get no walkable circle
 var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2[] ctrl, bool polyline, float target, bool shore, float maxGrade, (string n, UnityEngine.Vector2 p, string kind)[] pois)>
 {
     // camp to pump (8.9c re-walk 2, Wren): 15 m down to -4.5 needs a longer leg, so it zigzags down the knoll's lake side in two switchbacks; the last run cuts the lake bank west of the pump, the view corridor to the cab and the Snag; a polyline with no meander (a meander looped round the hairpins)
@@ -31,15 +35,15 @@ var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2
     ("Pump to boathouse", new[] { P(190,96), P(232,92), P(247.6f,52.4f) }, false, 84f, true, 0.25f, new[] { ("Overturned rowboat", P(223.6f,83.2f), "side") }),
     // Camp 2 legs (rev 15 leftover 2) end at the stack ramp's foot (298.9, 107.8), reaching it from the south, round the stack's east side
     ("Boathouse to Camp 2", new[] { P(247.6f,52.4f), P(282,64), P(301,97), P(298.9f,107.8f) }, false, 95f, false, 0.25f, new[] { ("Phone pole", P(272.8f,72f), "side") }),
-    ("Camp 2 to T", new[] { P(298.9f,107.8f), P(301,99), P(324,128), P(340,170) }, false, 94f, false, 0.25f, new[] { ("Food lockers", P(320,133.6f), "side") }),
+    ("Camp 2 to T", new[] { P(298.9f,107.8f), P(301,99), P(324,128), P(340,170) }, false, 94f, false, 0.25f, new[] { ("Food lockers", P(320,133.6f), "side"), ("Boulder", P(312f,116.6f), "tree") }),
     ("Camp to Jg", new[] { P(170,160), P(200,136), P(232,152), P(262,172) }, false, 125f, false, 0.25f, new[] { ("Hollow Giant", P(202,140), "tree"), ("Forage patch A", P(240,162.8f), "side") }),
     ("Jg to T", new[] { P(262,172), P(288,196), P(316,148), P(340,170) }, false, 105f, false, 0.25f, new[] { ("Gate Tree", P(290,176), "tree"), ("First sight of the lot", P(328,164), "side") }),
     ("Jg to Camp 1", new[] { P(262,172), P(264,208), P(282,238) }, false, 83f, false, 0.25f, new[] { ("Latrine shed", P(268,206.4f), "side") }),
     ("Camp to Camp 3", new[] { P(170,160), P(144,184), P(108,128), P(78,146) }, false, 126f, false, 0.25f, new[] { ("Forage patch B", P(142.4f,163.6f), "side"), ("Log steps", P(96,144.8f), "steps") }),
     ("Pump to W1", new[] { P(190,96), P(156,92), P(128,70) }, false, 80f, true, 0.25f, new[] { ("Washed-out truck", P(157.6f,87.6f), "side"), ("Stepping stones", P(131.8f,72.7f), "on") }),
-    ("W1 to Camp 3", new[] { P(128,70), P(96,104), P(78,146) }, false, 114f, false, 0.25f, new[] { ("Footbridge", P(114.8f,85.2f), "on"), ("Camper trailer", P(94,114.4f), "side"), ("Log steps", P(83.1f,134.1f), "steps") }),   // log steps down the hollow wall (rev 15 leftover 3)
+    ("W1 to Camp 3", new[] { P(128,70), P(96,104), P(78,146) }, false, 114f, false, 0.25f, new[] { ("Footbridge", P(114.8f,85.2f), "on"), ("Camper trailer", P(94,114.4f), "side"), ("Log steps", P(83.1f,134.1f), "steps"), ("Boulder", P(102.5f,102.2f), "tree") }),   // log steps down the hollow wall (rev 15 leftover 3)
     ("W1 to cave", new[] { P(128,70), P(108,48), P(84,64), P(52,37.5f) }, false, 109f, false, 0.25f, new[] { ("Rope handrail", P(106.8f,57.6f), "on"), ("Coloured bulbs", P(82,52), "side") }),
-    ("Camp to J", new[] { P(170,160), P(136,196), P(104,206) }, false, 96f, false, 0.25f, new[] { ("Burn-map board", P(136.4f,189.6f), "side"), ("Plank bridge", P(104.8f,203.2f), "on") }),
+    ("Camp to J", new[] { P(170,160), P(136,196), P(104,206) }, false, 96f, false, 0.25f, new[] { ("Burn-map board", P(136.4f,189.6f), "side"), ("Plank bridge", P(104.8f,203.2f), "on"), ("Boulder", P(146.9f,182f), "tree"), ("Boulder", P(123.9f,197.7f), "tree") }),
     // rev 15 (3.6): four switchback legs on the Wall's east face (8.1 builds the face as a plane, 88 at the crest falling 2.64
     // per metre east; in crest coordinates, along from (55, 190) toward (115, 270) and d out from the crest). A leg on the face
     // at 24 percent loses 0.089 m of d per metre along. Each turn is a platform: the next leg starts 3 m nearer the crest at the
@@ -49,7 +53,7 @@ var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2
     // (61.4, 15.73, 46.5); C (8, 10.96, 59.1), platform (8, 7.96), emerges (41.7, 7.96, 67.0); the pass (91.8, 2.4) at about 78.
     // Then a level 10 m through the notch and west across the plateau to the rock lip. No meander (the legs must stay on the
     // plane); the rune post stands outside the turn at B.
-    ("J to Ward", new[] { P(104,206), P(81.03f,180.48f), P(78.63f,182.28f), P(98.55f,208.84f), P(126.98f,254.76f), P(124.58f,256.56f), P(104.42f,229.68f), P(68.57f,189.82f), P(66.17f,191.62f), P(86.39f,218.58f), P(112,262), P(104,268), P(88,272), P(60,268), P(30,260), P(14.5f,256) }, true, 380f, false, 0.24f, new[] { ("Rune post", P(129.3f,257.6f), "side") }),
+    ("J to Ward", new[] { P(104,206), P(81.03f,180.48f), P(78.63f,182.28f), P(98.55f,208.84f), P(126.98f,254.76f), P(124.58f,256.56f), P(104.42f,229.68f), P(68.57f,189.82f), P(66.17f,191.62f), P(86.39f,218.58f), P(112,262), P(104,268), P(88,272), P(60,268), P(30,260), P(14.5f,256) }, true, 380f, false, 0.24f, new[] { ("Rune post", P(129.3f,257.6f), "side"), ("Boulder", P(66f,269.4f), "tree") }),
 };
 
 // ---------- centre line sampling ----------
@@ -108,7 +112,7 @@ foreach (var leg in legs)
     var detours = new System.Collections.Generic.List<(float s, float off)>();
     foreach (var poi in leg.pois) if (poi.kind == "tree")
     {
-        float r = poi.n == "Hollow Giant" ? 4.5f : 4f;
+        float r = poi.n == "Hollow Giant" ? 4.5f : poi.n == "Boulder" ? boulderR : 4f;
         float s0 = Project(C, S, poi.p, out float dd); var c0 = At(C, S, s0, out var t0);
         float sideOf = UnityEngine.Mathf.Sign(t0.x * (poi.p.y - c0.y) - t0.y * (poi.p.x - c0.x));   // + = tree on the left
         float need = r + 2.5f - dd; if (need > 0f) detours.Add((s0, -sideOf * need));
@@ -192,7 +196,15 @@ foreach (var leg in legs)
         float s0 = Project(path, ps, aim, out float dd); var at = At(path, ps, s0, out var tan);
         int idx = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(s0 / 0.5f), 0, N - 1);
         var obj = poi.p;
-        if (poi.kind == "side" && dd < 3.5f) { var nrm = P(-tan.y, tan.x); float sgn = LakeRe(at + nrm * 4f) >= LakeRe(at - nrm * 4f) ? 1f : -1f; obj = at + nrm * sgn * 4f; }
+        // a side piece on the trail line steps 4 m to the side whose ground is nearer the trail's height (8.9e re-walk: the
+        // coloured bulbs went up on the ravine rim and their walkable circle made a pocket there); on level ground, away from the lake
+        if (poi.kind == "side" && dd < 3.5f)
+        {
+            var nrm = P(-tan.y, tan.x); float th = prof[UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(s0 / 0.5f), 0, N - 1)];
+            float dl = UnityEngine.Mathf.Abs(H(at.x + nrm.x * 4f, at.y + nrm.y * 4f) - th), dr = UnityEngine.Mathf.Abs(H(at.x - nrm.x * 4f, at.y - nrm.y * 4f) - th);
+            float sgn = UnityEngine.Mathf.Abs(dl - dr) > sideLevelTol ? (dl < dr ? 1f : -1f) : (LakeRe(at + nrm * 4f) >= LakeRe(at - nrm * 4f) ? 1f : -1f);
+            obj = at + nrm * sgn * 4f;
+        }
         if (poi.kind == "on" || poi.kind == "steps") obj = at;
         poiPlaced.Add((leg.name, poi.n, at, tan, obj, poi.kind, s0, prof[idx]));
         report.Append(" | " + poi.n + " at " + s0.ToString("F0") + " m");
@@ -299,6 +311,9 @@ for (int qi = 0; qi < poiPlaced.Count; qi++)
 }
 foreach (var q in poiPlaced)
 {
+    // sight-break boulders (8.9e re-walk, Main3.md 2.11: no trail shows more than about 60 m straight): the trail bows round
+    // each one, so the rock hides the trail beyond it; a mesh collider, since a stretched sphere collider would be too big
+    if (q.n == "Boulder") { var bo = Prim(Sph, "POI_Boulder", poiRoot.transform, V(q.obj.x, H(q.obj.x, q.obj.y), q.obj.y), V(boulderR * 2f, boulderH * 2f, boulderR * 2f)); UnityEngine.Object.DestroyImmediate(bo.GetComponent<UnityEngine.Collider>()); bo.AddComponent<UnityEngine.MeshCollider>(); continue; }
     if (q.kind == "tree") continue;   // hero trees are built with the giants
     float yaw = UnityEngine.Mathf.Atan2(q.tan.x, q.tan.y) * UnityEngine.Mathf.Rad2Deg;   // local +z along the trail
     float gy = q.kind == "side" ? H(q.obj.x, q.obj.y) : q.height;
@@ -476,9 +491,17 @@ void Circle(UnityEngine.Vector2 c, float r) => Stamp(c.x - r - 1f, c.x + r + 1f,
 void Rect(float x0, float x1, float z0, float z1) => Stamp(x0 - 1f, x1 + 1f, z0 - 1f, z1 + 1f, q => UnityEngine.Mathf.Min(UnityEngine.Mathf.Min(q.x - x0, x1 - q.x), UnityEngine.Mathf.Min(q.y - z0, z1 - q.y)));
 void Seg(UnityEngine.Vector2 a, UnityEngine.Vector2 b, float hw) => Stamp(UnityEngine.Mathf.Min(a.x, b.x) - hw - 1f, UnityEngine.Mathf.Max(a.x, b.x) + hw + 1f, UnityEngine.Mathf.Min(a.y, b.y) - hw - 1f, UnityEngine.Mathf.Max(a.y, b.y) + hw + 1f, q => hw - SegD(q, a, b));
 void Ring(UnityEngine.Vector2 c, float r0, float r1) => Stamp(c.x - r1 - 1f, c.x + r1 + 1f, c.y - r1 - 1f, c.y + r1 + 1f, q => { float d = UnityEngine.Vector2.Distance(q, c); return UnityEngine.Mathf.Min(d - r0, r1 - d); });
-foreach (var b in built) for (int i = 0; i < b.path.Count - 1; i++) Seg(b.path[i], b.path[i + 1], 2.2f);
+// the Ward climb's corridor is narrower on the Wall's face (1.1 m each side, to the pass): its stacked shelves are 3 m apart,
+// so each shelf gets its own outline and walls between them (8.9e re-walk: jumping up or dropping off a shelf skipped legs)
+const float corridorHW = 2.2f, climbHW = 1.1f;
+foreach (var b in built)
+{
+    int passIdx = -1; if (b.name == "J to Ward") { float bd = float.MaxValue; for (int i = 0; i < b.path.Count; i++) { float d = UnityEngine.Vector2.Distance(b.path[i], P(112, 262)); if (d < bd) { bd = d; passIdx = i; } } }
+    for (int i = 0; i < b.path.Count - 1; i++) Seg(b.path[i], b.path[i + 1], i < passIdx ? climbHW : corridorHW);
+}
 Circle(P(170, 160), 18f); Circle(P(282, 238), 30f); Circle(P(292, 108), 20f); Circle(P(78, 146), 9f);
-Circle(P(104, 206), 5f); Circle(P(128, 70), 5f); Circle(P(262, 172), 4f); Circle(P(340, 170), 4f);
+Circle(P(104, 206), 4f); Circle(P(128, 70), 5f);   // J 4 m (8.9e re-walk: 5 m met the climb's second leg 6 m away)
+Circle(P(262, 172), 4f); Circle(P(340, 170), 4f);
 Rect(13.6f, 30f, 250f, 274f);                                                      // Ward (rev 15): up to the lip line (x 13.6), the low crest and the stones
 Rect(49.5f, 54.5f, 30f, 41f);                                                      // in front of the cave mouth and into the passage (8.9b: no wall across it)
 Rect(187.5f, 192.5f, 86f, 98f); Rect(236.3f, 248.3f, 49.1f, 55.7f);                // dock notch; boathouse and gangway
@@ -488,7 +511,9 @@ var spurW = new[] { P(385, 172.5f), P(385, 186), P(390, 196), P(390, 244) };
 for (int i = 0; i < spurW.Length - 1; i++) Seg(spurW[i], spurW[i + 1], 3f);
 Ring(P(372, 262), 9.5f, 21f);                                                      // loop road and pitches
 Seg(P(390, 243), P(387, 255), 3f);                                                 // spur on into the loop (8.9b)
-foreach (var q in poiPlaced) if (q.kind == "side") Circle(q.obj, poiRadius[q.n] + 1.5f);
+// a side piece is walkable round only where it stands level with its trail (8.9e re-walk: the coloured bulbs pushed up onto
+// the ravine rim made a walkable pocket there)
+foreach (var q in poiPlaced) if (q.kind == "side" && UnityEngine.Mathf.Abs(H(q.obj.x, q.obj.y) - q.height) < sideWalkTol) Circle(q.obj, poiRadius[q.n] + 1.5f);
 // marching squares: segments between edge crossings, keyed by edge so neighbouring cells join
 var ptOf = new System.Collections.Generic.Dictionary<long, UnityEngine.Vector2>();
 var adj = new System.Collections.Generic.Dictionary<long, System.Collections.Generic.List<long>>();
@@ -553,6 +578,7 @@ System.Collections.Generic.List<UnityEngine.Vector2> Simplify(System.Collections
 // Each outline segment gets two boxes (8.9b): an invisible wall 4 m over the highest ground under it (the player jumps 0.6 m,
 // so it cannot be climbed from a slope or a boulder), on the Ignore Raycast layer so no sight line or landmark check sees it;
 // and a low visible marker 0.3 m over the lowest ground, no collider, so the edge reads in gray without hiding anything.
+const float wallReach = 3f;
 var tileWalls = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
 var tileMarks = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
 int boxes = 0;
@@ -570,6 +596,10 @@ foreach (var raw0 in loops)
             var sa = UnityEngine.Vector2.Lerp(a, b, k / (float)parts); var sb2 = UnityEngine.Vector2.Lerp(a, b, (k + 1) / (float)parts); var mid = (sa + sb2) * 0.5f;
             float g0 = H(sa.x, sa.y), g1 = H(sb2.x, sb2.y), gm = H(mid.x, mid.y);
             float gLow = UnityEngine.Mathf.Min(gm, UnityEngine.Mathf.Min(g0, g1)), gTop = UnityEngine.Mathf.Max(gm, UnityEngine.Mathf.Max(g0, g1));
+            // 8.9e re-walk: also the ground up to wallReach either side, so a steep bank or a shelf just past the wall cannot
+            // be bounced up beside it and stepped over (the ravine rim at Wall_100, the stacked switchbacks on the Wall)
+            var perp = P(-(sb2 - sa).y, (sb2 - sa).x).normalized;
+            for (float o = 1f; o <= wallReach; o += 1f) foreach (var sg in new[] { -1f, 1f }) gTop = UnityEngine.Mathf.Max(gTop, H(mid.x + perp.x * o * sg, mid.y + perp.y * o * sg));
             float lo = gLow - 0.4f, wallTop = gTop + 4f, markTop = gLow + 0.3f;
             var dir = sb2 - sa; float l = dir.magnitude + 0.5f; var rot = UnityEngine.Quaternion.LookRotation(V(dir.x, 0f, dir.y).normalized, UnityEngine.Vector3.up);
             int key = ((int)(mid.x / 50f)) * 100 + (int)(mid.y / 50f);

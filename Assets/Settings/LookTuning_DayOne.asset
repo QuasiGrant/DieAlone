@@ -59,6 +59,7 @@ MonoBehaviour:
   lanternIntensity: 0.8
   practicalDayScale: 0.4
   cabLampBulbIntensity: 3
+  cabWindowGlowIntensity: 0.6
   lotLightColor: {r: 0.941, g: 0.541, b: 0.165, a: 1}
   mastLampColor: {r: 0.69, g: 0.125, b: 0.11, a: 1}
   farMarkerIntensity: 2.5

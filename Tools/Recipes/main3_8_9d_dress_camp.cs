@@ -181,6 +181,23 @@ foreach (var side in new[] { "N", "E", "W" })
 }
 Slab("Glass_S", cabDress, V(0.65f, paneY, -ch), V(2.5f, paneH, 0.02f), glass, UnityEngine.Vector3.zero);   // south window between the door and the corner
 Slab("Mullion_S", cabDress, V(0.65f, paneY, -ch), V(0.06f, paneH, 0.08f), null, UnityEngine.Vector3.zero);
+// lit windows at night (8.9e re-walk, Wren): one-sided quads just outside the glass on DieAlone/FireStandIn, facing out, so
+// from the Ward pass the tower reads as a small warm light past the night fog; from inside the cab they are back faces and
+// do not draw; NightMarker hides them in the daylight looks
+var glowMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(SliceDir + "/Slice_CabWindowGlow.mat");
+if (glowMat == null) { glowMat = new UnityEngine.Material(standIn); UnityEditor.AssetDatabase.CreateAsset(glowMat, SliceDir + "/Slice_CabWindowGlow.mat"); }
+glowMat.shader = standIn; glowMat.SetColor("_Color", look.practicalColor); glowMat.SetFloat("_Intensity", look.cabWindowGlowIntensity); UnityEditor.EditorUtility.SetDirty(glowMat);
+const float glowOut = 0.06f;
+var glowRs = new System.Collections.Generic.List<UnityEngine.Renderer>();
+foreach (var (gPos, gSize, gYaw) in new[] { (V(0f, paneY, ch + glowOut), V(cabW - 0.6f, paneH, 1f), 180f), (V(ch + glowOut, paneY, 0f), V(cabW - 0.6f, paneH, 1f), -90f), (V(-ch - glowOut, paneY, 0f), V(cabW - 0.6f, paneH, 1f), 90f), (V(0.65f, paneY, -ch - glowOut), V(2.5f, paneH, 1f), 0f) })
+{
+    var gq = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Quad); gq.name = "WindowGlow"; gq.transform.SetParent(cabDress, false);
+    gq.transform.localPosition = gPos; gq.transform.localScale = gSize; gq.transform.localRotation = UnityEngine.Quaternion.Euler(0f, gYaw, 0f);
+    UnityEngine.Object.DestroyImmediate(gq.GetComponent<UnityEngine.Collider>());
+    var qr = gq.GetComponent<UnityEngine.Renderer>(); qr.sharedMaterial = glowMat; qr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; glowRs.Add(qr);
+}
+var nm = cabDress.gameObject.AddComponent<NightMarker>(); var nmo = new UnityEditor.SerializedObject(nm); var nmr = nmo.FindProperty("renderers");
+nmr.arraySize = glowRs.Count; for (int i = 0; i < glowRs.Count; i++) nmr.GetArrayElementAtIndex(i).objectReferenceValue = glowRs[i]; nmo.ApplyModifiedPropertiesWithoutUndo();
 // wind vane on the roof: rod and arrow, rust
 float roofTop = cabWallH + 0.2f;
 var vaneRod = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cylinder); vaneRod.name = "WindVaneRod"; vaneRod.transform.SetParent(cabDress, false);

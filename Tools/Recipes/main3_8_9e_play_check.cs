@@ -3,7 +3,7 @@
 // side; a jump fails if it ends in the ravine east of the mouth or on the ground over the cave (x 44 to 92, z 3 to 48, below 3 m,
 // outside the cave mouth approach), as Marlow found; ends more than 4.5 m from any trail point elsewhere are listed as pockets. (2) Camp 2:
 // both legs walked to their ends at the ramp foot (298.9, 107.8). (3) Boathouse pocket: walking and hopping west from
-// (247.2, 54.9) must stop east of the pocket (x over 244.5). (4) Tower deck: the walkway walked all round at 3.9 m from the
+// (247.2, 54.9) must not drop into the pocket (the fill holds the player level, lowest over -4.2). (4) Tower deck: the walkway walked all round at 3.9 m from the
 // centre, east side past the hatch, without dropping. Leaves runInBackground off and the controller on.
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 UnityEngine.Application.runInBackground = true;
@@ -61,14 +61,14 @@ foreach (var name in new[] { "Boathouse to Camp 2", "Camp 2 to T" })
 }
 // (3) boathouse pocket
 {
-    float minX = float.MaxValue;
+    float minX = float.MaxValue, lowY = float.MaxValue;
     foreach (var mode in new[] { 0, 1 })
     {
         var ter = UnityEngine.Terrain.activeTerrain; Put(new UnityEngine.Vector3(247.2f, ter.SampleHeight(new UnityEngine.Vector3(247.2f, 0f, 54.9f)) + ter.transform.position.y, 54.9f));
         if (mode == 0) To(242f, 55f); else Hop(new UnityEngine.Vector3(-1f, 0f, 0f), tuning.sprintSpeed, 3f);
-        minX = UnityEngine.Mathf.Min(minX, pc.transform.position.x);
+        minX = UnityEngine.Mathf.Min(minX, pc.transform.position.x); lowY = UnityEngine.Mathf.Min(lowY, pc.transform.position.y);
     }
-    bool ok = minX > 244.5f; allOk &= ok; sb.Append("boathouse pocket: westmost x " + minX.ToString("F2") + " (" + (ok ? "stopped" : "DROPPED IN") + ")\n");
+    bool ok = lowY > -4.2f; allOk &= ok; sb.Append("boathouse pocket: westmost x " + minX.ToString("F2") + ", lowest " + lowY.ToString("F2") + " (" + (ok ? "held level over the pocket" : "DROPPED IN") + ")\n");
 }
 // (4) tower deck walkway, all round
 {
