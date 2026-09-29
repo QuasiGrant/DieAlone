@@ -141,6 +141,10 @@ The event grammar first (an event can block, add or replace a need, cost a stat,
 
 The seven residents' minigames and storylines from Docs/Private/Minigames.md (private), after Sable's revision and Grant's yes. Shared pieces first (resident record in the save, counter view, spot-the-change, beat input), then the games in Tully's order. Each loss traces to a choice or a visible failure, content varies between runs, warnings are subtle, and completing every storyline is hard. Includes the logbook's homage collectibles page.
 
+## Milestone 16: Homage references
+
+Many more collectible references to other games, beyond the first five, placed through Main3 and listed on the logbook page. Each is a plain object found in the world, no logos or names; a trademark and fair-use check before release.
+
 ## Later
 
 Main menu with New run and Continue. Volume, graphics and control rebinding settings. Endings built, scrapbook, inventory, map, Ward as physical objects, scares, a pet to feed, art pass.

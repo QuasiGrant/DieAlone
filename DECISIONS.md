@@ -152,3 +152,7 @@
 - 2026-09-29: The last page of the logbook is a collectible page of achievements that reference other games (for example the lamppost from The Beginner's Guide, the phone booth from Disco Elysium).
 - 2026-09-29: The game opens with content warnings.
 - 2026-09-29: Resident minigames get their own milestone (15), after Events. The Child's minigame is built first, inside Milestone 13, as the pilot for the dialogue and content format.
+- 2026-09-29: The escape-room style puzzle is not the office resident's (he already has the gate booth). It becomes the Artist's minigame.
+- 2026-09-29: The roulette is played with the hidden resident in the cave, with a real gun (adult game). The player has to play with him; the creepy part is that after he loses he is right back at it the next day.
+- 2026-09-29: The Lover's card game should be something more interesting than plain rummy; ideate when it is built.
+- 2026-09-29: Many more homage references are wanted; they get their own milestone later.
