@@ -66,60 +66,86 @@ for (int n = 0; n < stonePos.Length; n++)
 // rock lip (3.6.3): 0.8 m high across the path end at (13, 252), 3 m in from the cliff edge at x 10
 float gl = H(13f, 252f);
 Prim(Cube, "RockLip", ward, V(13f, gl + 0.4f - 0.3f, 252f), V(1.2f, 1.4f, 7f));
+// rock screen (8.9c re-walk 2): an outcrop along the north side of the straight run, from the last bend to just short of the
+// crest, 11 m over the ledge, so the stones stay hidden up the run and topping the crest at x 25 is the reveal
+const float screenX0 = 24f, screenX1 = 54f, screenZ0 = 253.5f, screenZ1 = 257.5f, screenTop = 47f;
+float screenBase = float.MaxValue;
+for (float sx = screenX0; sx <= screenX1; sx += 1f) foreach (var sz in new[] { screenZ0, screenZ1 }) screenBase = UnityEngine.Mathf.Min(screenBase, H(sx, sz));
+screenBase -= 0.5f;   // sunk so no gap shows under it
+Prim(Cube, "StoneScreen", ward, V((screenX0 + screenX1) * 0.5f, (screenBase + screenTop) * 0.5f, (screenZ0 + screenZ1) * 0.5f), V(screenX1 - screenX0, screenTop - screenBase, screenZ1 - screenZ0));
 
-// ---- stand-in burning ridge and valley fire (3.7), beyond the west map edge, gray with plain orange for flame and glow.
-// Built inactive: hidden on day 1 by day; a day and night system turns it on (nightfall on day 1, glow and smoke by day from day 2).
+// ---- stand-in burning ridge and valley fire (3.7), beyond the west map edge. Gray box, so the stand-in is brought near
+// (ridge about 200 to 300 m out instead of 300 to 500) to make the lip frame read inside the camera's 1000 m far clip:
+// fire across 150 degrees, flames 10 to 15 degrees over the ridge, the valley below burning as a sea, smoke over the sky.
+// Flame, glow and smoke use DieAlone/FireStandIn (unlit, no fog) so they read through the night and day-two haze;
+// colours from LookTuning (fireGlowColor and fireGlowIntensity for fire, smokeFireColor for the fire-lit smoke).
+// Built inactive: hidden on day 1 by day; a day and night system turns it on. No renderer casts shadows.
 var fire = new UnityEngine.GameObject("StandInFire"); fire.transform.SetParent(ward, false);
-const string fireMatPath = "Assets/Materials/Blockout/Blockout_Fire.mat";
-var fireMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(fireMatPath);
-// fire colour through DieAlone/FireStandIn, which ignores fog, so the stand-in reads through the night and day-two haze;
-// colour and strength are LookTuning.fireGlowColor and fireGlowIntensity
 var fireSh = UnityEngine.Shader.Find("DieAlone/FireStandIn"); if (fireSh == null) return "DieAlone/FireStandIn shader not found";
 var lookT = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning.asset"); if (lookT == null) return "no LookTuning";
-if (fireMat == null) { fireMat = new UnityEngine.Material(fireSh); UnityEditor.AssetDatabase.CreateAsset(fireMat, fireMatPath); }
-fireMat.shader = fireSh; fireMat.SetColor("_Color", lookT.fireGlowColor); fireMat.SetFloat("_Intensity", lookT.fireGlowIntensity);
-UnityEditor.EditorUtility.SetDirty(fireMat);
-UnityEngine.GameObject Stand(UnityEngine.PrimitiveType t, string name, UnityEngine.Transform parent, UnityEngine.Vector3 pos, UnityEngine.Vector3 sc, bool flame, float lean = 0f)
+UnityEngine.Material FireMat(string path, UnityEngine.Color c, float intensity)
+{
+    var m = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(path);
+    if (m == null) { m = new UnityEngine.Material(fireSh); UnityEditor.AssetDatabase.CreateAsset(m, path); }
+    m.shader = fireSh; m.SetColor("_Color", c); m.SetFloat("_Intensity", intensity); UnityEditor.EditorUtility.SetDirty(m); return m;
+}
+var fireMat = FireMat("Assets/Materials/Blockout/Blockout_Fire.mat", lookT.fireGlowColor, lookT.fireGlowIntensity);
+var smokeMat = FireMat("Assets/Materials/Blockout/Blockout_Smoke.mat", lookT.smokeFireColor, 1f);
+UnityEngine.GameObject Stand(UnityEngine.PrimitiveType t, string name, UnityEngine.Transform parent, UnityEngine.Vector3 pos, UnityEngine.Vector3 sc, UnityEngine.Material mat, float lean = 0f)
 {
     var g = UnityEngine.GameObject.CreatePrimitive(t); g.name = name; g.transform.SetParent(parent, false); g.transform.position = pos; g.transform.localScale = sc;
     g.transform.rotation = UnityEngine.Quaternion.Euler(0f, 0f, lean);
     UnityEngine.Object.DestroyImmediate(g.GetComponent<UnityEngine.Collider>());   // far scenery, never touched
-    if (flame) g.GetComponent<UnityEngine.Renderer>().sharedMaterial = fireMat;
+    var rr = g.GetComponent<UnityEngine.Renderer>(); rr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; rr.receiveShadows = false;
+    if (mat != null) rr.sharedMaterial = mat;
     return g;
 }
 var rng = new System.Random(8013);
 float R(float a, float b) => a + (float)rng.NextDouble() * (b - a);
-// valley floor at -40 from the cliff foot out past the ridge, the full length of the ridge
-Stand(UnityEngine.PrimitiveType.Cube, "ValleyFloor", fire.transform, V(-260f, -40.5f, 250f), V(520f, 1f, 2300f), false);
-// ridge: a rolling band of flattened ellipsoids, crest about 30, 300 to 500 m west of the cliff, z -870 to 1370
+const float zMin = -700f, zMax = 1200f;   // 75 degrees either side of west from the lip at 250 m out, and a margin
+// the valley floor glows as embers in the fire-lit smoke colour, so the brighter fires on it read as one burning sea
+Stand(UnityEngine.PrimitiveType.Cube, "ValleyFloor", fire.transform, V(-160f, -40.5f, 250f), V(330f, 1f, zMax - zMin), smokeMat);
 var ridge = new UnityEngine.GameObject("Ridge").transform; ridge.SetParent(fire.transform, false);
-for (float z = -870f; z <= 1370f; z += 70f)
-    Stand(UnityEngine.PrimitiveType.Sphere, "Hill", ridge, V(R(-420f, -360f), -40f, z + R(-15f, 15f)), V(R(200f, 260f), R(120f, 150f), R(120f, 160f)), false);
-Stand(UnityEngine.PrimitiveType.Cube, "GlowBand", fire.transform, V(-330f, 30f, 250f), V(6f, 3f, 2240f), true);
-// burning giants on the ridge: gray trunks 40 to 50 m with orange flame shapes to 70 to 100 m above the ridge
+var hills = new System.Collections.Generic.List<(UnityEngine.Vector3 c, UnityEngine.Vector3 r)>();   // centre and semi-axes, for setting fires on the slopes
+for (float z = zMin; z <= zMax; z += 60f)
+{
+    var hc = V(R(-275f, -245f), -40f, z + R(-12f, 12f)); var hs = V(R(150f, 190f), R(120f, 150f), R(110f, 150f));
+    Stand(UnityEngine.PrimitiveType.Sphere, "Hill", ridge, hc, hs, null); hills.Add((hc, hs * 0.5f));
+}
+float Ground(float x, float z)   // the valley floor, or the highest hill surface over (x, z)
+{
+    float y = -40f;
+    foreach (var h in hills) { float dx = (x - h.c.x) / h.r.x, dz = (z - h.c.z) / h.r.z, q = 1f - dx * dx - dz * dz; if (q > 0f) y = UnityEngine.Mathf.Max(y, h.c.y + h.r.y * UnityEngine.Mathf.Sqrt(q)); }
+    return y;
+}
+Stand(UnityEngine.PrimitiveType.Cube, "GlowBand", fire.transform, V(-215f, 30f, (zMin + zMax) * 0.5f), V(6f, 4f, zMax - zMin), fireMat);
 var giants = new UnityEngine.GameObject("BurningGiants").transform; giants.SetParent(fire.transform, false);
-for (float z = -850f; z <= 1350f; z += 45f)
+for (float z = zMin + 10f; z <= zMax - 10f; z += 30f)
 {
-    float x = R(-390f, -300f), baseY = 25f, tall = R(40f, 50f);
-    Stand(UnityEngine.PrimitiveType.Cylinder, "Trunk", giants, V(x, baseY + tall * 0.5f, z), V(6f, tall * 0.5f, 6f), false);
-    float flame = R(70f, 100f);
-    Stand(UnityEngine.PrimitiveType.Sphere, "Flame", giants, V(x, baseY + flame * 0.5f, z), V(R(18f, 26f), flame, R(18f, 26f)), true);
+    float x = R(-265f, -205f), baseY = 25f, tall = R(40f, 50f), flame = R(50f, 75f);
+    Stand(UnityEngine.PrimitiveType.Cylinder, "Trunk", giants, V(x, baseY + tall * 0.5f, z), V(6f, tall * 0.5f, 6f), null);
+    Stand(UnityEngine.PrimitiveType.Sphere, "Flame", giants, V(x, baseY + flame * 0.5f, z), V(R(20f, 30f), flame, R(20f, 30f)), fireMat);
 }
-// valley fires 135 to 440 m west of the lip (x about -125 to -430): low flame mounds on the floor
+// valley and ridge face: overlapping low fires from about 60 m out, across the floor and up the ridge's face to under its
+// crest (30 degrees below level from the lip up the lower face), so the front reads as one burning sea
+const float faceTop = -10f;   // face fires stay low enough that the crest on the run still hides them (Ward 3.6: only flame tops before the crest)
 var valley = new UnityEngine.GameObject("ValleyFires").transform; valley.SetParent(fire.transform, false);
-for (int i = 0; i < 90; i++)
-{
-    float x = R(-430f, -125f), z = R(-600f, 1100f), hgt = R(8f, 22f);
-    Stand(UnityEngine.PrimitiveType.Sphere, "Fire", valley, V(x, -40f + hgt * 0.3f, z), V(R(14f, 30f), hgt, R(14f, 30f)), true);
-}
-// smoke: four columns 250 m and more, leaning east over the map, and a sheet roofing the west
+for (float z = zMin; z <= zMax; z += 26f)
+    for (float x = -60f; x >= -260f; x -= 20f)
+    {
+        float fx = x + R(-8f, 8f), fz = z + R(-8f, 8f), gy = Ground(fx, fz), hgt = R(6f, 20f);
+        if (gy > faceTop) continue;
+        Stand(UnityEngine.PrimitiveType.Sphere, "Fire", valley, V(fx, gy + hgt * 0.25f, fz), V(R(36f, 50f), hgt, R(36f, 50f)), fireMat);
+    }
+// smoke lit from below by the fire: five columns 400 to 500 m, leaning east over the map, past the frame top at level gaze,
+// and a smoke bank behind the ridge filling the sky from the horizon to about 18 degrees up, leaning east
 var smoke = new UnityEngine.GameObject("Smoke").transform; smoke.SetParent(fire.transform, false);
-foreach (var z in new[] { -300f, 150f, 520f, 900f })
+foreach (var z in new[] { -350f, 0f, 250f, 520f, 850f })
 {
-    float hgt = R(460f, 560f);   // tall enough to leave the top of the frame from the lip at level gaze (3.6.6)
-    Stand(UnityEngine.PrimitiveType.Cylinder, "Column", smoke, V(-360f + hgt * 0.15f, 30f + hgt * 0.5f, z), V(R(60f, 90f), hgt * 0.5f, R(60f, 90f)), false, -12f);
+    float hgt = R(400f, 500f);
+    Stand(UnityEngine.PrimitiveType.Cylinder, "Column", smoke, V(-230f + hgt * 0.15f, 30f + hgt * 0.5f, z), V(R(90f, 130f), hgt * 0.5f, R(90f, 130f)), smokeMat, -12f);
 }
-Stand(UnityEngine.PrimitiveType.Cube, "SmokeSheet", smoke, V(-250f, 330f, 250f), V(500f, 20f, 2200f), false);
+Stand(UnityEngine.PrimitiveType.Cube, "SmokeBank", smoke, V(-330f, 90f, (zMin + zMax) * 0.5f), V(20f, 120f, zMax - zMin), smokeMat, -20f);
 fire.SetActive(false);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " cairn at " + cairnPos.ToString("F1") + " solid chain 4 m up the trail | Tor top " + torTop.ToString("F1") + " ground at Tor centre " + H(76f, 223f).ToString("F1") + " closest climb point " + minD.ToString("F1") + " m from the Tor centre | stones ground " + H(18f, 262f).ToString("F1") + " tops 48 | lip ground " + gl.ToString("F1") + " | stand-in fire built, off";

@@ -73,8 +73,8 @@ float Project(System.Collections.Generic.List<UnityEngine.Vector2> pts, float[] 
 }
 float PolyLen(System.Collections.Generic.List<UnityEngine.Vector2> p) { float l = 0; for (int i = 1; i < p.Count; i++) l += UnityEngine.Vector2.Distance(p[i - 1], p[i]); return l; }
 
-// table 2.1 heights at the named trail ends
-var namedEnds = new (UnityEngine.Vector2 p, float h)[] { (P(170,160), 8f), (P(190,96), -4.5f), (P(128,70), -4.5f), (P(104,206), 10f), (P(262,172), 5f), (P(340,170), 3f), (P(282,238), 5f), (P(292,108), 4f), (P(78,146), -4f), (P(52,37.5f), -6f), (P(14.5f,252), 36f) };
+// table 2.1 heights at the named trail ends; camp is the 15 m knoll top (rev 13, 8.1), so the camp ends meet it level
+var namedEnds = new (UnityEngine.Vector2 p, float h)[] { (P(170,160), 15f), (P(190,96), -4.5f), (P(128,70), -4.5f), (P(104,206), 10f), (P(262,172), 5f), (P(340,170), 3f), (P(282,238), 5f), (P(292,108), 4f), (P(78,146), -4f), (P(52,37.5f), -6f), (P(14.5f,252), 36f) };
 var built = new System.Collections.Generic.List<(string name, System.Collections.Generic.List<UnityEngine.Vector2> path, float[] prof, float target)>();
 var poiPlaced = new System.Collections.Generic.List<(string leg, string n, UnityEngine.Vector2 at, UnityEngine.Vector2 tan, UnityEngine.Vector2 obj, string kind, float along, float height)>();
 var report = new System.Text.StringBuilder();
@@ -132,10 +132,27 @@ foreach (var leg in legs)
     float EndH(UnityEngine.Vector2 q) { foreach (var np in namedEnds) if (UnityEngine.Vector2.Distance(q, np.p) < 1f) return np.h; return H(q.x, q.y); }
     prof[0] = EndH(path[0]); prof[N - 1] = EndH(path[N - 1]);
     float stepsFrom = stepsSeg >= 0 ? anchors[stepsSeg] - 1f : float.MaxValue;
-    for (int pass = 0; pass < 6; pass++)   // ends stay pinned; interior points clamp toward them
+    // largest height change between samples i - 1 and i, from their real spacing (the meander stretches samples past 0.5 m)
+    // gradeMargin keeps the built ground under the leg's grade after the terrain blend rounds the profile
+    const float gradeMargin = 0.98f;
+    float G(int i) => (i * 0.5f >= stepsFrom ? 0.85f : leg.maxGrade * gradeMargin) * UnityEngine.Vector2.Distance(path[i - 1], path[i]);
+    // band first (8.9c re-walk 2): each point within reach of both pinned ends at the leg's grade, so the neighbour clamps
+    // below cannot leave an end short (a tight leg such as camp to pump, 19.5 m down in 80 m, came out 6.7 m under the camp end)
+    var fromA = new float[N]; var fromB = new float[N];
+    for (int i = 1; i < N; i++) fromA[i] = fromA[i - 1] + G(i);
+    for (int i = N - 2; i >= 0; i--) fromB[i] = fromB[i + 1] + G(i + 1);
+    for (int i = 1; i < N - 1; i++)
     {
-        for (int i = 1; i < N - 1; i++) { float g = (i * 0.5f >= stepsFrom ? 0.85f : leg.maxGrade) * 0.5f; prof[i] = UnityEngine.Mathf.Clamp(prof[i], prof[i - 1] - g, prof[i - 1] + g); }
-        for (int i = N - 2; i >= 1; i--) { float g = (i * 0.5f >= stepsFrom ? 0.85f : leg.maxGrade) * 0.5f; prof[i] = UnityEngine.Mathf.Clamp(prof[i], prof[i + 1] - g, prof[i + 1] + g); }
+        float bLo = UnityEngine.Mathf.Max(prof[0] - fromA[i], prof[N - 1] - fromB[i]), bHi = UnityEngine.Mathf.Min(prof[0] + fromA[i], prof[N - 1] + fromB[i]);
+        if (bLo > bHi) return leg.name + ": the ends are too far apart in height for the grade (" + prof[0] + " to " + prof[N - 1] + " over " + PolyLen(path).ToString("F1") + " m)";
+        prof[i] = UnityEngine.Mathf.Clamp(prof[i], bLo, bHi);
+    }
+    for (int pass = 0; pass < 200; pass++)   // ends stay pinned; interior points clamp toward their neighbours until nothing moves
+    {
+        float moved = 0f;
+        for (int i = 1; i < N - 1; i++) { float c = UnityEngine.Mathf.Clamp(prof[i], prof[i - 1] - G(i), prof[i - 1] + G(i)); moved = UnityEngine.Mathf.Max(moved, UnityEngine.Mathf.Abs(c - prof[i])); prof[i] = c; }
+        for (int i = N - 2; i >= 1; i--) { float c = UnityEngine.Mathf.Clamp(prof[i], prof[i + 1] - G(i + 1), prof[i + 1] + G(i + 1)); moved = UnityEngine.Mathf.Max(moved, UnityEngine.Mathf.Abs(c - prof[i])); prof[i] = c; }
+        if (moved < 0.0001f) break;
     }
     // log steps: one straight grade from the steps anchor to where the profile reaches the hollow floor, so terrain and ramp agree
     if (stepsSeg >= 0)

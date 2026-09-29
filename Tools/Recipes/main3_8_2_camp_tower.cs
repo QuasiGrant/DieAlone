@@ -77,6 +77,14 @@ for (float b0 = 0f; b0 < deckTop - 1f; b0 += bayH)
 // Each flight has a collider-only StairRamp along its nosings (STAIRS RULE) and rails on both sides.
 var stairs = Group("Stairs", T, V(0f, 0f, 0f)).transform;
 const int flights = 10, steps = 16; const float run = 0.3f, laneW = 1.0f, stepThick = 0.5f, railH = 1.0f;
+// invisible stops: 2.8 m over the highest floor they guard clears a 0.6 m jump with a 1.8 m capsule and margin; 0.1 m thick
+const float stopH = 2.8f, stopDepth = 0.3f, stopThick = 0.1f;
+UnityEngine.GameObject Stop(string name, UnityEngine.Transform parent, UnityEngine.Vector3 pos, UnityEngine.Vector3 size)
+{
+    var go = new UnityEngine.GameObject(name); go.layer = 2;   // Ignore Raycast: blocks the player, not sight checks
+    go.transform.SetParent(parent, false); go.transform.localPosition = pos;
+    go.AddComponent<UnityEngine.BoxCollider>().size = size; return go;
+}
 float rise = deckTop / (flights * steps), flightRise = rise * steps, flightRun = run * steps;
 float ringC = (flightRun + laneW) * 0.5f;   // corner landing centres at (+-ringC, +-ringC), 2.9 m
 var corners = new[] { V(-ringC, 0f, -ringC), V(ringC, 0f, -ringC), V(ringC, 0f, ringC), V(-ringC, 0f, ringC) };
@@ -95,6 +103,11 @@ for (int k = 0; k < flights; k++)
     ramp.transform.localScale = V(laneW, 0.2f, rampLen); ramp.AddComponent<UnityEngine.BoxCollider>();
     foreach (var sx in new[] { -laneW * 0.5f, laneW * 0.5f })
         Box("Rail", g, V(sx, flightRise * 0.5f + railH * 0.5f + 0.1f, flightRun * 0.5f), V(0.05f, railH, rampLen * (flightRun - 0.8f) / flightRun), V(-theta, 0f, 0f));   // short of both ends, so the tilted rail never pokes into a landing
+    // RailStops (8.9c re-walk 2): invisible walls just outside both lane edges, exactly the flight's length so none reaches
+    // into a landing's open edge, from the foot to stopH over the top landing (a player leaping down from the top landing
+    // flies well above the lower steps), on Ignore Raycast
+    foreach (var sx in new[] { -1f, 1f })
+        Stop("RailStop", g, V(sx * (laneW + stopThick) * 0.5f, (flightRise + stopH - stopDepth) * 0.5f, flightRun * 0.5f), V(stopThick, flightRise + stopH + stopDepth, flightRun));
     if (k < flights - 1)
     {
         // corner landing at the top of this flight, rails on its two outer edges
@@ -102,6 +115,10 @@ for (int k = 0; k < flights; k++)
         Box("Slab", L, V(0f, -0.15f, 0f), V(laneW, 0.3f, laneW));
         Box("RailX", L, V(UnityEngine.Mathf.Sign(to.x) * laneW * 0.5f, railH * 0.5f, 0f), V(0.05f, railH, laneW));
         Box("RailZ", L, V(0f, railH * 0.5f, UnityEngine.Mathf.Sign(to.z) * laneW * 0.5f), V(laneW, railH, 0.05f));
+        float sOut = (laneW + stopThick) * 0.5f, sLen = laneW + stopThick * 2f, sTop = UnityEngine.Mathf.Min(flightRise + stopH, deckTop - deckThick - (h0 + flightRise)),   // as tall as the flight stops (players leap down onto landings too), never up through the deck walkway
+              sy = (sTop - stopDepth) * 0.5f, sh = sTop + stopDepth;
+        Stop("RailStopX", L, V(UnityEngine.Mathf.Sign(to.x) * sOut, sy, 0f), V(stopThick, sh, sLen));
+        Stop("RailStopZ", L, V(0f, sy, UnityEngine.Mathf.Sign(to.z) * sOut), V(sLen, sh, stopThick));
     }
 }
 // deck with the hatch over the last flight (east side, x 2.4 to 3.4, z -2.4 to 2.4); rails round the hatch and the deck edge
