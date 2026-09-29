@@ -99,3 +99,8 @@
 - 2026-09-29: The fire is not visible at all on day one. Day one is an ordinary fire lookout job until nightfall, when the player sees the roaring wildfire and the Ward holding it off.
 - 2026-09-29: The unsigned trail to the cultist cave is the one exception to the pass check that the next destination is visible at every junction.
 - 2026-09-29: Grant bought the six shortlisted packs and a few more prop packs. Shaders in bought packs are replaced with the project's own. Every asset used must be licensed for commercial sale.
+- 2026-09-29: Nothing forces the player to act. A player who never files the report or goes to the Ward simply does not progress; that is their choice.
+- 2026-09-29: The Ward's hunger rises each week (1, then 2, then 3 a night), so no run lasts longer than intended.
+- 2026-09-29: From day two the fire may show by day as far glow and smoke. It is never visible on day one, and when it is seen it is huge in the distance.
+- 2026-09-29: Whether an event can end the day with needs unmet varies by event; some can.
+- 2026-09-29: Sound changes for day one accepted for now: the fire is heard at the Ward on night one, the road has ordinary traffic on day one, and the cave chant starts on night one.
