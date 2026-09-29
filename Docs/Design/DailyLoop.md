@@ -31,11 +31,13 @@ Routes are kept to the trails by the ground itself: giant root walls, deadfall, 
 4. **Hunger and feeding** (proposed, question 1):
    - The Ward's hunger H is taken from WARD every night: H = 1 on days 1 to 7, 2 on days 8 to 14, 3 on days 15 to 21, and so on.
    - Each point given buys 1 WARD. At most 3 a night.
+   - WARD, HP and MIND never go above 12. The screen does not accept a point that would push WARD past 12.
    - WARD change tonight = points given minus H. Give nothing: WARD falls by H.
    - Diegetic: the fire is closer each week; its roar at the Ward grows with H (Hollis).
-5. **The bunk at night:** from night 2, lying in the bunk opens the same Ward screen (the stones in a dream). No night passes without the screen. Ignoring the Ward is choosing Give nothing. Night 1 is different (section 6).
-6. **Sleep.** After the screen, fade out, wake in the cabin. Needs are paid and the game autosaves.
-7. WARD at 0: the barrier falls and the world burns. HP or MIND at 0: the run ends. Giving your last HP or MIND is allowed and ends the run; the screen warns once.
+5. **The bunk at night:** from night 2, lying in the bunk counts as Give nothing: WARD falls by H, no Ward screen, no stats that night. The only night action is going to the Ward (DECISIONS 2026-09-28). Night 1 is different (section 6).
+6. **Stalling:** a player who never files, or never goes to the Ward or the bunk, has stalled the game. That is not a surviving run and the design does not count it. No fix needed.
+7. **Sleep.** After the screen, fade out, wake in the cabin. Needs are paid and the game autosaves.
+8. WARD at 0: the barrier falls and the world burns. HP or MIND at 0: the run ends. Giving your last HP or MIND is allowed and ends the run; the screen warns once.
 
 ## 3. Needs, where they are met, what missing costs
 
@@ -78,14 +80,14 @@ Routes are kept to the trails by the ground itself: giant root walls, deadfall, 
 | 15 to 18 | 3 | 33 |
 | 19 | 3 | 36 |
 
-4. All three stats at 1 or more needs 3 points left, so the longest possible run ends on night 19.
+4. All three stats at 1 or more needs 3 points left, so without recovery the longest possible run ends on night 19 (26 with the recovery cap, 4.6).
 5. Every play style bottoms out:
    - **Feed everything:** WARD stays up, HP and MIND carry the whole hunger and hit 0.
    - **Give nothing:** WARD falls by H a night; 12 WARD is gone on night 10 at the latest.
    - **Balance:** all three fall together; the total still falls by H.
    - **Meet all five every day:** saves only the need costs, never the hunger.
    - **Hoard WARD high early:** the hunger doubles and triples later; the hoard is spent faster.
-6. Recovery (memories, items, the odd event) comes in Milestone 7. However generous, any recovery with a fixed cap per day is overtaken once H passes it, and the total lost grows faster every week. So the run always ends.
+6. **Recovery cap:** all recovery together (RESTORE events, and later memories and items) gives back at most 1 point a day, and never lifts a stat past 12. With the full 1 a day, the net minimum loss is H minus 1: 0 in week 1, 1 in week 2, 2 in week 3, 3 in week 4. Total lost: 0 by night 7, 7 by night 14, 21 by night 21, 33 by night 25. **The longest possible run with recovery ends on night 26** (19 without). Any recovery with a fixed daily cap is overtaken once H passes it, so the run always ends.
 7. Typical runs, with needs missed and event costs, end between night 10 and 16. At 10 to 15 real minutes a day, a run is about 2 to 4 hours.
 8. Alternative timer if Grant prefers: event severity rises with the day count instead of hunger. It is weaker: a player who resolves everything is never charged. Recommendation: rising hunger, with events escalating on top (Events.md 3).
 
@@ -122,7 +124,7 @@ Day 1 is Firewatch played straight. Night 1 tells you the lookout's real job. Fr
 
 ## 9. Open questions for Grant
 
-1. The timer: the Ward gets hungrier every 7 days (takes 1 WARD a night, then 2, then 3). Feeding buys 1 WARD per point, up to 3 a night. The longest possible run is 19 nights. OK, or should the hunger rise more slowly?
+1. The timer: the Ward gets hungrier every 7 days (takes 1 WARD a night, then 2, then 3). Feeding buys 1 WARD per point, up to 3 a night. The longest possible run is 19 nights, 26 with the most recovery allowed. OK, or should the hunger rise more slowly?
 2. From day 2 on, should the fire show by day as a far glow and smoke that grows as WARD drops (my pick), or only ever at night?
 3. When a chase catches you, the day ends and you wake at the Ward; your report files itself with everything unmet counted. OK?
 

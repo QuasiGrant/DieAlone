@@ -66,7 +66,7 @@ Inspect (look and write it in the logbook), fix (hold interact at a marked spot)
 
 ## 4. Starter slots (mechanics only)
 
-Eighteen slots. Costs are proposals. Quill writes what each one is.
+Nineteen slots. Costs are proposals. Quill writes what each one is.
 
 | # | Location type | Sev | Shown as | Effects | Resolve on foot | If unresolved |
 |---|---|---|---|---|---|---|
@@ -75,11 +75,11 @@ Eighteen slots. Costs are proposals. Quill writes what each one is.
 | 3 | Camp (any) | 1 | CHECK | FLAG; BLOCK that camp's need option | fix at the camp | -1 MIND |
 | 4 | Camp (any) | 2 | CHECK | FLAG; resident absent, Social there blocked | search 3 spots on the camp's legs | -1 MIND, carries as stage 2 |
 | 5 | Camp (any) | 2 | CHECK (smoke) | FLAG | put out: carry water from the nearest source | -1 WARD |
-| 6 | Trail leg | 2 | tower sound | FLAG a sixth line for the day | put out a spot fire on the leg | -2 WARD |
+| 6 | Trail leg | 2 | tower sound | FLAG a sixth line for the day; not needed to File (File needs only the five location lines), counts for Safety | put out a spot fire on the leg | -2 WARD |
 | 7 | Office | 1 | CHECK | FLAG | talk, then fix at the office | -1 MIND |
-| 8 | Store | 1 | CHECK | FLAG; BLOCK store Food | inspect the store | store blocked tomorrow; no stat cost |
+| 8 | Store | 1 | CHECK on the Office line (the store has no line of its own) | FLAG; BLOCK store Food | inspect the store | store blocked tomorrow; no stat cost |
 | 9 | Office | 2 | tower sound (radio) | FLAG | answer at the office | -1 MIND, carries as stage 2 |
-| 10 | Tower | 1 | the deck | BLIND the tower | stamp all five on foot | cannot be left: File needs the stamps |
+| 10 | Tower | 1 | the deck | BLIND the tower | stamp all five on foot | File stays locked until all five are stamped; if another event ends the day first, the missing stamps are waived and no cost |
 | 11 | Map-wide | 1 | not shown | BLOCK creek; CHANGE the sky | none; ends at sleep | none |
 | 12 | Keeper's camp | 2 | not shown (at wake) | COST 1 MIND on finding it | search the camp | -1 MIND |
 | 13 | Keeper's camp | 1 | not shown | ADD a Food option | inspect | none; accepting may have its own cost (story) |
@@ -88,10 +88,11 @@ Eighteen slots. Costs are proposals. Quill writes what each one is.
 | 16 | Cave | 2 | chant spots louder | OPEN the cave deeper for the day | follow down the spur and inspect | -1 MIND (from night 1 only) |
 | 17 | Ward | 3 | night | HIJACK THE NIGHT: something on the climb | hide, then reach the stones | caught: -1 MIND; the Ward screen still opens |
 | 18 | Any location | 2 | CHECK | FLAG; MINIGAME | play | the minigame's own cost |
+| 19 | Camp (any) | 3 | CHECK | FLAG; CHASE starts at the camp once inspected | inspect, then flee to a safe point | caught: END THE DAY, -1 HP, -1 MIND; left alone: -1 WARD, -1 MIND |
 
-1. Severity spread: 8 at 1, 8 at 2, 2 at 3. More severity 3 slots are needed before the week 3 weights can be met (Milestone 14). Each location type has at least one slot.
+1. Severity spread: 8 at 1, 8 at 2, 3 at 3 (slot 19 is the severity 3 FLAG event). More severity 3 slots are needed before the week 3 weights can be met (Milestone 14). Each location type has at least one slot.
 2. Every slot can be met on foot, except 11 (weather) and 17 (night), which are not FLAG events.
-3. Slot 10 is the only one that can never be left: it is how the loop tests stamping on foot.
+3. Slot 10 is how the loop tests stamping on foot. It blocks filing until done, unless another event ends the day first.
 4. What each slot is, who it belongs to, and what it means: story session, then Quill.
 
 ## 5. Open questions

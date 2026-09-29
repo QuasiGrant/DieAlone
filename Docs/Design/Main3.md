@@ -115,7 +115,7 @@ Every trail leaves its clearing aimed at the next landmark for its first 30 m. D
 ## 7. Reviews needed
 
 - Vesper: section 3 feel and light, the two poles, event states, the day 1 fire-off look.
-- Pim: junction markers 4.1, lectern, report box, the bunk-opens-the-screen rule (DailyLoop.md 2.5).
+- Pim: junction markers 4.1, lectern, report box, the bunk-counts-as-Give-nothing rule (DailyLoop.md 2.5).
 - Hollis: section 3 sound column, the road over the run, chant volumes, the fire's day 1 silence.
 - Quill: placeholders only; Camp 1 as one resident with a lot of kit.
 - Marlow: the trail rule, the 30 s check, chase legs 4.6.
