@@ -171,3 +171,6 @@
 - 2026-09-29: Main3 revision 15 (Ward plateau behind the Wall, distance layers) is fine for now; tweaks later.
 - 2026-09-29: The collectibles page does not name the games directly (this replaces naming them); the shout-outs stay in the objects themselves.
 - 2026-09-29: Achievements, Steam integration and similar release work get their own milestone at the end (17). The Steam achievement wording question waits for it.
+- 2026-09-29: Fonts: Patrick Hand (logbook handwriting), Overpass (forms, menus, settings, dialogue, objective line, warnings), VT323 (tape overlay only). All SIL OFL. Replaces the built-in-font-only rule in Style.md 7.1.
+- 2026-09-29: UI text moves to TextMeshPro (built into ugui 2.0; its Essential Resources are imported, about 4 MB). This replaces the 2026-09-20 line that kept legacy Text.
+- 2026-09-29: The main menu (New run, Continue, Settings, Quit) and the content warning screen are built in Milestone 10.

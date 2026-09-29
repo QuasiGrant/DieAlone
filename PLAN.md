@@ -122,7 +122,7 @@ Postponed by Grant (2026-09-29): runs after Milestone 11. In the Main3 blockout:
 
 ## Milestone 10: One playable week
 
-In the Main3 blockout: wake, tower, logbook, needs, the end-of-day resource screen with feeding the Ward, sleep, stats and autosave, with one placeholder conversation for Social. All numbers in a tuning asset. Done when Grant has played several weeks and a run has ended.
+In the Main3 blockout: the main menu and content warning screen (TextMeshPro, the chosen fonts), wake, tower, logbook, needs, the end-of-day resource screen with feeding the Ward, sleep, stats and autosave, with one placeholder conversation for Social. All numbers in a tuning asset. Done when Grant has played several weeks and a run has ended.
 
 ## Milestone 11: Main3 dressing and look
 
