@@ -62,7 +62,27 @@ Building("Store", 366f, 200f, 8f, 5.6f, 3.0f, 366f);    // map x 362 to 370, z 1
 var mast = Group("Mast", fz); mast.position = V(357f, G, 205f);
 for (int i = 0; i < 3; i++) { float a = i * 120f * UnityEngine.Mathf.Deg2Rad; Prim(Cube, "Leg", mast, V(357f + UnityEngine.Mathf.Cos(a) * 0.45f, G + 15f, 205f + UnityEngine.Mathf.Sin(a) * 0.45f), V(0.1f, 30f, 0.1f)); }
 for (int k = 1; k < 10; k++) Prim(Cyl, "Ring", mast, V(357f, G + k * 3f, 205f), V(1.0f, 0.03f, 1.0f), 0f, false);
-Prim(Sph, "RedLamp", mast, V(357f, G + 30.3f, 205f), V(0.5f, 0.5f, 0.5f), 0f, false);
+// far markers (rev 15, 2.11): the mast lamp and two sodium lot lights on DieAlone/FireStandIn (unlit, no fog), so they still
+// mark the office at night past the night fog end (Style.md 2.4 colours from LookTuning)
+var look = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning.asset"); if (look == null) return "no LookTuning";
+var markerSh = UnityEngine.Shader.Find("DieAlone/FireStandIn"); if (markerSh == null) return "DieAlone/FireStandIn shader not found";
+UnityEngine.Material MarkerMat(string path, UnityEngine.Color c)
+{
+    var m = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(path);
+    if (m == null) { m = new UnityEngine.Material(markerSh); UnityEditor.AssetDatabase.CreateAsset(m, path); }
+    m.shader = markerSh; m.SetColor("_Color", c); m.SetFloat("_Intensity", look.farMarkerIntensity); UnityEditor.EditorUtility.SetDirty(m); return m;
+}
+var redLamp = Prim(Sph, "RedLamp", mast, V(357f, G + 30.3f, 205f), V(0.5f, 0.5f, 0.5f), 0f, false);
+redLamp.GetComponent<UnityEngine.Renderer>().sharedMaterial = MarkerMat("Assets/Materials/Blockout/Blockout_MastLamp.mat", look.mastLampColor);
+// lot lights: two 6 m posts at opposite corners of the lot, a sodium head on each (Main3.md 5.4, "red lamp and sodium")
+const float lotPostH = 6f;
+var lotLightMat = MarkerMat("Assets/Materials/Blockout/Blockout_LotLight.mat", look.lotLightColor);
+var lotLights = Group("LotLights", fz);
+foreach (var lp in new[] { new UnityEngine.Vector2(344.5f, 151.5f), new UnityEngine.Vector2(371.5f, 188.5f) })
+{
+    Prim(Cyl, "Post", lotLights, V(lp.x, G + lotPostH * 0.5f, lp.y), V(0.15f, lotPostH * 0.5f, 0.15f));
+    Prim(Cube, "Head", lotLights, V(lp.x, G + lotPostH + 0.1f, lp.y), V(0.6f, 0.2f, 0.35f), 0f, false).GetComponent<UnityEngine.Renderer>().sharedMaterial = lotLightMat;
+}
 // the lot resident's car (map (370, 179.4)), gray stand-in
 var car = Group("Resident_Car", fz); car.position = V(370f, G, 179.4f);
 Prim(Cube, "Body", car, V(370f, G + 0.55f, 179.4f), V(4.5f, 0.8f, 1.8f));

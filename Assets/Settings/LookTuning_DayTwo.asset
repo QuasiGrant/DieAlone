@@ -59,3 +59,12 @@ MonoBehaviour:
   lanternIntensity: 0.8
   practicalDayScale: 0.4
   cabLampBulbIntensity: 3
+  lotLightColor: {r: 0.941, g: 0.541, b: 0.165, a: 1}
+  mastLampColor: {r: 0.69, g: 0.125, b: 0.11, a: 1}
+  farMarkerIntensity: 2.5
+  backdropForestColor: {r: 0.31, g: 0.29, b: 0.173, a: 1}
+  backdropRangeColor: {r: 0.431, g: 0.4, b: 0.376, a: 1}
+  backdropGroundColor: {r: 0.29, g: 0.271, b: 0.18, a: 1}
+  backdropNearHaze: 0.55
+  backdropFarHaze: 0.8
+  backdropGroundHaze: 0.2

@@ -115,4 +115,26 @@ public class LookTuning : ScriptableObject
     [Range(0f, 1f)] public float practicalDayScale = 0.4f;
     [Tooltip("Brightness of the cab lamp bulb, drawn without fog so it marks the tower at night.")]
     [Range(0f, 10f)] public float cabLampBulbIntensity = 3.0f;
+
+    [Header("Far markers (drawn without fog so they mark places at night; Style.md 2.4)")]
+    [Tooltip("Office lot lights, sodium. Style #F08A2A.")]
+    public Color lotLightColor = new Color(0.941f, 0.541f, 0.165f);
+    [Tooltip("Red lamp on the office mast. Style #B0201C.")]
+    public Color mastLampColor = new Color(0.690f, 0.125f, 0.110f);
+    [Tooltip("Brightness of the lot lights and the mast lamp.")]
+    [Range(0f, 10f)] public float farMarkerIntensity = 2.5f;
+
+    [Header("Distance layers (off-map backdrop, DieAlone/Backdrop; Main3.md 2.11)")]
+    [Tooltip("Forested hills and the rolling forest east of the fence. Style #4F4A2C.")]
+    public Color backdropForestColor = new Color(0.310f, 0.290f, 0.173f);
+    [Tooltip("The far ranges. Style granite #6E6660.")]
+    public Color backdropRangeColor = new Color(0.431f, 0.400f, 0.376f);
+    [Tooltip("Off-map ground under the edge forest and the skirt below the map edge.")]
+    public Color backdropGroundColor = new Color(0.290f, 0.271f, 0.180f);
+    [Tooltip("How far the near layers (ridges 120 to 300 m out, the east forest) blend toward the fog colour.")]
+    [Range(0f, 1f)] public float backdropNearHaze = 0.55f;
+    [Tooltip("How far the far ranges (1.2 to 2.5 km out) blend toward the fog colour.")]
+    [Range(0f, 1f)] public float backdropFarHaze = 0.8f;
+    [Tooltip("How far the off-map ground and the map-edge skirt blend toward the fog colour.")]
+    [Range(0f, 1f)] public float backdropGroundHaze = 0.2f;
 }

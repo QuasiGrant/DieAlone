@@ -1,5 +1,5 @@
 // Main3 task 8.1: scene, terrain, fence, bounds, spawn, dev warps.
-// Source: Docs/Design/Main3.md rev 11 table 2.1 and Main3_map.svg; resolutions in Docs/Design/Main3_BuildNotes.md.
+// Source: Docs/Design/Main3.md rev 15 table 2.1 and Main3_map.svg (the Wall and the Ward plateau from rev 15); resolutions in Docs/Design/Main3_BuildNotes.md.
 // Run from Graybox (or any saved scene) in edit mode. Refuses if Main3.unity exists: delete it and its terrain folder to rebuild,
 // then rerun every later Main3 recipe in task order.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
@@ -24,11 +24,25 @@ foreach (var r in scene.GetRootGameObjects()) if (r.name == "Ground") UnityEngin
 }
 
 // ---------- map data (metres, x east, z north) ----------
-const float sizeX = 400f, sizeZ = 300f, baseY = -45f, sizeY = 90f;
+const float sizeX = 400f, sizeZ = 300f, baseY = -45f, sizeY = 140f;   // up to 95 absolute: the Wall's crest is 88 (rev 15)
 const int res = 513, ares = 512;
-var spurEdge = new[] { P(10,190), P(60,200), P(100,225.2f), P(124.8f,260), P(134.8f,300) };        // SE boundary of the spur
-var spurPoly = new[] { P(10,190), P(60,200), P(100,225.2f), P(124.8f,260), P(134.8f,300), P(10,300) };
-var crest = new[] { P(72,212), P(108,284) };
+// ---------- the Wall and the Ward plateau (rev 15, 2.1 and 3.6) ----------
+// The Wall's crest runs (55, 190) to (115, 270) at 88. North-west of it the plateau (map polygon) at 72 under the Wall
+// falling to 70 by the cliff at x 10. The east face falls from the crest at faceSlope, so J (104, 206), 29.6 m out, sits at
+// its foot at 10; the switchback legs of the climb (8.3) lie on this plane at 24 percent. The south and north-east rims of
+// the plateau fall the same way. The pass is a notch at (112, 262), floor 78, a level 10 m through the crest.
+var wallA = P(55,190); var wallB = P(115,270); var wallU = (wallB - wallA).normalized; var wallN = P(wallU.y, -wallU.x);   // wallN points east, toward the tower
+var plateauPoly = new[] { P(10,170), wallA, wallB, P(130,300), P(10,300) };
+var rimS = new[] { P(10,170), wallA }; var rimNE = new[] { wallB, P(130,300) };
+var passAt = P(112,262);
+const float wallCrest = 88f, plateauHigh = 72f, plateauLow = 70f, passFloor = 78f;
+const float faceSlope = 2.64f;        // (88 - 10) / 29.6: J at the foot of the east face
+const float springFoot = 10f;         // J and the spring at the face's foot
+const float backSlope = 1.6f;         // west side: from the crest down to the plateau (72) within 10 m
+const float plateauFall = 50f;        // the plateau falls from 72 to 70 over 50 m beyond the Wall's foot
+const float notchHalfW = 4f, notchWall = 1.5f, notchEast = 6f, notchLevel = 10f, notchFall = 0.24f;   // notch: half floor width, wall slope, reach east of the pass, level stretch, fall to the plateau
+const float lowCrestX = 25f, lowCrestZ0 = 250f, lowCrestZ1 = 266f, lowCrestH = 2f, lowCrestHalfW = 6f;   // 3.6.4
+const float lipX = 13f, cliffX = 10f, ledgeEdgeH = 67.5f, ledgeZ0 = 236f, ledgeZ1 = 282f;   // 3.6.5: past the lip the ledge falls to 67.5 at the edge
 var ravPoly = new[] { P(20,20), P(80,25.2f), P(94.8f,50), P(74,60), P(70,62), P(30,55.2f) };
 var ravEdges = new[] { P(30,55.2f), P(20,20), P(80,25.2f), P(94.8f,50) };                           // west, south and east sides
 var rim = new[] { P(30,55.2f), P(70,62), P(74,60), P(94.8f,50) };
@@ -85,8 +99,6 @@ var ctrl = new System.Collections.Generic.List<(UnityEngine.Vector2 c, float h)>
 foreach (var n in named) if (n.c != P(170, 160)) ctrl.Add((n.c, n.h));   // the knoll shapes itself (linear flank), so it does not lift the ground round the lake
 for (float bx = 200f; bx <= 330f; bx += 32.5f) ctrl.Add((P(bx, 166f + (bx - 185f) * 0.08f), BurnH(bx)));
 float rimLen = LineLen(rim);
-var wardClimb = new[] { P(104,206), P(88,200), P(66,204), P(54,218), P(56,236), P(60,250) };   // rev 13, 3.6.1
-float wardClimbLen = LineLen(wardClimb);
 float rimS18 = 45.1f;   // arc length of the vertex (74, 60) along the rim line
 
 float Height(float x, float z)
@@ -97,26 +109,34 @@ float Height(float x, float z)
     foreach (var c in ctrl) { float w = UnityEngine.Mathf.Exp(-(UnityEngine.Vector2.SqrMagnitude(p - c.c)) / (40f * 40f)); num += w * (c.h - Base(c.c.x, c.c.y)); den += w; }
     float h = b + num / den + (UnityEngine.Mathf.PerlinNoise(x / 45f + 3.1f, z / 45f + 7.7f) - 0.5f) * 1.6f;
     float field = h;
-    // 2. spur and plateau: from its SE edge up to the crest at 34, then to 36 toward the Ward ledge and the cliff
-    if (Inside(p, spurPoly))
+    // 2. the Wall and the Ward plateau (rev 15): the plateau inside its polygon, the Wall's west side down to it; outside,
+    // the east face and the rims falling at faceSlope to the ground; the pass notch through the crest; the low crest
     {
-        float db = LineDist(p, spurEdge, out _);
-        float dc = LineDist(p, crest, out _);
-        var cd = crest[1] - crest[0];
-        float side = cd.x * (z - crest[0].y) - cd.y * (x - crest[0].x);   // > 0 north-west of the crest line
-        float target = side > 0f ? 34f + 2f * SS(dc / 40f) : L(34f, h, SS(dc / (dc + db)));
-        h = side > 0f ? L(h, target, SS(db / 12f)) : target;
-    }
-    // 2b. Ward approach (rev 13, 3.6): the climb from J round the Tor's south and west feet rises evenly from 10 to 36 at the
-    // last bend (60, 250); a level run west at 36 over a 2 m low crest at x 25 to the rock lip; the ledge x 14 to 24, z 254 to 270
-    {
-        float dcl = LineDist(p, wardClimb, out float s);
-        float w = 1f - SS((dcl - 3f) / 9f);
-        if (w > 0f) h = L(h, L(10f, 36f, s / wardClimbLen), w);
-        float dx = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(11f - x, x - 62f)), dz = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(242f - z, z - 272f));
-        float dFlat = UnityEngine.Mathf.Sqrt(dx * dx + dz * dz);
-        if (dFlat < 6f) h = L(36f, h, SS(dFlat / 6f));
-        if (dFlat == 0f && z > 241f && z < 263f) h += 2f * UnityEngine.Mathf.Max(0f, 1f - UnityEngine.Mathf.Abs(x - 25f) / 6f) * SS((z - 241f) / 3f) * SS((263f - z) / 3f);
+        float dWall = SegDist(p, wallA, wallB, out _);
+        if (Inside(p, plateauPoly))
+        {
+            float plat = L(plateauHigh, plateauLow, UnityEngine.Mathf.Clamp01((dWall - (wallCrest - plateauHigh) / backSlope) / plateauFall));
+            h = UnityEngine.Mathf.Max(plat, wallCrest - backSlope * dWall);
+            if (z > lowCrestZ0 - 2f && z < lowCrestZ1 + 2f)
+                h += lowCrestH * UnityEngine.Mathf.Max(0f, 1f - UnityEngine.Mathf.Abs(x - lowCrestX) / lowCrestHalfW) * SS((z - (lowCrestZ0 - 2f)) / 3f) * SS((lowCrestZ1 + 2f - z) / 3f);
+        }
+        else
+        {
+            // rim tops: the south rim rises from the plateau (70) to the crest over its last 40 percent; the north-east rim
+            // falls from the crest to the plateau's high side (72) over its first half
+            float dS = SegDist(p, rimS[0], rimS[1], out float tS), dNE = SegDist(p, rimNE[0], rimNE[1], out float tN);
+            float topS = L(plateauLow, wallCrest, SS((tS - 0.6f) / 0.4f)), topN = L(wallCrest, plateauHigh, SS(tN / 0.5f));
+            float face = UnityEngine.Mathf.Max(wallCrest - faceSlope * dWall, UnityEngine.Mathf.Max(topS - faceSlope * dS, topN - faceSlope * dNE));
+            h = UnityEngine.Mathf.Max(h, face);
+        }
+        // the pass: a notch across the crest, floor 78, level for notchLevel m toward the plateau, then falling at 24 percent
+        float aP = UnityEngine.Vector2.Dot(p - passAt, wallU), dP = UnityEngine.Vector2.Dot(p - passAt, wallN);
+        float notchReach = notchLevel + (passFloor - plateauHigh) / notchFall;   // where the falling floor meets the plateau
+        if (dP > -notchReach && dP < notchEast)
+        {
+            float floorH = UnityEngine.Mathf.Max(plateauHigh, passFloor - notchFall * UnityEngine.Mathf.Max(0f, -dP - notchLevel));
+            h = UnityEngine.Mathf.Min(h, floorH + notchWall * UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Abs(aP) - notchHalfW));
+        }
     }
     // 3. named flats
     // the knoll falls linearly (under 20 percent) so trails leaving the camp stay walkable; the other flats blend smoothly
@@ -180,6 +200,8 @@ float Height(float x, float z)
         float floorH = seg >= 5 && dcr >= 1.2f ? bed + 0.3f : bed;
         float carve = floorH + UnityEngine.Mathf.Max(0f, dcr - hw) * slope;
         float reach = 1f - SS((dcr - hw - 8f) / 4f);   // banks end 12 m out; the creek never cuts distant ground
+        // on the Wall's east face (rev 15) the spring comes out of a narrow slot, not an open bowl, so the climb's legs keep their ledges
+        float dFace = UnityEngine.Vector2.Dot(p - wallA, wallN); if (dFace > 0f && dFace < (wallCrest - springFoot) / faceSlope) reach *= 1f - SS((dcr - hw) / 1.5f);
         h = UnityEngine.Mathf.Min(h, L(h, carve, reach));
         // W1 stays at its table height beside the inlet
         float dW = UnityEngine.Vector2.Distance(p, P(128, 70));
@@ -202,9 +224,9 @@ float Height(float x, float z)
     }
     // 10. front zone flat at 3
     if (x >= 330f) h = L(h, 3f, SS((x - 330f) / 10f));
-    // 10b. past the rock lip (x 13) the ledge falls to 33.5 at the cliff edge, so a player standing at the lip (eye 37.6) sees
-    // down 30 degrees into the valley (3.6.6 frame check; a level edge hid everything nearer than about 210 m)
-    if (x >= 10f && x < 13f && z > 238f && z < 266f) h = UnityEngine.Mathf.Min(h, L(33.5f, 36f, (x - 10f) / 3f));
+    // 10b. past the rock lip (x 13) the ledge falls to 67.5 at the cliff edge, so a player standing at the lip (eye 71.6) sees
+    // down 30 degrees into the valley (3.6.5); along the stretch of cliff in front of the lip and the stones
+    if (x >= cliffX && x < lipX && z > ledgeZ0 && z < ledgeZ1) h = UnityEngine.Mathf.Min(h, L(ledgeEdgeH, plateauLow, (x - cliffX) / (lipX - cliffX)));
     // 11. cliff at x 10, valley floor -40
     if (x < 10f) h = L(-40f, h, SS((x - 4f) / 6f));
     return h;
@@ -327,11 +349,11 @@ Warp("Gate_Booth", 388f, 176f, 396f, 170f);
 Warp("Closed_Campground", 385f, 232f, 372f, 262f);
 Warp("Trailhead_T", 337f, 170f, 358f, 170f);
 Warp("Junction_Jg", 262f, 168f, 340f, 170f);
-Warp("Junction_J", 106f, 203f, 76f, 223f);
+Warp("Junction_J", 106f, 203f, 85f, 225f);
 Warp("Junction_W1", 130f, 72f, 190f, 60f);
 Warp("Cave_Mouth", 58f, 44f, 52f, 34f);
-Warp("Tor", 98f, 240f, 76f, 223f);
-Warp("Ward", 40f, 258f, 21.8f, 258f);
+Warp("Ward_Pass", 109f, 264f, 164f, 166f);   // at the pass, looking back at the tower (3.6.2)
+Warp("Ward", 40f, 262f, 21.8f, 262f);   // on the plateau short of the low crest, facing the lip
 Warp("Old_Burn", 230f, 166f, 340f, 178f);
 
 UnityEditor.AssetDatabase.SaveAssets();
@@ -339,7 +361,7 @@ bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 var sb = new System.Text.StringBuilder("saved=" + saved + " warps=" + warps.transform.childCount + " fence pieces=" + fence.transform.childCount);
 sb.Append(" | ground: camp=" + H(170, 160).ToString("F1") + " tower=" + H(164, 166).ToString("F1") + " camp1=" + H(282, 238).ToString("F1") + " camp2=" + H(292, 108).ToString("F1")
     + " hollow=" + H(78, 146).ToString("F1") + " snag=" + H(90, 146).ToString("F1") + " J=" + H(104, 206).ToString("F1") + " bridge=" + H(104.8f, 203.2f).ToString("F1")
-    + " spring=" + H(104, 215.2f).ToString("F1") + " crest=" + H(90, 248).ToString("F1") + " torBase=" + H(76, 223).ToString("F1") + " wardLip=" + H(13, 252).ToString("F1") + " lowCrest=" + H(25, 252).ToString("F1") + " lastBend=" + H(60, 250).ToString("F1") + " knoll r40=" + H(170, 120).ToString("F1")
+    + " spring=" + H(104, 215.2f).ToString("F1") + " wallCrest=" + H(85, 230).ToString("F1") + " pass=" + H(112, 262).ToString("F1") + " plateau=" + H(60, 268).ToString("F1") + " wardLip=" + H(13.5f, 256).ToString("F1") + " lowCrest=" + H(25, 258).ToString("F1") + " stones=" + H(18, 266).ToString("F1") + " ledgeEdge=" + H(10.2f, 256).ToString("F1") + " knoll r40=" + H(170, 120).ToString("F1")
     + " lakeC=" + H(190, 60).ToString("F1") + " pump=" + H(190, 96).ToString("F1") + " W1=" + H(128, 70).ToString("F1") + " sill=" + H(110, 55).ToString("F1")
     + " mouthFloor=" + H(52, 38).ToString("F1") + " overPassage=" + H(52, 28).ToString("F1") + " overChamber=" + H(80, 12).ToString("F1") + " rim74=" + H(74, 60).ToString("F1")
     + " rim40=" + H(40, 57).ToString("F1") + " jg=" + H(262, 172).ToString("F1") + " gateTree=" + H(290, 176).ToString("F1") + " hollowGiant=" + H(202, 140).ToString("F1")

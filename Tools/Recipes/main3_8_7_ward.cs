@@ -1,11 +1,10 @@
-// Main3 task 8.7: Ward climb pieces, gray. Run after 8.6 in Main3, edit mode.
+// Main3 task 8.7: Ward pieces, gray. Run after 8.6 in Main3, edit mode.
 // Cairn gate 4 m up the J to Ward trail: pale cairn on its west side, clear of the Camp to J trail end (Marlow finding 9), and a
 // solid chain at 0.9 m across it to a post: the climb is closed by day (DECISIONS 2026-09-25); a later night rule opens it,
-// and the dev warps reach the ledge meanwhile. The climb itself is 8.3's J to Ward trail.
-// The Tor (5.4): granite dome at (76, 223), radius 18, base 34, top 58 in the doc, raised by torRaise so the W-1 check keeps
-// 3 m with eyes and targets raised 3 m (8.9a): an ellipsoid mesh (horizontal radius 18, vertical 28, centre y 30 + torRaise), so its skirt runs below the ground on the lower south-east side instead of floating.
-// Ward ledge (rev 13, 3.6): stones at (16, 262), (21, 259), (18, 266), 3.6 x 4 m, tops 48, to the right of the rock lip at
-// (13, 252), 0.8 m high. Stand-in burning ridge and valley fire beyond the west edge (3.7), built switched off.
+// and the dev warps reach the plateau meanwhile. The climb itself is 8.3's J to Ward trail; the Wall and plateau are 8.1's terrain.
+// Ward on the high plateau (rev 15, 3.6): stones at (16, 266), (21, 263), (18, 270), 3.6 x 4 m, tops 82, to the right of the
+// rock lip at (13, 256), 0.8 m high. The Tor and the stone screen are gone (the Wall hides the Ward from the tower).
+// Stand-in burning ridge and valley fire beyond the west edge (3.7), built switched off.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -47,32 +46,18 @@ var gateBlock = new UnityEngine.GameObject("GateBlocker"); gateBlock.transform.S
 gateBlock.transform.position = V(gateAt.x, H(gateAt.x, gateAt.z) + 1.2f, gateAt.z); gateBlock.transform.rotation = UnityEngine.Quaternion.LookRotation(along, UnityEngine.Vector3.up);
 gateBlock.AddComponent<UnityEngine.BoxCollider>().size = V(6.0f, 3.4f, 0.5f);
 
-// the Tor
-const float torRaise = 5.5f;
-var tor = Prim(Sph, "Tor", ward, V(76f, 30f + torRaise, 223f), V(36f, 56f, 36f), 0f, false);
-tor.AddComponent<UnityEngine.MeshCollider>().sharedMesh = tor.GetComponent<UnityEngine.MeshFilter>().sharedMesh;
-float torTop = tor.GetComponent<UnityEngine.Renderer>().bounds.max.y;
-// clearance from the climb trail to the Tor's widest ring
-float minD = float.MaxValue; foreach (UnityEngine.Transform m in legT) minD = UnityEngine.Mathf.Min(minD, UnityEngine.Vector2.Distance(new UnityEngine.Vector2(m.position.x, m.position.z), new UnityEngine.Vector2(76f, 223f)));
-
-// Ward stones (rev 13, 3.6.4): to the player's right from the lip, in the Tor's shadow
+// Ward stones (rev 15, 3.6.6): to the player's right from the lip, at the cliff edge facing the fire
+const float stoneTop = 82f, lipH = 0.8f;
 var stones = new UnityEngine.GameObject("Stones").transform; stones.SetParent(ward, false);
-var stonePos = new[] { P2(16f, 262f), P2(21f, 259f), P2(18f, 266f) };
+var stonePos = new[] { P2(16f, 266f), P2(21f, 263f), P2(18f, 270f) };
 for (int n = 0; n < stonePos.Length; n++)
 {
     float g = H(stonePos[n].x, stonePos[n].y);
-    Prim(Cube, "Stone_" + (n + 1), stones, V(stonePos[n].x, g + (48f - g) * 0.5f - 0.5f, stonePos[n].y), V(3.6f, 48f - g + 1f, 4f));
+    Prim(Cube, "Stone_" + (n + 1), stones, V(stonePos[n].x, g + (stoneTop - g) * 0.5f - 0.5f, stonePos[n].y), V(3.6f, stoneTop - g + 1f, 4f));
 }
-// rock lip (3.6.3): 0.8 m high across the path end at (13, 252), 3 m in from the cliff edge at x 10
-float gl = H(13f, 252f);
-Prim(Cube, "RockLip", ward, V(13f, gl + 0.4f - 0.3f, 252f), V(1.2f, 1.4f, 7f));
-// rock screen (8.9c re-walk 2): an outcrop along the north side of the straight run, from the last bend to just short of the
-// crest, 11 m over the ledge, so the stones stay hidden up the run and topping the crest at x 25 is the reveal
-const float screenX0 = 24f, screenX1 = 54f, screenZ0 = 253.5f, screenZ1 = 257.5f, screenTop = 47f;
-float screenBase = float.MaxValue;
-for (float sx = screenX0; sx <= screenX1; sx += 1f) foreach (var sz in new[] { screenZ0, screenZ1 }) screenBase = UnityEngine.Mathf.Min(screenBase, H(sx, sz));
-screenBase -= 0.5f;   // sunk so no gap shows under it
-Prim(Cube, "StoneScreen", ward, V((screenX0 + screenX1) * 0.5f, (screenBase + screenTop) * 0.5f, (screenZ0 + screenZ1) * 0.5f), V(screenX1 - screenX0, screenTop - screenBase, screenZ1 - screenZ0));
+// rock lip (3.6.5): 0.8 m high across the path end at (13, 256), 3 m in from the cliff edge at x 10
+float gl = H(13f, 256f);
+Prim(Cube, "RockLip", ward, V(13f, gl + lipH * 0.5f - 0.3f, 256f), V(1.2f, lipH + 0.6f, 7f));
 
 // ---- stand-in burning ridge and valley fire (3.7), beyond the west map edge. Gray box, so the stand-in is brought near
 // (ridge about 200 to 300 m out instead of 300 to 500) to make the lip frame read inside the camera's 1000 m far clip:
@@ -122,7 +107,7 @@ Stand(UnityEngine.PrimitiveType.Cube, "GlowBand", fire.transform, V(-215f, 30f, 
 var giants = new UnityEngine.GameObject("BurningGiants").transform; giants.SetParent(fire.transform, false);
 for (float z = zMin + 10f; z <= zMax - 10f; z += 30f)
 {
-    float x = R(-265f, -205f), baseY = 25f, tall = R(40f, 50f), flame = R(50f, 75f);
+    float x = R(-265f, -205f), baseY = 25f, tall = R(40f, 50f), flame = R(75f, 105f);   // tops 100 to 130: 6 to 11 degrees over level from the plateau lip (eye 71.6, 3.6.8)
     Stand(UnityEngine.PrimitiveType.Cylinder, "Trunk", giants, V(x, baseY + tall * 0.5f, z), V(6f, tall * 0.5f, 6f), null);
     Stand(UnityEngine.PrimitiveType.Sphere, "Flame", giants, V(x, baseY + flame * 0.5f, z), V(R(20f, 30f), flame, R(20f, 30f)), fireMat);
 }
@@ -148,4 +133,4 @@ foreach (var z in new[] { -350f, 0f, 250f, 520f, 850f })
 Stand(UnityEngine.PrimitiveType.Cube, "SmokeBank", smoke, V(-330f, 90f, (zMin + zMax) * 0.5f), V(20f, 120f, zMax - zMin), smokeMat, -20f);
 fire.SetActive(false);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " cairn at " + cairnPos.ToString("F1") + " solid chain 4 m up the trail | Tor top " + torTop.ToString("F1") + " ground at Tor centre " + H(76f, 223f).ToString("F1") + " closest climb point " + minD.ToString("F1") + " m from the Tor centre | stones ground " + H(18f, 262f).ToString("F1") + " tops 48 | lip ground " + gl.ToString("F1") + " | stand-in fire built, off";
+return "saved=" + saved + " cairn at " + cairnPos.ToString("F1") + " solid chain 4 m up the trail | stones ground " + H(18f, 266f).ToString("F1") + " tops " + stoneTop + " | lip ground " + gl.ToString("F1") + " | stand-in fire built, off";

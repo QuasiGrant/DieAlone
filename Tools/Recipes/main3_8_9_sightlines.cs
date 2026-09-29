@@ -4,7 +4,7 @@
 // Tower geometry is ignored (the player can stand anywhere on the deck).
 // Places: a target is seen if a ray reaches it (a hit within 2 m of the target counts); margin = how far the best line
 //   passes above anything under it (terrain, rock, buildings, giants with crowns), from the eye to 5 m short of the target.
-// W-1 / C-1 (trees off): rays to every Ward stone corner and every cave mouth corner must hit the Tor or terrain; hidden
+// W-1 / C-1 (trees off): rays to every Ward stone corner and every cave mouth corner must hit the terrain (the Wall, rev 15; the rim for the cave); hidden
 //   margin = how deep the least-hidden line passes under the blocking surface. Repeated with eyes and targets raised 3 m.
 // 4.1: from each junction at 1.6 m eye height, is any part of the cab visible (trees on)?
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
@@ -96,7 +96,7 @@ foreach (UnityEngine.Transform s in wardRoot.Find("Stones"))
 }
 var mouthCorners = new System.Collections.Generic.List<UnityEngine.Vector3> { V(50.5f, -6f, 37.4f), V(53.5f, -6f, 37.4f), V(50.5f, -2f, 37.4f), V(53.5f, -2f, 37.4f) };
 md.AppendLine("\n## W-1 (Ward) and C-1 (cave), trees off\n");
-md.AppendLine("Every ray must hit the Tor or the terrain before its target. Hidden margin: how deep the least-hidden line passes under the blocking surface.\n");
+md.AppendLine("Every ray must hit the terrain (the Wall for the Ward, the rim for the cave) before its target. Hidden margin: how deep the least-hidden line passes under the blocking surface.\n");
 md.AppendLine("| Check | Eyes and targets | Rays | Rays blocked | Blocked by | Hidden margin, all eyes | Hidden margin, deck centre |");
 md.AppendLine("|---|---|---|---|---|---|---|");
 bool wardHidden = true, caveHidden = true; string headline = ""; float w1Plus3 = float.MaxValue;
@@ -111,8 +111,8 @@ foreach (var chk in new[] { ("W-1", stoneCorners), ("C-1", mouthCorners) })
                     var a = V(e.x, heights[hi].Item2 + raise, e.y); var tgt = c + V(0f, raise, 0f);
                     var end = tgt - (tgt - a).normalized * 0.4f; rays++;
                     bool hit = FirstHit(a, end, false, out var h);
-                    bool ok = hit && (IsUnder(h.collider.transform, wardRoot.Find("Tor")) || h.collider is UnityEngine.TerrainCollider);
-                    if (ok) { blocked++; by.Add(h.collider is UnityEngine.TerrainCollider ? "terrain" : "Tor"); }
+                    bool ok = hit && h.collider is UnityEngine.TerrainCollider;   // the Wall is terrain (rev 15)
+                    if (ok) { blocked++; by.Add("terrain"); }
                     // depth under the blocker: max over samples of (surface - line), trees off, stopping 3 m short of the target
                     float len = UnityEngine.Vector3.Distance(a, tgt), depth = float.MinValue;
                     for (float s = 3f; s < len - 3f; s += 1.5f) { var p = UnityEngine.Vector3.Lerp(a, tgt, s / len); depth = UnityEngine.Mathf.Max(depth, Surface(p.x, p.z, false) - p.y); }

@@ -95,6 +95,16 @@ Prim(Cube, "Roof", B, V(bcx, floorY + wallH + 0.1f, bcz), V(bw + 0.6f, 0.2f, bd 
 float gx0 = bx1, gx1 = bx1 + 3.8f, gy0 = floorY, gy1 = H(gx1, doorZ);
 float glen = UnityEngine.Mathf.Sqrt((gx1 - gx0) * (gx1 - gx0) + (gy0 - gy1) * (gy0 - gy1)), groll = UnityEngine.Mathf.Atan2(gy0 - gy1, gx1 - gx0) * UnityEngine.Mathf.Rad2Deg;
 Prim(Cube, "Gangway", B, V((gx0 + gx1) * 0.5f, (gy0 + gy1) * 0.5f - 0.06f, doorZ), V(glen, 0.12f, 1.4f), V(0f, 0f, -groll));
+// bank pockets beside the gangway (rev 15 leftover 4): the bank drops from the gangway foot to 0.2 m over the water north
+// and south of the boathouse's east wall with no walk out, so an invisible wall on the Ignore Raycast layer keeps walkers on
+// the gangway line; the gangway itself (1.4 m wide) stays open
+const float pocketX = 1.7f, pocketGap = 1.05f, pocketLen = 4.5f, pocketTop = 0f, pocketBottom = -7f;
+foreach (var sgn in new[] { -1f, 1f })
+{
+    var pw = new UnityEngine.GameObject(sgn > 0f ? "PocketWall_N" : "PocketWall_S"); pw.transform.SetParent(B, false); pw.layer = 2;
+    pw.transform.position = V(bx1 + pocketX, (pocketTop + pocketBottom) * 0.5f, doorZ + sgn * (pocketGap + pocketLen * 0.5f));
+    pw.AddComponent<UnityEngine.BoxCollider>().size = V(0.3f, pocketTop - pocketBottom, pocketLen);
+}
 var spot = Prim(Cap, "Resident_Lake_Spot", B, V(238.6f, floorY + 0.9f, 51.2f), V(0.6f, 0.9f, 0.6f), null, false);
 
 // warp update: the lake boathouse warp stands at the gangway foot

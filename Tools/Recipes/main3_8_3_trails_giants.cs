@@ -1,7 +1,7 @@
 // Main3 task 8.3: trails flattened and painted along every route in Main3.md 4, points of interest as gray stand-ins,
 // gray giant trees (hero trunks with mesh colliders), and the thicket that keeps walkers on the trails. Run after 8.2 in Main3, edit mode.
-// Grades: every leg at 25 percent or less (DailyLoop.md, rev 13 3.4.7), the log steps excepted. J to Ward is built at 157 m with a 24 percent clamp
-// (table 150, within 5 percent) so its climb to the last bend stays under 25 percent on the ground itself.
+// Grades: every leg at 25 percent or less (DailyLoop.md, rev 13 3.4.7), the log steps excepted. J to Ward (rev 15) climbs the Wall on
+// four switchback legs at 24 percent and crosses the plateau to the lip, about 380 m, no meander.
 // Trails: the map curve (Main3_map.svg) is the centre line; ends and on-trail points of interest are anchors; between
 // anchors the trail meanders (half-waves about 18 m long) with one amplitude factor per leg, solved so the walked
 // length matches table 4 (Docs/Design/Main3_BuildNotes.md). Shore legs meander only to the land side.
@@ -29,18 +29,27 @@ var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2
     // camp to pump (8.9c re-walk 2, Wren): 15 m down to -4.5 needs a longer leg, so it zigzags down the knoll's lake side in two switchbacks; the last run cuts the lake bank west of the pump, the view corridor to the cab and the Snag; a polyline with no meander (a meander looped round the hairpins)
     ("Camp to pump", new[] { P(170,160), P(152,145), P(188,133), P(176,118), P(176,105), P(190,96) }, true, 108f, false, 0.25f, new[] { ("Water tank", P(182,128), "side") }),
     ("Pump to boathouse", new[] { P(190,96), P(232,92), P(247.6f,52.4f) }, false, 84f, true, 0.25f, new[] { ("Overturned rowboat", P(223.6f,83.2f), "side") }),
-    ("Boathouse to Camp 2", new[] { P(247.6f,52.4f), P(280,64), P(292,108) }, false, 95f, false, 0.25f, new[] { ("Phone pole", P(272.8f,72f), "side") }),
-    ("Camp 2 to T", new[] { P(292,108), P(324,128), P(340,170) }, false, 94f, false, 0.25f, new[] { ("Food lockers", P(320,133.6f), "side") }),
+    // Camp 2 legs (rev 15 leftover 2) end at the stack ramp's foot (298.9, 107.8), reaching it from the south, round the stack's east side
+    ("Boathouse to Camp 2", new[] { P(247.6f,52.4f), P(282,64), P(301,97), P(298.9f,107.8f) }, false, 95f, false, 0.25f, new[] { ("Phone pole", P(272.8f,72f), "side") }),
+    ("Camp 2 to T", new[] { P(298.9f,107.8f), P(301,99), P(324,128), P(340,170) }, false, 94f, false, 0.25f, new[] { ("Food lockers", P(320,133.6f), "side") }),
     ("Camp to Jg", new[] { P(170,160), P(200,136), P(232,152), P(262,172) }, false, 125f, false, 0.25f, new[] { ("Hollow Giant", P(202,140), "tree"), ("Forage patch A", P(240,162.8f), "side") }),
     ("Jg to T", new[] { P(262,172), P(288,196), P(316,148), P(340,170) }, false, 105f, false, 0.25f, new[] { ("Gate Tree", P(290,176), "tree"), ("First sight of the lot", P(328,164), "side") }),
     ("Jg to Camp 1", new[] { P(262,172), P(264,208), P(282,238) }, false, 83f, false, 0.25f, new[] { ("Latrine shed", P(268,206.4f), "side") }),
     ("Camp to Camp 3", new[] { P(170,160), P(144,184), P(108,128), P(78,146) }, false, 126f, false, 0.25f, new[] { ("Forage patch B", P(142.4f,163.6f), "side"), ("Log steps", P(96,144.8f), "steps") }),
     ("Pump to W1", new[] { P(190,96), P(156,92), P(128,70) }, false, 80f, true, 0.25f, new[] { ("Washed-out truck", P(157.6f,87.6f), "side"), ("Stepping stones", P(131.8f,72.7f), "on") }),
-    ("W1 to Camp 3", new[] { P(128,70), P(96,104), P(78,146) }, false, 114f, false, 0.25f, new[] { ("Footbridge", P(114.8f,85.2f), "on"), ("Camper trailer", P(94,114.4f), "side") }),
+    ("W1 to Camp 3", new[] { P(128,70), P(96,104), P(78,146) }, false, 114f, false, 0.25f, new[] { ("Footbridge", P(114.8f,85.2f), "on"), ("Camper trailer", P(94,114.4f), "side"), ("Log steps", P(83.1f,134.1f), "steps") }),   // log steps down the hollow wall (rev 15 leftover 3)
     ("W1 to cave", new[] { P(128,70), P(108,48), P(84,64), P(52,37.5f) }, false, 109f, false, 0.25f, new[] { ("Rope handrail", P(106.8f,57.6f), "on"), ("Coloured bulbs", P(82,52), "side") }),
     ("Camp to J", new[] { P(170,160), P(136,196), P(104,206) }, false, 96f, false, 0.25f, new[] { ("Burn-map board", P(136.4f,189.6f), "side"), ("Plank bridge", P(104.8f,203.2f), "on") }),
-    // rev 13 (3.6): round the Tor's south and west feet to the last bend (60, 250), then a straight run west over the low crest to the rock lip
-    ("J to Ward", new[] { P(104,206), P(88,200), P(66,204), P(54,218), P(56,236), P(60,250), P(27,251), P(14.5f,252) }, true, 157f, false, 0.24f, new[] { ("Rune post", P(66,201.5f), "side"), ("Last bend", P(60,250), "bend") }),
+    // rev 15 (3.6): four switchback legs on the Wall's east face (8.1 builds the face as a plane, 88 at the crest falling 2.64
+    // per metre east; in crest coordinates, along from (55, 190) toward (115, 270) and d out from the crest). A leg on the face
+    // at 24 percent loses 0.089 m of d per metre along. Each turn is a platform: the next leg starts 3 m nearer the crest at the
+    // same height, cut into the face, runs level in d until it meets the face (about 33 m), then climbs on it; so the stacked
+    // shelves stay 3 m or more apart instead of meeting at a point. Corners (along, d, height): J (42.2, 29.6, 10);
+    // A (8, 26.54, 18.1), platform (8, 23.54), emerges (41.2, 23.54, 25.9); B (95, 18.73, 38.6), platform (95, 15.73), emerges
+    // (61.4, 15.73, 46.5); C (8, 10.96, 59.1), platform (8, 7.96), emerges (41.7, 7.96, 67.0); the pass (91.8, 2.4) at about 78.
+    // Then a level 10 m through the notch and west across the plateau to the rock lip. No meander (the legs must stay on the
+    // plane); the rune post stands outside the turn at B.
+    ("J to Ward", new[] { P(104,206), P(81.03f,180.48f), P(78.63f,182.28f), P(98.55f,208.84f), P(126.98f,254.76f), P(124.58f,256.56f), P(104.42f,229.68f), P(68.57f,189.82f), P(66.17f,191.62f), P(86.39f,218.58f), P(112,262), P(104,268), P(88,272), P(60,268), P(30,260), P(14.5f,256) }, true, 380f, false, 0.24f, new[] { ("Rune post", P(129.3f,257.6f), "side") }),
 };
 
 // ---------- centre line sampling ----------
@@ -77,7 +86,7 @@ float PolyLen(System.Collections.Generic.List<UnityEngine.Vector2> p) { float l 
 // table 2.1 heights at the named trail ends; camp is the 15 m knoll top (rev 13, 8.1), so the camp ends meet it level
 // the keeper's camp clearing: flat at the knoll top out to campClearR, where no trail is built (the tower and cabin stand there)
 var campC = P(170, 160); const float campH = 15f, campClearR = 15f;
-var namedEnds = new (UnityEngine.Vector2 p, float h)[] { (campC, campH), (P(190,96), -4.5f), (P(128,70), -4.5f), (P(104,206), 10f), (P(262,172), 5f), (P(340,170), 3f), (P(282,238), 5f), (P(292,108), 4f), (P(78,146), -4f), (P(52,37.5f), -6f), (P(14.5f,252), 36f) };
+var namedEnds = new (UnityEngine.Vector2 p, float h)[] { (campC, campH), (P(190,96), -4.5f), (P(128,70), -4.5f), (P(104,206), 10f), (P(262,172), 5f), (P(340,170), 3f), (P(282,238), 5f), (P(298.9f,107.8f), 4f), (P(78,146), -4f), (P(52,37.5f), -6f), (P(14.5f,256), 70f) };
 var built = new System.Collections.Generic.List<(string name, System.Collections.Generic.List<UnityEngine.Vector2> path, float[] prof, float target)>();
 var poiPlaced = new System.Collections.Generic.List<(string leg, string n, UnityEngine.Vector2 at, UnityEngine.Vector2 tan, UnityEngine.Vector2 obj, string kind, float along, float height)>();
 var report = new System.Text.StringBuilder();
@@ -119,8 +128,6 @@ foreach (var leg in legs)
             var c = At(C, S, UnityEngine.Mathf.Min(d, Lc), out var tan); var q = c + P(-tan.y, tan.x) * off;
             // shore legs keep 6 percent of the lake radii off the water line, so no trail runs through the shallows (8.9a)
             if (leg.shore) { float re = LakeRe(q); if (re < 1.06f) q = lakeC + (q - lakeC) * (1.06f / re); }
-            // the Ward climb keeps 21 m from the Tor's centre (its skirt is 18 m round at the foot, rev 13 route round it)
-            if (leg.name == "J to Ward") { var tq = q - P(76, 223); if (tq.magnitude < 21f) q = P(76, 223) + tq.normalized * 21f; }
             outp.Add(q);
         }
         return outp;
@@ -129,7 +136,10 @@ foreach (var leg in legs)
     if (PolyLen(path) < leg.target) { for (int it = 0; it < 40; it++) { float mid = (lo + hi) * 0.5f; if (PolyLen(Build(mid)) < leg.target) lo = mid; else hi = mid; } path = Build((lo + hi) * 0.5f); }
     // height profile: terrain along the path, smoothed over 8 m, grade clamped both ways; the log steps segment may reach 0.85
     int N = path.Count; var raw = new float[N]; var prof = new float[N];
-    for (int i = 0; i < N; i++) raw[i] = H(path[i].x, path[i].y);
+    // the Ward climb follows the Wall's east face plane (8.1: crest (55, 190) to (115, 270) at 88, falling 2.64 per metre east), so
+    // where J's flat or the spring slot dip the ground beside the legs the trail keeps its ledge instead of following the dip
+    float WallFace(UnityEngine.Vector2 q) { var a = P(55, 190); var ab = P(115, 270) - a; float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(q - a, ab) / ab.sqrMagnitude); float d = UnityEngine.Vector2.Distance(q, a + ab * t); bool east = ab.x * (q.y - a.y) - ab.y * (q.x - a.x) < 0f; return east ? UnityEngine.Mathf.Min(88f - 2.64f * d, 78f) : float.MinValue; }   // never above the pass floor (78)
+    for (int i = 0; i < N; i++) raw[i] = leg.name == "J to Ward" ? UnityEngine.Mathf.Max(H(path[i].x, path[i].y), WallFace(path[i])) : H(path[i].x, path[i].y);
     for (int i = 0; i < N; i++) { float sum = 0; int cnt = 0; for (int j = UnityEngine.Mathf.Max(0, i - 8); j <= UnityEngine.Mathf.Min(N - 1, i + 8); j++) { sum += raw[j]; cnt++; } prof[i] = sum / cnt; }
     // pin both ends: to the table 2.1 height where the end is a named point (so J is 10 beside its creek and the pump -4.5), else the ground there; legs meeting at a point then agree
     float EndH(UnityEngine.Vector2 q) { foreach (var np in namedEnds) if (UnityEngine.Vector2.Distance(q, np.p) < 1f) return np.h; return H(q.x, q.y); }
@@ -155,7 +165,7 @@ foreach (var leg in legs)
     }
     // pins stay; the rest clamp toward the samples up to chordReach back and ahead, by straight-line distance, until nothing
     // moves: on a hairpin the path folds back, so a 10 m walk measured corner to corner must also hold the grade
-    const int chordReach = 20;   // 10 m of samples
+    const int chordReach = 4;   // 2 m of samples, the trail point spacing a walk measures along: a longer reach flattened the Ward climb's hairpins, where the legs meet at the turn
     float GC(int i, int j) => ((i > j ? i : j) * 0.5f >= stepsFrom ? 0.85f : leg.maxGrade * gradeMargin) * UnityEngine.Vector2.Distance(path[i], path[j]);
     for (int pass = 0; pass < 200; pass++)
     {
@@ -199,24 +209,30 @@ foreach (var w in lot) { float l = PolyLen(new System.Collections.Generic.List<U
 // inside the keeper's camp clearing the trails are not built: the tower and cabin stand there and the clearing is flat
 bool InCamp(UnityEngine.Vector2 q) => UnityEngine.Vector2.Distance(q, campC) < campClearR;
 // ---------- flatten: 1.5 m at the profile height, blend over 2.5 m ----------
+// Each cell takes a weighted blend of the nearby samples (no cliffs where trails meet), but only of samples within
+// stackTol of the nearest sample's height: where two legs pass close at different heights (the Ward climb's switchbacks
+// stacked on the Wall's face, rev 15) each shelf keeps its own height instead of a ramp averaged between them.
 int res = data.heightmapResolution; var hm = data.GetHeights(0, 0, res, res);
-var bestD = new float[res, res]; var sumW = new float[res, res]; var sumH = new float[res, res];   // weighted blend of nearby samples, no cliffs where trails meet
+var bestD = new float[res, res]; var nearH = new float[res, res]; var sumW = new float[res, res]; var sumH = new float[res, res];
 for (int z = 0; z < res; z++) for (int x = 0; x < res; x++) bestD[z, x] = float.MaxValue;
-float cellX = size.x / (res - 1), cellZ = size.z / (res - 1); const float flatR = 1.5f, blendR = 2.5f, reach = flatR + blendR;
-foreach (var b in built)
-    for (int i = 0; i < b.path.Count; i++)
-    {
-        var p = b.path[i]; if (InCamp(p)) continue;
-        int x0 = UnityEngine.Mathf.Max(0, (int)((p.x - reach) / cellX)), x1 = UnityEngine.Mathf.Min(res - 1, (int)((p.x + reach) / cellX) + 1);
-        int z0 = UnityEngine.Mathf.Max(0, (int)((p.y - reach) / cellZ)), z1 = UnityEngine.Mathf.Min(res - 1, (int)((p.y + reach) / cellZ) + 1);
-        for (int z = z0; z <= z1; z++) for (int x = x0; x <= x1; x++)
+float cellX = size.x / (res - 1), cellZ = size.z / (res - 1); const float flatR = 1.5f, blendR = 2.5f, reach = flatR + blendR, stackTol = 1f;
+void EachCell(System.Action<int, int, float, float> visit)
+{
+    foreach (var b in built)
+        for (int i = 0; i < b.path.Count; i++)
         {
-            float d = UnityEngine.Vector2.Distance(p, P(x * cellX, z * cellZ));
-            if (d >= reach) continue;
-            if (d < bestD[z, x]) bestD[z, x] = d;
-            float wk = UnityEngine.Mathf.Exp(-(d * d) / (1.2f * 1.2f)); sumW[z, x] += wk; sumH[z, x] += wk * b.prof[i];
+            var p = b.path[i]; if (InCamp(p)) continue;
+            int x0 = UnityEngine.Mathf.Max(0, (int)((p.x - reach) / cellX)), x1 = UnityEngine.Mathf.Min(res - 1, (int)((p.x + reach) / cellX) + 1);
+            int z0 = UnityEngine.Mathf.Max(0, (int)((p.y - reach) / cellZ)), z1 = UnityEngine.Mathf.Min(res - 1, (int)((p.y + reach) / cellZ) + 1);
+            for (int z = z0; z <= z1; z++) for (int x = x0; x <= x1; x++)
+            {
+                float d = UnityEngine.Vector2.Distance(p, P(x * cellX, z * cellZ));
+                if (d < reach) visit(z, x, d, b.prof[i]);
+            }
         }
-    }
+}
+EachCell((cz, cx, dist, ph) => { if (dist < bestD[cz, cx]) { bestD[cz, cx] = dist; nearH[cz, cx] = ph; } });
+EachCell((cz, cx, dist, ph) => { if (UnityEngine.Mathf.Abs(ph - nearH[cz, cx]) > stackTol) return; float wk = UnityEngine.Mathf.Exp(-(dist * dist) / (1.2f * 1.2f)); sumW[cz, cx] += wk; sumH[cz, cx] += wk * ph; });
 for (int z = 0; z < res; z++) for (int x = 0; x < res; x++)
 {
     float d = bestD[z, x]; if (d >= reach) continue;
@@ -348,9 +364,7 @@ Giant("Gate_Tree", heroes.transform, P(290, 176), 8f, 15f, false, true);
 // Camp 3 floor and the log steps trail keeps clear of its trunk (8.9a, build notes)
 Giant("Snag", heroes.transform, P(96, 146.5f), 6f, 54f - H(96, 146.5f), false, true);
 
-// giant field: at least 30 m apart, never on a grid, tops at most 50 absolute (46 in the cliff-edge band x < 32),
-// 40 to 50 m tall, none on the spur or wherever that rule leaves no room, none in clearings, trails, the lake, the
-// ravine, the hollow, the old burn, the front zone, or within 3 m (plus crown) of the five tower cones on the map.
+// giant field (rev 15, 2.11): the cliff-edge band, then groves with gaps
 var cones = new[] {
     new[] { P(164,166), P(226.7f,43.1f), P(253.3f,60.9f) }, new[] { P(164,166), P(297.6f,212.4f), P(266.4f,263.6f) },
     new[] { P(164,166), P(283.8f,89.8f), P(300.2f,126.2f) }, new[] { P(164,166), P(88.8f,150.6f), P(91.2f,141.4f) },
@@ -373,31 +387,74 @@ var placed = new System.Collections.Generic.List<UnityEngine.Vector2> { P(202, 1
 var sights = new[] { (P(190, 97), P(96, 146.5f)), (P(286.5f, 102.2f), P(240, 52.4f)), (P(78, 146), P(164, 166)),
     (P(104, 206), P(164, 166)), (P(262, 172), P(164, 166)), (P(128, 70), P(164, 166)), (P(340, 170), P(164, 166)), (P(190, 97), P(164, 166)),
     (P(276, 232), P(164, 166)), (P(286, 99), P(164, 166)), (P(128, 70), P(96, 146.5f)) };   // every junction to the tower cab (4.1); W1 to the Snag (8.9b)
+// one giant's rules: tops at most 50 absolute (46 in the cliff-edge band x < 32), 40 to 50 m tall (30 to 35 on the knoll),
+// none where that leaves no room (the Wall and the plateau), in clearings, trails, the lake, the ravine, the hollow, the old
+// burn, the front zone, or within 3 m (plus crown) of the five tower cones and the junction sight lines
+const float crownR = 9f;
 var rng = new System.Random(8003); int made = 0;
-for (int attempt = 0; attempt < 20000; attempt++)
+float Fits(UnityEngine.Vector2 p, float trunkD)
 {
-    var p = P(12f + (float)rng.NextDouble() * 323f, 6f + (float)rng.NextDouble() * 288f);
-    float trunkD = 6f + (float)rng.NextDouble() * 4f, crownR = 9f, clear = trunkD * 0.5f + 3f;
-    bool ok = true;
-    foreach (var q in placed) if (UnityEngine.Vector2.Distance(p, q) < 30f) { ok = false; break; }
-    if (!ok) continue;
+    float clear = trunkD * 0.5f + 3f;
     float g = H(p.x, p.y); float cap = p.x < 32f ? 46f : 50f; float tall = UnityEngine.Mathf.Min(40f + (float)rng.NextDouble() * 10f, cap - g);
-    // on the knoll (ground up to 15, rev 13) giants are at most 35 m tall, still capped at 50 absolute
-    bool onKnoll = UnityEngine.Vector2.Distance(p, P(170, 160)) < 63f && g > 8f;
+    bool onKnoll = UnityEngine.Vector2.Distance(p, P(170, 160)) < 63f && g > 8f;   // on the knoll (ground up to 15, rev 13) at most 35 m tall
     if (onKnoll) tall = UnityEngine.Mathf.Min(tall, 35f);
-    if (tall < (onKnoll ? 30f : 40f)) continue;
-    foreach (var c in clearings) if (UnityEngine.Vector2.Distance(p, c.c) < c.r + crownR) { ok = false; break; }
-    if (!ok) continue;
-    foreach (var cone in cones) if (PolyDist(p, cone) < crownR + 3f) { ok = false; break; }
-    foreach (var s in sights) if (SegD(p, s.Item1, s.Item2) < crownR + 3f) { ok = false; break; }
-    if (!ok || PolyDist(p, burn) < crownR || PolyDist(p, ravine) < clear || LakeRe(p) < 1.35f) continue;
-    foreach (var t in trailPts) if (UnityEngine.Vector2.Distance(p, t) < clear + 1.5f) { ok = false; break; }
-    if (!ok) continue;
-    foreach (var q in poiPlaced) if (UnityEngine.Vector2.Distance(p, q.obj) < clear + 4f) { ok = false; break; }
-    if (!ok) continue;
-    placed.Add(p); made++;
-    Giant("Giant_" + made.ToString("00"), giants.transform, p, trunkD, tall, true, false);
+    if (tall < (onKnoll ? 30f : 40f)) return -1f;
+    foreach (var c in clearings) if (UnityEngine.Vector2.Distance(p, c.c) < c.r + crownR) return -1f;
+    foreach (var cone in cones) if (PolyDist(p, cone) < crownR + 3f) return -1f;
+    foreach (var s in sights) if (SegD(p, s.Item1, s.Item2) < crownR + 3f) return -1f;
+    if (PolyDist(p, burn) < crownR || PolyDist(p, ravine) < clear || LakeRe(p) < 1.35f) return -1f;
+    foreach (var t in trailPts) if (UnityEngine.Vector2.Distance(p, t) < clear + 1.5f) return -1f;
+    foreach (var q in poiPlaced) if (UnityEngine.Vector2.Distance(p, q.obj) < clear + 4f) return -1f;
+    return tall;
 }
+float RandTrunk() => 6f + (float)rng.NextDouble() * 4f;
+// cliff-edge band (x under 32): kept as before, 30 m apart, so the fire's base stays hidden from the tower (2.11)
+const float bandX0 = 12f, bandX1 = 32f, bandGap = 30f;
+var band = new System.Collections.Generic.List<UnityEngine.Vector2>();
+for (int attempt = 0; attempt < 4000; attempt++)
+{
+    var p = P(bandX0 + (float)rng.NextDouble() * (bandX1 - bandX0), 6f + (float)rng.NextDouble() * 288f); float trunkD = RandTrunk();
+    bool ok = true; foreach (var q in placed) if (UnityEngine.Vector2.Distance(p, q) < bandGap) { ok = false; break; }
+    if (!ok) continue; float tall = Fits(p, trunkD); if (tall < 0f) continue;
+    placed.Add(p); band.Add(p); made++; Giant("Giant_" + made.ToString("00"), giants.transform, p, trunkD, tall, true, false);
+}
+// groves (rev 15, 2.11): 6 to 8 groves of 4 to 8 giants, 12 to 20 m apart inside a grove, at least 60 m to any other grove,
+// the first three centred in the tower's distance bands (50 to 80, 120 to 160, 200 m and out) so they frame the view lanes
+var tower = P(164, 166);
+var bands = new[] { (50f, 80f), (120f, 160f), (200f, 400f) };
+const int grovesMin = 6, grovesMax = 8, perGroveMin = 4, perGroveMax = 8;
+const float inGroveMin = 12f, inGroveMax = 20f, groveGap = 60f, groveCentreGap = 80f, groveSpread = 24f, groveX0 = 36f;
+var groves = new System.Collections.Generic.List<System.Collections.Generic.List<UnityEngine.Vector2>>(); var groveCentres = new System.Collections.Generic.List<UnityEngine.Vector2>();
+for (int gi = 0; gi < 5000 && groves.Count < grovesMax; gi++)
+{
+    var bnd = groves.Count < bands.Length ? bands[groves.Count] : (40f, 400f);
+    float ang = (float)rng.NextDouble() * UnityEngine.Mathf.PI * 2f, rr = bnd.Item1 + (float)rng.NextDouble() * (bnd.Item2 - bnd.Item1);
+    var c = tower + P(UnityEngine.Mathf.Cos(ang), UnityEngine.Mathf.Sin(ang)) * rr;
+    if (c.x < groveX0 || c.x > 330f || c.y < 10f || c.y > 290f) continue;
+    bool ok = true; foreach (var q in groveCentres) if (UnityEngine.Vector2.Distance(c, q) < groveCentreGap) { ok = false; break; }
+    if (!ok) continue;
+    int want = perGroveMin + rng.Next(perGroveMax - perGroveMin + 1); var trees = new System.Collections.Generic.List<(UnityEngine.Vector2 p, float d, float tall)>();
+    for (int k = 0; k < 600 && trees.Count < want; k++)
+    {
+        var p = c + P((float)rng.NextDouble() * 2f - 1f, (float)rng.NextDouble() * 2f - 1f) * groveSpread;
+        if (p.x < groveX0 || p.x > 335f || p.y < 6f || p.y > 294f) continue;   // inside the map, as the old field
+        float nearest = float.MaxValue; foreach (var t in trees) nearest = UnityEngine.Mathf.Min(nearest, UnityEngine.Vector2.Distance(p, t.p));
+        if (trees.Count > 0 && (nearest < inGroveMin || nearest > inGroveMax)) continue;
+        bool far = true; foreach (var g2 in groves) foreach (var q in g2) if (UnityEngine.Vector2.Distance(p, q) < groveGap) { far = false; break; }
+        foreach (var q in placed) if (UnityEngine.Vector2.Distance(p, q) < inGroveMin) far = false;
+        if (!far) continue;
+        float trunkD = RandTrunk(), tall = Fits(p, trunkD); if (tall < 0f) continue;
+        trees.Add((p, trunkD, tall));
+    }
+    if (trees.Count < perGroveMin) continue;
+    var ps = new System.Collections.Generic.List<UnityEngine.Vector2>();
+    foreach (var t in trees) { placed.Add(t.p); ps.Add(t.p); made++; Giant("Giant_" + made.ToString("00"), giants.transform, t.p, t.d, t.tall, true, false); }
+    groves.Add(ps); groveCentres.Add(c);
+}
+if (groves.Count < grovesMin) return "only " + groves.Count + " giant groves fit (need " + grovesMin + ")";
+report.Append("\nGiants: " + band.Count + " in the cliff-edge band, " + groves.Count + " groves (");
+foreach (var g2 in groves) { var cc = UnityEngine.Vector2.zero; foreach (var q in g2) cc += q; cc /= g2.Count; report.Append(g2.Count + " at " + UnityEngine.Vector2.Distance(cc, tower).ToString("F0") + " m; "); }
+report.Append(")");
 
 
 // ---------- thicket (8.9a): the ground keeps walkers on the trails (DailyLoop.md 1.2, Main3.md 2.10) ----------
@@ -422,7 +479,7 @@ void Ring(UnityEngine.Vector2 c, float r0, float r1) => Stamp(c.x - r1 - 1f, c.x
 foreach (var b in built) for (int i = 0; i < b.path.Count - 1; i++) Seg(b.path[i], b.path[i + 1], 2.2f);
 Circle(P(170, 160), 18f); Circle(P(282, 238), 30f); Circle(P(292, 108), 20f); Circle(P(78, 146), 9f);
 Circle(P(104, 206), 5f); Circle(P(128, 70), 5f); Circle(P(262, 172), 4f); Circle(P(340, 170), 4f);
-Rect(13.6f, 30f, 245f, 271f);                                                      // Ward ledge (rev 13): up to the lip line (x 13.6), the low crest and the stones
+Rect(13.6f, 30f, 250f, 274f);                                                      // Ward (rev 15): up to the lip line (x 13.6), the low crest and the stones
 Rect(49.5f, 54.5f, 30f, 41f);                                                      // in front of the cave mouth and into the passage (8.9b: no wall across it)
 Rect(187.5f, 192.5f, 86f, 98f); Rect(236.3f, 248.3f, 49.1f, 55.7f);                // dock notch; boathouse and gangway
 Rect(342f, 374f, 149f, 191f); Rect(373f, 395.6f, 166.5f, 173.5f); Circle(P(384, 160), 9f);   // lot, drive, turning circle

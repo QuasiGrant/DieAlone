@@ -46,7 +46,8 @@ var camp = Group("Camp", null, V(0f, 0f, 0f));
 // ================= TOWER =================
 float tx = 164f, tz = 166f, ty = H(tx, tz);
 float deckTop = 56f - ty;   // the deck stays at 56 m absolute on the raised knoll (rev 13: 41 m of legs on ground 15)
-const float deckThick = 0.4f, deckHalf = 4f, legAt = 3.75f;
+// deck 8.8 m square (rev 15 leftover 5): the east walkway beside the hatch rail is 1.0 m, wider than the 0.7 m capsule
+const float deckThick = 0.4f, deckHalf = 4.4f, legAt = 3.75f;
 var tower = Group("Tower", camp.transform, V(tx, ty, tz)); var T = tower.transform;
 var frame = Group("Frame", T, V(0f, 0f, 0f)).transform;
 foreach (var sx in new[] { -legAt, legAt }) foreach (var sz in new[] { -legAt, legAt })
