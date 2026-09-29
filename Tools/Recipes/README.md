@@ -127,4 +127,6 @@ One recipe per task, run in task order from a clean Main3 rebuild (see PLAN.md R
 | File | Builds or does |
 |---|---|
 | main3_8_1_scene_ground.cs | Main3.unity from the base template, 400 x 300 terrain from Main3.md table 2.1, gray layers, fence on x 396, invisible walls, spawn, DevWarps. |
+| main3_8_2_camp_tower.cs | Camp: timber-frame tower with 12 ramped flights, deck, cab, lectern; cabin with door, bunk, desk, report box, stove; fire pit; generator; spawn; deck and cabin warps. |
+| main3_walk.cs | Play-mode walk template: drives the CharacterController along waypoint routes and reports stalls. |
 | main3_topdown.cs | Top-down image in 100 m tiles to Docs/Layout/Main3/Main3_top.png. |

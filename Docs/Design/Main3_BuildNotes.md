@@ -16,3 +16,9 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 - Route lengths: every map curve is shorter than table 4. The map curve is the centre line, with the ends and points of interest at their map positions; each trail meanders about it to reach the table length within 5 percent. Camp to pump 67.2 -> 80; pump to boathouse 72.3 -> 84; boathouse to Camp 2 80.2 -> 95; Camp 2 to T 79.8 -> 94; Camp to Jg 100.5 -> 125; Jg to T 84.1 -> 105; Jg to Camp 1 69.7 -> 83; Camp to Camp 3 99.2 -> 126; pump to W1 68.1 -> 80; W1 to Camp 3 91.4 -> 114; W1 to cave 85.7 -> 109; Camp to J 81.3 -> 96; Ward climb polyline 114.1 -> 130.
 - Positions the doc leaves to the map: mast at the office north-east corner (356, 204); Camp 2 granite stack 12 m across (map r 6); office 12 x 8 m; store 8 x 5.6 m; boathouse 6.4 x 5.6 m.
 - Keeper's camp layout (not in the doc or the map): cabin centred (178, 168) in the clearing's north-east quarter, the only quarter no trail leaves through; player spawn inside it.
+- Creek through the hollow: map line (84, 150) -> (100, 110) passes 4 m from the Snag, which 2.1 puts at ground 4 on the rim -> creek rerouted (84, 150), (78, 146), (84, 128), (100, 110), 11 m clear of the Snag; the W1 to Camp 3 trail enters the hollow along this cut.
+
+## 8.2 Camp and tower
+
+- Camp items the doc places only by name -> fire pit (172, 163), generator (181.5, 171.5) behind the cabin, stove inside the cabin, lectern inside the cab facing north, report box on the cabin desk.
+- Tower frame: Vesper's timber legs built (square posts, beams every 8 m, X braces), gray. Deck 8 x 8 m, cab 4.4 x 4.4 m with a 1.8 m walkway, stairs a south switchback of 12 flights, arriving at the deck's south-west corner.
