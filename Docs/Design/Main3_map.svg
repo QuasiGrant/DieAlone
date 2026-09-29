@@ -8,7 +8,7 @@
 
   <!-- background and title -->
   <rect x="0" y="0" width="1190" height="1170" fill="#f6f3ec"/>
-  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 12 (as built in gray), 2026-09-29, Sable. Nothing here is decided.</text>
+  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 13, 2026-09-29, Sable. Nothing here is decided.</text>
   <text x="60" y="47" font-size="11" fill="#444">400 x 300 m at 2.5 px per m. Origin south-west, x east, z north. Heights absolute. Walk times at 2.5 m/s. The loop is in DailyLoop.md.</text>
 
   <!-- map area -->
@@ -17,6 +17,7 @@
   <!-- fire, west -->
   <rect x="0" y="70" width="60" height="750" fill="url(#fire)"/>
   <text transform="translate(26,445) rotate(-90)" text-anchor="middle" font-size="13" font-weight="bold" fill="#7a1e08">FIRE: burning ridge 300 to 500 m WEST</text>
+  <text transform="translate(12,445) rotate(-90)" text-anchor="middle" font-size="9" fill="#7a1e08">gray stand-in: ridge z -870 to 1,370, flames to 100 m, valley burning 135 to 440 m from the lip (3.7)</text>
   <text transform="translate(44,445) rotate(-90)" text-anchor="middle" font-size="10" fill="#7a1e08">day 1: not visible at all; first seen at the Ward on night 1</text>
   <rect x="60" y="70" width="25" height="750" fill="#d6c6b0"/>
   <line x1="85" y1="70" x2="85" y2="820" stroke="#4d3d2d" stroke-width="3"/>
@@ -128,7 +129,7 @@
     <circle cx="790" cy="550" r="50" fill="#d9d6ce"/>
     <circle cx="790" cy="550" r="15" fill="#8b8274"/>
     <circle cx="255" cy="455" r="31" fill="#cfdcc4"/>
-    <circle cx="140" cy="175" r="30" fill="#efe2cc"/>
+    <ellipse cx="105" cy="178" rx="25" ry="30" fill="#efe2cc"/>
     <circle cx="660" cy="690" r="19" fill="#f8f4e4" fill-opacity="0.6"/>
     <circle cx="320" cy="305" r="12" fill="#f8f4e4"/>
     <circle cx="380" cy="645" r="10" fill="#f8f4e4"/>
@@ -167,11 +168,17 @@
     <path d="M380,645 C330,700 270,660 190,726"/>
   </g>
   <!-- Ward climb, night only -->
-  <polyline points="320,305 335,250 305,215 250,200 215,170 175,185 140,175" fill="none" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4" stroke-linejoin="round"/>
+  <polyline points="320,305 280,320 225,310 195,275 200,230 210,195 127.5,192.5 92.5,190" fill="none" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4" stroke-linejoin="round"/>
+  <line x1="122.5" y1="170" x2="122.5" y2="210" stroke="#7a6446" stroke-width="2" stroke-dasharray="3 2"/>
+  <text x="124" y="218" font-size="8" fill="#6a5436">low crest 38</text>
+  <rect x="88" y="186" width="6" height="8" fill="#5a5348"/>
+  <text x="86" y="204" font-size="8" fill="#5a5348" text-anchor="start">rock lip</text>
 
   <!-- blocked sightlines -->
   <line x1="470" y1="405" x2="287.5" y2="286.8" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/>
-  <line x1="287.5" y1="286.8" x2="115" y2="175" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
+  <line x1="287.5" y1="286.8" x2="105" y2="155" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
+  <line x1="287.5" y1="286.8" x2="112.5" y2="172.5" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
+  <line x1="287.5" y1="286.8" x2="100" y2="165" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
   <line x1="470" y1="405" x2="245" y2="670" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/>
   <line x1="245" y1="670" x2="190" y2="724" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
   <text transform="translate(385,350) rotate(33)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">Ward hidden by the rock outcrop</text>
@@ -185,9 +192,9 @@
 
   <!-- Ward stones -->
   <g fill="#3b3a44">
-    <rect x="110" y="155" width="9" height="10"/>
-    <rect x="110" y="170" width="9" height="10"/>
-    <rect x="110" y="185" width="9" height="10"/>
+    <rect x="100.5" y="150" width="9" height="10"/>
+    <rect x="95.5" y="160" width="9" height="10"/>
+    <rect x="108" y="167.5" width="9" height="10"/>
   </g>
 
   <!-- keeper's camp layout (as built) -->
@@ -208,7 +215,7 @@
     <circle cx="565" cy="470" r="3.5"/><circle cx="785" cy="378" r="3.5"/><circle cx="880" cy="410" r="3.5"/><circle cx="730" cy="304" r="3.5"/>
     <circle cx="300" cy="458" r="3.5"/><circle cx="454" cy="601" r="3.5"/><circle cx="347" cy="607" r="3.5"/><circle cx="295" cy="534" r="3.5"/>
     <circle cx="327" cy="676" r="3.5"/><circle cx="265" cy="690" r="3.5"/><circle cx="401" cy="346" r="3.5"/><circle cx="322" cy="312" r="3.5"/>
-    <circle cx="290" cy="211" r="3.5"/><circle cx="175" cy="185" r="3.5"/>
+    <circle cx="265" cy="317.5" r="3.5"/><circle cx="210" cy="195" r="3.5"/>
   </g>
   <g fill="#3d7a2a">
     <circle cx="660" cy="413" r="5"/><circle cx="416" cy="411" r="5"/>
@@ -230,8 +237,8 @@
     <text x="257" y="686" text-anchor="end">coloured bulbs</text>
     <text x="409" y="342">burn-map board</text>
     <text x="330" y="320">plank bridge, creek water</text>
-    <text x="296" y="207">rune post</text>
-    <text x="170" y="198" text-anchor="end">last bend, silence</text>
+    <text x="265" y="334" text-anchor="middle">rune post</text>
+    <text x="216" y="190">last bend, silence</text>
     <text x="668" y="430" fill="#3d7a2a">forage A</text>
     <text x="424" y="424" fill="#3d7a2a">forage B</text>
     <text x="292" y="444">the Snag, 54 m (cap exemption)</text>
@@ -254,14 +261,14 @@
     <text x="926" y="385" font-size="9">T</text>
   </g>
   <g font-size="10" font-weight="bold" fill="#7b2d6b" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">
-    <text x="345" y="236">Ward climb 130 m / 52 s</text>
+    <text x="345" y="236">Ward climb 150 m / 60 s</text>
     <text x="345" y="249">night only</text>
   </g>
 
   <!-- place labels -->
   <g fill="#222" text-anchor="middle">
     <text x="498" y="432" font-size="11" font-weight="bold">KEEPER'S CAMP</text>
-    <text x="498" y="445" font-size="9">knoll 8 m, stove (Warmth)</text>
+    <text x="498" y="445" font-size="9">knoll 15 m, stove (Warmth)</text>
 
     <text x="545" y="660" font-size="12" font-weight="bold">LAKE</text>
     <text x="545" y="674" font-size="9">pump on the dock (Water)</text>
@@ -329,7 +336,7 @@
     <rect x="640" y="940" width="40" height="12" fill="#e4e1db" stroke="#8c877e"/><text x="686" y="950">front zone, inside the gate</text>
     <rect x="640" y="960" width="40" height="12" fill="url(#fire)"/><text x="686" y="970">fire direction (west)</text>
 
-    <text x="60" y="990" fill="#444">Camp to the Ward at night: 226 m, 90 s. Camp to the office: 270 m. Giant tops at most 50 m absolute. Walk times are information, not a budget. Day 1: no fire, everything ordinary until the Ward.</text>
+    <text x="60" y="990" fill="#444">Camp to the Ward at night: 246 m, 98 s. Camp to the office: 266 m. Tower: knoll 15, deck 56, spiral stair about 24 s up. Giant tops at most 50 m absolute. Walk times are information, not a budget. Day 1: no fire, everything ordinary until the Ward.</text>
   </g>
 
   <!-- cave section, unfolded along the path: X = 180 + 7 per m along the path, Y = 1040 at 0 m, 5 px per m down -->

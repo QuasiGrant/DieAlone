@@ -1,6 +1,6 @@
 # Main3 paper brief
 
-**DRAFT, revision 12, 2026-09-29, Sable. Revision 7 approved pending resident placement (DECISIONS 2026-09-29). Revision 12 folds in Rook's gray blockout resolutions (Docs/Design/Main3_BuildNotes.md) so this file matches what was built; three items stay only in the build notes (trail ends pinned, shift walls off, the sightline report line). Rook's fix batch after Marlow's walk may change more. Nothing else here is decided.** The loop lives in Docs/Design/DailyLoop.md and events in Docs/Design/Events.md; neither is repeated here. Map: Docs/Design/Main3_map.svg.
+**DRAFT, revision 13, 2026-09-29, Sable. Revision 13 changes the knoll and tower stairs, the cabin, the Ward approach and ledge, and adds the stand-in fire (Grant's gray-box walk). Revision 7 approved pending resident placement (DECISIONS 2026-09-29). Revision 12 folds in Rook's gray blockout resolutions (Docs/Design/Main3_BuildNotes.md) so this file matches what was built; three items stay only in the build notes (trail ends pinned, shift walls off, the sightline report line). Rook's fix batch after Marlow's walk may change more. Nothing else here is decided.** The loop lives in Docs/Design/DailyLoop.md and events in Docs/Design/Events.md; neither is repeated here. Map: Docs/Design/Main3_map.svg.
 
 Coordinates in metres, origin south-west, x east, z north. Heights absolute (metres above map base 0). Walk times at 2.5 m/s are information for pacing and events; there is no day time budget (DECISIONS 2026-09-29). Where the map drawing and this file differ, the map wins for positions and shapes and table 2.1 wins for heights (Wren's build rule).
 
@@ -15,10 +15,10 @@ Coordinates in metres, origin south-west, x east, z north. Heights absolute (met
 2. West edge: cliff along x 10, valley floor -40 m below, burning ridge 300 to 500 m beyond.
 3. North-west: the spur, high ground to 36 m, the Ward on its cliff edge behind the Tor.
 4. South-west: a ravine with the cultist cave below a rock rim.
-5. Centre: the keeper's camp on an 8 m knoll with the tower; the lake south; Camp 3 in a hollow west.
+5. Centre: the keeper's camp on a 15 m knoll with the tower; the lake south; Camp 3 in a hollow west.
 6. East: Camp 1 and Camp 2 in the forest, then the front zone.
 7. **The fence and gate are the map edge.** Chain-link along x 396, the full height of the map. The gate at (396, 170). The road comes from off-map to the gate and never enters. Inside the gate: a gravel drive, the parking lot, the office and the store.
-8. Giant trees: emergents 40 to 50 m tall, trunks 6 to 10 m. Tops never above 50 m absolute (46 west of x 32); on the knoll at most 42 m tall; none on the spur (its ground leaves no room for a 40 m giant under the caps). One stated exemption: the Snag at Camp 3, top 54 m, 3.6 m under the tower eye. **As built:** 46 giants by rule, 30 m or more apart, none in clearings, trails, the lake, ravine, hollow, old burn or front zone, and none within 3 m plus crown of the five tower cones (see 5.10 for one exception found).
+8. Giant trees: emergents 40 to 50 m tall, trunks 6 to 10 m. Tops never above 50 m absolute (46 west of x 32); on the knoll (ground up to 15) at most 35 m tall, re-capped to the absolute 50; none on the spur (its ground leaves no room for a 40 m giant under the caps). One stated exemption: the Snag at Camp 3, top 54 m, 3.6 m under the tower eye. **As built:** 46 giants by rule, 30 m or more apart, none in clearings, trails, the lake, ravine, hollow, old burn or front zone, and none within 3 m plus crown of the five tower cones (see 5.10 for one exception found).
 9. Routes stay on trails (DailyLoop.md 1.2).
 10. **The old burn** (DECISIONS 2026-09-29: the tower sees more of the office and lot). A years-old burn scar runs from the foot of the knoll east to the front zone: 30 m wide at the knoll (x 185, z 151 to 181), widening to 70 m at the front zone (x 340, z 143 to 213). No giants and no mid canopy in it: dense young regrowth 4 to 6 m tall, 4 m in the last 40 m before the front zone. The thicket is impassable off the trails, so it opens the view, not a shortcut. An old burn under a lookout is ordinary on day 1.
 
@@ -28,7 +28,7 @@ Base ground is 0 in the south-west, rolling up to 5 in the north-east. Between n
 
 | Point | Position | Ground m | Notes |
 |---|---|---|---|
-| Keeper's camp, knoll top | (170, 160) | 8 | tower base (164, 166) at 8 |
+| Keeper's camp, knoll top | (170, 160) | 15 | raised from 8 in revision 13; flat 15 across the 36 m clearing, tower base (164, 166) at 15; flanks fall to the surrounding ground within about 60 m at no more than 25 percent |
 | Lake water surface | (190, 60) | -5.5 | 110 x 55 m |
 | Lake bed | deepest, centre | -8 | 2.5 m deep, shelving from the shore |
 | Lake shore line | all round | -4.5 | banks rise to 0 within 15 m of the water |
@@ -46,7 +46,10 @@ Base ground is 0 in the south-west, rolling up to 5 in the north-east. Between n
 | J, Ward junction | (104, 206) | 10 | at the foot of the spur |
 | Spur crest | (72, 212) to (108, 284) | 34 | rising to 36 at the Ward ledge |
 | The Tor (rock outcrop) | (76, 223) | base 34, top 58 | |
-| Ward ledge | (32, 258) | 36 | |
+| Ward approach, straight run | (60, 250) to (27, 251) | 36 | after the last bend at the Tor's north-west foot |
+| Ward low crest | x 25, z 244 to 260 | 38 | 2 m above the run, 15 m from the edge; hides the drop until topped |
+| Ward rock lip | (13, 252) | 36, lip 0.8 m high | 3 m from the cliff edge at x 10; the path ends here facing west |
+| Ward ledge (stones) | x 14 to 24, z 254 to 270 | 36 | |
 | Ravine floor | north of the mouth face (z 37.4 and up) | -6 | the strip south of z 34 stays at 0 |
 | Cave mouth | face at z 37.4, x 50 to 53.9 | floor -6 | 4 m tall, top -2; terrain hole x 50.0 to 53.9, z 33.4 to 37.5, a rock block above the passage ceiling |
 | Ravine rim, north side | along the rim line | 14 | 18 for 20 m west and 15 m east of (74, 60) (the rim line ends 23 m east of the vertex and tapers to the cave trail entry over its last 8 m) |
@@ -54,7 +57,7 @@ Base ground is 0 in the south-west, rolling up to 5 in the north-east. Between n
 | Hollow Giant | (202, 140) | 6 | top 50 |
 | Forage patch A / B | on Camp to Jg at 96 m / Camp to Camp 3 at 40 m | 5 / 6 | |
 | Jg | (262, 172) | 5 | in the old burn |
-| Old burn | knoll foot to front zone | 8 falling to 3 | |
+| Old burn | knoll flank to front zone | about 12 at x 185 falling to 3 | |
 | Gate Tree | (290, 176) | 4 | stub 15 m |
 | Camp 1 | (282, 238) | 5 | |
 | Camp 2 boulder field / stack top | (292, 108) | 4 / 24 | |
@@ -66,14 +69,14 @@ Six locations with one resident each, plus the keeper's camp and the Ward. Every
 
 | Place | Position, ground | Size and feel | Actions (need) | Seen from tower as | Sound |
 |---|---|---|---|---|---|
-| Keeper's camp | (170, 160), knoll 8 m | 36 m clearing, warm light; layout 3.4 | tower and lectern; stove (Warmth) | the tower itself | wind vane squeal |
+| Keeper's camp | (170, 160), knoll 15 m | 36 m clearing, warm light; layout 3.4 | tower and lectern; stove (Warmth) | the tower itself | wind vane squeal |
 | Lake | water (190, 60), 110 x 55 m, surface -5.5, bed -8, shore -4.5 (2.1); pump on the north dock (190, 94.8); resident's boathouse on stilts (240, 52), 6.4 x 5.6 m | the one wide open sky | pump (Water); talk; events | open water, boathouse tin roof | lapping, dock chain |
 | Camp 1 | (282, 238), ground 5 m | big by kit, one tent: a sprawling workshop camp, 60 m, pale harsh light | cookfire meal (Food, some days); talk; events | a lashed timber spar 24 m with a string of bulbs | pots |
 | Camp 2 | (292, 108), ground 4 m | tiny: one tent on top of a 20 m granite stack (12 m across at the base, 9.6 m at the top) in a 40 m boulder field, ladder up, cold white tent lamp (Vesper) | rain barrel (Water, some days); talk; events | the granite stack | wind |
 | Camp 3 | (78, 146), hollow floor -4 m | sunk 8 m below its rim, 25 m across, dense, green-glass lantern | sit at the fire (Warmth, some days); talk; events | the Snag: a bleached dead giant on the east rim (ground 4, 50 m tall), top 54 m | creek through the hollow, a low fire |
 | Office | (350, 200), front zone, ground 3 m, 12 x 8 m | prefab ranger office on the north side of the lot; store 16 m east at (366, 200), 8 x 5.6 m. This location's resident lives around the lot where the drive starts: a car in the lot's north-east corner at (370, 179.4). Gate booth and closed campground: 3.2 | talk (Social, starts his gate minigame); events; store (Food) | the whole parking lot, office, store and mast (30 m, red lamp), in a wide view across the old burn | mains hum; radio with ordinary chatter on day 1, going to static after the reveal |
 | Cultist cave | mouth face (52, 37.4), ravine floor -6 m, mouth 4 m tall | weird on purpose (DECISIONS 2026-09-29): rave lights and music inside, busting the grim cult cave trope; the rock outside stays grey, so the light spilling up the descent is the surprise. Interior: 3.3 | talk (Social); its own events; story session | hidden (5.5), never checked | chant from night 1, heard at two trail spots; inside it slowly turns into bass on the way down (DECISIONS 2026-09-29) |
-| Ward ledge | (32, 258), ground 36 m | stones at x 21.8, z 252, 258 and 264, 11.8 m in from the cliff at x 10, facing west; each 3.6 x 4 m, tops 48; 25 m clearing | night only: the Ward screen | hidden (5.4) | silence from the last bend |
+| Ward ledge | rock lip (13, 252), ground 36 m; approach 3.6 | stones in the Tor's shadow to the player's right: (16, 262), (21, 259), (18, 266), each 3.6 x 4 m, tops 48 | night only: the Ward screen | hidden (5.4) | silence from the last bend |
 
 1. Event states change a landmark, never remove it: bulbs out on the Camp 1 spar, the Camp 2 tent lamp dark, the Snag's lantern missing, the office lamp steady instead of blinking. Details are Vesper's and Pim's.
 2. Poles: only two, and they differ: Camp 1's lashed timber spar with bulbs, the office's steel lattice mast with a red lamp. Camp 2 and Camp 3 use rock and a dead tree.
@@ -121,23 +124,53 @@ The cave is a dead end with one way in and one way out. All interior pieces are 
 8. Rock cover over the entrance passage is only 2 m (ceiling -2 under surface 0), over leg 1 from 2.5 m to 6.5 m. Keep the terrain from dipping into these ceilings in any later change.
 
 ### 3.4 Keeper's camp layout (as built)
-1. Cabin centred (178, 168) in the clearing's north-east quarter, the only quarter no trail leaves through. The player spawns inside it. Stove inside; report box on the cabin desk (a prop: the report is filed from the carried logbook, DailyLoop.md 1).
+1. **Cabin** centred (178, 168) in the clearing's north-east quarter, the only quarter no trail leaves through. Inside 6 m east-west by 4.5 m north-south, ceiling 2.7 m.
+   - Door in the south wall, centred. The player spawns inside, in the bunk.
+   - Bunk along the north wall, west half.
+   - Stove in the north-east corner, 1 m clear on every open side.
+   - Desk under the west window, the player facing west toward the tower when seated. The report box sits on it (a prop: the report is filed from the carried logbook, DailyLoop.md 1).
+   - A 1.5 m clear aisle from the door north to the bunk, stove and desk.
 2. Fire pit (172, 163). Generator (181.5, 171.5) behind the cabin.
-3. Tower base (164, 166), 8.5 m from the camp centre on the Camp to J line. Timber legs (section 3, note 3). Deck 8 x 8 m at 56 m; cab 4.4 x 4.4 m with a 1.8 m walkway; lectern inside the cab facing north. Stairs are a south switchback of 12 flights arriving at the deck's south-west corner.
-4. Trails stop at the clearing edge; there are no built trails inside the 15 m clearing.
+3. **Tower** base (164, 166) on the knoll at 15 m, 8.5 m from the camp centre on the Camp to J line. Deck stays at 56 m absolute, so every sightline check in section 5 holds; the legs rise 41 m. Timber legs (section 3, note 3). Deck 8 x 8 m; cab 4.4 x 4.4 m with a 1.8 m walkway; lectern inside the cab facing north.
+4. **Stairs: a square spiral inside the tower legs** (Vesper: the legs stay a clean silhouette; Sable: each flight faces a new bearing, so the climb turns the player through the whole horizon). Ten flights of about 4.1 m rise each (16 to 17 steps of 0.25 m rise, 0.3 m run, so 4.9 m of run per flight), one 1 m corner landing between flights, two and a half turns, arriving through a hatch in the deck. StairRamp colliders per the STAIRS RULE.
+5. **Climb time:** about 59 m of horizontal run (49 m of flights, 10 m of landings) at 2.5 m/s: **about 24 s up**, inside the 20 to 25 s target. The walk clock counts grounded horizontal distance (DailyLoop.md), so the tower check's fixed cost is unchanged by design.
+6. Trails stop at the clearing edge; there are no built trails inside the 15 m clearing.
+7. **Walkable grades with the higher knoll:** every trail leg stays at 25 percent (14 degrees) or less, averaged over any 10 m. The steepest is Camp to pump: 15 m down to about 0 at the top of the lake bank over its first 60 m (25 percent), then the dock notch. Camp to J (15 to 10), Camp to Camp 3 (15 to the rim at 4, then the log steps) and Camp to Jg (15 to 5) are gentler. The only steeper walked slopes on the map are the cave ramp legs (17 degrees, 30 percent) and stairs with their ramps.
 
 ### 3.5 Other places as built
 1. **Lake:** boathouse door in the east wall at z 52.4 facing the shore, with a 3.8 m gangway to the ground; the resident's spot is inside by the west wall. A wade limit (invisible, at 0.97 of the lake radii, tops -5.0 under the dock deck) lets the player wade the edge and never walk into deep water.
 2. **Camp 1:** the spar at the camp centre with the bulb string running 14 m west to a stake; one tent, three workbenches, lumber, the cookfire (Food), the resident's spot.
 3. **Camp 2:** trails end at the stack foot. The ladder on the west-south-west face is looks only for now: the game has no ladder climb, so the tent and the resident's spot on top cannot be reached on foot yet (open, 8).
 4. **Camp 3:** tent, fire (Warmth) and a seat log in the hollow west of the creek. The green-glass lantern hangs on the Snag's hollow side, 3 m above the rim.
-5. **Ward climb:** pale cairn 2.2 m beside the trail start at J, with a chain across the trail to a post. The climb passes the Tor 22 m from its centre at the closest.
+5. **Ward climb:** pale cairn 2.2 m beside the trail start at J, with a chain across the trail to a post. Route and ledge: 3.6.
+
+### 3.6 Ward approach and ledge (revision 13: Sable's positions with Vesper's reveal)
+1. **Climb** from J (104, 206), centre line (104, 206), (88, 200), (66, 204) past the Tor's south foot, (54, 218) up its west foot, (56, 236), then the **last bend** at (60, 250) round the Tor's north-west foot. About 103 m of trail to the bend, climbing from 10 to 36 at no more than 25 percent (the trail meanders about the centre line to reach its length). The Tor fills the view west through the whole climb and hides the stones, which sit in its shadow. Silence starts at the last bend.
+2. **Straight run** west from the bend along z 250 to 252, about 47 m, level at 36, rising to a **low crest** 2 m high (38) at x 25, 15 m from the edge. Before the crest the player sees sky, the fire's glow and flame tops over it, not the drop.
+3. **Rock lip** at (13, 252), 3 m from the cliff edge at x 10, 0.8 m high: the path ends here, facing west. Topping the crest at x 25 opens the drop and the burning valley; the lip is the stopping point.
+4. **Stones** to the player's right, in the Tor's shadow: (16, 262), (21, 259), (18, 266), each 3.6 x 4 m, tops 48. From the lip they stand 7 to 14 m to the north and north-east, so turning right from the fire brings them into view.
+5. **W-1 at the new stones** (paper, deck centre, against the as-built Tor ellipsoid): the tower-to-stone lines pass within 3 m of the Tor's centre, crossing it at about 51.7 to 51.9 m against a Tor surface of 57.7 to 58: margins 5.8 to 6.3 m. The rule is at least 3 m at eye height over the whole deck grid. Rerun W-1 and C-1 after the move.
+6. **Vesper's frame check from the lip** (eye 37.6 m plus the 0.8 m lip, looking level west):
+   - Fire across at least 150 degrees: the stand-in ridge must reach 75 degrees either side of west. At 300 m out that is about 1,120 m north and south of the lip, so the ridge runs from about z -870 to z +1,370 (3.7).
+   - Drop and burning valley in the bottom third of the frame (about 10 to 30 degrees below level at a 60 degree vertical view): the valley floor at -40 sits 78 m below the eye, so that band is the valley from about 135 m to 440 m out. That stretch of valley burns.
+   - Flame tops 10 to 15 degrees above level at the ridge and smoke past the top of the frame, per Style.md 6.3.
+7. Camp to the Ward by J: 96 + 150 = 246 m, about 98 s.
+
+### 3.7 Stand-in burning ridge and fire (gray blockout, beyond the west map edge)
+Marlow: the ledge shows no fire yet. A gray stand-in, sized to Style.md 6.3, so the frame can be checked before the art pass. Gray shapes with plain orange emissive for flame and glow; no final look.
+1. **Ridge:** a rolling band (not cones, Style.md), 300 to 500 m west of the cliff (x -290 to -490), from z -870 to z +1,370 (2.24 km), crest about 30 m absolute. It spans at least 150 degrees from the lip.
+2. **Burning giants and flames on the ridge:** stand-in trunks 40 to 50 m with flame shapes to 70 to 100 m above the ridge (tops about 100 to 130 absolute), about 10 to 15 degrees above level from the lip.
+3. **Valley floor** at -40 between the cliff and the ridge, burning in patches from 135 m to 440 m west of the lip (x about -125 to -430), so the bottom third of the frame burns.
+4. **Smoke:** three to five columns rising 250 m and more, leaning east over the map, with a sheet roofing the west. Stand-in: tall gray cylinders or cards.
+5. **Glow:** an orange emissive band along the ridge line and the valley fires, brightest thing in the frame.
+6. **Switched by state:** hidden entirely on day 1 by day (DECISIONS 2026-09-29), shown from nightfall on day 1. From day 2 by day as far glow and smoke (5.9). The cliff-edge giant band keeps the base hidden from the tower.
+7. Rook checks the frame from the lip with a Game view screenshot against 3.6.6.
 
 ## 4. Routes
 
 Shapes differ on purpose: winding trails, a west loop, dead-end spurs, and a straight road the player sees but never walks.
 
-The map curves are the trails' centre lines. Every built trail meanders about its curve to reach the table length within 5 percent (map curve lengths: Camp to pump 67, pump to boathouse 72, boathouse to Camp 2 80, Camp 2 to T 80, Camp to Jg 101, Jg to T 84, Jg to Camp 1 70, Camp to Camp 3 99, pump to W1 68, W1 to Camp 3 91, W1 to cave 86, Camp to J 81, Ward climb 114). Points of interest are at their built distances.
+The map curves are the trails' centre lines. Every built trail meanders about its curve to reach the table length within 5 percent (map curve lengths: Camp to pump 67, pump to boathouse 72, boathouse to Camp 2 80, Camp 2 to T 80, Camp to Jg 101, Jg to T 84, Jg to Camp 1 70, Camp to Camp 3 99, pump to W1 68, W1 to Camp 3 91, W1 to cave 86, Camp to J 81, Ward climb 138 in revision 13). Points of interest are at their built distances.
 
 | Leg | Shape | Length m | Walk s | Points of interest (m along leg, as built) |
 |---|---|---|---|---|
@@ -154,13 +187,13 @@ The map curves are the trails' centre lines. Every built trail meanders about it
 | W1 to Camp 3 | trail, entering the hollow along the creek cut | 114 | 46 | 27: footbridge (over dry ground; the creek runs 8 m north); 71: wrecked camper trailer |
 | W1 to cave | dead-end spur, winding down | 109 | 44 | 35: rope handrail, chant spot 1; 68: a string of coloured bulbs on a dead branch (not on day 1); 109: ravine floor at (52, 37.5), boarded mouth on day 1 (3.3) |
 | Camp to J | trail | 96 | 38 | 53: burn-map board; 95: plank bridge (creek water) |
-| J to Ward | switchbacks, night only | 130 | 52 | 0: pale cairn and chain; 57: rune post; 90: Tor base; 110: last bend, silence; 130: stones |
+| J to Ward | switchbacks round the Tor, then a straight run west, night only | 150 | 60 | 0: pale cairn and chain; 40: rune post at the Tor's south foot; 70: Tor's west foot; 103: last bend, silence; 138: low crest, the reveal; 150: rock lip, stones to the right |
 
 1. Two points of interest are giant trees (Hollow Giant, Gate Tree), plus the Snag landmark. All three are scene objects with mesh colliders (Rook).
 2. **The cave spur is unsigned at W1**, the one exception to the junction pass check (DECISIONS 2026-09-29). Chant spot 2 is W1 itself, from night 1 on; on day 1 the cave is not heard.
 3. Every leg walked eastward has one bend turning the player west. From day 2 these are glimpses of the glow (DECISIONS 2026-09-29); on day 1 they show only the far ridge. The fire is loudest at the three west glimpses: W1, the Camp 3 rim, the Camp to J bend (Hollis).
 4. Creek: spring (104, 215.2), past J, through the Camp 3 hollow, to the lake shore beside W1 (2.1). Crossings: Camp to J (plank bridge on the creek) and pump to W1 (stepping stones at the mouth). The W1 to Camp 3 trail runs on the creek's south-west bank; its footbridge spans dry ground.
-5. Loops: east ring (Camp, pump, boathouse, Camp 2, T, Jg, Camp) 583 m, 233 s; west loop (Camp, pump, W1, Camp 3, Camp) 400 m, 160 s. Camp to the office about 266 m. Camp to the Ward by J 226 m, 90 s.
+5. Loops: east ring (Camp, pump, boathouse, Camp 2, T, Jg, Camp) 583 m, 233 s; west loop (Camp, pump, W1, Camp 3, Camp) 400 m, 160 s. Camp to the office about 266 m. Camp to the Ward by J 246 m, 98 s.
 6. Chase events (Events.md) use these legs: the longest unlit stretches are Camp to Jg, Jg to T and W1 to Camp 3. Chases never route into the cave spur (3.3.7). Safe points for a chase: the keeper's camp, any lit camp, the lot.
 
 ### 4.1 Junctions
@@ -168,7 +201,7 @@ Every trail leaves its clearing aimed at the next landmark for its first 30 m. D
 
 ## 5. Tower sightlines
 
-1. Tower base (164, 166) on the 8 m knoll, deck 56 m, eye 57.6 m (58.2 m at jump height). Every giant is at least 7.6 m below the eye.
+1. Tower base (164, 166) on the 15 m knoll (revision 13), deck 56 m, eye 57.6 m (58.2 m at jump height), all unchanged. Every giant is at least 7.6 m below the eye. The raised knoll's crowns (15 + 35 at most) stay under every sightline: the lowest line near the tower (to the lake's far water) is at about 50 m where it passes the knoll edge.
 2. Cone rule: from the eye to both edges of each landmark, no crown or trunk edge within 3 m of the line.
 3. Landmark checks at each clearing's near edge, from the deck centre (paper figures; Camp 2 as built in 5.10):
 
@@ -180,7 +213,7 @@ Every trail leaves its clearing aimed at the next landmark for its first 30 m. D
 | Camp 3 | W | 88 | Snag top 54 | 4.0 over every giant cap |
 | Office and lot | E, 75 to 95 | 189 to 212 | lot surface from its west edge, cars, office, store, mast | 2.6 over the 4 m regrowth at the lot edge; buildings and mast far more |
 
-4. **Ward hidden:** the Tor (a rock outcrop; "tor" is the plain word for a bare rock hill), on the crest at (76, 223), radius 18 m, base 34 m, top 58 m. **As built (W-1 over 64 deck eye points):** least margin 4.2 m at eye height (5.0 m from the deck centre), 0.9 m with eyes and targets raised 3 m. Every ray still hits.
+4. **Ward hidden:** the Tor (a rock outcrop; "tor" is the plain word for a bare rock hill), on the crest at (76, 223), radius 18 m, base 34 m, top 58 m. **As built at the old stone positions (W-1 over 64 deck eye points):** least margin 4.2 m at eye height (5.0 m from the deck centre), 0.9 m with eyes and targets raised 3 m. Revision 13 moves the stones (3.6.5): paper margins 5.8 to 6.3 m from the deck centre; W-1 must show at least 3 m at eye height over the deck grid.
 5. **Cave hidden:** the ravine rim north of the mouth (mouth floor -6, top -2), raised to 18 m near (74, 60) (2.1). **As built (C-1 over 64 deck eye points):** least margin 9.2 m (9.3 m from the deck centre), 6.0 m with eyes and targets raised 3 m.
 6. The old burn lies east of the tower (bearings 75 to 95) and crosses neither hiding line.
 7. **Checks W-1 and C-1** (rerun after any change): trees off. Eye points on a 1 m grid over the whole deck and walkway, at eye height and jump height. Rays to every stone corner (W-1) and to the cave mouth's corners (C-1). Every ray must hit the Tor, rim or terrain. Repeat with eyes and targets raised 3 m: every ray must still hit.
@@ -196,7 +229,7 @@ Every trail leaves its clearing aimed at the next landmark for its first 30 m. D
 
 1. Sizes: 60 m (Camp 1), 40 m boulder field (Camp 2), 36 m (camp), 25 m sunken (Camp 3), a 110 m lake, a lot.
 2. Distances from camp: 80 m (pump) to about 266 m (office).
-3. Heights: -18 m (cave chamber), -6 m (ravine), -4 m (hollow), 8 m (knoll), 24 m (stack top), 36 m (Ward).
+3. Heights: -18 m (cave chamber), -6 m (ravine), -4 m (hollow), 15 m (knoll), 24 m (stack top), 36 m (Ward).
 4. Light: warm (camp), pale harsh (Camp 1), cold white (Camp 2, Vesper's call, so the keeper's camp, Camp 1 and the office are not all warm), green glass (Camp 3), red lamp and sodium (office), rave colour spilling from grey rock (cave).
 5. Actions: each camp gives a different need (Food, Water, Warmth). The office has the store. The lake has the sure water.
 
