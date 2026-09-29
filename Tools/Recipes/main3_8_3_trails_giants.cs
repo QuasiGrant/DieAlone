@@ -26,7 +26,8 @@ float LakeRe(UnityEngine.Vector2 p) { var q = p - lakeC; return UnityEngine.Math
 // poi kind: "on" = the trail passes through it; "side" = stands beside the trail
 var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2[] ctrl, bool polyline, float target, bool shore, float maxGrade, (string n, UnityEngine.Vector2 p, string kind)[] pois)>
 {
-    ("Camp to pump", new[] { P(170,160), P(174,128), P(190,96) }, false, 80f, false, 0.25f, new[] { ("Water tank", P(182,128), "side") }),
+    // camp to pump (8.9c re-walk 2, Wren): 15 m down to -4.5 needs a longer leg, so it zigzags down the knoll's lake side in two switchbacks; the last run cuts the lake bank west of the pump, the view corridor to the cab and the Snag; a polyline with no meander (a meander looped round the hairpins)
+    ("Camp to pump", new[] { P(170,160), P(152,145), P(188,133), P(176,118), P(176,105), P(190,96) }, true, 108f, false, 0.25f, new[] { ("Water tank", P(182,128), "side") }),
     ("Pump to boathouse", new[] { P(190,96), P(232,92), P(247.6f,52.4f) }, false, 84f, true, 0.25f, new[] { ("Overturned rowboat", P(223.6f,83.2f), "side") }),
     ("Boathouse to Camp 2", new[] { P(247.6f,52.4f), P(280,64), P(292,108) }, false, 95f, false, 0.25f, new[] { ("Phone pole", P(272.8f,72f), "side") }),
     ("Camp 2 to T", new[] { P(292,108), P(324,128), P(340,170) }, false, 94f, false, 0.25f, new[] { ("Food lockers", P(320,133.6f), "side") }),
@@ -74,7 +75,9 @@ float Project(System.Collections.Generic.List<UnityEngine.Vector2> pts, float[] 
 float PolyLen(System.Collections.Generic.List<UnityEngine.Vector2> p) { float l = 0; for (int i = 1; i < p.Count; i++) l += UnityEngine.Vector2.Distance(p[i - 1], p[i]); return l; }
 
 // table 2.1 heights at the named trail ends; camp is the 15 m knoll top (rev 13, 8.1), so the camp ends meet it level
-var namedEnds = new (UnityEngine.Vector2 p, float h)[] { (P(170,160), 15f), (P(190,96), -4.5f), (P(128,70), -4.5f), (P(104,206), 10f), (P(262,172), 5f), (P(340,170), 3f), (P(282,238), 5f), (P(292,108), 4f), (P(78,146), -4f), (P(52,37.5f), -6f), (P(14.5f,252), 36f) };
+// the keeper's camp clearing: flat at the knoll top out to campClearR, where no trail is built (the tower and cabin stand there)
+var campC = P(170, 160); const float campH = 15f, campClearR = 15f;
+var namedEnds = new (UnityEngine.Vector2 p, float h)[] { (campC, campH), (P(190,96), -4.5f), (P(128,70), -4.5f), (P(104,206), 10f), (P(262,172), 5f), (P(340,170), 3f), (P(282,238), 5f), (P(292,108), 4f), (P(78,146), -4f), (P(52,37.5f), -6f), (P(14.5f,252), 36f) };
 var built = new System.Collections.Generic.List<(string name, System.Collections.Generic.List<UnityEngine.Vector2> path, float[] prof, float target)>();
 var poiPlaced = new System.Collections.Generic.List<(string leg, string n, UnityEngine.Vector2 at, UnityEngine.Vector2 tan, UnityEngine.Vector2 obj, string kind, float along, float height)>();
 var report = new System.Text.StringBuilder();
@@ -136,22 +139,29 @@ foreach (var leg in legs)
     // gradeMargin keeps the built ground under the leg's grade after the terrain blend rounds the profile
     const float gradeMargin = 0.98f;
     float G(int i) => (i * 0.5f >= stepsFrom ? 0.85f : leg.maxGrade * gradeMargin) * UnityEngine.Vector2.Distance(path[i - 1], path[i]);
-    // band first (8.9c re-walk 2): each point within reach of both pinned ends at the leg's grade, so the neighbour clamps
-    // below cannot leave an end short (a tight leg such as camp to pump, 19.5 m down in 80 m, came out 6.7 m under the camp end)
-    var fromA = new float[N]; var fromB = new float[N];
-    for (int i = 1; i < N; i++) fromA[i] = fromA[i - 1] + G(i);
-    for (int i = N - 2; i >= 0; i--) fromB[i] = fromB[i + 1] + G(i + 1);
-    for (int i = 1; i < N - 1; i++)
+    // pins: both ends, and every sample inside the camp clearing, which stays flat at the camp height and is not carved
+    // (8.9c re-walk 2: a trail that started down inside the clearing left a step at its edge)
+    var pinned = new bool[N]; pinned[0] = pinned[N - 1] = true;
+    for (int i = 0; i < N; i++) if (UnityEngine.Vector2.Distance(path[i], campC) < campClearR) { pinned[i] = true; prof[i] = campH; }
+    // band first: each point within reach of every pin at the leg's grade, so the neighbour clamps below cannot leave a pin short
+    var bLo = new float[N]; var bHi = new float[N];
+    for (int i = 0; i < N; i++) { bLo[i] = pinned[i] ? prof[i] : (i > 0 ? bLo[i - 1] - G(i) : float.MinValue); bHi[i] = pinned[i] ? prof[i] : (i > 0 ? bHi[i - 1] + G(i) : float.MaxValue); }
+    for (int i = N - 2; i >= 0; i--) if (!pinned[i]) { bLo[i] = UnityEngine.Mathf.Max(bLo[i], bLo[i + 1] - G(i + 1)); bHi[i] = UnityEngine.Mathf.Min(bHi[i], bHi[i + 1] + G(i + 1)); }
+    for (int i = 0; i < N; i++)
     {
-        float bLo = UnityEngine.Mathf.Max(prof[0] - fromA[i], prof[N - 1] - fromB[i]), bHi = UnityEngine.Mathf.Min(prof[0] + fromA[i], prof[N - 1] + fromB[i]);
-        if (bLo > bHi) return leg.name + ": the ends are too far apart in height for the grade (" + prof[0] + " to " + prof[N - 1] + " over " + PolyLen(path).ToString("F1") + " m)";
-        prof[i] = UnityEngine.Mathf.Clamp(prof[i], bLo, bHi);
+        if (pinned[i]) continue;
+        if (bLo[i] > bHi[i] + 1e-4f) return leg.name + ": the pinned heights are too far apart for the grade near " + path[i].ToString("F0") + " (leg " + PolyLen(path).ToString("F1") + " m)";
+        prof[i] = UnityEngine.Mathf.Clamp(prof[i], bLo[i], bHi[i]);
     }
-    for (int pass = 0; pass < 200; pass++)   // ends stay pinned; interior points clamp toward their neighbours until nothing moves
+    // pins stay; the rest clamp toward the samples up to chordReach back and ahead, by straight-line distance, until nothing
+    // moves: on a hairpin the path folds back, so a 10 m walk measured corner to corner must also hold the grade
+    const int chordReach = 20;   // 10 m of samples
+    float GC(int i, int j) => ((i > j ? i : j) * 0.5f >= stepsFrom ? 0.85f : leg.maxGrade * gradeMargin) * UnityEngine.Vector2.Distance(path[i], path[j]);
+    for (int pass = 0; pass < 200; pass++)
     {
         float moved = 0f;
-        for (int i = 1; i < N - 1; i++) { float c = UnityEngine.Mathf.Clamp(prof[i], prof[i - 1] - G(i), prof[i - 1] + G(i)); moved = UnityEngine.Mathf.Max(moved, UnityEngine.Mathf.Abs(c - prof[i])); prof[i] = c; }
-        for (int i = N - 2; i >= 1; i--) { float c = UnityEngine.Mathf.Clamp(prof[i], prof[i + 1] - G(i + 1), prof[i + 1] + G(i + 1)); moved = UnityEngine.Mathf.Max(moved, UnityEngine.Mathf.Abs(c - prof[i])); prof[i] = c; }
+        for (int i = 1; i < N - 1; i++) { if (pinned[i]) continue; float c = prof[i]; for (int j = UnityEngine.Mathf.Max(0, i - chordReach); j < i; j++) c = UnityEngine.Mathf.Clamp(c, prof[j] - GC(i, j), prof[j] + GC(i, j)); moved = UnityEngine.Mathf.Max(moved, UnityEngine.Mathf.Abs(c - prof[i])); prof[i] = c; }
+        for (int i = N - 2; i >= 1; i--) { if (pinned[i]) continue; float c = prof[i]; for (int j = UnityEngine.Mathf.Min(N - 1, i + chordReach); j > i; j--) c = UnityEngine.Mathf.Clamp(c, prof[j] - GC(i, j), prof[j] + GC(i, j)); moved = UnityEngine.Mathf.Max(moved, UnityEngine.Mathf.Abs(c - prof[i])); prof[i] = c; }
         if (moved < 0.0001f) break;
     }
     // log steps: one straight grade from the steps anchor to where the profile reaches the hollow floor, so terrain and ramp agree
@@ -187,7 +197,7 @@ var lot = new (string n, UnityEngine.Vector2[] p, float target)[] {
 foreach (var w in lot) { float l = PolyLen(new System.Collections.Generic.List<UnityEngine.Vector2>(w.p)); report.Append(w.n + " (lot walk): " + l.ToString("F1") + " m vs " + w.target + " (" + (100f * (l - w.target) / w.target).ToString("+0.0;-0.0") + "%)\n"); }
 
 // inside the keeper's camp clearing the trails are not built: the tower and cabin stand there and the clearing is flat
-bool InCamp(UnityEngine.Vector2 q) => UnityEngine.Vector2.Distance(q, P(170, 160)) < 15f;
+bool InCamp(UnityEngine.Vector2 q) => UnityEngine.Vector2.Distance(q, campC) < campClearR;
 // ---------- flatten: 1.5 m at the profile height, blend over 2.5 m ----------
 int res = data.heightmapResolution; var hm = data.GetHeights(0, 0, res, res);
 var bestD = new float[res, res]; var sumW = new float[res, res]; var sumH = new float[res, res];   // weighted blend of nearby samples, no cliffs where trails meet

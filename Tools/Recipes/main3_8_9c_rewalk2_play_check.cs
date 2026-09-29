@@ -1,4 +1,4 @@
-// Main3 8.9c re-walk 2 check (Play mode). (1) Camp re-entry: from each camp leg's trail point about 30 m out, walk the
+// Main3 8.9c re-walk 2 check (Play mode). (1b) walks the camp to pump leg down and back up, timed. (1) Camp re-entry: from each camp leg's trail point about 30 m out, walk the
 // markers back to the camp end and on to the clearing edge 12 m from the centre, on the 15 m knoll top. (2) Tower stair: sprint-jumps (5.5 m/s, gravity 20,
 // 0.6 m hop, jumping again on every landing, dt 0.02, 3 s) from three points on every flight in six directions (both sides,
 // and 45 degrees up and down the flight to both sides) and from every landing in three outward directions. PASS when the
@@ -39,6 +39,23 @@ foreach (UnityEngine.Transform leg in Root("Trails").transform)
     var inCamp = camp + (F(pts[pts.Count - 1]) - camp).normalized * 12f;   // the clearing edge; the tower and cabin stand nearer the centre
     ok = ok && To(inCamp.x, inCamp.y) && pc.transform.position.y > 14.4f; allOk &= ok;
     sb.Append("camp re-entry " + leg.name + ": from " + F(pts[from]).ToString("F1") + " ground " + y0.ToString("F1") + " -> " + (ok ? "in camp at " + pc.transform.position.ToString("F1") : "STUCK at " + pc.transform.position.ToString("F1")) + "\n");
+}
+// (1b) camp to pump both ways (Wren's switchback leg): the clearing edge to the pump end and back, timed at the walk speed
+{
+    var leg = Root("Trails").transform.Find("Camp to pump"); var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform m in leg) pts.Add(m.position);
+    var pumpEnd = new UnityEngine.Vector2(190f, 96f); var edge = camp + (new UnityEngine.Vector2(pts[0].x, pts[0].z) - camp).normalized * 12f;
+    float Walk(System.Collections.Generic.IEnumerable<UnityEngine.Vector2> route, out bool ok)
+    {
+        float dist = 0f; ok = true;
+        foreach (var q in route) { var a = pc.transform.position; ok = To(q.x, q.y); var b = pc.transform.position; dist += new UnityEngine.Vector2(b.x - a.x, b.z - a.z).magnitude; if (!ok) break; }
+        return dist;
+    }
+    var down = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (var p in pts) down.Add(new UnityEngine.Vector2(p.x, p.z)); down.Add(pumpEnd);
+    var up = new System.Collections.Generic.List<UnityEngine.Vector2>(down); up.Reverse(); up.RemoveAt(0); up.Add(edge);
+    Put(new UnityEngine.Vector3(edge.x, 15f, edge.y)); float dDown = Walk(down, out bool okDown); var atPump = pc.transform.position;
+    float dUp = okDown ? Walk(up, out bool okUp) : 0f; bool upOk = okDown && pc.transform.position.y > 14.4f && UnityEngine.Vector2.Distance(new UnityEngine.Vector2(pc.transform.position.x, pc.transform.position.z), edge) < 0.5f;
+    allOk &= okDown && upOk; float spd = tuning.walkSpeed;
+    sb.Append("camp to pump, clearing edge to the pump: " + (okDown ? "reached " + atPump.ToString("F1") : "STUCK at " + atPump.ToString("F1")) + ", " + dDown.ToString("F1") + " m, " + (dDown / spd).ToString("F1") + " s at " + spd + " m/s; back up: " + (upOk ? "reached the clearing at " + pc.transform.position.ToString("F1") : "STUCK at " + pc.transform.position.ToString("F1")) + ", " + dUp.ToString("F1") + " m, " + (dUp / spd).ToString("F1") + " s\n");
 }
 // (2) tower stair sprint-jumps
 var tower = Root("Camp").transform.Find("Tower"); const float c = 2.9f, run = 0.3f; const int flights = 10, steps = 16;
