@@ -107,3 +107,4 @@
 - 2026-09-29: The daily routine in Docs/Design/DailyLoop.md (revision 6) is approved for now.
 - 2026-09-29: There will be minigames that progress each of the six characters' dialogue, and they affect the multiple endings.
 - 2026-09-29: Main3 map change: the tower should see more of the office and parking lot.
+- 2026-09-29: From the approved routine: the lake is open from the start, and the player wakes in the camp cabin.

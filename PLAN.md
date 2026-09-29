@@ -123,8 +123,6 @@ Main menu with New run and Continue. Volume, graphics and control rebinding sett
 
 ## Open decisions (owner)
 
-- The lake is open from the start; DESIGN.md says such locations unlock through events.
-- The player wakes in the camp cabin; DESIGN.md says the tower.
 
 ## Rules and Tips
 
