@@ -115,7 +115,7 @@ Every task below: gray only (Unity primitives, ProBuilder, Terrain; no pack art)
 
 ## Milestone 9: Sound groundwork
 
-In the Main3 blockout: mixer with five groups, an AudioTuning asset, footsteps, the fire pit loop, and one ambience bed per zone with an edge where it changes. Done when Grant walks the routes with sound and says the walk lengths work.
+Postponed by Grant (2026-09-29): runs after Milestone 11. In the Main3 blockout: mixer with five groups, an AudioTuning asset, footsteps, the fire pit loop, and one ambience bed per zone with an edge where it changes. Done when Grant walks the routes with sound and says the walk lengths work.
 
 ## Milestone 10: One playable week
 
