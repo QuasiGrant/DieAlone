@@ -1,1 +1,1 @@
-- [Build rewrites need Grant](feedback_build_rewrites.md) — proof builds dirty settings and recreate DefaultVolumeProfile; do not delete or revert, report
+- [Build rewrites need Grant](feedback_build_rewrites.md) — build dirties settings; git checkout and deletes blocked; runtime list cannot match HEAD via Editor
