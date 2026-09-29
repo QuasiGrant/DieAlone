@@ -16,7 +16,7 @@ MonoBehaviour:
   lowResHeight: 360
   colorBleed: 0.5
   washOut: 0.25
-  crushBlacks: 0.3
+  crushBlacks: 0.15
   grainStrength: 0.2
   grainSpeed: 24
   noiseBandStrength: 0.35
@@ -24,7 +24,7 @@ MonoBehaviour:
   noiseBandInterval: 20
   scanLines: 0.3
   blur: 0.3
-  darkCorners: 0.45
+  darkCorners: 0.3
   fogEnabled: 1
   fogColor: {r: 0.02, g: 0.03, b: 0.05, a: 1}
   fogStart: 20
@@ -32,7 +32,7 @@ MonoBehaviour:
   sunsetFogColor: {r: 0.65882355, g: 0.627451, b: 0.5568628, a: 1}
   sunsetFogStart: 40
   sunsetFogEnd: 600
-  sunsetAmbient: {r: 0.43137255, g: 0.4, b: 0.34509805, a: 1}
+  sunsetAmbient: {r: 0.6, g: 0.5411765, b: 0.4509804, a: 1}
   nightAmbient: {r: 0.027, g: 0.031, b: 0.039, a: 1}
   fireFillColor: {r: 0.353, g: 0.141, b: 0.071, a: 1}
   fireFillIntensity: 0.25
@@ -42,7 +42,7 @@ MonoBehaviour:
   sunGlowColor: {r: 1, g: 0.7882353, b: 0.5411765, a: 1}
   sunGlowSize: 24
   sunColor: {r: 1, g: 0.7882353, b: 0.5411765, a: 1}
-  sunElevation: 14
+  sunElevation: 28
   sunBearing: 270
   sunIntensity: 1.1
   fireGlowColor: {r: 1, g: 0.42, b: 0.1, a: 1}

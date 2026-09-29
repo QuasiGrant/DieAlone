@@ -1,7 +1,8 @@
 using UnityEngine;
 
 /// Switches the whole look between the scene's own LookTuning and the preview looks listed
-/// here (day one, day two), in Play mode, without changing any asset or scene. The LOOK section
+/// here (day one, day two), in Play mode, without changing any asset or scene. Play starts in
+/// startLook (day one in GameSystems), set before the first frame. The LOOK section
 /// of the F1 dev menu (DevMenu) calls Select; there is no key of its own.
 /// A daylight look forces the Sunset fog set and sky, turns the scene's directional lights off
 /// and adds a sun placed and coloured from that LookTuning; going back restores everything.
@@ -23,6 +24,8 @@ public class LookPreview : MonoBehaviour
     [SerializeField] private Look[] looks;
     [Tooltip("Material using DieAlone/SkyGradient. Copied at start so the preview never writes to the asset.")]
     [SerializeField] private Material skyMaterial;
+    [Tooltip("Index into looks that Play starts in, applied in Awake so it holds from the first frame. 0 keeps the scene's own look.")]
+    [SerializeField] private int startLook;
 
     private int current;
     private Material skyCopy;
@@ -41,6 +44,7 @@ public class LookPreview : MonoBehaviour
     private void Awake()
     {
         if (skyMaterial != null) skyCopy = new Material(skyMaterial);
+        if (startLook != 0) Select(startLook);
     }
 
     private void Update()

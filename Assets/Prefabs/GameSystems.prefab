@@ -830,6 +830,7 @@ MonoBehaviour:
     tuning: {fileID: 11400000, guid: abd1632e3aeef8a4eb1514e5234a8f73, type: 2}
     daylight: 1
   skyMaterial: {fileID: 2100000, guid: 721ffb968b88cd94d96a758bcbbabb0b, type: 2}
+  startLook: 1
 --- !u!1 &3815159851938191409
 GameObject:
   m_ObjectHideFlags: 0
@@ -1279,6 +1280,7 @@ MonoBehaviour:
   targetCamera: {fileID: 0}
   fogSet: 0
   skyMaterial: {fileID: 0}
+  fireFill: {fileID: 0}
 --- !u!114 &5099930884943251396
 MonoBehaviour:
   m_ObjectHideFlags: 0
