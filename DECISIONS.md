@@ -104,3 +104,6 @@
 - 2026-09-29: From day two the fire may show by day as far glow and smoke. It is never visible on day one, and when it is seen it is huge in the distance.
 - 2026-09-29: Whether an event can end the day with needs unmet varies by event; some can.
 - 2026-09-29: Sound changes for day one accepted for now: the fire is heard at the Ward on night one, the road has ordinary traffic on day one, and the cave chant starts on night one.
+- 2026-09-29: The daily routine in Docs/Design/DailyLoop.md (revision 6) is approved for now.
+- 2026-09-29: There will be minigames that progress each of the six characters' dialogue, and they affect the multiple endings.
+- 2026-09-29: Main3 map change: the tower should see more of the office and parking lot.
