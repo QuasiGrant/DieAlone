@@ -156,3 +156,11 @@
 - 2026-09-29: The roulette is played with the hidden resident in the cave, with a real gun (adult game). The player has to play with him; the creepy part is that after he loses he is right back at it the next day.
 - 2026-09-29: The Lover's card game should be something more interesting than plain rummy; ideate when it is built.
 - 2026-09-29: Many more homage references are wanted; they get their own milestone later.
+- 2026-09-29: Grant's second Main3 walk: the map feels a little small; the Ward must sit higher than the fire tower (the tower currently reads as higher); the Ward must never be visible from the tower. He needs to see it designed to judge the look.
+- 2026-09-29: Hollis's technical sound setup (groups, import settings, SOURCES.md audio section with credits, Envato kept out of git, footstep detection order) is fine for now.
+- 2026-09-29: Grant is subscribed to Envato Elements and holds the licences.
+- 2026-09-29: Sound groundwork (Milestone 9) moves later; the sound files are not needed yet.
+- 2026-09-29: The homage collectibles name the games they shout out; they are the team's favourite games and inspirations.
+- 2026-09-29: A collectible find counts straight away. Collectibles are also Steam achievements.
+- 2026-09-29: The logbook's collectibles page shows only inspiration collectibles, never other game achievements.
+- 2026-09-29: Content warnings include depression, and jump scares if the game uses them; both can be adjusted later.
