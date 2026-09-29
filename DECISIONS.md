@@ -139,3 +139,7 @@
 - 2026-09-29: No voice acting. All speech is text; the cult chant has no words.
 - 2026-09-29: The hidden resident's storyline completes when he is calmed, not destroyed; his condition is never named.
 - 2026-09-29: Grant's gray-box feedback on Main3: the dev menu opens off screen; there are not nearly enough trees (fine for the gray box); the cabin is too small; the tower climb is too high and too long (consider starting it on a hill and stairs that wrap around; team to comment); the Ward clearing must look out off the ledge at the fire and into the distance, with the Ward itself off to one side.
+- 2026-09-29: Saving every resident is hard; unlocking the best ending is an achievement. How and when a neglected resident is lost varies by storyline; there is no single universal clock.
+- 2026-09-29: Each minigame session and storyline has its own dialogue.
+- 2026-09-29: Warnings before a resident is lost are subtle, never overt.
+- 2026-09-29: A resident whose storyline is completed stays for the rest of the run, and counts toward the ending.
