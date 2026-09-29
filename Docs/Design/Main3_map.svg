@@ -8,11 +8,15 @@
 
   <!-- background and title -->
   <rect x="0" y="0" width="1190" height="1170" fill="#f6f3ec"/>
-  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 14, 2026-09-29, Sable. Nothing here is decided.</text>
+  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 15, 2026-09-29, Sable. Nothing here is decided.</text>
   <text x="60" y="47" font-size="11" fill="#444">400 x 300 m at 2.5 px per m. Origin south-west, x east, z north. Heights absolute. Walk times at 2.5 m/s. The loop is in DailyLoop.md.</text>
 
   <!-- map area -->
   <rect x="60" y="70" width="1000" height="750" fill="#e2ebd6" stroke="#8a9a7a" stroke-width="1"/>
+  <!-- distance layers, off-map (Vesper's spec, Main3.md 2.11) -->
+  <text x="560" y="64" text-anchor="middle" font-size="9" fill="#5a6a52">NORTH off-map: forest strip 60 to 100 m; near ridge 120 to 250 m out, crest 45 to 60; far range 1.2 to 1.8 km, crest 150 to 220</text>
+  <text x="560" y="852" text-anchor="middle" font-size="9" fill="#5a6a52">SOUTH off-map: forest strip 60 to 100 m; low ridge 150 to 300 m out, crest 35 to 50; far range 1.5 to 2 km, crest 180 to 250</text>
+  <text transform="translate(1180,650) rotate(-90)" text-anchor="middle" font-size="9" fill="#5a6a52">EAST off-map: rolling forest 20 to 35 m for 100 to 400 m, road in a gap; far range 1.5 to 2.5 km</text>
 
   <!-- fire, west -->
   <rect x="0" y="70" width="60" height="750" fill="url(#fire)"/>
@@ -24,10 +28,11 @@
   <text transform="translate(76,700) rotate(-90)" text-anchor="middle" font-size="9" fill="#5a4a3a">valley -40 m, cliff x 10</text>
 
   <!-- spur -->
-  <polygon points="85,345 210,320 310,257 372,170 397,70 85,70" fill="#dccfb8" stroke="#a08c6c" stroke-width="1"/>
-  <line x1="240" y1="290" x2="330" y2="110" stroke="#7a6446" stroke-width="2" stroke-dasharray="8 4"/>
-  <text x="96" y="88" font-size="11" font-weight="bold" fill="#6a5436">SPUR, high ground to 36 m</text>
-  <text transform="translate(326,150) rotate(-63)" font-size="9" fill="#6a5436">crest 34 m</text>
+  <polygon points="85,395 197.5,345 347.5,145 385,70 85,70" fill="#d8c9a8" stroke="#a08c6c" stroke-width="1"/>
+  <line x1="197.5" y1="345" x2="347.5" y2="145" stroke="#4a4038" stroke-width="10" stroke-linecap="round"/>
+  <text transform="translate(262,262) rotate(-53)" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">THE WALL, crest 88 m</text>
+  <text x="96" y="88" font-size="11" font-weight="bold" fill="#6a5436">WARD PLATEAU, 70 m</text>
+  <text x="96" y="101" font-size="9" fill="#6a5436">above the tower deck (56), hidden behind the Wall</text>
 
   <!-- cave ravine -->
   <polygon points="110,726 270,726 297,695 245,670 235,665 135,682" fill="#cfcfcf" stroke="#777" stroke-width="1"/>
@@ -96,7 +101,7 @@
   <text x="1120" y="474" text-anchor="middle" font-size="9" fill="#444">goes quiet after the reveal</text>
 
   <!-- tower fire view -->
-  <polygon points="470,405 85,350 85,790" fill="#f08a3a" fill-opacity="0.09"/>
+  <polygon points="470,405 85,410 85,790" fill="#f08a3a" fill-opacity="0.09"/>
   <text x="95" y="600" font-size="9" fill="#a0521c">tower fire view W to SW, day 2 on if approved: glow and smoke over the far ridge, base hidden</text>
 
   <!-- old burn: view corridor to the front zone -->
@@ -129,7 +134,7 @@
     <circle cx="790" cy="550" r="50" fill="#d9d6ce"/>
     <circle cx="790" cy="550" r="15" fill="#8b8274"/>
     <circle cx="255" cy="455" r="31" fill="#cfdcc4"/>
-    <ellipse cx="105" cy="178" rx="25" ry="30" fill="#efe2cc"/>
+    <ellipse cx="105" cy="165" rx="25" ry="28" fill="#efe2cc"/>
     <circle cx="660" cy="690" r="19" fill="#f8f4e4" fill-opacity="0.6"/>
     <circle cx="320" cy="305" r="12" fill="#f8f4e4"/>
     <circle cx="380" cy="645" r="10" fill="#f8f4e4"/>
@@ -141,8 +146,6 @@
   </g>
   <circle cx="255" cy="455" r="20" fill="none" stroke="#6f8a5f" stroke-width="1" stroke-dasharray="3 3"/>
   <circle cx="300" cy="454" r="5" fill="#fbfbf6" stroke="#666" stroke-width="1.2"/>
-  <ellipse cx="157.5" cy="177.5" rx="37.5" ry="6" fill="#8b8274" stroke="#5a5348" stroke-width="1"/>
-  <text x="157.5" y="171" text-anchor="middle" font-size="8" fill="#5a5348" style="paint-order:stroke;stroke:#efe2cc;stroke-width:3px">stone screen, top 47</text>
   <line x1="765" y1="225" x2="765" y2="190" stroke="#8a6a4a" stroke-width="3"/>
 
   <!-- trails -->
@@ -170,33 +173,31 @@
     <path d="M380,645 C330,700 270,660 190,726"/>
   </g>
   <!-- Ward climb, night only -->
-  <polyline points="320,305 280,320 225,310 195,275 200,230 210,195 127.5,192.5 92.5,190" fill="none" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4" stroke-linejoin="round"/>
-  <line x1="122.5" y1="170" x2="122.5" y2="210" stroke="#7a6446" stroke-width="2" stroke-dasharray="3 2"/>
-  <text x="124" y="218" font-size="8" fill="#6a5436">low crest 38</text>
-  <rect x="88" y="186" width="6" height="8" fill="#5a5348"/>
-  <text x="86" y="204" font-size="8" fill="#5a5348" text-anchor="start">rock lip</text>
+  <polyline points="320,305 355,275 325,240 365,210 335,190 340,165 310,145 210,150 135,170 92.5,180" fill="none" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4" stroke-linejoin="round"/>
+  <circle cx="340" cy="165" r="6" fill="#fff" stroke="#7b2d6b" stroke-width="2"/>
+  <text x="350" y="160" font-size="9" font-weight="bold" fill="#7b2d6b" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">THE PASS, 78 m</text>
+  <text x="350" y="172" font-size="8" fill="#7b2d6b" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">turn: the tower below</text>
+  <line x1="122.5" y1="155" x2="122.5" y2="195" stroke="#7a6446" stroke-width="2" stroke-dasharray="3 2"/>
+  <text x="124" y="203" font-size="8" fill="#6a5436">low crest 72</text>
+  <rect x="88" y="176" width="6" height="8" fill="#5a5348"/>
+  <text x="86" y="194" font-size="8" fill="#5a5348" text-anchor="start">rock lip</text>
 
   <!-- blocked sightlines -->
-  <line x1="470" y1="405" x2="287.5" y2="286.8" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/>
-  <line x1="287.5" y1="286.8" x2="105" y2="155" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
-  <line x1="287.5" y1="286.8" x2="112.5" y2="172.5" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
-  <line x1="287.5" y1="286.8" x2="100" y2="165" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
+  <line x1="470" y1="405" x2="265" y2="250" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="265" y1="250" x2="105" y2="145" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
+  <line x1="265" y1="250" x2="112.5" y2="162.5" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
+  <line x1="265" y1="250" x2="100" y2="155" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
   <line x1="470" y1="405" x2="245" y2="670" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/>
   <line x1="245" y1="670" x2="190" y2="724" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
-  <text transform="translate(385,350) rotate(33)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">Ward hidden by the rock outcrop</text>
+  <text transform="translate(372,331) rotate(37)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">Ward hidden behind the Wall, about 17 m</text>
   <text transform="translate(360,540) rotate(-49.7)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">cave hidden by the rim</text>
 
-  <!-- Tor -->
-  <circle cx="250" cy="262" r="45" fill="#8b8274" stroke="#5a5348" stroke-width="1.5"/>
-  <text x="250" y="254" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">ROCK OUTCROP</text>
-  <text x="250" y="266" text-anchor="middle" font-size="9" fill="#fff">(the Tor)</text>
-  <text x="250" y="278" text-anchor="middle" font-size="9" fill="#fff">top 63.5 m</text>
 
   <!-- Ward stones -->
   <g fill="#3b3a44">
-    <rect x="100.5" y="150" width="9" height="10"/>
-    <rect x="95.5" y="160" width="9" height="10"/>
-    <rect x="108" y="167.5" width="9" height="10"/>
+    <rect x="100.5" y="140" width="9" height="10"/>
+    <rect x="95.5" y="150" width="9" height="10"/>
+    <rect x="108" y="157.5" width="9" height="10"/>
   </g>
 
   <!-- keeper's camp layout (as built) -->
@@ -204,8 +205,6 @@
   <circle cx="490" cy="412.5" r="3" fill="#d0602a"/>
   <rect x="511" y="388" width="5" height="5" fill="#555"/>
   <text x="519" y="397" font-size="7" fill="#333">cabin, spawn</text>
-  <!-- open build issue -->
-  <text x="575" y="496" font-size="8" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">crown crowds the Camp 2 cone (open)</text>
 
   <!-- tower -->
   <rect x="464" y="399" width="12" height="12" fill="#2c2c2c"/>
@@ -217,7 +216,7 @@
     <circle cx="565" cy="470" r="3.5"/><circle cx="785" cy="378" r="3.5"/><circle cx="880" cy="410" r="3.5"/><circle cx="730" cy="304" r="3.5"/>
     <circle cx="300" cy="458" r="3.5"/><circle cx="454" cy="601" r="3.5"/><circle cx="347" cy="607" r="3.5"/><circle cx="295" cy="534" r="3.5"/>
     <circle cx="327" cy="676" r="3.5"/><circle cx="265" cy="690" r="3.5"/><circle cx="401" cy="346" r="3.5"/><circle cx="322" cy="312" r="3.5"/>
-    <circle cx="265" cy="317.5" r="3.5"/><circle cx="210" cy="195" r="3.5"/>
+    <circle cx="325" cy="240" r="3.5"/><circle cx="310" cy="145" r="3.5"/>
   </g>
   <g fill="#3d7a2a">
     <circle cx="660" cy="413" r="5"/><circle cx="416" cy="411" r="5"/>
@@ -239,8 +238,8 @@
     <text x="257" y="686" text-anchor="end">coloured bulbs</text>
     <text x="409" y="342">burn-map board</text>
     <text x="330" y="320">plank bridge, creek water</text>
-    <text x="265" y="334" text-anchor="middle">rune post</text>
-    <text x="216" y="190">last bend, silence</text>
+    <text x="319" y="236" text-anchor="end">rune post</text>
+    <text x="304" y="140" text-anchor="end">rim, silence</text>
     <text x="668" y="430" fill="#3d7a2a">forage A</text>
     <text x="424" y="424" fill="#3d7a2a">forage B</text>
     <text x="307" y="444">the Snag, 54 m (cap exemption)</text>
@@ -263,8 +262,8 @@
     <text x="926" y="385" font-size="9">T</text>
   </g>
   <g font-size="10" font-weight="bold" fill="#7b2d6b" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">
-    <text x="345" y="236">Ward climb 157 m / 63 s</text>
-    <text x="345" y="249">night only</text>
+    <text x="372" y="262">Ward climb about 380 m / 152 s</text>
+    <text x="372" y="275">up the Wall, night only</text>
   </g>
 
   <!-- place labels -->
@@ -291,8 +290,8 @@
     <text x="218" y="451" text-anchor="end" font-size="9">hollow -4 m, green-glass lantern</text>
     <text x="218" y="463" text-anchor="end" font-size="9">sit at the fire (Warmth)</text>
 
-    <text x="150" y="128" font-size="11" font-weight="bold">WARD LEDGE</text>
-    <text x="150" y="140" font-size="9">36 m, night only, the reveal</text>
+    <text x="175" y="122" font-size="11" font-weight="bold">WARD STONES</text>
+    <text x="175" y="134" font-size="9">70 m, tops 82, facing the fire</text>
 
     <text x="350" y="772" font-size="11" font-weight="bold">CULTIST CAVE</text>
     <text x="350" y="784" font-size="9">mouth in the ravine -6 m, not checked</text>
@@ -332,13 +331,13 @@
     <circle cx="370" cy="962" r="5" fill="#3d7a2a"/><text x="396" y="966">forage patch (Food, about 60 percent)</text>
 
     <polygon points="640,856 680,850 680,872" fill="#f2cf3c" fill-opacity="0.45" stroke="#c9a41c" stroke-width="0.6"/><text x="686" y="866">tower sightline to a checked location</text>
-    <line x1="640" y1="886" x2="680" y2="886" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/><text x="686" y="890">tower line blocked (Ward by the rock outcrop, cave by the rim)</text>
-    <rect x="640" y="900" width="40" height="12" fill="#dccfb8" stroke="#a08c6c"/><text x="686" y="910">spur high ground</text>
+    <line x1="640" y1="886" x2="680" y2="886" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/><text x="686" y="890">tower line blocked (Ward by the Wall, cave by the rim)</text>
+    <rect x="640" y="900" width="40" height="12" fill="#d8c9a8" stroke="#a08c6c"/><text x="686" y="910">Ward plateau (70 m); dark band: the Wall (crest 88)</text>
     <rect x="640" y="920" width="40" height="12" fill="#cfcfcf" stroke="#777"/><text x="686" y="930">cave ravine</text>
     <rect x="640" y="940" width="40" height="12" fill="#e4e1db" stroke="#8c877e"/><text x="686" y="950">front zone, inside the gate</text>
     <rect x="640" y="960" width="40" height="12" fill="url(#fire)"/><text x="686" y="970">fire direction (west)</text>
 
-    <text x="60" y="990" fill="#444">Camp to the Ward at night: 253 m, 101 s. Camp to the office: 266 m. Tower: knoll 15, deck 56, spiral stair 22.4 s up. Giant tops at most 50 m absolute. Walk times are information, not a budget. Day 1: no fire, everything ordinary until the Ward.</text>
+    <text x="60" y="990" fill="#444">Camp to the Ward at night: about 476 m, 190 s. Camp to the office: 266 m. Tower: knoll 15, deck 56, spiral stair 22.4 s up. Giant tops at most 50 m absolute. Walk times are information, not a budget. Day 1: no fire, everything ordinary until the Ward.</text>
   </g>
 
   <!-- cave section, unfolded along the path: X = 180 + 7 per m along the path, Y = 1040 at 0 m, 5 px per m down -->
