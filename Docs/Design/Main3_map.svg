@@ -8,7 +8,7 @@
 
   <!-- background and title -->
   <rect x="0" y="0" width="1190" height="1000" fill="#f6f3ec"/>
-  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 7, 2026-09-29, Sable. Nothing here is decided.</text>
+  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 8, 2026-09-29, Sable. Nothing here is decided.</text>
   <text x="60" y="47" font-size="11" fill="#444">400 x 300 m at 2.5 px per m. Origin south-west, x east, z north. Heights absolute. Walk times at 2.5 m/s. The loop is in DailyLoop.md.</text>
 
   <!-- map area -->
@@ -45,6 +45,8 @@
   <rect x="990" y="313" width="20" height="14" fill="#b98a4a" stroke="#444"/>
   <text x="1000" y="342" text-anchor="middle" font-size="9" font-weight="bold" fill="#222">STORE</text>
   <line x1="1017" y1="395" x2="1050" y2="395" stroke="#9a958c" stroke-width="8"/>
+  <rect x="1009" y="376" width="12" height="7" fill="#5a6f86" stroke="#333"/>
+  <text x="1015" y="372" text-anchor="middle" font-size="7" fill="#333">resident's car</text>
   <text x="1034" y="420" text-anchor="middle" font-size="8" fill="#555">drive</text>
   <text x="980" y="520" text-anchor="middle" font-size="11" font-weight="bold" fill="#555">FRONT ZONE</text>
   <text x="980" y="534" text-anchor="middle" font-size="9" fill="#555">inside the gate</text>
@@ -65,6 +67,11 @@
   <text x="1120" y="438" text-anchor="middle" font-size="9" fill="#444">from off-map,</text>
   <text x="1120" y="450" text-anchor="middle" font-size="9" fill="#444">never walked</text>
   <polygon points="1186,395 1174,388 1174,402" fill="#444"/>
+  <path d="M1100,387 L1155,318" stroke="#8f8a81" stroke-width="10" fill="none" stroke-dasharray="8 4"/>
+  <rect x="1138" y="326" width="24" height="5" fill="#c0282d" transform="rotate(-51 1150 328)"/>
+  <text x="1120" y="290" text-anchor="middle" font-size="9" font-weight="bold" fill="#7b2d6b">2nd road? (proposal)</text>
+  <text x="1120" y="302" text-anchor="middle" font-size="8" fill="#7b2d6b">to a blocked-off camp,</text>
+  <text x="1120" y="312" text-anchor="middle" font-size="8" fill="#7b2d6b">never seen; gate checks</text>
   <text x="1120" y="462" text-anchor="middle" font-size="9" fill="#444">day 1: distant traffic</text>
   <text x="1120" y="474" text-anchor="middle" font-size="9" fill="#444">goes quiet after the reveal</text>
 
@@ -108,7 +115,7 @@
     <circle cx="380" cy="645" r="10" fill="#f8f4e4"/>
     <circle cx="715" cy="390" r="8" fill="#f8f4e4"/>
     <circle cx="910" cy="395" r="8" fill="#f8f4e4"/>
-    <circle cx="190" cy="735" r="12" fill="#9a9a9a"/>
+    <circle cx="190" cy="735" r="12" fill="#c24fc9"/>
   </g>
   <circle cx="255" cy="455" r="20" fill="none" stroke="#6f8a5f" stroke-width="1" stroke-dasharray="3 3"/>
   <circle cx="285" cy="455" r="5" fill="#fbfbf6" stroke="#666" stroke-width="1.2"/>
@@ -190,8 +197,8 @@
     <text x="446" y="597" text-anchor="end">truck</text>
     <text x="355" y="603">footbridge</text>
     <text x="287" y="530" text-anchor="end">camper trailer</text>
-    <text x="335" y="690">rope rail, chant 1</text>
-    <text x="257" y="686" text-anchor="end">charms</text>
+    <text x="335" y="690">rope rail, music 1</text>
+    <text x="257" y="686" text-anchor="end">coloured bulbs</text>
     <text x="409" y="342">burn-map board</text>
     <text x="330" y="320">plank bridge, creek water</text>
     <text x="296" y="207">rune post</text>
@@ -248,11 +255,11 @@
     <text x="150" y="140" font-size="9">36 m, night only, the reveal</text>
 
     <text x="190" y="790" font-size="11" font-weight="bold">CULTIST CAVE</text>
-    <text x="190" y="802" font-size="9">ravine -6 m, the grey cold place, not checked</text>
+    <text x="190" y="802" font-size="9">ravine -6 m, rave lights and music, not checked</text>
   </g>
   <g fill="#222" font-size="9" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">
     <text x="304" y="296" text-anchor="end" font-weight="bold">J, pale cairn</text>
-    <text x="392" y="660">W1, chant spot 2</text>
+    <text x="392" y="660">W1, music spot 2</text>
     <text x="700" y="382" text-anchor="end" font-weight="bold">Jg</text>
     <text x="547" y="592">pump</text>
   </g>

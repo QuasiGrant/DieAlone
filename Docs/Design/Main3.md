@@ -1,6 +1,6 @@
 # Main3 paper brief
 
-**DRAFT, revision 7, 2026-09-29, Sable. Nothing here is decided.** The loop lives in Docs/Design/DailyLoop.md and events in Docs/Design/Events.md; neither is repeated here. Map: Docs/Design/Main3_map.svg. Numbers provisional until the Milestone 7 simulator.
+**DRAFT, revision 8, 2026-09-29, Sable. Revision 7 approved pending resident placement and a possible second road (DECISIONS 2026-09-29); this revision places the residents. Nothing else here is decided.** The loop lives in Docs/Design/DailyLoop.md and events in Docs/Design/Events.md; neither is repeated here. Map: Docs/Design/Main3_map.svg. Numbers provisional until the Milestone 7 simulator.
 
 Coordinates in metres, origin south-west, x east, z north. Heights absolute (metres above map base 0). Walk times at 2.5 m/s are information for pacing and events; there is no day time budget (DECISIONS 2026-09-29).
 
@@ -33,8 +33,8 @@ Six locations with one resident each, plus the keeper's camp and the Ward. Every
 | Camp 1 | (282, 238), ground 5 m | big by kit, one tent: a sprawling workshop camp, 60 m, pale harsh light | cookfire meal (Food, some days); talk; events | a lashed timber spar 24 m with a string of bulbs | pots |
 | Camp 2 | (292, 108), ground 4 m | tiny: one tent on top of a 20 m granite stack in a 40 m boulder field, ladder up, dim amber tent lamp | rain barrel (Water, some days); talk; events | the granite stack | wind |
 | Camp 3 | (78, 146), hollow floor -4 m | sunk 8 m below its rim, 25 m across, dense, green-glass lantern | sit at the fire (Warmth, some days); talk; events | the Snag: a bleached dead giant on the east rim, top 54 m | creek through the hollow, a low fire |
-| Office | (360, 200), front zone, ground 3 m | prefab ranger office on the north side of the lot; store 16 m east at (376, 200) | talk; events; store (Food) | the whole parking lot, office, store and mast (30 m, red lamp), in a wide view across the old burn | mains hum; radio with ordinary chatter on day 1, going to static after the reveal |
-| Cultist cave | mouth (52, 34), ravine floor -6 m, mouth 4 m tall | the one cold place: grey rock, no sunset colour | placeholder (story session); its own events | hidden (5.5) | chant from night 1, heard only at two trail spots |
+| Office | (360, 200), front zone, ground 3 m | prefab ranger office on the north side of the lot; store 16 m east at (376, 200). This location's resident lives around the lot where the drive starts: a car parked by the drive at (382, 172) | talk; events; store (Food) | the whole parking lot, office, store and mast (30 m, red lamp), in a wide view across the old burn | mains hum; radio with ordinary chatter on day 1, going to static after the reveal |
+| Cultist cave | mouth (52, 34), ravine floor -6 m, mouth 4 m tall | weird on purpose (DECISIONS 2026-09-29): rave lights and music inside, busting the grim cult cave trope; the rock outside stays grey, so the light spilling from the mouth is the surprise | talk (Social); its own events; story session | hidden (5.5), never checked | music from night 1, heard only at two trail spots, rising down the spur (Hollis to recast the chant as music) |
 | Ward ledge | (32, 258), ground 36 m | stones on the cliff edge facing west, 25 m clearing | night only: the Ward screen | hidden (5.4) | silence from the last bend |
 
 1. Event states change a landmark, never remove it: bulbs out on the Camp 1 spar, the Camp 2 tent lamp dark, the Snag's lantern missing, the office lamp steady instead of blinking. Details are Vesper's and Pim's.
@@ -46,7 +46,7 @@ Six locations with one resident each, plus the keeper's camp and the Ward. Every
 1. The strip inside the gate, x 340 to 396. The only man-made ground.
 2. Road: outside the gate, off-map to the east. Day 1: ordinary distant traffic. After the night 1 reveal it goes quiet as WARD drops (DailyLoop.md 6).
 3. Gate (396, 170), chained. Gravel drive 10 m to the lot.
-4. Parking lot 30 x 40 m centred (368, 170). Trailhead T at its west side (340, 170).
+4. Parking lot 30 x 40 m centred (368, 170). Trailhead T at its west side (340, 170). The front-zone resident's car stands by the drive at (382, 172); where they sleep (car, office back room, a small trailer by the lot) is for the story session.
 5. Office (360, 200) and store (376, 200), side by side on the lot's north side, 16 m apart. Store: small, unstaffed, a lit cooler sign.
 6. Sound: mains hum here and nowhere else.
 
@@ -67,12 +67,12 @@ Shapes differ on purpose: winding trails, a west loop, dead-end spurs, and a str
 | Camp to Camp 3 | winding descent | 126 | 50 | 40: forage patch B; 90: log steps down the rim (STAIRS RULE ramp) |
 | Pump to W1 | shore path | 80 | 32 | 40: washed-out truck; 80: stepping stones at the creek inlet |
 | W1 to Camp 3 | trail | 114 | 46 | 25: footbridge; 70: wrecked camper trailer |
-| W1 to cave | dead-end spur, winding down | 109 | 44 | 36: rope handrail, chant spot 1; 72: charms on a dead branch (not on day 1); 109: cave mouth |
+| W1 to cave | dead-end spur, winding down | 109 | 44 | 36: rope handrail, music spot 1; 72: a string of coloured bulbs on a dead branch (not on day 1); 109: cave mouth, coloured light spilling out |
 | Camp to J | trail | 96 | 38 | 48: burn-map board; 90: plank bridge (creek water) |
 | J to Ward | switchbacks, night only | 130 | 52 | 0: pale cairn and chain; 50: rune post; 90: Tor base; 110: last bend, silence; 130: stones |
 
 1. Two points of interest are giant trees (Hollow Giant, Gate Tree), plus the Snag landmark. All three are scene objects with mesh colliders (Rook).
-2. **The cave spur is unsigned at W1**, the one exception to the junction pass check (DECISIONS 2026-09-29). Chant spot 2 is W1 itself, from night 1 on; on day 1 the cave is not heard.
+2. **The cave spur is unsigned at W1**, the one exception to the junction pass check (DECISIONS 2026-09-29). Music spot 2 is W1 itself, from night 1 on; on day 1 the cave is not heard.
 3. Every leg walked eastward has one bend turning the player west. From day 2 these are glimpses of the glow (DECISIONS 2026-09-29); on day 1 they show only the far ridge. The fire is loudest at the three west glimpses: W1, the Camp 3 rim, the Camp to J bend (Hollis).
 4. Creek: spring by J, through the Camp 3 hollow, to the lake inlet at W1.
 5. Loops: east ring (Camp, pump, boathouse, Camp 2, T, Jg, Camp) 583 m, 233 s; west loop (Camp, pump, W1, Camp 3, Camp) 400 m, 160 s. Camp to the office 270 m, 108 s. Camp to the Ward by J 226 m, 90 s.
@@ -111,20 +111,24 @@ Every trail leaves its clearing aimed at the next landmark for its first 30 m. D
 1. Sizes: 60 m (Camp 1), 40 m boulder field (Camp 2), 36 m (camp), 25 m sunken (Camp 3), a 110 m lake, a lot.
 2. Distances from camp: 80 m (pump) to 270 m (office).
 3. Heights: -6 m (cave), -4 m (hollow), 8 m (knoll), 24 m (stack top), 36 m (Ward).
-4. Light: warm (camp), pale harsh (Camp 1), dim amber (Camp 2), green glass (Camp 3), red lamp and sodium (office), grey (cave).
+4. Light: warm (camp), pale harsh (Camp 1), dim amber (Camp 2), green glass (Camp 3), red lamp and sodium (office), rave colour spilling from grey rock (cave).
 5. Actions: each camp gives a different need (Food, Water, Warmth). The office has the store. The lake has the sure water.
 
 ## 7. Reviews needed
 
 - Vesper: section 3 feel and light, the two poles, event states, the day 1 fire-off look.
 - Pim: junction markers 4.1, lectern, report box, the bunk-counts-as-Give-nothing rule (DailyLoop.md 2.5).
-- Hollis: section 3 sound column, the road over the run, chant volumes, the fire's day 1 silence.
+- Hollis: section 3 sound column, the road over the run, the cave music at two volumes, the fire's day 1 silence.
 - Quill: placeholders only; Camp 1 as one resident with a lot of kit.
 - Marlow: the trail rule, the 30 s check, chase legs 4.6.
 - Rook: W-1 and C-1 grid checks, meshes for the Tor, stack and cave mouth, fog plan, tower cab from junctions, the day 1 fire-off state.
 
 ## 8. Open questions
 
-The map raises no new question. Grant's questions are in DailyLoop.md 9.
+Grant's loop questions are in DailyLoop.md 9. One map question:
+
+1. **Second road (proposal):** beyond the gate, a second road branches off the main road to a blocked-off camp the player never sees. Arrivals come up the road to the gate, where the office resident's document-check minigame runs (Papers, Please at the gate), and the gate turns some away down the second road. It stays off-map; the player sees only its start and a barrier from the gate. Add it?
+
+Residents (DECISIONS 2026-09-29): one at the lake, one at each of the three campsites, one in the cultist cave, and one around the parking lot where the drive starts. No names or story in this file.
 
 Sable
