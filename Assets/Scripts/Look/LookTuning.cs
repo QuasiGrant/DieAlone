@@ -67,6 +67,16 @@ public class LookTuning : ScriptableObject
     [Tooltip("Higher is a tighter glow around the sun.")]
     [Range(2f, 200f)] public float sunGlowSize = 24f;
 
+    [Header("Sun (day looks; read by the dev look preview, scenes keep their own light)")]
+    [Tooltip("Colour of the fixed sun.")]
+    public Color sunColor = new Color(1.0f, 0.55f, 0.25f);
+    [Tooltip("Sun height above the horizon in degrees.")]
+    [Range(0f, 90f)] public float sunElevation = 6f;
+    [Tooltip("Compass bearing of the sun in degrees: 0 north, 90 east, 180 south, 270 west.")]
+    [Range(0f, 360f)] public float sunBearing = 270f;
+    [Tooltip("Sun light intensity.")]
+    [Range(0f, 4f)] public float sunIntensity = 1.2f;
+
     [Header("Horizon fire")]
     public Color fireGlowColor = new Color(1.0f, 0.42f, 0.10f);
     [Tooltip("Brightness of the glow strips along the burning ridge. 0 hides them.")]

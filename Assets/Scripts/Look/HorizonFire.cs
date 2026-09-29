@@ -30,6 +30,7 @@ public class HorizonFire : MonoBehaviour
 
     private void Update()
     {
+        var tuning = LookOverride.Resolve(this.tuning);
         if (tuning == null) return;
         float t = Time.time * tuning.fireFlickerSpeed;
         for (int i = 0; i < glowStrips.Length; i++)

@@ -780,6 +780,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5622953318322419494}
+  - component: {fileID: 8691723719342412934}
   m_Layer: 0
   m_Name: GameSystems
   m_TagString: Untagged
@@ -806,6 +807,29 @@ Transform:
   - {fileID: 4878999312675378607}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8691723719342412934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3707874514029442330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7250dd692ade7984291a1473a0ee3144, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: DieAlone::LookPreview
+  looks:
+  - label: Current
+    tuning: {fileID: 0}
+    daylight: 0
+  - label: Day one
+    tuning: {fileID: 11400000, guid: 2ae1596d65bf9a641881f4975e668a15, type: 2}
+    daylight: 1
+  - label: Day two
+    tuning: {fileID: 11400000, guid: abd1632e3aeef8a4eb1514e5234a8f73, type: 2}
+    daylight: 1
+  skyMaterial: {fileID: 2100000, guid: 721ffb968b88cd94d96a758bcbbabb0b, type: 2}
 --- !u!1 &3815159851938191409
 GameObject:
   m_ObjectHideFlags: 0
@@ -1253,6 +1277,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LookEnvironment
   tuning: {fileID: 11400000, guid: 4b4b646b05244b54780bf9cb1ce01712, type: 2}
   targetCamera: {fileID: 0}
+  fogSet: 0
+  skyMaterial: {fileID: 0}
 --- !u!114 &5099930884943251396
 MonoBehaviour:
   m_ObjectHideFlags: 0

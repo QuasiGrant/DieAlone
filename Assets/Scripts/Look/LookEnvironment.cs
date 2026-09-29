@@ -39,9 +39,11 @@ public class LookEnvironment : MonoBehaviour
 
     private void Apply()
     {
+        var tuning = LookOverride.Resolve(this.tuning);
         if (tuning == null) return;
         ApplySmokeGlobals(tuning);
-        bool sunset = fogSet == FogSet.Sunset;
+        bool sunset = fogSet == FogSet.Sunset || LookOverride.ForceSunset;
+        var skyMaterial = LookOverride.ForceSunset && LookOverride.SkyMaterial != null ? LookOverride.SkyMaterial : this.skyMaterial;
         Color color = sunset ? tuning.sunsetFogColor : tuning.fogColor;
         float start = sunset ? tuning.sunsetFogStart : tuning.fogStart;
         float end = sunset ? tuning.sunsetFogEnd : tuning.fogEnd;

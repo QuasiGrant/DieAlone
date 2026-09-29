@@ -26,9 +26,10 @@ public class LookFilterFeature : ScriptableRendererFeature
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
     {
-        if (material == null || tuning == null || !tuning.filterEnabled) return;
+        var look = LookOverride.Resolve(tuning);
+        if (material == null || look == null || !look.filterEnabled) return;
         if (renderingData.cameraData.cameraType != CameraType.Game) return;
-        pass.Setup(material, tuning);
+        pass.Setup(material, look);
         renderer.EnqueuePass(pass);
     }
 

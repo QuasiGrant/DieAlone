@@ -112,3 +112,10 @@ Copied from the scratchpad on 2026-09-27. Later scripts supersede earlier ones f
 | fix_swap_keywords_7_6.cs | One-off cleanup of materials swapped by the first run (stale keywords, detail maps, flame emission). |
 | list_material_shaders.cs | Counts every material by shader; done-check is pack shaders = 0 and broken shaders = 0. |
 | shoot_shader_swap_7_6.cs | One shot per swapped group in a temporary additive scene, closed unsaved. |
+
+## Look preview (task 7.7)
+
+| File | Builds or does |
+|---|---|
+| create_look_previews_7_7.cs | LookTuning_DayOne and LookTuning_DayTwo from Style.md (copies of LookTuning.asset, which stays untouched) and the dev-only LookPreview on GameSystems. |
+| shoot_look_preview_7_7.cs | Graybox from the three look spots in the active preview look, then selects the next; run once per look in Play mode. Writes Docs/Look/Preview. |
