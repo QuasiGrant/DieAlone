@@ -119,3 +119,5 @@
 - 2026-09-29: One resident lives around the parking lot, where the drive starts. The three campsites hold one resident each.
 - 2026-09-29: The cultist cave is weird on purpose: rave lights, music, busting the trope of the grim cult cave.
 - 2026-09-29: Endings get their own sessions later, once more of the story is worked out.
+- 2026-09-29: Hollis's slow-burn sound ramp is OK for now. When sounds drop out, creepy sounds replace them; the world does not go quiet.
+- 2026-09-29: Sound and music sources: our own recordings, Grant's music from the book, CC0, CC-BY or other licences that allow commercial use with credit, packs Grant owns, and Grant's Envato Elements account. Every file is listed in Assets/SOURCES.md with its licence, and credited in the game where the licence asks.
