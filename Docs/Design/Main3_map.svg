@@ -8,7 +8,7 @@
 
   <!-- background and title -->
   <rect x="0" y="0" width="1190" height="1170" fill="#f6f3ec"/>
-  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 10, 2026-09-29, Sable. Nothing here is decided.</text>
+  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 11, 2026-09-29, Sable. Nothing here is decided.</text>
   <text x="60" y="47" font-size="11" fill="#444">400 x 300 m at 2.5 px per m. Origin south-west, x east, z north. Heights absolute. Walk times at 2.5 m/s. The loop is in DailyLoop.md.</text>
 
   <!-- map area -->
@@ -32,6 +32,8 @@
   <polygon points="110,770 260,757 297,695 245,670 235,665 135,682" fill="#cfcfcf" stroke="#777" stroke-width="1"/>
   <polyline points="135,682 235,665 245,670 297,695" fill="none" stroke="#444" stroke-width="3"/>
   <text x="140" y="700" font-size="9" fill="#444">rim 14 m</text>
+  <circle cx="245" cy="670" r="4" fill="#444"/>
+  <text x="252" y="664" font-size="9" font-weight="bold" fill="#444">rim 18 m here, (74, 60)</text>
 
   <!-- front zone: inside the gate -->
   <rect x="910" y="70" width="140" height="750" fill="#e4e1db"/>
@@ -256,6 +258,7 @@
     <text x="545" y="660" font-size="12" font-weight="bold">LAKE</text>
     <text x="545" y="674" font-size="9">pump on the dock (Water)</text>
     <text x="545" y="686" font-size="9">resident: boathouse on stilts</text>
+    <text x="545" y="698" font-size="9">surface -5.5, bed -8, shore -4.5</text>
 
     <text x="765" y="215" font-size="12" font-weight="bold">CAMP 1, big by kit</text>
     <text x="765" y="229" font-size="9">one tent, sprawling workshop, 60 m</text>
@@ -264,7 +267,7 @@
 
     <text x="845" y="600" text-anchor="start" font-size="12" font-weight="bold">CAMP 2, tiny</text>
     <text x="845" y="613" text-anchor="start" font-size="9">tent on a 20 m granite stack</text>
-    <text x="845" y="625" text-anchor="start" font-size="9">amber lamp, rain barrel</text>
+    <text x="845" y="625" text-anchor="start" font-size="9">cold white lamp, rain barrel</text>
 
     <text x="218" y="438" text-anchor="end" font-size="12" font-weight="bold">CAMP 3, sunken</text>
     <text x="218" y="451" text-anchor="end" font-size="9">hollow -4 m, green-glass lantern</text>

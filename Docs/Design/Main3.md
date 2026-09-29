@@ -1,6 +1,6 @@
 # Main3 paper brief
 
-**DRAFT, revision 10, 2026-09-29, Sable. Revision 7 approved pending resident placement (DECISIONS 2026-09-29). Revision 9 places the residents, the gate booth (option B) and the cave interior. Nothing else here is decided.** The loop lives in Docs/Design/DailyLoop.md and events in Docs/Design/Events.md; neither is repeated here. Map: Docs/Design/Main3_map.svg. Numbers provisional until the Milestone 7 simulator.
+**DRAFT, revision 11, 2026-09-29, Sable. Revision 7 approved pending resident placement (DECISIONS 2026-09-29). Revision 9 places the residents, the gate booth (option B) and the cave interior. Nothing else here is decided.** The loop lives in Docs/Design/DailyLoop.md and events in Docs/Design/Events.md; neither is repeated here. Map: Docs/Design/Main3_map.svg. Numbers provisional until the Milestone 7 simulator.
 
 Coordinates in metres, origin south-west, x east, z north. Heights absolute (metres above map base 0). Walk times at 2.5 m/s are information for pacing and events; there is no day time budget (DECISIONS 2026-09-29).
 
@@ -22,6 +22,42 @@ Coordinates in metres, origin south-west, x east, z north. Heights absolute (met
 9. Routes stay on trails (DailyLoop.md 1.2).
 10. **The old burn** (DECISIONS 2026-09-29: the tower sees more of the office and lot). A years-old burn scar runs from the foot of the knoll east to the front zone: 30 m wide at the knoll (x 185, z 151 to 181), widening to 70 m at the front zone (x 340, z 143 to 213). No giants and no mid canopy in it: dense young regrowth 4 to 6 m tall, 4 m in the last 40 m before the front zone. The thicket is impassable off the trails, so it opens the view, not a shortcut. An old burn under a lookout is ordinary on day 1.
 
+### 2.1 Ground heights (absolute, metres; accepted from Rook's proposal with the rim change in 5.5)
+
+Base ground is 0 in the south-west, rolling up to 5 in the north-east. Between named points the blockout interpolates smoothly.
+
+| Point | Position | Ground m | Notes |
+|---|---|---|---|
+| Keeper's camp, knoll top | (170, 160) | 8 | tower base (164, 166) at 8 |
+| Lake water surface | (190, 60) | -5.5 | 110 x 55 m |
+| Lake bed | deepest, centre | -8 | 2.5 m deep, shelving from the shore |
+| Lake shore line | all round | -4.5 | banks rise to 0 within 15 m of the water |
+| Pump and dock root | (190, 96) | -4.5 | dock deck -4.8, 0.7 m above the water |
+| Boathouse | (240, 52) | shore -4.5 | on stilts over the water, floor -3.8 |
+| W1, west shore junction | (128, 70) | -4.5 | creek inlet beside it; stepping stones -5.3 |
+| Sill between lake and ravine | x 100 to 120, z 45 to 65 | -3 or higher | keeps the lake from draining into the ravine |
+| Creek spring | by J, (100, 215) | 10 | |
+| Plank bridge on Camp to J | (110, 200) | 9 | creek bed 8 |
+| Camp 3 hollow floor | (78, 146) | -4 | creek runs through it |
+| Camp 3 rim | ring 12 to 20 m out | 4 | 8 m above the floor |
+| The Snag | east rim (90, 146) | 4 | 50 m dead giant, top 54 |
+| Creek | J, hollow, inlet | 10, -4, -5.5 | falls 14 m in about 65 m above the hollow (cascades), then 1.5 m in about 90 m to the lake |
+| J, Ward junction | (104, 206) | 10 | |
+| Spur crest | (35, 140) to (62, 195) | 34 | |
+| The Tor (rock outcrop) | (76, 223) | base 34, top 58 | |
+| Ward ledge | (32, 258) | 36 | |
+| Cave ravine floor and mouth floor | (52, 34) | -6 | mouth 4 m tall, top -2 |
+| Ravine rim, north side | along the rim line | 14 | 18 near (74, 60), see 5.5 |
+| Surface over the cave interior | x 44 to 89, z 3 to 22 | 0 | |
+| Hollow Giant | (202, 140) | 6 | |
+| Forage patch A / B | on Camp to Jg at 95 m / Camp to Camp 3 at 40 m | 5 / 6 | |
+| Jg | (262, 172) | 5 | in the old burn |
+| Old burn | knoll foot to front zone | 8 falling to 3 | |
+| Gate Tree | (290, 176) | 4 | stub 15 m |
+| Camp 1 | (282, 238) | 5 | |
+| Camp 2 boulder field / stack top | (292, 108) | 4 / 24 | |
+| Front zone (lot, office, store, T, drive, booth, turning circle, spur, loop) | x 340 to 396 | 3 | flat |
+
 ## 3. Places
 
 Six locations with one resident each, plus the keeper's camp and the Ward. Everything reads ordinary on day 1 (DailyLoop.md 6). Sounds heard within 35 m (camp 40 m) unless noted; Hollis owns the sound column.
@@ -29,18 +65,19 @@ Six locations with one resident each, plus the keeper's camp and the Ward. Every
 | Place | Position, ground | Size and feel | Actions (need) | Seen from tower as | Sound |
 |---|---|---|---|---|---|
 | Keeper's camp | (170, 160), knoll 8 m | 36 m clearing, warm light | tower and lectern; stove (Warmth) | the tower itself | wind vane squeal |
-| Lake | water (190, 60), 110 x 55 m; pump on the north dock (190, 96); resident's boathouse on stilts (240, 52) | the one wide open sky | pump (Water); talk; events | open water, boathouse tin roof | lapping, dock chain |
+| Lake | water (190, 60), 110 x 55 m, surface -5.5, bed -8, shore -4.5 (2.1); pump on the north dock (190, 96); resident's boathouse on stilts (240, 52) | the one wide open sky | pump (Water); talk; events | open water, boathouse tin roof | lapping, dock chain |
 | Camp 1 | (282, 238), ground 5 m | big by kit, one tent: a sprawling workshop camp, 60 m, pale harsh light | cookfire meal (Food, some days); talk; events | a lashed timber spar 24 m with a string of bulbs | pots |
-| Camp 2 | (292, 108), ground 4 m | tiny: one tent on top of a 20 m granite stack in a 40 m boulder field, ladder up, dim amber tent lamp | rain barrel (Water, some days); talk; events | the granite stack | wind |
-| Camp 3 | (78, 146), hollow floor -4 m | sunk 8 m below its rim, 25 m across, dense, green-glass lantern | sit at the fire (Warmth, some days); talk; events | the Snag: a bleached dead giant on the east rim, top 54 m | creek through the hollow, a low fire |
+| Camp 2 | (292, 108), ground 4 m | tiny: one tent on top of a 20 m granite stack in a 40 m boulder field, ladder up, cold white tent lamp (Vesper) | rain barrel (Water, some days); talk; events | the granite stack | wind |
+| Camp 3 | (78, 146), hollow floor -4 m | sunk 8 m below its rim, 25 m across, dense, green-glass lantern | sit at the fire (Warmth, some days); talk; events | the Snag: a bleached dead giant on the east rim (ground 4, 50 m tall), top 54 m | creek through the hollow, a low fire |
 | Office | (350, 200), front zone, ground 3 m | prefab ranger office on the north side of the lot; store 16 m east at (366, 200). This location's resident lives around the lot where the drive starts: a car in the lot's north-east corner at (370, 178). Gate booth and closed campground: 3.2 | talk (Social, starts his gate minigame); events; store (Food) | the whole parking lot, office, store and mast (30 m, red lamp), in a wide view across the old burn | mains hum; radio with ordinary chatter on day 1, going to static after the reveal |
 | Cultist cave | mouth (52, 34), ravine floor -6 m, mouth 4 m tall | weird on purpose (DECISIONS 2026-09-29): rave lights and music inside, busting the grim cult cave trope; the rock outside stays grey, so the light spilling up the descent is the surprise. Interior: 3.3 | talk (Social); its own events; story session | hidden (5.5), never checked | chant from night 1, heard at two trail spots; inside it slowly turns into bass on the way down (DECISIONS 2026-09-29) |
 | Ward ledge | (32, 258), ground 36 m | stones on the cliff edge facing west, 25 m clearing | night only: the Ward screen | hidden (5.4) | silence from the last bend |
 
 1. Event states change a landmark, never remove it: bulbs out on the Camp 1 spar, the Camp 2 tent lamp dark, the Snag's lantern missing, the office lamp steady instead of blinking. Details are Vesper's and Pim's.
 2. Poles: only two, and they differ: Camp 1's lashed timber spar with bulbs, the office's steel lattice mast with a red lamp. Camp 2 and Camp 3 use rock and a dead tree.
-3. Resident hooks and roles: placeholders for the story session. Nothing that leans toward the ending goes in this file.
-4. The Tor, the granite stack and the cave mouth are meshes, not terrain (Rook).
+3. **Vesper's proposal, for Rook to confirm buildable:** the tower gets timber legs, so the office mast is the only steel lattice on the map.
+4. Resident hooks and roles: placeholders for the story session. Nothing that leans toward the ending goes in this file.
+5. The Tor, the granite stack and the cave mouth are meshes, not terrain (Rook).
 
 ### 3.1 Front zone
 1. The strip inside the gate, x 340 to 396. The only man-made ground. The Wardkeeper never goes beyond the fence (DECISIONS 2026-09-29).
@@ -119,15 +156,15 @@ Every trail leaves its clearing aimed at the next landmark for its first 30 m. D
 
 | Place | Bearing | Dist m | Target (abs) | Margin m |
 |---|---|---|---|---|
-| Lake | SSE | 137 | far water, boathouse roof | 5.7 |
+| Lake | SSE | 137 | far water at -5.5, over bank crowns at about 16 (ground -2 plus 18); boathouse roof | 5.9 |
 | Camp 1 | ENE | 138 | spar top 29 | 9.2 |
 | Camp 2 | ESE | 141 | granite stack top 24, boulder field r 20 | 3.8 |
 | Camp 3 | W | 88 | Snag top 54 | 4.0 over every giant cap |
 | Office and lot | E, 75 to 95 | 189 to 212 | lot surface from its west edge, cars, office, store, mast | 2.6 over the 4 m regrowth at the lot edge; buildings and mast far more |
 
 4. **Ward hidden:** the Tor (a rock outcrop; "tor" is the plain word for a bare rock hill), a granite dome on the crest at (76, 223), radius 18 m, base 34 m, top 58 m. The line from the deck centre to the stone tops (48 m) crosses it 6.4 m under the top, about 5.4 m at the outer stone edges.
-5. **Cave hidden:** the ravine rim, 14 m, north of the mouth (mouth top -2 m). The line from the deck centre crosses the rim 8.3 m under it.
-6. **Recheck after the old burn:** the burn lies east of the tower (bearings 75 to 95). The Ward line runs north-west (314) and the cave line south-west; neither crosses the burn, and the Tor and rim are unchanged. Margins stay 6.4 m (Ward) and 8.3 m (cave) from the deck centre. The only giant moved, the Hollow Giant, is south of the burn and in no hiding line.
+5. **Cave hidden:** the ravine rim north of the mouth (mouth floor -6, top -2). Corrected from revision 10 (Rook): the deck-to-mouth line crosses the rim at the vertex (74, 60) at about 9.7 m, so a 14 m rim left only 4.3 m over the mouth top, and about 1.3 m under the C-1 check with eyes and targets raised 3 m. Too thin. **The rim is raised to 18 m for 20 m either side of (74, 60)** (14 m elsewhere): 8.3 m over the mouth top, about 5.3 m under C-1. The rest of the rim line must be rechecked by C-1 at 14 m.
+6. **Recheck after the old burn:** the burn lies east of the tower (bearings 75 to 95). The Ward line runs north-west (314) and the cave line south-west; neither crosses the burn, and the Tor and rim are unchanged. Margins: 6.4 m (Ward) and 8.3 m (cave, with the rim raised to 18 m near (74, 60), item 5) from the deck centre. The only giant moved, the Hollow Giant, is south of the burn and in no hiding line.
 7. **Checks W-1 and C-1** (blockout, rerun after any change): trees off. Eye points on a 1 m grid over the whole deck and walkway, at eye height and jump height. Rays to every stone corner (W-1) and to the cave mouth's corners (C-1). Every ray must hit the Tor, rim or terrain. Repeat with eyes and targets raised 3 m: every ray must still hit. The margins above are from the deck centre only until this runs.
 8. Haze: landmarks at 137 to 212 m. First try a distance fog end past 300 m for Main3 and emissive lamps. Height fog is new shader work; only if the blockout shows landmarks lost (Rook).
 9. **The fire and the tower:**
@@ -141,7 +178,7 @@ Every trail leaves its clearing aimed at the next landmark for its first 30 m. D
 1. Sizes: 60 m (Camp 1), 40 m boulder field (Camp 2), 36 m (camp), 25 m sunken (Camp 3), a 110 m lake, a lot.
 2. Distances from camp: 80 m (pump) to 270 m (office).
 3. Heights: -6 m (cave), -4 m (hollow), 8 m (knoll), 24 m (stack top), 36 m (Ward).
-4. Light: warm (camp), pale harsh (Camp 1), dim amber (Camp 2), green glass (Camp 3), red lamp and sodium (office), rave colour spilling from grey rock (cave).
+4. Light: warm (camp), pale harsh (Camp 1), cold white (Camp 2, Vesper's call, so the keeper's camp, Camp 1 and the office are not all warm), green glass (Camp 3), red lamp and sodium (office), rave colour spilling from grey rock (cave).
 5. Actions: each camp gives a different need (Food, Water, Warmth). The office has the store. The lake has the sure water.
 
 ## 7. Reviews needed
