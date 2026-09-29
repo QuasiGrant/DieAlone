@@ -186,13 +186,30 @@ Day two on, from the tower (by day):
 
 ## 7. UI type (Vesper owns type, Pim owns reading and layout)
 
-1. One font: the built-in legacy Text font (DECISIONS 2026-09-20). No second face.
-2. Sizes at a 1080-row reference **P**: body 28, headings 36, small print 22. Nothing under 22.
-3. Colour #D8CCB4 on a #1E1916 plate at 80 percent opacity **P**. No pure white text.
-4. Sentence case. Short. Prompts one line, at most two. No exclamation marks, no emoji, no em dashes.
+1. Three families, all SIL OFL, on TextMeshPro (DECISIONS 2026-09-29; replaces the 2026-09-20 built-in-font rule). No other face in UI. Detail, files and licences: Docs/Design/Fonts.md.
+   - **Patrick Hand** Regular: only what the keeper wrote (logbook lines, day list, notes, map labels, pencil fill-in on forms).
+   - **Overpass** Regular and SemiBold: everything the game or an agency printed (forms, report, rule sheets), menus, settings, dialogue, objective line, prompts, content warnings, day-end card.
+   - **VT323** Regular: tape overlay only (REC, PLAY >, counter). Caps, short, never sentences, never in the world.
+2. Sizes at a 1080-row reference **P**, per role:
+
+| Role | Family, weight | Size | Colour | Backing |
+|---|---|---|---|---|
+| Body: dialogue, prompts, settings, objective line | Overpass Regular | 28 | #D8CCB4 | #1E1916 plate, 80 percent |
+| Headings, menu items, day-end title | Overpass SemiBold | 36 | #D8CCB4 | plate or none on menu |
+| Small print: labels, credits, footnotes | Overpass Regular | 22 | #D8CCB4 | plate |
+| Content warnings | Overpass Regular, heading SemiBold | 30, heading 36 | #D8CCB4 | #1E1916 solid, full screen |
+| Printed form text on paper | Overpass Regular, labels in caps SemiBold | 24 to 28 | ink #2A2420 | paper #D8CCB4 |
+| Logbook handwriting | Patrick Hand Regular | 32 | pencil #4A4440 | paper #D8CCB4 |
+| Crossed-out handwriting | Patrick Hand Regular, `<s>` | 32 | pencil #4A4440 at 70 percent | paper |
+| Tape overlay | VT323 Regular | 36 or larger, whole multiple of its pixel grid (Rook to find) | #D8CCB4, 1 px shadow #1E1916 | none |
+| REC dot | image, not text | matches VT323 cap height | #B0201C | none |
+
+3. Nothing under 22. No faux bold or italic; only the weights listed. No pure white text. Saturated colour in type only on the REC dot.
+4. Sentence case, except caps labels on printed forms and the tape overlay. Short. Prompts one line, at most two. No exclamation marks, no emoji, no em dashes.
 5. Layout: prompts lower centre, stats screen only in the end-of-day phase (DECISIONS 2026-09-28). Nothing permanent on screen except the crosshair dot.
 6. Diegetic first: logbook, notice board, map, labels on objects carry information before any HUD does.
-7. Whether UI draws over or under the tape filter is unverified; Rook to confirm. Target **P**: UI over the filter, legible, but in palette.
+7. Whether UI draws over or under the tape filter is unverified; Rook to confirm. Target **P**: UI over the filter, legible, but in palette. World-space text (labels, notice boards) goes through the filter; judge it at 360 rows.
+8. Legibility aids are TMP material settings (outline, underlay), not extra meshes **P**: underlay 1 px #1E1916 on text without a plate. No glow, no coloured outline.
 
 ## 8. Forbidden
 
