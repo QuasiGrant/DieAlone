@@ -33,10 +33,10 @@ Coordinates are Main3's: metres, origin south-west, x east, z north, y absolute 
 1. Where zones overlap, the lower priority number wins.
 2. Fire offset is added to the fire row gain inside that zone (section 10). Sheltered places are quieter; the three west glimpses are louder (10.3).
 
-## 3. Keeper's camp (170, 160), knoll 8 m
+## 3. Keeper's camp (170, 160), knoll 15 m (Main3.md revision 13)
 
 - **Bed (Knoll):** open air on a knoll. Wind across the clearing rather than high in the canopy, a slow low groan from the tower frame in gusts. Different from Forest by what is missing (canopy hiss) and what is added (the structure).
-- **Signature, heard before seen:** wind vane squeal on the tower roof, (164, 166) y about 60 (roof height from Rook's blockout). One-shots driven by the wind, vaneIntervalMin / Max (start 8 / 25 s by day). Source is 52 m above the knoll ground, so max distance is sqrt(40 squared plus 52 squared) = 66 m (vaneMaxDistance), min 10 m. Without this, a 40 m max distance on a 60 m high source is never heard on the ground.
+- **Signature, heard before seen:** wind vane squeal on the tower roof, (164, 166) y about 60 (roof height from Rook's blockout). One-shots driven by the wind, vaneIntervalMin / Max (start 8 / 25 s by day). Source is 45 m above the knoll ground (roof about 60, knoll 15, revision 13), so max distance is sqrt(40 squared plus 45 squared) = 60 m (vaneMaxDistance), min 10 m. Without this, a 40 m max distance on a source 45 m up is never heard on the ground.
 - **Close layer:** the fire pit loop (Milestone 9), firePitGainDb, firePitMaxDistance 20 m. Position: the pit as Vesper places it in the clearing. Dry wood, steady, a pop now and then. Warm.
 - **Edge:** Knoll circle r 25 m. Leaving camp on any leg, the vane stays audible for the first 40 m.
 - **Day one:** knoll day bed, the day-one leaves layer, full birds, vane, fire pit.
@@ -217,7 +217,7 @@ All World, 3D, mono unless stated. y where it matters; otherwise ground plus 1 m
 
 | ID | What | Position (x, z, y) | Max m | Days |
 |---|---|---|---|---|
-| E1 | vane squeal | (164, 166, about 60) | 66 | all |
+| E1 | vane squeal | (164, 166, about 60) | 60 | all |
 | E2 | fire pit | camp clearing, Vesper places | 20 | all |
 | E3 | dock chain | (190, 96) | 35 | all |
 | E4 | pilings, pump dock | (190, 96) | 15 | all |
@@ -270,7 +270,7 @@ Birds (day) and replacement crickets (night) spawn around the listener by code.
 
 ## 15. Tuning fields added by this doc (AudioTuning.md to add on approval)
 
-zoneExitMarginMeters (4), hollowCrossfadeSeconds (5), zoneFireOffsetDb per zone (section 2), vaneMaxDistance (66), vaneIntervalMin / Max (8 / 25 s), vaneIntervalNightMin / Max (30 / 90 s), dockChainIntervalMin / Max (10 / 30 s), dockChainNightScale (2), potsIntervalMin / Max (4 / 15 s), stackWindMaxDistance (41), stackCreakIntervalMin / Max (20 / 60 s), roadPassMaxDistance (260), carTickSeconds (90), fireMinDistance (60), fireMaxDistanceHigh / Mid / Low / Last (140 / 190 / 300 / 420), fireGlimpseGainDb (6), fireGlimpseLowpassHz (1500), chantW1GainDb (-30), chantSpot1GainDb (-20), chantMouthGainDb (-10), chantZoneFadeSeconds (2), caveBassLeg1GainDb (-12), caveMusicLowpassLeg3 (400 Hz), chamberSpatialBlend (0.5), chamberTalkDuckDb (-6), wardClimbFadeMeters (40). caveMusicLowpassFar (150) and caveMusicLowpassNear (8000) already exist in DN 13; caveChantRadius (60) in AudioTuning 2.12 is replaced by the three chant keys.
+zoneExitMarginMeters (4), hollowCrossfadeSeconds (5), zoneFireOffsetDb per zone (section 2), vaneMaxDistance (60), vaneIntervalMin / Max (8 / 25 s), vaneIntervalNightMin / Max (30 / 90 s), dockChainIntervalMin / Max (10 / 30 s), dockChainNightScale (2), potsIntervalMin / Max (4 / 15 s), stackWindMaxDistance (41), stackCreakIntervalMin / Max (20 / 60 s), roadPassMaxDistance (260), carTickSeconds (90), fireMinDistance (60), fireMaxDistanceHigh / Mid / Low / Last (140 / 190 / 300 / 420), fireGlimpseGainDb (6), fireGlimpseLowpassHz (1500), chantW1GainDb (-30), chantSpot1GainDb (-20), chantMouthGainDb (-10), chantZoneFadeSeconds (2), caveBassLeg1GainDb (-12), caveMusicLowpassLeg3 (400 Hz), chamberSpatialBlend (0.5), chamberTalkDuckDb (-6), wardClimbFadeMeters (40). caveMusicLowpassFar (150) and caveMusicLowpassNear (8000) already exist in DN 13; caveChantRadius (60) in AudioTuning 2.12 is replaced by the three chant keys.
 
 ## 16. Files
 
@@ -355,7 +355,7 @@ Footsteps (AudioTuning.md 3), interaction foley (pump, stove, ladder, lectern, d
 2. Ledge roar bandwidth under the Ward snapshot (10.4). **[Grant yes]**
 3. Roar on the climb after the reveal: DN 3.7 against DN 7.5; this doc takes 7.5 (10.4).
 4. Wordless chant as voice under "no voice acting" (11.1). **[Grant yes]**
-5. Vane height: max distance 66 m assumes a roof near y 60; Rook's blockout sets it.
+5. Vane height: max distance 60 m assumes a roof near y 60 on the 15 m knoll (Main3.md revision 13, deck 56 m absolute); Rook's blockout sets it.
 6. Camp to J bend position for the third glimpse: unverified (10.3). Marlow.
 7. Night reachability of the lake, burn, hollow, front zone and ravine (rule 1.7). Pim.
 8. Stereo clip on a partly 3D source in 6000.3 (11.3.2). Rook. Also AudioSource custom rolloff curves set from code for the chant (11.1), believed to be AudioSource.SetCustomCurve with AudioSourceCurveType.CustomRolloff; unverified.
