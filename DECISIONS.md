@@ -181,3 +181,5 @@
 - 2026-09-29: Tuesday's survival depends only on her own feeding timer: if she is not fed enough days before it runs out, she dies. Events do not decide it.
 - 2026-09-29: Docs/Private gets its own local git history (not pushed anywhere).
 - 2026-09-29: Backups of Docs/Private: a local git history, plus a dated zip uploaded to Grant's Google Drive (folder DieAlone Private Backups) every time Grant says he is taking a break.
+- 2026-09-29: The second builder starts once at least three plain-logic tasks are queued (expected Milestone 13); Tully tags them. Decided by Wren and Tully at Grant's request.
+- 2026-09-29: Process (Wren's call): Marlow's walk checks become a committed recipe that Rook runs before every scene handback; Sable and Marlow check the design doc against the map on paper before each build starts.
