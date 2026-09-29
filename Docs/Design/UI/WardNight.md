@@ -2,7 +2,7 @@
 
 **DRAFT, 2026-09-28, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (stats on screen only at the end-of-day Ward phase; at night the only action is going to the Ward and offering HP or MIND; ignoring it lowers WARD; WARD at 0 means the barrier falls; a run ends the first time HP, MIND or WARD reaches 0; the Ward screen has `Give nothing`), 2026-09-29 (the day ends by filing the report or by an event, for example a chase that catches the player, who then finds themselves at the Ward; no time budget for the day). DESIGN.md: stats 0 to 12, never above 12. Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. Colours **[GAP: Style]**. Revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Overpass for menus and warnings; VT323 only for the tape overlay): section 3 notes 3 and 6.
 
-Terms check, 2026-09-29 (Wren: the approved DailyLoop.md wins): this spec uses no stamp or location names. Day one rule (Quill): the night 1 climb is led by the keeper's note and the lit cairn, never by naming the Ward (Logbook.md 4.4); the screen itself may name it, being the reveal. 0 to 3 points in any mix and the WARD cap are folded in (section 4.4 and 4.5, 2026-09-29). The other **[GAP: DailyLoop]** items below (bunk from night 2, the night 1 explainer, the last-point warning) are answered by DailyLoop.md 2 and 6 and get folded in at the next revision.
+Terms check, 2026-09-29 (Wren: the approved DailyLoop.md wins): this spec uses no stamp or location names. Day one rule (Quill): the night 1 climb is led by the keeper's note and the lit cairn, never by naming the Ward (Logbook.md 4.4); the screen itself may name it, being the reveal. 0 to 3 points in any mix and the WARD cap are folded in (section 4.4 and 4.5, 2026-09-29). Event changes to tonight's Ward added in section 6a (2026-09-29, third pass). The other **[GAP: DailyLoop]** items below (bunk from night 2, the night 1 explainer, the last-point warning) are answered by DailyLoop.md 2 and 6 and get folded in at the next revision.
 
 ## 1. Purpose
 
@@ -74,6 +74,19 @@ After a gift, if fewer than 3 points are given, the buttons return with `Enough`
 6. If the player never came to the Ward that night, WARD drops at sleep with no screen. On the next visit that pip shows cracked (`x`) instead of plain dark, once, so the loss is seen late.
 7. The drop sequence plays through without input, except Pause. Pausing freezes the sequence where it is; Resume continues it.
 
+## 6a. Events that change tonight before the player gives
+
+Added 2026-09-29 (third pass). Some events change the Ward before the screen opens: a point of WARD given tonight by something other than the player, or a smaller hunger tonight. Words are Quill's; the lines below are placeholders.
+
+1. **A talk at the stones** before kneeling plays in the Dialogue.md format, lower band, before the `Kneel` prompt shows. The Ward screen opens only after it ends.
+2. **WARD given tonight by an event.** During the fill (section 2.3), the WARD row fills to its value before the event, then, 0.4 s after the fill ends, the next pip lights with the same rune brighten as a gift (section 5) and one line shows under the rows for 2.5 s: `The stones have been fed tonight.` Input stays locked until the line has shown 1 s.
+3. The WARD cap holds (section 4.5): if WARD is already 12, no pip lights and the line is `The stones are fed.` as usual.
+4. Whether an event's point counts toward the player's 3 a night is **[GAP: Sable]**. If it counts, the screen asks as if one point was already given (`Enough` in place of `Give nothing`).
+5. **A smaller hunger tonight.** Once the hunger row is folded in (DailyLoop.md 2.3, next revision of this spec), a reduced hunger shows as fewer hollow pips on that row, and one line under the rows for 2.5 s: `The stones want less tonight.` No numbers in the line.
+6. **Paid back later.** An event whose cost lands the next night (a debt) shows as a normal hunger or stat change on that night; no extra line unless content gives one.
+7. One event line per night at most on this screen. A second waits for the logbook (Logbook.md 4.5, night line).
+8. Line budget: 45 characters, one line, Overpass Regular 28, under the rows where `The stones go quiet.` sits. Never both at once: a drop line waits until the event line has faded.
+
 ## 7. States
 
 | State | What shows |
@@ -81,6 +94,8 @@ After a gift, if fewer than 3 points are given, the buttons return with `Enough`
 | Day at the stones | No prompt. No screen. |
 | Night, at the stones | Prompt `Kneel`. |
 | Arrived by event | Fade up already kneeling (section 2.4), then Opening. |
+| Talk at the stones | Dialogue.md talk before `Kneel` (section 6a.1). |
+| Event gift or smaller hunger | Extra pip or fewer hollow pips after the fill, one line 2.5 s (section 6a). |
 | Opening (input lock, about 1.8 s) | Camera eases, rows fill. Every press is ignored except Pause, which freezes the easing and fill until Resume. A Submit held down when the lock ends does not count; it must be released and pressed again. |
 | Choosing | Rows, three buttons, focus on one. |
 | Holding | Bar fills under the focused button. Focus change cancels it (section 4.7). |

@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-Sound specs live in Docs/Design/Sound: Mixer.md, DayNight.md (DN), Sourcing.md, AudioTuning.md, Locations.md, Shortlist.md (Milestone 9 downloads for Grant). Private (twist material): Docs/Private/StoreSound.md, RouletteSound.md. All drafts until Grant confirms lines in DECISIONS.md.
+Sound specs live in Docs/Design/Sound: Mixer.md, DayNight.md (DN), Sourcing.md, AudioTuning.md, Locations.md, Shortlist.md (Milestone 9 downloads for Grant). Private (twist material): Docs/Private/StoreSound.md, RouletteSound.md, ScareSound.md (sound per ScareList tag; proposes a fifth mixer snapshot "Cut", tape sounds on UI, Child humming carried by pots because humming is voice). All drafts until Grant confirms lines in DECISIONS.md.
 
 Conventions set in Locations.md:
 - 35 m site / 40 m camp radius is horizontal; elevated sources use slant max distance (vane 60 m on the 15 m knoll of Main3 rev 13, stack 41 m). Recheck when Main3 heights change.

@@ -1,6 +1,6 @@
 # Logbook
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (the player carries the logbook; its main job is tracking questions and notes; settings live in it, later inventory, memories and collectibles; stats show on screen only at the Ward, the rest of the time in the logbook only; at night the only action is the Ward), 2026-09-29 (the day ends by filing or by an event; no time budget; nothing forces the player to act; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Written after the four loop specs, per Tully's order. Revised 2026-09-29 to add the Kept tab after Settings (Collectibles.md). Colours and sizes follow Style.md section 7 and Fonts.md (Vesper owns type). Settings content is Settings.md. Revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Patrick Hand for logbook handwriting, Overpass for forms, menus and settings, VT323 only for the tape overlay): section 2.1.
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (the player carries the logbook; its main job is tracking questions and notes; settings live in it, later inventory, memories and collectibles; stats show on screen only at the Ward, the rest of the time in the logbook only; at night the only action is the Ward), 2026-09-29 (the day ends by filing or by an event; no time budget; nothing forces the player to act; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Written after the four loop specs, per Tully's order. Revised 2026-09-29 to add the Kept tab after Settings (Collectibles.md). Colours and sizes follow Style.md section 7 and Fonts.md (Vesper owns type). Settings content is Settings.md. Revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Patrick Hand for logbook handwriting, Overpass for forms, menus and settings, VT323 only for the tape overlay): section 2.1. Revised 2026-09-29 (third pass) for event text: tower lines, log lines, missed lines, night lines, off-row places, length budgets, pages before day 1 and the unread state (sections 4.5 to 4.7). Examine and read: Examine.md. Talk and captions: Dialogue.md.
 
 Terms (Wren, 2026-09-29: the approved DailyLoop.md wins): the tower stamps `SAFE` or `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office, as in DailyLoop.md and Main3.md. On a narrow logbook column `CHECK ON FOOT` may be cut to `CHECK`; the full words show on the tower sheet, the binoculars and the map foot line.
 
@@ -22,14 +22,16 @@ A screen-space uGUI overlay drawn as an open notebook, about 80 percent of scree
 |  |  DAY 14                     |  At the Ward, night 13      | |
 |  |                             |    HP     7                 | |
 |  |  [x] Climb the tower        |    MIND   9                 | |
-|  |      Lake       SAFE        |    WARD   4                 | |
-|  |      Camp 1     SAFE        |                             | |
-|  |      Camp 2     CHECK   [ ] |  Today                      | |
-|  |      Camp 3     SAFE        |    Food     -               | |
-|  |      Office     ___         |    Water    met             | |
-|  |                             |    Warmth   -               | |
-|  |  [ File the report ]        |    Social   -               | |
-|  |    Climb the tower first.   |                             | |
+|  |      Haze. (general line)   |    WARD   4                 | |
+|  |      Lake       SAFE        |                             | |
+|  |      Camp 1     SAFE        |  Today                      | |
+|  |      Camp 2     CHECK   [ ] |    Food -  Water met        | |
+|  |        (tower line)         |    Warmth -  Social -       | |
+|  |      Camp 3     SAFE        |  Log                        | |
+|  |      Office     ___         |  . (log line, up to three   | |
+|  |                             |    lines)                   | |
+|  |  [ File the report ]        |    (log line)               | |
+|  |    Climb the tower first.   |                       more  | |
 |  |  Then the Ward.             |                             | |
 |  |                         < > |                    Day 14   | |
 |  +-----------------------------+-----------------------------+ |
@@ -89,13 +91,14 @@ The book always opens on the tab it was closed on, except: after waking it opens
 ### 4.2 Right page
 
 1. `At the Ward, night n`: HP, MIND and WARD as numbers, exactly as they stood when the player last left the Ward screen. Not live. Day 1 shows `Nothing written yet.` Draft reading of DECISIONS 2026-09-28 line "the rest of the time they are in the logbook only"; see question 1.
-2. `Today`: needs with `met` or `-`, fixed order Food, Water, Warmth, Social. Safety is the CHECK lines.
+2. `Today`: needs with `met` or `-`, fixed order Food, Water, Warmth, Social, two to a line. Safety is the CHECK lines.
+3. `Log`: the day's log lines (section 4.5). Hidden while empty.
 
 ### 4.3 Past days
 
 1. `<` and `>` at the page foot turn to earlier days. Past pages are read-only: what was stamped, what was met, the Ward reading that night.
 2. On a past day the right page foot shows `Day n`; the left page foot shows `Back to today` as a choosable line.
-3. Oldest page is day 1. Past pages are kept for the whole run and saved with it (GameState, Rook to size).
+3. Oldest page is day 1, unless content adds a page before it (section 4.7). Past pages are kept for the whole run and saved with it (GameState, Rook to size).
 
 ### 4.4 Day 1 and night 1: the Ward is not named
 
@@ -104,6 +107,57 @@ The book always opens on the tab it was closed on, except: after waking it opens
 3. Report filed on day 1: the on-screen line is `Logbook: the cairn path, at dark.` instead of `go to the Ward.`, and the night page top line is `Night. The cairn path.` The chain is down and the cairn lamp lit (DailyLoop.md 2.1), so the lamp is the thing to walk to.
 4. Map on day 1 and night 1: the cairn is drawn with no label; the ledge is an unnamed cliff.
 5. After the night 1 Ward screen closes, every later page, line and label may name the Ward. The day 1 page, read back later, keeps its original wording.
+
+### 4.5 Event lines
+
+The game writes four kinds of line from event and storyline content (Events.md; words by Quill). All Patrick Hand 32, pencil, as the rest of the page. The player never writes.
+
+| Kind | Written when | Where |
+|---|---|---|
+| Tower line | The location's row is stamped (binoculars or on foot) | Left page, indented under its row, one line |
+| Log line | An event is dealt with, a thing is found, a talk or examine says so, or on waking | Right page, `Log` block, newest last |
+| Missed line | At sleep, for an event left open that has one | The day just ended, `Log` block, after its log lines |
+| Night line | At night (the climb, the stones) | The day just filed, `Log` block, under a handwritten `Night` subheading |
+
+1. **Tower line.** The fact the tower saw, SAFE rows included (Events.md 4.5: warnings are a plain line, never a stamp). One per row at most. The event record names its row. The location prefix is stripped when the line sits under its own row (`Camp 2: smoke.` shows as `smoke.` under Camp 2).
+2. **Off-row places.** Places without a row hang under the row their event belongs to (Events.md 3.1.1 and 6: a trail beside a location flags that location; the store is on the Office line). They keep their prefix, since it is not the row name. Draft mapping, Sable to confirm per event:
+
+| Place in the text | Row |
+|---|---|
+| Store, lot, booth, barrier, closed loop, the road | Office |
+| Trail leg, trail pole, crossing | the location whose roll drew it |
+| Sky, far trees, the tower itself, map-wide | General line |
+
+3. **General line.** One line directly under `Climb the tower`, for tower facts that belong to no row. Hidden when empty. At most one; a second map-wide fact replaces it.
+4. **Log block.** Lines in the order written. A log line that resolves a CHECK sits in the block; the CHECK box on the left ticks as before. The same content line is never written twice on one page.
+5. **Missed lines** are written at sleep, so the player reads them on the past page (`<`) or when a past day is shown. The unread state (4.7) marks them.
+6. **Night lines** go on the day that was filed, so night 3 is read on day 3's page. Lines written on waking go on the new day's Log block.
+7. Past pages keep all four kinds exactly as written.
+
+### 4.6 Length budgets and overflow
+
+Estimates at the 1080-row reference, Patrick Hand 32, about 45 characters per line on one page. Rook to check on the first build and through the filter.
+
+| Line | Budget |
+|---|---|
+| Tower line, with any prefix | 45 characters, one line |
+| General line | 45 characters, one line |
+| Log line | 120 characters, three lines at most |
+| Missed line | 120 characters, three lines at most |
+| Night line | 120 characters, three lines at most |
+
+1. Over budget: Rook's import check warns. The page never shrinks text.
+2. Left page worst case (general line, five rows, five tower lines, File with its locked line, the Ward line) is 15 lines. It fits one page; no scroll on the left.
+3. The Log block scrolls when it outgrows the right page. A handwritten `more` at its foot shows when lines are below; `back up` at its head when lines are above. Right stick or mouse wheel scrolls it. Focus never enters it (it has nothing to choose).
+4. Line spacing: 0.5 line gap between log lines so a three-line entry reads as one.
+
+### 4.7 Pages before day 1, and unread
+
+1. Content may add a page dated before day 1. It sits before day 1 in the `<` order and reads like any past page. Nothing in the UI announces it beyond the unread mark.
+2. **Unread.** A line or page the player has not yet had on screen for 1 s carries the new-note dot (Image, as Questions 5.1): beside the line, on the `<` arrow when an earlier page holds one, and on the `Today` tab label.
+3. A dot clears when its line or page has been on screen 1 s. Reading a page clears every dot on it.
+4. Content may test whether a page is still unread (for a line written at each sleep while it stays unread). The UI only keeps the flag; the rule is content's.
+5. Unread state is saved with the run.
 
 ## 5. Questions tab
 
@@ -211,7 +265,7 @@ Keyboard and mouse:
 1. `Tab` opens and closes the book.
 2. `Q` and `E` change tab. Clicking a tab opens it.
 3. Arrow keys or `W` / `S` move focus up and down. On Today, `A` / `D` or left and right arrows turn days; on Map they move between pins; on Settings they change the focused control; on Kept they move between frames.
-4. `Enter` chooses. Mouse click chooses; hover moves focus. Mouse wheel scrolls a long Questions list.
+4. `Enter` chooses. Mouse click chooses; hover moves focus. Mouse wheel scrolls a long Questions list and the Today `Log` block (4.6.3).
 5. `Esc` closes the book.
 
 Gamepad:
@@ -220,6 +274,7 @@ Gamepad:
 3. D-pad or left stick move focus. Left and right turn days on Today, move between pins on Map, change the control on Settings, move between frames on Kept.
 4. `A` chooses.
 5. `B` or `Start` closes the book.
+6. Right stick up and down scrolls the Today `Log` block and a long Questions list.
 
 Requirements for Rook:
 1. New Player action `Logbook`: `<Keyboard>/tab` and the gamepad View/Select button. The exact Input System path for View (`<Gamepad>/select` expected) is unverified; Rook to check. Tab, View, LB and RB are unbound today (checked in Assets/InputSystem_Actions.inputactions).
@@ -228,6 +283,8 @@ Requirements for Rook:
 4. Book UI runs on unscaled time so it works when opened from the paused Settings row.
 5. The book component goes in GamePause's gameplay list.
 6. Forced close API for events (section 8.3), clearing the modal flag.
+7. Right stick scroll in the book: the UI map has no gamepad scroll today (unverified; Rook to check and add a `ScrollWheel`-like binding for `<Gamepad>/rightStick`).
+8. Event line records: row (Lake, Camp 1 to 3, Office, or general), kind (tower, log, missed, night), unread flag, day. Import check for the 4.6 budgets.
 
 ## 11. States
 
@@ -240,6 +297,9 @@ Requirements for Rook:
 | Day-end card open | DayEndConfirm.md over the dimmed page. |
 | Night | Read-only Today (8.2). |
 | Past day | Read-only page, `Back to today`. |
+| Unread lines | New-note dots on the lines, the `<` arrow and the Today tab (4.7). |
+| Log block full | Scrolls; `more` / `back up` marks (4.6.3). |
+| Page before day 1 | Reached with `<` from day 1, read-only (4.7). |
 | Opened from pause | Settings page only, Back returns to pause. |
 | Forced close | Gone at once, no fade. |
 
