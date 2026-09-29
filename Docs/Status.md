@@ -6,13 +6,12 @@ Last updated 2026-09-29.
 
 ## Next step
 
-As of 2026-09-29, late:
-1. Done: Milestones 5 and 6; Milestone 7 build work 7.1 to 7.8; Main3 gray blockout 8.1 to 8.9b, walked by Marlow and by Grant. Main3.md is at revision 13 (Grant's gray-box feedback). Recipes and run order in Tools/Recipes/README.md; runner Tools/Recipes/main3_rebuild.sh.
-2. Running: Rook on 7.9 (dev panel on screen, Grant to try) then 8.9c (higher knoll, spiral stair, bigger cabin, Ward lip and stand-in fire). Marlow's re-walk checklist is ready for after 8.9c. Sable rewriting the resident minigames (Docs/Private/Minigames.md). Vesper on Pony Island, Inscryption, Buckshot Roulette notes. Pim on Collectibles.md and ContentWarning.md. Hollis on the store loop sound. Quill on the Child pilot dialogue.
-3. Next: 8.10 closes when Grant walks the rebuilt Main3; then Milestone 9 (sound groundwork).
-4. Plan shape: Milestones 9 sound, 10 one playable week, 11 dressing and look, 12 characters, 13 content format and dialogue (Child minigame as pilot), 14 events, 15 resident minigames.
-5. Open for Grant: where the escape-room puzzle goes and where the roulette fits (after Vesper's notes).
-6. Story canon only in Docs/Private (StoryBible, Minigames, MinigameReview, ToneReference, SessionPrep, ChildDialogue, StoreSound, MullinsNotes).
+As of 2026-09-29, evening:
+1. Done: Milestones 5 to 7 (7.9 dev panel closed); Main3 gray blockout 8.1 to 8.9c, walked twice by Grant.
+2. Running: Rook on 8.9d (dressing the camp and tower per Docs/Design/LookSlice.md). Next 8.9e (Ward plateau behind the Wall and distance layers, Main3.md revision 15), then 8.9f (13 slice captures for Grant), then 8.10 (Grant's walk).
+3. Plan shape: 10 one playable week, 11 dressing and look, 12 characters, 13 content format and dialogue (Child minigame pilot), 14 events, 15 resident minigames, 16 homage references; sound (9) postponed until after 11.
+4. Open for Grant: Docs/Private/OpenForGrant.md.
+5. Story canon only in Docs/Private (StoryBible, Minigames rev 2, MinigameReview, dialogue drafts for the Child, Lover, Addict, Ranger, Tuesday, UI and sound for the store, roulette and fishing, MullinsNotes, ToneReference).
 
 ## How we work now (2026-09-28)
 
