@@ -92,3 +92,10 @@
 - 2026-09-28: As WARD gets low, the fire gets louder and the world gets weird.
 - 2026-09-28: The first day plays as a very normal job, like Firewatch, until the player reaches the Ward and sees the magic and the wildfire. That is when the player learns it is a horror fantasy game.
 - 2026-09-28: Clarifies the tower line above: the tower sees every Main3 location except the Ward and the cultist cave, as the cave line says.
+- 2026-09-29: The day ends when the player ends it by filing the report, or when an event ends it (for example a monster that catches the player, who then finds themselves at the Ward early). There is no time budget for the day.
+- 2026-09-29: Feeding the Ward may raise WARD, as long as the game still has some kind of timer and a run cannot go on forever.
+- 2026-09-29: All five needs may sometimes be met in a day, as long as every run still ends by a stat bottoming out.
+- 2026-09-29: Each event affects MIND, HP or WARD according to what the event is, not a fixed cost on a timer. Many events need writing.
+- 2026-09-29: The fire is not visible at all on day one. Day one is an ordinary fire lookout job until nightfall, when the player sees the roaring wildfire and the Ward holding it off.
+- 2026-09-29: The unsigned trail to the cultist cave is the one exception to the pass check that the next destination is visible at every junction.
+- 2026-09-29: Grant bought the six shortlisted packs and a few more prop packs. Shaders in bought packs are replaced with the project's own. Every asset used must be licensed for commercial sale.
