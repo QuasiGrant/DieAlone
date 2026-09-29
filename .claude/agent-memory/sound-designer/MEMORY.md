@@ -1,0 +1,1 @@
+- [Sound doc set](project_sound_docs.md) — where the sound specs live, Locations.md conventions, conflicts pending rewrite
