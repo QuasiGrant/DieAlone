@@ -72,12 +72,13 @@ Prim(Cube, "RockLip", ward, V(13f, gl + 0.4f - 0.3f, 252f), V(1.2f, 1.4f, 7f));
 var fire = new UnityEngine.GameObject("StandInFire"); fire.transform.SetParent(ward, false);
 const string fireMatPath = "Assets/Materials/Blockout/Blockout_Fire.mat";
 var fireMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(fireMatPath);
-if (fireMat == null)
-{
-    var sh = UnityEngine.Shader.Find("Universal Render Pipeline/Unlit"); if (sh == null) return "URP Unlit shader not found";
-    fireMat = new UnityEngine.Material(sh); fireMat.SetColor("_BaseColor", new UnityEngine.Color(1f, 0.45f, 0.1f));
-    UnityEditor.AssetDatabase.CreateAsset(fireMat, fireMatPath);
-}
+// fire colour through DieAlone/FireStandIn, which ignores fog, so the stand-in reads through the night and day-two haze;
+// colour and strength are LookTuning.fireGlowColor and fireGlowIntensity
+var fireSh = UnityEngine.Shader.Find("DieAlone/FireStandIn"); if (fireSh == null) return "DieAlone/FireStandIn shader not found";
+var lookT = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning.asset"); if (lookT == null) return "no LookTuning";
+if (fireMat == null) { fireMat = new UnityEngine.Material(fireSh); UnityEditor.AssetDatabase.CreateAsset(fireMat, fireMatPath); }
+fireMat.shader = fireSh; fireMat.SetColor("_Color", lookT.fireGlowColor); fireMat.SetFloat("_Intensity", lookT.fireGlowIntensity);
+UnityEditor.EditorUtility.SetDirty(fireMat);
 UnityEngine.GameObject Stand(UnityEngine.PrimitiveType t, string name, UnityEngine.Transform parent, UnityEngine.Vector3 pos, UnityEngine.Vector3 sc, bool flame, float lean = 0f)
 {
     var g = UnityEngine.GameObject.CreatePrimitive(t); g.name = name; g.transform.SetParent(parent, false); g.transform.position = pos; g.transform.localScale = sc;
@@ -115,7 +116,7 @@ for (int i = 0; i < 90; i++)
 var smoke = new UnityEngine.GameObject("Smoke").transform; smoke.SetParent(fire.transform, false);
 foreach (var z in new[] { -300f, 150f, 520f, 900f })
 {
-    float hgt = R(260f, 340f);
+    float hgt = R(460f, 560f);   // tall enough to leave the top of the frame from the lip at level gaze (3.6.6)
     Stand(UnityEngine.PrimitiveType.Cylinder, "Column", smoke, V(-360f + hgt * 0.15f, 30f + hgt * 0.5f, z), V(R(60f, 90f), hgt * 0.5f, R(60f, 90f)), false, -12f);
 }
 Stand(UnityEngine.PrimitiveType.Cube, "SmokeSheet", smoke, V(-250f, 330f, 250f), V(500f, 20f, 2200f), false);

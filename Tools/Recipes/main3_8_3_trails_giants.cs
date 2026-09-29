@@ -1,5 +1,7 @@
 // Main3 task 8.3: trails flattened and painted along every route in Main3.md 4, points of interest as gray stand-ins,
 // gray giant trees (hero trunks with mesh colliders), and the thicket that keeps walkers on the trails. Run after 8.2 in Main3, edit mode.
+// Grades: every leg at 25 percent or less (DailyLoop.md, rev 13 3.4.7), the log steps excepted. J to Ward is built at 157 m with a 24 percent clamp
+// (table 150, within 5 percent) so its climb to the last bend stays under 25 percent on the ground itself.
 // Trails: the map curve (Main3_map.svg) is the centre line; ends and on-trail points of interest are anchors; between
 // anchors the trail meanders (half-waves about 18 m long) with one amplitude factor per leg, solved so the walked
 // length matches table 4 (Docs/Design/Main3_BuildNotes.md). Shore legs meander only to the land side.
@@ -24,20 +26,20 @@ float LakeRe(UnityEngine.Vector2 p) { var q = p - lakeC; return UnityEngine.Math
 // poi kind: "on" = the trail passes through it; "side" = stands beside the trail
 var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2[] ctrl, bool polyline, float target, bool shore, float maxGrade, (string n, UnityEngine.Vector2 p, string kind)[] pois)>
 {
-    ("Camp to pump", new[] { P(170,160), P(174,128), P(190,96) }, false, 80f, false, 0.3f, new[] { ("Water tank", P(182,128), "side") }),
-    ("Pump to boathouse", new[] { P(190,96), P(232,92), P(247.6f,52.4f) }, false, 84f, true, 0.3f, new[] { ("Overturned rowboat", P(223.6f,83.2f), "side") }),
-    ("Boathouse to Camp 2", new[] { P(247.6f,52.4f), P(280,64), P(292,108) }, false, 95f, false, 0.3f, new[] { ("Phone pole", P(272.8f,72f), "side") }),
-    ("Camp 2 to T", new[] { P(292,108), P(324,128), P(340,170) }, false, 94f, false, 0.3f, new[] { ("Food lockers", P(320,133.6f), "side") }),
-    ("Camp to Jg", new[] { P(170,160), P(200,136), P(232,152), P(262,172) }, false, 125f, false, 0.3f, new[] { ("Hollow Giant", P(202,140), "tree"), ("Forage patch A", P(240,162.8f), "side") }),
-    ("Jg to T", new[] { P(262,172), P(288,196), P(316,148), P(340,170) }, false, 105f, false, 0.3f, new[] { ("Gate Tree", P(290,176), "tree"), ("First sight of the lot", P(328,164), "side") }),
-    ("Jg to Camp 1", new[] { P(262,172), P(264,208), P(282,238) }, false, 83f, false, 0.3f, new[] { ("Latrine shed", P(268,206.4f), "side") }),
-    ("Camp to Camp 3", new[] { P(170,160), P(144,184), P(108,128), P(78,146) }, false, 126f, false, 0.3f, new[] { ("Forage patch B", P(142.4f,163.6f), "side"), ("Log steps", P(96,144.8f), "steps") }),
-    ("Pump to W1", new[] { P(190,96), P(156,92), P(128,70) }, false, 80f, true, 0.3f, new[] { ("Washed-out truck", P(157.6f,87.6f), "side"), ("Stepping stones", P(131.8f,72.7f), "on") }),
-    ("W1 to Camp 3", new[] { P(128,70), P(96,104), P(78,146) }, false, 114f, false, 0.3f, new[] { ("Footbridge", P(114.8f,85.2f), "on"), ("Camper trailer", P(94,114.4f), "side") }),
-    ("W1 to cave", new[] { P(128,70), P(108,48), P(84,64), P(52,37.5f) }, false, 109f, false, 0.3f, new[] { ("Rope handrail", P(106.8f,57.6f), "on"), ("Coloured bulbs", P(82,52), "side") }),
-    ("Camp to J", new[] { P(170,160), P(136,196), P(104,206) }, false, 96f, false, 0.3f, new[] { ("Burn-map board", P(136.4f,189.6f), "side"), ("Plank bridge", P(104.8f,203.2f), "on") }),
+    ("Camp to pump", new[] { P(170,160), P(174,128), P(190,96) }, false, 80f, false, 0.25f, new[] { ("Water tank", P(182,128), "side") }),
+    ("Pump to boathouse", new[] { P(190,96), P(232,92), P(247.6f,52.4f) }, false, 84f, true, 0.25f, new[] { ("Overturned rowboat", P(223.6f,83.2f), "side") }),
+    ("Boathouse to Camp 2", new[] { P(247.6f,52.4f), P(280,64), P(292,108) }, false, 95f, false, 0.25f, new[] { ("Phone pole", P(272.8f,72f), "side") }),
+    ("Camp 2 to T", new[] { P(292,108), P(324,128), P(340,170) }, false, 94f, false, 0.25f, new[] { ("Food lockers", P(320,133.6f), "side") }),
+    ("Camp to Jg", new[] { P(170,160), P(200,136), P(232,152), P(262,172) }, false, 125f, false, 0.25f, new[] { ("Hollow Giant", P(202,140), "tree"), ("Forage patch A", P(240,162.8f), "side") }),
+    ("Jg to T", new[] { P(262,172), P(288,196), P(316,148), P(340,170) }, false, 105f, false, 0.25f, new[] { ("Gate Tree", P(290,176), "tree"), ("First sight of the lot", P(328,164), "side") }),
+    ("Jg to Camp 1", new[] { P(262,172), P(264,208), P(282,238) }, false, 83f, false, 0.25f, new[] { ("Latrine shed", P(268,206.4f), "side") }),
+    ("Camp to Camp 3", new[] { P(170,160), P(144,184), P(108,128), P(78,146) }, false, 126f, false, 0.25f, new[] { ("Forage patch B", P(142.4f,163.6f), "side"), ("Log steps", P(96,144.8f), "steps") }),
+    ("Pump to W1", new[] { P(190,96), P(156,92), P(128,70) }, false, 80f, true, 0.25f, new[] { ("Washed-out truck", P(157.6f,87.6f), "side"), ("Stepping stones", P(131.8f,72.7f), "on") }),
+    ("W1 to Camp 3", new[] { P(128,70), P(96,104), P(78,146) }, false, 114f, false, 0.25f, new[] { ("Footbridge", P(114.8f,85.2f), "on"), ("Camper trailer", P(94,114.4f), "side") }),
+    ("W1 to cave", new[] { P(128,70), P(108,48), P(84,64), P(52,37.5f) }, false, 109f, false, 0.25f, new[] { ("Rope handrail", P(106.8f,57.6f), "on"), ("Coloured bulbs", P(82,52), "side") }),
+    ("Camp to J", new[] { P(170,160), P(136,196), P(104,206) }, false, 96f, false, 0.25f, new[] { ("Burn-map board", P(136.4f,189.6f), "side"), ("Plank bridge", P(104.8f,203.2f), "on") }),
     // rev 13 (3.6): round the Tor's south and west feet to the last bend (60, 250), then a straight run west over the low crest to the rock lip
-    ("J to Ward", new[] { P(104,206), P(88,200), P(66,204), P(54,218), P(56,236), P(60,250), P(27,251), P(14.5f,252) }, true, 150f, false, 0.3f, new[] { ("Rune post", P(66,201.5f), "side"), ("Last bend", P(60,250), "bend") }),
+    ("J to Ward", new[] { P(104,206), P(88,200), P(66,204), P(54,218), P(56,236), P(60,250), P(27,251), P(14.5f,252) }, true, 157f, false, 0.24f, new[] { ("Rune post", P(66,201.5f), "side"), ("Last bend", P(60,250), "bend") }),
 };
 
 // ---------- centre line sampling ----------
@@ -393,7 +395,7 @@ void Ring(UnityEngine.Vector2 c, float r0, float r1) => Stamp(c.x - r1 - 1f, c.x
 foreach (var b in built) for (int i = 0; i < b.path.Count - 1; i++) Seg(b.path[i], b.path[i + 1], 2.2f);
 Circle(P(170, 160), 18f); Circle(P(282, 238), 30f); Circle(P(292, 108), 20f); Circle(P(78, 146), 9f);
 Circle(P(104, 206), 5f); Circle(P(128, 70), 5f); Circle(P(262, 172), 4f); Circle(P(340, 170), 4f);
-Rect(10.6f, 30f, 245f, 271f);                                                      // Ward ledge (rev 13): the lip, the low crest and the stones
+Rect(13.6f, 30f, 245f, 271f);                                                      // Ward ledge (rev 13): up to the lip line (x 13.6), the low crest and the stones
 Rect(49.5f, 54.5f, 30f, 41f);                                                      // in front of the cave mouth and into the passage (8.9b: no wall across it)
 Rect(187.5f, 192.5f, 86f, 98f); Rect(236.3f, 248.3f, 49.1f, 55.7f);                // dock notch; boathouse and gangway
 Rect(342f, 374f, 149f, 191f); Rect(373f, 395.6f, 166.5f, 173.5f); Circle(P(384, 160), 9f);   // lot, drive, turning circle

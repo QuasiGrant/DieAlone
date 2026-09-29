@@ -202,6 +202,9 @@ float Height(float x, float z)
     }
     // 10. front zone flat at 3
     if (x >= 330f) h = L(h, 3f, SS((x - 330f) / 10f));
+    // 10b. past the rock lip (x 13) the ledge falls to 33.5 at the cliff edge, so a player standing at the lip (eye 37.6) sees
+    // down 30 degrees into the valley (3.6.6 frame check; a level edge hid everything nearer than about 210 m)
+    if (x >= 10f && x < 13f && z > 238f && z < 266f) h = UnityEngine.Mathf.Min(h, L(33.5f, 36f, (x - 10f) / 3f));
     // 11. cliff at x 10, valley floor -40
     if (x < 10f) h = L(-40f, h, SS((x - 4f) / 6f));
     return h;
