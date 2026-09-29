@@ -1,6 +1,6 @@
 # Day end confirm: "This ends your day"
 
-**DRAFT, 2026-09-28, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (filing the report asks to confirm that it ends the day; stats on screen only at the Ward; the player carries the logbook), 2026-09-29 (the day ends by filing the report or by an event; no time budget for the day). Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. The logbook screen itself is Docs/Design/UI/Logbook.md (not yet written) **[GAP: Logbook]**. Colours **[GAP: Style]**.
+**DRAFT, 2026-09-28, revised 2026-09-29 (second pass), Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (filing the report asks to confirm that it ends the day; stats on screen only at the Ward; the player carries the logbook), 2026-09-29 (the day ends by filing the report or by an event; no time budget for the day; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Terms (Wren, 2026-09-29): stamps are `SAFE` and `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office. Day one rule (Quill): nothing names the Ward before the night 1 reveal. The logbook is Docs/Design/UI/Logbook.md. Type per Style.md 7; warning colour **[GAP: Style]**.
 
 ## 1. Purpose
 
@@ -8,9 +8,9 @@ Filing the report ends the day and starts the night. It cannot be undone. The co
 
 ## 2. Where it opens
 
-1. In the carried logbook, on today's page, the player chooses `File the report`. Whether filing works anywhere or only at a set place (the cabin, the tower) **[GAP: DailyLoop]**.
+1. In the carried logbook, on the Today page, the player chooses `File the report`. Filing works anywhere (DailyLoop.md 1.6).
 2. The confirm opens as a small card over the dimmed logbook page. The logbook stays behind it.
-3. `File the report` is only offered once the tower check is done **[GAP: DailyLoop]**. Before that the logbook line reads `Climb the tower first.` and cannot be chosen.
+3. `File the report` is only choosable once all five locations are stamped (DailyLoop.md 1.6). Before that the logbook line reads `Climb the tower first.` and cannot be chosen.
 4. Event-ended day: when an event ends the day (DECISIONS 2026-09-29, for example a chase that catches the player), this card never opens and the open lines are never shown. If the card or the logbook is open when the event fires, both close at once with no choice made. The event's sequence ends in black and the player comes to at the Ward, on the Ward screen (WardNight.md section 2.4).
 5. The card shows no clock, time left or hour. The day has no time budget.
 
@@ -22,10 +22,10 @@ Filing the report ends the day and starts the night. It cannot be undone. The co
 |                                                        |
 |      +------------------------------------------+      |
 |      |  File today's report?                    |      |
-|      |  This ends your day.                     |      |
+|      |  Filing the report ends your day.        |      |
 |      |                                          |      |
 |      |  Still open:                             |      |
-|      |    Campsite 2 not seen to.               |      |
+|      |    Camp 2 not checked.                   |      |
 |      |    Food not met.                         |      |
 |      |    Water not met.                        |      |
 |      |                                          |      |
@@ -41,21 +41,21 @@ With nothing open, the list is replaced by one line: `Nothing left open.`
 ## 4. Open lines
 
 1. One line per thing not done today. No numbers and no stat names: stats show only at the Ward (DECISIONS 2026-09-28). The words are the warning.
-2. Order: unresolved NOT SAFE locations first, in tower-sheet order, then needs in the fixed order Food, Water, Warmth, Social.
+2. Order: open CHECK ON FOOT locations first, in tower-sheet order, then needs in the fixed order Food, Water, Warmth, Social.
 3. Wording. The need words are the same in every UI spec (Objective.md uses them too): `Food`, `Water`, `Warmth`, `Social`. Quill may change the words, but a change applies to all specs at once.
 
 | Open item | Line |
 |---|---|
-| NOT SAFE location not resolved | `<Location> not seen to.` |
+| CHECK ON FOOT location not resolved | `<Location> not checked.` |
 | Food not met | `Food not met.` |
 | Water not met | `Water not met.` |
 | Warmth not met | `Warmth not met.` |
 | Social not met | `Social not met.` |
 
-The list of needs (Food, Water, Warmth, Social, with Safety carried by the location lines) follows DECISIONS 2026-09-28 and stays a **[GAP: DailyLoop]** until Sable's DailyLoop.md sets it.
+The needs are Food, Water, Warmth, Social, with Safety carried by the location lines (DailyLoop.md).
 
-4. At most 8 lines. If more, the eighth reads `And more.` (Nine is only possible with all five locations NOT SAFE and no need met **[GAP: DailyLoop]**.)
-5. Safety has no line of its own. It is met by resolving the NOT SAFE location, so the location line is the Safety line (DECISIONS 2026-09-28).
+4. At most 8 lines. If more, the eighth reads `And more.` (Nine is only possible with all five locations CHECK ON FOOT and no need met.)
+5. Safety has no line of its own. It is met by resolving each CHECK ON FOOT location, so the location line is the Safety line (DECISIONS 2026-09-28).
 6. A need blocked by an event that day still gets its line; events may add their own wording later (Milestone 14).
 
 ## 5. Buttons and default focus
@@ -64,7 +64,8 @@ The list of needs (Food, Water, Warmth, Social, with Safety carried by the locat
 2. Default focus: `Not yet`. The irreversible choice is never the default.
 3. Input lock: for 0.4 s after the card opens, Submit and click are ignored, so the press that opened it cannot carry through.
 4. `Not yet` closes the card and returns to the logbook page, focus back on `File the report`.
-5. `File it` closes the card and the logbook and starts the transition to night **[GAP: DailyLoop]**. The on-screen line then reads `Logbook: go to the Ward.` (Objective.md).
+5. `File it` closes the card and the logbook, plays the day-end tone (Hollis) and starts the transition to night (DailyLoop.md 2). The on-screen line then reads `Logbook: go to the Ward.`, or on day 1 `Logbook: the cairn path, at dark.` (Objective.md 4, Logbook.md 4.4).
+6. Day 1 card: no line on it names the Ward.
 
 ## 6. States
 
@@ -103,7 +104,7 @@ Gamepad:
 
 ## 9. Open questions
 
-1. Is the tower check a hard gate on filing? **[GAP: DailyLoop]**
+1. Closed 2026-09-29: yes, File is locked until all five are stamped (DailyLoop.md 1.6).
 2. Closed 2026-09-29 (DECISIONS 2026-09-29): the day ends by filing or by an event, never by time. An event-ended day skips this card (section 2.4).
 3. Should the card name a cost in words (for example `Water not met. It will cost you.`) without numbers? Draft says no: the line alone.
 

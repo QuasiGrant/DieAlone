@@ -1,16 +1,16 @@
 # Tower check: lectern and binoculars
 
-**DRAFT, 2026-09-28, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (daily loop, cave not checked, day and night states, night allows only the Ward), 2026-09-29 (the day ends by filing the report or by an event; no time budget, so no clock in the binocular view). Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. Colours and type sizes wait on Vesper's Style.md **[GAP: Style]**.
+**DRAFT, 2026-09-28, revised 2026-09-29 (second pass), Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (daily loop, cave not checked, day and night states, night allows only the Ward), 2026-09-29 (the day ends by filing the report or by an event; no time budget, so no clock in the binocular view; routine in Docs/Design/DailyLoop.md revision 6 approved for now). Terms (Wren, 2026-09-29): stamps are `SAFE` and `CHECK ON FOOT`; locations are Lake, Camp 1, Camp 2, Camp 3, Office (DailyLoop.md, Main3.md). Colours and type per Style.md 7 (Vesper); the warning colour is still **[GAP: Style]**.
 
 ## 1. Purpose
 
-Every day the player climbs the tower and looks at each location except the cultist cave. The game marks each one SAFE or NOT SAFE from that day's event. The player only has to look; spotting is not a skill here (DECISIONS 2026-09-28).
+Every day the player climbs the tower and looks at each location except the cultist cave. The game stamps each one SAFE or CHECK ON FOOT from that day's events. The player only has to look; spotting is not a skill here (DECISIONS 2026-09-28).
 
 ## 2. Where it lives
 
 1. A lectern in the tower cab, facing the widest window. On it: a pair of binoculars and a clipped sheet, the tower sheet.
 2. The tower sheet is a world-space uGUI canvas on the lectern, readable by walking up to it. It is the diegetic summary: one row per location, a pencil mark appears when checked.
-3. Locations checked **[GAP: DailyLoop]** for the final list. Draft uses the five from DECISIONS 2026-09-28: Lake, Campsite 1, Campsite 2, Campsite 3, Office. The cave is never on the sheet.
+3. Locations checked (DailyLoop.md 1.3): Lake, Camp 1, Camp 2, Camp 3, Office. The cave is never on the sheet.
 
 ## 3. Wireframes
 
@@ -20,11 +20,11 @@ Tower sheet on the lectern (world space, seen at arm's length):
 +----------------------------------+
 |  TOWER SHEET          DAY 14     |
 |                                  |
-|  LAKE ........ SW    SAFE        |
-|  CAMPSITE 1 .. S     ___         |
-|  CAMPSITE 2 .. ESE   NOT SAFE    |
-|  CAMPSITE 3 .. NNW   ___         |
-|  OFFICE ...... E     ___         |
+|  LAKE ...... SW   SAFE           |
+|  CAMP 1 .... S    ___            |
+|  CAMP 2 .... ESE  CHECK ON FOOT  |
+|  CAMP 3 .... NNW  ___            |
+|  OFFICE .... E    ___            |
 |                                  |
 |  (blank line until all checked)  |
 +----------------------------------+
@@ -61,19 +61,20 @@ Binocular view (screen space overlay, full screen):
 
 1. Each location has one designated view: a fixed direction (bearing and elevation) from the deck eye to its landmark, set by the scene recipe. Every designated view must be clear from the deck on an ordinary day: through a window opening, not a wall or post, and over the trees (Main3 sightline rules). Marlow checks each one on the blockout.
 2. The look counts on the bearing alone. The check is the angle between the view centre and the designated direction; there is no line-of-sight ray. If smoke, fog, trees or an event hide the landmark that day, the look still counts. An obscured view can itself be that day's anomaly.
-3. When the designated direction is inside the inner ring, the result line shows the name and three dots fill in over 1.0 s: `LAKE .`, `LAKE . .`, `LAKE . . .`.
+3. When the designated direction is inside the inner ring, the result line shows the name and three dots fill in over 2.0 s (DailyLoop.md 1.3): `LAKE .`, `LAKE . .`, `LAKE . . .`.
 4. If the direction leaves the ring before the dots fill, the line clears and the timer resets.
-5. When the dots fill, the game marks the location from that day's event. The line becomes `LAKE    SAFE` or `CAMPSITE 2    NOT SAFE`. A pencil-scratch sound plays (Hollis). The tower sheet row gets the same word.
+5. When the dots fill, the game stamps the location from that day's events. The line becomes `LAKE    SAFE` or `CAMP 2    CHECK ON FOOT`. A pencil-scratch sound plays (Hollis). The tower sheet row and the logbook line get the same stamp.
 6. A location already marked today shows its result at once when it enters the ring. No dwell.
 7. Only one direction can be in the ring at a time. If two overlap, the one nearest the ring centre wins. Designated views are at least 20 degrees apart, so this is rare.
 8. When the last location is marked, the line reads `All checked.` for 2 s. The view stays up until the player lowers it.
-9. The tower check can always be completed on any day. Nothing in the world can block a designated view from counting, so filing the report can never be blocked forever by the tower.
-10. A NOT SAFE mark adds the location to the logbook day list and posts an objective line after the binoculars are lowered (Objective.md). It never interrupts the view.
+9. The tower check can always be completed on any day. Nothing in the world can block a designated view from counting, so filing the report can never be blocked forever by the tower. If an event blinds the tower, the line can also be stamped on foot (DailyLoop.md 1.6); that is the event's content, not this screen.
+10. When all five are stamped, the objective line posts after the binoculars are lowered: all safe, or one line per CHECK ON FOOT (Objective.md 4). It never interrupts the view.
+11. Day 1: all five stamp SAFE (DailyLoop.md 6.1). Nothing on the sheet or in the view names the Ward.
 
-## 5. How SAFE or NOT SAFE is shown
+## 5. How SAFE or CHECK ON FOOT is shown
 
-1. The word, never colour alone. SAFE and NOT SAFE differ in length and shape so they read through the VHS filter.
-2. SAFE in the off-white of the interact prompt. NOT SAFE in the warm warning colour **[GAP: Style]**.
+1. The word, never colour alone. SAFE and CHECK ON FOOT differ in length and shape so they read through the VHS filter.
+2. SAFE in the text colour of Style.md 7.3. CHECK ON FOOT in the warm warning colour **[GAP: Style]**.
 3. The world carries the event (thick smoke, torn sheet). That is scene content, not UI. The mark only confirms.
 
 ## 6. States
@@ -83,7 +84,7 @@ Binocular view (screen space overlay, full screen):
 | Day, tower not checked | Lectern prompt `Use binoculars`. Sheet rows blank. |
 | Binoculars up, nothing in ring | Mask, bearing, empty result line. |
 | Target in ring, dwelling | Name plus filling dots. |
-| Marked SAFE / NOT SAFE | Name plus word. Sheet row updated. |
+| Stamped SAFE / CHECK ON FOOT | Name plus stamp. Sheet row and logbook line updated. |
 | All marked | `All checked.` for 2 s. Sheet footer: `Checked.` |
 | Day, already checked | Prompt `Use binoculars` still works. Every target shows its result at once. |
 | Night | No prompt at the lectern. Binoculars cannot be raised (night allows only the Ward). |
@@ -120,9 +121,9 @@ Requirements for Rook:
 
 ## 9. Open questions
 
-1. Final location list and bearings **[GAP: DailyLoop, Main3 revision]**.
-2. Does the tower check have to be complete before the report can be filed? **[GAP: DailyLoop]** DayEndConfirm.md assumes yes; section 4.9 keeps that gate from ever locking.
-3. Wording: SAFE and NOT SAFE, or in-world words such as `CLEAR` and `SEE TO IT`? Draft keeps the words in DECISIONS.
-4. Dwell 1.0 s and ring 15 percent are guesses. Marlow to time them on the blockout.
+1. Bearings **[GAP: Main3 revision]**. The list is closed: DailyLoop.md 1.3.
+2. Closed 2026-09-29: File stays locked until all five are stamped (DailyLoop.md 1.6); section 4.9 keeps that gate from ever locking.
+3. Closed 2026-09-29 (Wren): stamps are SAFE and CHECK ON FOOT.
+4. Dwell 2.0 s (DailyLoop.md) and ring 15 percent: Marlow to time them on the blockout.
 
 Pim

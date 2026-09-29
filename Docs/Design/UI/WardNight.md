@@ -2,6 +2,8 @@
 
 **DRAFT, 2026-09-28, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (stats on screen only at the end-of-day Ward phase; at night the only action is going to the Ward and offering HP or MIND; ignoring it lowers WARD; WARD at 0 means the barrier falls; a run ends the first time HP, MIND or WARD reaches 0; the Ward screen has `Give nothing`), 2026-09-29 (the day ends by filing the report or by an event, for example a chase that catches the player, who then finds themselves at the Ward; no time budget for the day). DESIGN.md: stats 0 to 12, never above 12. Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. Colours **[GAP: Style]**.
 
+Terms check, 2026-09-29 (Wren: the approved DailyLoop.md wins): this spec uses no stamp or location names. Day one rule (Quill): the night 1 climb is led by the keeper's note and the lit cairn, never by naming the Ward (Logbook.md 4.4); the screen itself may name it, being the reveal. The **[GAP: DailyLoop]** items below (0 to 3 points in any mix, WARD cap, bunk from night 2, the night 1 explainer, the last-point warning) are answered by DailyLoop.md 2 and 6 and get folded in at the next revision.
+
 ## 1. Purpose
 
 The one place the player sees HP, MIND and WARD as numbers, and the one choice of the night: give the Ward HP, give it MIND, or give it nothing. Once the player kneels, there is no way back out without choosing.
