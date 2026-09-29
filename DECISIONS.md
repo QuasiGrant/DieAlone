@@ -108,3 +108,4 @@
 - 2026-09-29: There will be minigames that progress each of the six characters' dialogue, and they affect the multiple endings.
 - 2026-09-29: Main3 map change: the tower should see more of the office and parking lot.
 - 2026-09-29: From the approved routine: the lake is open from the start, and the player wakes in the camp cabin.
+- 2026-09-29: Story session round 1 held. Grant's story canon (premise, the six residents, the hidden seventh, the endings) is recorded in Docs/Private/StoryBible.md, which is not committed. His manuscript Cinderedge is the source; Quill reads it from his copy.
