@@ -145,3 +145,9 @@
 - 2026-09-29: A resident whose storyline is completed stays for the rest of the run, and counts toward the ending.
 - 2026-09-29: This is an adult game. Resident deaths can be bloody and scary; only the cat's and the child's are kept subtle.
 - 2026-09-29: The team's suggested horror devices are noted, none adopted yet (Docs/Private/MinigameReview.md).
+- 2026-09-29: The store inside the fence hosts a resident's minigame: go in to buy a bottle, or leave if you spot an anomaly. Inside it can turn weird and trippy, and the player can get stuck in it, looping like the Backrooms.
+- 2026-09-29: One place is a point-and-click, escape-room style puzzle, like Inscryption's meta layer. Which place is open.
+- 2026-09-29: A roulette-style minigame (like Buckshot Roulette) is wanted; where it fits is open.
+- 2026-09-29: A camp has a payphone, as a homage to Disco Elysium.
+- 2026-09-29: The last page of the logbook is a collectible page of achievements that reference other games (for example the lamppost from The Beginner's Guide, the phone booth from Disco Elysium).
+- 2026-09-29: The game opens with content warnings.
