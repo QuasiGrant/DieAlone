@@ -1,2 +1,2 @@
 - [Grant](user_grant.md) — answers numbered lists by number; explain Unity terms plainly; archive, never delete
-- [Parallel work](feedback_parallel_work.md) — Tully finds parallel work; never ask Grant about sequencing
+- [Parallel work](feedback_parallel_work.md) — idle check after every handback; roster line in every report; never make Grant ask
