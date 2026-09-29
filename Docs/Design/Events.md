@@ -24,7 +24,7 @@ One record per event (Rook sets the format, Milestone 13).
 ## 2. Grammar
 
 ### 2.1 Verbs (what an event can do)
-1. **FLAG** a location: the tower stamps it CHECK. Counts for Safety.
+1. **FLAG** a location: the tower stamps it CHECK. Counts for Safety. Only the five checked locations can be flagged; an event on a trail beside one flags that location's line.
 2. **BLIND** the tower: some or all lines cannot be stamped from the deck; they must be stamped on foot. File unlocks when all five are stamped.
 3. **BLOCK** a need option for the day (pump seized, store empty).
 4. **ADD** a need option (a meal left out, a spring running clear).
@@ -42,10 +42,11 @@ One record per event (Rook sets the format, Milestone 13).
 Inspect (look and write it in the logbook), fix (hold interact at a marked spot), carry (bring an object from one place to another), put out (carry water to it), search (find one of several marked spots), talk (a resident conversation), follow (walk a leg behind something), hide or flee (chases), play (minigame).
 
 ### 2.3 Rules
-1. Safety counts only FLAG events. Hidden and night events never cost the Safety need; their cost is their own.
-2. Unresolved events cost what they say. There is no general aging timer.
-3. Carrying: an event may say it carries to tomorrow at its next stage. Carried events still count toward the daily cap.
-4. An event that ENDS THE DAY with other events open: each open event takes its own unresolved cost.
+1. Safety counts only FLAG events, which are drawn only in the checked-location rolls. Hidden and night events never cost the Safety need; their cost is their own.
+2. Each FLAG event left open when the day ends costs 1 MIND for the Safety miss, per open CHECK, plus its own "if unresolved" cost.
+3. Unresolved events cost what they say. There is no general aging timer.
+4. Carrying: an event may say it carries to tomorrow at its next stage. Carried events still count toward the daily cap.
+5. An event that ENDS THE DAY with other events open: each open event takes its own unresolved cost.
 
 ## 3. Drawing and escalation
 
@@ -62,7 +63,7 @@ Inspect (look and write it in the logbook), fix (hold interact at a marked spot)
 
    At WARD 5 or less, shift 10 points from severity 1 to severity 3.
 5. **Tracks:** a track is three stages of one event line. Stage 2 is drawn no sooner than 2 days after stage 1 ends. Stage 3 is the weirdest (DESIGN.md).
-6. **Empty pool:** if a location has no event left to draw, it stamps SAFE. Milestone 14 decides whether pools refill.
+6. **Pools refill:** when a location's pool (or the hidden or night pool) runs out, its used events are reshuffled back in. A track stage returns only after its whole track has ended. So the odds, the severity weights and the all-SAFE figures below hold for the whole run.
 7. Chance of an all-SAFE tower check: about 59 percent on day 2, 22 percent on day 10, 5 percent on day 20.
 
 ## 4. Starter slots (mechanics only)
@@ -76,7 +77,7 @@ Nineteen slots. Costs are proposals. Quill writes what each one is.
 | 3 | Camp (any) | 1 | CHECK | FLAG; BLOCK that camp's need option | fix at the camp | -1 MIND |
 | 4 | Camp (any) | 2 | CHECK | FLAG; resident absent, Social there blocked | search 3 spots on the camp's legs | -1 MIND, carries as stage 2 |
 | 5 | Camp (any) | 2 | CHECK (smoke) | FLAG | put out: carry water from the nearest source | -1 WARD |
-| 6 | Trail leg | 2 | tower sound | FLAG a sixth line for the day; not needed to File (File needs only the five location lines), counts for Safety | put out a spot fire on the leg | -2 WARD |
+| 6 | Trail leg beside a checked location | 2 | CHECK on that location's line (smoke rising beside it), with a tower sound | FLAG that location; counts for Safety like any FLAG. Drawn in that location's dawn roll, from its pool; no sixth line | put out a spot fire on the leg beside it | -2 WARD |
 | 7 | Office | 1 | CHECK | FLAG | talk, then fix at the office | -1 MIND |
 | 8 | Store | 1 | CHECK on the Office line (the store has no line of its own) | FLAG; BLOCK store Food | inspect the store | store blocked tomorrow; no stat cost |
 | 9 | Office | 2 | tower sound (radio) | FLAG | answer at the office | -1 MIND, carries as stage 2 |
