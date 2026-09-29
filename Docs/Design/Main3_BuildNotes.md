@@ -52,3 +52,9 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 - Resident's car at the map point (370, 179.4), doc (370, 178).
 - Shift walls (3.2.7) are built but off: nothing starts a shift until the gate minigame exists; the "You can't abandon your post." message also waits for it. The gate PlayerBlocker is always on; it blocks everything for now, so cars will need their own layer when they exist.
 - Closed campground: loop road ring (5 m wide, 40 m outside) with eight empty pitches; the spur runs on to the loop at z 242.
+
+## 8.7 Ward climb and ledge
+
+- Cairn gate: pale cairn 2.2 m beside the trail start at J with a chain across the trail to a post. The chain has no collider: nothing makes the climb night only yet, and a solid chain would stop the climb.
+- The Tor: dome of radius 18 m, top 58, built as an ellipsoid (vertical radius 28, centre y 30) so it meets the lower ground on its south-east side (its base circle runs 7 m past the spur edge) without floating. Closest point of the climb trail is 22 m from its centre.
+- Ward stones at the map positions, 3.6 x 4 m, tops 48 (5.4); they stand 11.8 m in from the cliff, as in the 8.1 note.
