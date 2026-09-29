@@ -2,7 +2,8 @@
 // Camp 1 (282, 238) ground 5, 60 m workshop camp: one tent, workbenches, cookfire (Food), landmark a lashed timber spar
 //   24 m (top 29) with a string of bulbs, at the centre as drawn on the map.
 // Camp 2 (292, 108) ground 4, 40 m boulder field around a granite stack 20 m tall (top 24), 12 m across (map), a ladder up,
-//   one tent on top with a cold white lamp, a rain barrel (Water). The stack is a mesh with a mesh collider.
+//   one tent on top with a cold white lamp, a rain barrel (Water). The stack is a mesh with a mesh collider; a switchback path
+//   up its east face reaches the top on foot (8.9a).
 // Camp 3 (78, 146) hollow floor -4, 25 m: tent, fire (Warmth), green-glass lantern hung on the Snag (landmark, built in 8.3).
 // Each has a Resident_*_Spot capsule (no collider).
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
@@ -76,22 +77,60 @@ var top2 = Group("StackTop", c2, 292f, 108f, 0f).transform; top2.position = V(29
 var t2 = new UnityEngine.GameObject("Tent"); t2.transform.SetParent(top2, false); t2.transform.localPosition = V(0.5f, 0f, 0.5f); Tent(t2.transform, 2.2f, 2.6f, 1.4f);
 Prim(Cube, "TentLamp", top2, V(0.5f, 1.1f, -0.9f), V(0.15f, 0.25f, 0.15f), null, false);
 Prim(Cap, "Resident_Camp2_Spot", top2, V(-1.8f, 0.9f, 0.5f), V(0.6f, 0.9f, 0.6f), null, false);
-// ladder on the west-south-west face toward the arriving trail (looks only: a ladder climb is not in the game yet)
+// switchback path up the east face (8.9a; Main3.md 8.1, Sable's lean): four 26.6 degree ramps on two lanes beside the
+// face, lane A (x 298.2 to 299.6) climbing north, lane B (x 299.7 to 301.1) climbing south, z 108 to 118, 5 m per ramp,
+// landings at each end, rails on every open edge; the top landing reaches over the stack top (24) at its east edge.
+var path2 = new UnityEngine.GameObject("StackPath").transform; path2.SetParent(c2, false);
+const float laneA0 = 298.2f, laneA1 = 299.6f, laneB0 = 299.7f, laneB1 = 301.1f, zS = 108f, zN = 118f, rampRise = 5f, railH2 = 1.0f;
+float rampRun = zN - zS, rampLen = UnityEngine.Mathf.Sqrt(rampRun * rampRun + rampRise * rampRise), rampAng = UnityEngine.Mathf.Atan2(rampRise, rampRun) * UnityEngine.Mathf.Rad2Deg;
+void Ramp(string name, float x0, float x1, float yLow, bool north)
+{
+    float cx = (x0 + x1) * 0.5f, ym = yLow + rampRise * 0.5f, zm = (zS + zN) * 0.5f, pitch = north ? -rampAng : rampAng;
+    var up = UnityEngine.Quaternion.Euler(pitch, 0f, 0f) * UnityEngine.Vector3.up;
+    var r = Prim(Cube, name, path2, V(0f, 0f, 0f), V(x1 - x0, 0.2f, rampLen + 0.3f)); r.transform.position = V(cx, ym, zm) - up * 0.1f; r.transform.rotation = UnityEngine.Quaternion.Euler(pitch, 0f, 0f);
+    foreach (var rx in new[] { x0 + 0.03f, x1 - 0.03f })
+    { var rl = Prim(Cube, name + "_Rail", path2, V(0f, 0f, 0f), V(0.06f, railH2, rampLen)); rl.transform.position = V(rx, ym + railH2 * 0.5f, zm); rl.transform.rotation = UnityEngine.Quaternion.Euler(pitch, 0f, 0f); }
+}
+void Landing2(string name, float x0, float x1, float z0, float z1, float y, bool railN, bool railS, bool railE, bool railW)
+{
+    var s = Prim(Cube, name, path2, V(0f, 0f, 0f), V(x1 - x0, 0.2f, z1 - z0)); s.transform.position = V((x0 + x1) * 0.5f, y - 0.1f, (z0 + z1) * 0.5f);
+    float ry = y + railH2 * 0.5f;
+    if (railN) { var r = Prim(Cube, name + "_RailN", path2, V(0f, 0f, 0f), V(x1 - x0, railH2, 0.06f)); r.transform.position = V((x0 + x1) * 0.5f, ry, z1 - 0.03f); }
+    if (railS) { var r = Prim(Cube, name + "_RailS", path2, V(0f, 0f, 0f), V(x1 - x0, railH2, 0.06f)); r.transform.position = V((x0 + x1) * 0.5f, ry, z0 + 0.03f); }
+    if (railE) { var r = Prim(Cube, name + "_RailE", path2, V(0f, 0f, 0f), V(0.06f, railH2, z1 - z0)); r.transform.position = V(x1 - 0.03f, ry, (z0 + z1) * 0.5f); }
+    if (railW) { var r = Prim(Cube, name + "_RailW", path2, V(0f, 0f, 0f), V(0.06f, railH2, z1 - z0)); r.transform.position = V(x0 + 0.03f, ry, (z0 + z1) * 0.5f); }
+}
+float y0 = g2;
+Ramp("Ramp1", laneA0, laneA1, y0, true);                       // lane A, north
+Landing2("LandingN1", laneA0, laneB1, zN, zN + 1.5f, y0 + 5f, true, false, true, true);
+Ramp("Ramp2", laneB0, laneB1, y0 + 5f, false);                 // lane B, south
+Landing2("LandingS1", laneA0, laneB1, zS - 1.5f, zS, y0 + 10f, false, true, true, true);
+Ramp("Ramp3", laneA0, laneA1, y0 + 10f, true);
+Landing2("LandingN2", laneA0, laneB1, zN, zN + 1.5f, y0 + 15f, true, false, true, true);
+Ramp("Ramp4", laneB0, laneB1, y0 + 15f, false);
+Landing2("LandingTop", 295.5f, laneB1, zS - 1.5f, zS, 24f, false, true, true, false);
+{ var r = Prim(Cube, "LandingTop_RailOverLaneA", path2, V(0f, 0f, 0f), V(laneA1 - laneA0, railH2, 0.06f)); r.transform.position = V((laneA0 + laneA1) * 0.5f, 24f + railH2 * 0.5f, zS - 0.03f); }
+foreach (var px in new[] { laneA0, laneB1 }) foreach (var pz in new[] { zS - 1.5f, zN + 1.5f })
+{ var post = Prim(Cube, "Post", path2, V(0f, 0f, 0f), V(0.2f, 24f - y0 + 1f, 0.2f)); post.transform.position = V(px, (y0 - 1f + 24f) * 0.5f, pz); }
+// ladder on the west-south-west face toward the arriving trail (looks only: the switchback path above is the way up)
 var lad = new UnityEngine.GameObject("Ladder"); lad.transform.SetParent(c2, false);
 float la = 200f * UnityEngine.Mathf.Deg2Rad; var ladBase = V(292f + UnityEngine.Mathf.Sin(la) * 6.3f, g2, 108f + UnityEngine.Mathf.Cos(la) * 6.3f);
 lad.transform.position = ladBase; lad.transform.rotation = UnityEngine.Quaternion.Euler(-3f, 200f + 180f, 0f);
 foreach (var sx in new[] { -0.25f, 0.25f }) Prim(Cube, "Rail", lad.transform, V(sx, 10f, 0f), V(0.06f, 20.5f, 0.06f), null, false);
 for (int i = 1; i < 68; i++) Prim(Cube, "Rung", lad.transform, V(0f, i * 0.3f, 0f), V(0.5f, 0.04f, 0.04f), null, false);
 var barrel = Group("RainBarrel", c2, 286.5f, 101.5f, 0f).transform; Prim(Cyl, "Barrel", barrel, V(0f, 0.45f, 0f), V(0.6f, 0.45f, 0.6f));
-// boulder field: 16 boulders on a ring 8 to 19 m out, kept 4 m clear of the two trails into the stack
+// boulder field: 16 boulders on a ring 9.5 to 19 m out, kept 4 m clear of the two trails into the stack
 var rng = new System.Random(8005); var trailPts = new System.Collections.Generic.List<UnityEngine.Vector2>();
 foreach (UnityEngine.Transform leg in Root("Trails").transform) foreach (UnityEngine.Transform p in leg) trailPts.Add(new UnityEngine.Vector2(p.position.x, p.position.z));
 int boulders = 0;
 for (int tries = 0; tries < 400 && boulders < 16; tries++)
 {
-    float ang = (float)rng.NextDouble() * UnityEngine.Mathf.PI * 2f, rr = 8f + (float)rng.NextDouble() * 11f, sz = 1f + (float)rng.NextDouble() * 2f;
+    float ang = (float)rng.NextDouble() * UnityEngine.Mathf.PI * 2f, rr = 9.5f + (float)rng.NextDouble() * 9.5f, sz = 1f + (float)rng.NextDouble() * 2f;
     var p = new UnityEngine.Vector2(292f + UnityEngine.Mathf.Cos(ang) * rr, 108f + UnityEngine.Mathf.Sin(ang) * rr);
     bool ok = UnityEngine.Vector2.Distance(p, new UnityEngine.Vector2(ladBase.x, ladBase.z)) > 4f && UnityEngine.Vector2.Distance(p, new UnityEngine.Vector2(286.5f, 101.5f)) > 3f;
+    // keep the stack path and its approach clear, and the Camp 2 view line to the boathouse (8.9a)
+    if (p.x > 295f - sz && p.x < 303f + sz && p.y > 100f - sz && p.y < 122f + sz) ok = false;
+    { var va = new UnityEngine.Vector2(286.5f, 102.2f); var ab = new UnityEngine.Vector2(240f, 52.4f) - va; float tt = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(p - va, ab) / ab.sqrMagnitude); if (UnityEngine.Vector2.Distance(p, va + ab * tt) < sz + 3f) ok = false; }
     foreach (var t in trailPts) if (UnityEngine.Vector2.Distance(p, t) < sz + 3f) { ok = false; break; }
     if (!ok) continue;
     var bg = Group("Boulder", c2, p.x, p.y, (float)rng.NextDouble() * 360f).transform;
@@ -115,6 +154,7 @@ Prim(Cap, "Resident_Camp3_Spot", Group("Resident", c3, 75f, 149.5f, 150f).transf
 // warps: Camp 2 warp at the ladder foot
 var w2 = Root("DevWarps").transform.Find("Camp_2");
 if (w2 != null) { w2.position = ladBase + (V(ladBase.x, 0f, ladBase.z) - V(292f, 0f, 108f)).normalized * 2f + V(0f, 0.2f, 0f); w2.rotation = UnityEngine.Quaternion.LookRotation(V(292f - ladBase.x, 0f, 108f - ladBase.z).normalized); }
+{ var wt = new UnityEngine.GameObject("Camp_2_Top"); wt.transform.SetParent(Root("DevWarps").transform, false); wt.transform.position = V(294.5f, 24.2f, 107.2f); wt.transform.rotation = UnityEngine.Quaternion.Euler(0f, 270f, 0f); }
 
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " camp1 ground " + H(282f, 238f).ToString("F1") + " spar top " + sparTop.y.ToString("F1") + " | camp2 ground " + g2.ToString("F1") + " stack top " + stack.GetComponent<UnityEngine.Renderer>().bounds.max.y.ToString("F1") + " boulders " + boulders

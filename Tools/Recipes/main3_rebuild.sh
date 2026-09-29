@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Main3 runner (8.9a): rebuilds Main3 from 8.1 in task order through the connected Editor and stops at the first failure.
+# Usage: bash Tools/Recipes/main3_rebuild.sh   (from the project root, Editor open, not in Play mode, nothing unsaved)
+# Each recipe runs as a detached Editor job (long recipes outlive the bridge's 5 s request limit) and must return its
+# success text; 8.8 and 8.9 must also pass their own checks. Output: one line per step.
+set -u
+cd "$(dirname "$0")/../.." || exit 1
+R="$(pwd)/Tools/Recipes"
+unity status 2>/dev/null | grep -q "ready" || { echo "FAIL no Editor in state ready (unity status)"; exit 1; }
+unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "stopped"' || { echo "FAIL Editor is in Play mode or busy"; exit 1; }
+run() {   # $1 = recipe file, then any number of required substrings
+  local file="$1"; shift
+  local id; id=$(unity command --detach eval_file --file "$R/$file" --json 2>/dev/null | sed -n 's/.*"jobId": "\([0-9a-f]*\)".*/\1/p')
+  [ -n "$id" ] || { echo "FAIL $file: could not start the job"; exit 1; }
+  local out; out=$(unity job wait "$id" --timeout 1200 --json 2>/dev/null)
+  local res; res=$(printf '%s' "$out" | sed -n 's/^ *"result": "\(.*\)",\{0,1\}$/\1/p' | head -1)
+  printf '%s' "$out" | grep -q '"state": "completed"' || { echo "FAIL $file: job did not complete"; printf '%s\n' "$out" | head -20; exit 1; }
+  for need in "$@"; do
+    case "$res" in *"$need"*) ;; *) echo "FAIL $file: missing \"$need\""; printf '%s\n' "$res" | sed 's/\n/\n/g'; exit 1;; esac
+  done
+  echo "ok   $file: $(printf '%s' "$res" | sed 's/\n/ | /g' | cut -c1-400)"
+}
+run main3_reset.cs "saved=True"
+run main3_8_1_scene_ground.cs "saved=True"
+run main3_8_2_camp_tower.cs "saved=True"
+run main3_8_3_trails_giants.cs "saved=True"
+run main3_8_4_lake.cs "saved=True"
+run main3_8_5_campsites.cs "saved=True"
+run main3_8_6_front_zone.cs "saved=True"
+run main3_8_7_ward.cs "saved=True"
+run main3_8_8_cave.cs "saved=True" "terrain never enters the passage or chamber: YES" "only at the mouth: YES"
+run main3_8_9_sightlines.cs "all seen: True" "Ward hidden: True, cave hidden: True" "ok True | next:" "all True" "ok True | cab from"
+run main3_topdown.cs "wrote"
+echo "Main3 rebuilt. Commit Main3.unity.meta with ProjectSettings/EditorBuildSettings.asset (the scene GUID changes on every rebuild)."

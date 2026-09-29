@@ -4,7 +4,7 @@
 // Passage pieces (3 m wide): entrance x 50.5..53.5 z 20.5..37.4 floor -6 ceiling -2; three legs between x 53.5 and 66.5 on
 // z 22 / 17 / 12 falling 4 m each (-6..-10, -10..-14, -14..-18) with level 3 x 8 m turns at x 68 and x 52; a level passage
 // to the chamber x 71..89, z 3..21, floor -18, ceiling -10. Each piece: floor, ceiling and walls 0.5 m thick, openings where
-// pieces join. Board across the mouth is looks only (no day system yet). Prints the terrain clearance over every piece and
+// pieces join. The day-one board across the mouth is solid (8.9a). Prints the terrain clearance over every piece and
 // the terrain holes, the done-check of 8.8.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
@@ -65,9 +65,9 @@ Piece("Chamber", 71f, 89f, 3f, 21f, -18f, -18f, 8f, new[] { ('W', 10.5f, 13.5f) 
 // mouth: rock block over the passage inside the hole, and the terrain hole itself
 var mouth = new UnityEngine.GameObject("Mouth").transform; mouth.SetParent(cave, false);
 Box("RockAbove", mouth, V(52f, (-2f + 0.2f) * 0.5f, 35.45f), V(4.4f, 2.2f, 4.3f));   // covers the hole cells (x 50.0 to 53.9, z 33.4 to 37.5)
-// day-one board: CLOSED, UNSAFE planks across the opening (looks only until a day system exists)
+// day-one board: CLOSED, UNSAFE planks across the opening, solid; a later day system takes them down from day 2 (dev warp Cave_Chamber reaches inside)
 var board = new UnityEngine.GameObject("DayOneBoard").transform; board.SetParent(mouth, false);
-foreach (var y in new[] { -5.2f, -4.4f, -3.6f }) Box("Plank", board, V(52f, y, 37.6f), V(3.2f, 0.25f, 0.06f), y == -4.4f ? 6f : -4f, false);
+foreach (var y in new[] { -5.2f, -4.4f, -3.6f }) Box("Plank", board, V(52f, y, 37.6f), V(3.2f, 0.25f, 0.06f), y == -4.4f ? 6f : -4f, true);   // solid: boarded on day 1 (8.9a)
 Box("Sign", board, V(52f, -4.0f, 37.66f), V(1.4f, 0.6f, 0.04f), 0f, false);
 int hres = data.holesResolution; float hx = data.size.x / hres, hz = data.size.z / hres;
 int ix0 = UnityEngine.Mathf.FloorToInt(50.3f / hx), ix1 = UnityEngine.Mathf.CeilToInt(53.7f / hx) - 1, iz0 = UnityEngine.Mathf.FloorToInt(33.6f / hz), iz1 = UnityEngine.Mathf.CeilToInt(37.4f / hz) - 1;

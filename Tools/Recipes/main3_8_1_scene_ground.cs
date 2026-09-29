@@ -179,6 +179,14 @@ float Height(float x, float z)
         if (dRect < 4f) h = L(0f, h, SS(dRect / 4f));
         if (x >= 48f && x <= 56f && z >= 22f && z <= 34f) h = 0f;
     }
+    // 9b. Camp 2 view cut (8.9a): from the Camp 2 junction (8 m out from the stack toward the lake, eye 5.6) the line to the
+    // boathouse roof (-1.0) must clear the ground by 1.3 m, so the next destination shows (Marlow 2026-09-29, finding 4)
+    {
+        var va = P(286.5f, 102.2f); var vb = P(240f, 52.4f); var ab = vb - va;
+        float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(p - va, ab) / ab.sqrMagnitude);
+        float d = UnityEngine.Vector2.Distance(p, va + ab * t);
+        if (d < 7f) { float cap = L(5.6f, -1.0f, t) - 1.3f; float w = 1f - SS((d - 3f) / 4f); if (h > cap) h = L(h, cap, w); }
+    }
     // 10. front zone flat at 3
     if (x >= 330f) h = L(h, 3f, SS((x - 330f) / 10f));
     // 11. cliff at x 10, valley floor -40
@@ -240,7 +248,7 @@ terrainGo.transform.position = V(0f, baseY, 0f);
 var terrain = terrainGo.GetComponent<UnityEngine.Terrain>();
 float H(float x, float z) => terrain.SampleHeight(V(x, 0f, z)) + baseY;
 
-// ---------- bounds: invisible walls on the north, south and west edges and at the cliff ----------
+// ---------- bounds: invisible walls on the north, south and west edges and at the cliff (the east edge is the fence; 8.6 builds the gate) ----------
 var bounds = new UnityEngine.GameObject("Bounds");
 void Wall(string name, UnityEngine.Vector3 c, UnityEngine.Vector3 s)
 {
@@ -251,7 +259,6 @@ Wall("Wall_Cliff", V(10f, 25f, 150f), V(1f, 150f, 300f));
 Wall("Wall_West", V(0f, 25f, 150f), V(1f, 150f, 300f));
 Wall("Wall_North", V(200f, 25f, 300f), V(400f, 150f, 1f));
 Wall("Wall_South", V(200f, 25f, 0f), V(400f, 150f, 1f));
-Wall("Wall_GateOpening", V(396f, 25f, 170f), V(1f, 150f, 5f));   // task 8.6 replaces this with the gate barrier
 
 // ---------- fence along x 396, gray, 2.1 m, gap for the gate lane z 167.5 to 172.5 ----------
 var fence = new UnityEngine.GameObject("Fence");

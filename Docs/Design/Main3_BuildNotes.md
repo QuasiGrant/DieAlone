@@ -70,3 +70,17 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 - Report: Docs/Layout/Main3/Main3_sightlines.md. Every place is seen from the deck; the Ward (Tor) and the cave (rim and terrain) are hidden from all 64 eye points, also with eyes and targets raised 3 m.
 - Hidden margins (least-hidden line): W-1 4.2 m at eye height (5.0 from the deck centre, doc 6.4), 0.9 m at +3 m jump; C-1 9.2 m (9.3 from the centre, doc 8.3), 6.0 m at +3 m jump (doc about 5.3).
 - For Sable: the Hollow Giant (map (202, 140), a 40 to 50 m giant, top 50 here) stands 1.8 m outside the map's Camp 2 cone and its crown reaches into it: the stack top is seen from 37 of 64 eye points with 0.5 m margin from the deck centre (doc 3.8, cone rule 3), and the boulder field is not seen. The same crown hides the cab from the Camp 2 stack foot.
+
+## 8.9a Fix batch (after Marlow's walk and Tully's check)
+
+- Camp 2: switchback path up the stack's east face (four 26.6 degree ramps on two lanes, z 108 to 118, rails, a top landing over the stack top). Boulders keep off it and off the Camp 2 view line.
+- Hollow Giant crown: radius 5.5, centred 2.5 m south of the trunk -> 3.5 m clear of the deck-centre lines to the Camp 2 stack.
+- Ward stones: map x 21.8 -> x 12.5 on the cliff edge (DECISIONS 2026-09-25 wins over the map).
+- Tor: top 58 -> 63.5 (raised 5.5 m) so W-1 keeps 3.8 m with eyes and targets raised 3 m.
+- Snag: map (90, 146) -> (96, 146.5), 6 m east on the rim, so the log-steps trail clears its trunk and the cab shows from the Camp 3 centre.
+- Camp 2 view: ground under the line from the Camp 2 junction (286.5, 102.2) to the boathouse roof lowered to 1.3 m under the line; giants and hedges kept under it.
+- Off-trail: hedges line the outline of the walkable ground (trail corridors 2.2 m each side, clearings, lake landings, front-zone surfaces, ledge, cave approach): 1.2 m thicket, 5 m regrowth in the old burn, 4 m in its last 40 m. The regrowth near T hides the lot's west edge from the tower (5.3 claims a 2.6 m margin over it); the lot centre, office, store, car and mast stay seen.
+- Lake: wade boxes stand 0.9 m over the ground where the ring runs up the bank (buried where a shore trail crosses it); dock rails over the water, so there is no stepping off and no way back needed; shore trails keep 6 percent of the lake radii off the water line.
+- Shift walls: a U across the spur mouth and a closed ring round the turning circle; still off until shifts exist.
+- Cairn gate 4 m up the J to Ward trail with the cairn on its west side; the chain and the cave's day-one board are solid, so the Ward climb and the cave are closed by day (dev warps reach both).
+- Boathouse trail end moved from (246, 57) to (247.6, 52.4), the gangway foot. Footbridge rails have no colliders. 8.1 builds no gate wall.

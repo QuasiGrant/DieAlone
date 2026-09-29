@@ -1,5 +1,5 @@
 // Main3 task 8.3: trails flattened and painted along every route in Main3.md 4, points of interest as gray stand-ins,
-// gray giant trees (hero trunks with mesh colliders). Run after 8.2 in Main3, edit mode.
+// gray giant trees (hero trunks with mesh colliders), and the thicket that keeps walkers on the trails. Run after 8.2 in Main3, edit mode.
 // Trails: the map curve (Main3_map.svg) is the centre line; ends and on-trail points of interest are anchors; between
 // anchors the trail meanders (half-waves about 18 m long) with one amplitude factor per leg, solved so the walked
 // length matches table 4 (Docs/Design/Main3_BuildNotes.md). Shore legs meander only to the land side.
@@ -25,8 +25,8 @@ float LakeRe(UnityEngine.Vector2 p) { var q = p - lakeC; return UnityEngine.Math
 var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2[] ctrl, bool polyline, float target, bool shore, float maxGrade, (string n, UnityEngine.Vector2 p, string kind)[] pois)>
 {
     ("Camp to pump", new[] { P(170,160), P(174,128), P(190,96) }, false, 80f, false, 0.3f, new[] { ("Water tank", P(182,128), "side") }),
-    ("Pump to boathouse", new[] { P(190,96), P(232,92), P(246,57) }, false, 84f, true, 0.3f, new[] { ("Overturned rowboat", P(223.6f,83.2f), "side") }),
-    ("Boathouse to Camp 2", new[] { P(246,57), P(280,64), P(292,108) }, false, 95f, false, 0.3f, new[] { ("Phone pole", P(272.8f,72f), "side") }),
+    ("Pump to boathouse", new[] { P(190,96), P(232,92), P(247.6f,52.4f) }, false, 84f, true, 0.3f, new[] { ("Overturned rowboat", P(223.6f,83.2f), "side") }),
+    ("Boathouse to Camp 2", new[] { P(247.6f,52.4f), P(280,64), P(292,108) }, false, 95f, false, 0.3f, new[] { ("Phone pole", P(272.8f,72f), "side") }),
     ("Camp 2 to T", new[] { P(292,108), P(324,128), P(340,170) }, false, 94f, false, 0.3f, new[] { ("Food lockers", P(320,133.6f), "side") }),
     ("Camp to Jg", new[] { P(170,160), P(200,136), P(232,152), P(262,172) }, false, 125f, false, 0.3f, new[] { ("Hollow Giant", P(202,140), "tree"), ("Forage patch A", P(240,162.8f), "side") }),
     ("Jg to T", new[] { P(262,172), P(288,196), P(316,148), P(340,170) }, false, 105f, false, 0.3f, new[] { ("Gate Tree", P(290,176), "tree"), ("First sight of the lot", P(328,164), "side") }),
@@ -108,7 +108,10 @@ foreach (var leg in legs)
             float f = UnityEngine.Mathf.Sin(UnityEngine.Mathf.PI * n * u) * UnityEngine.Mathf.Sin(UnityEngine.Mathf.PI * u); if (leg.shore) f = UnityEngine.Mathf.Abs(f) * side;
             float off = amp * f;
             foreach (var dt in detours) { float x = (d - dt.s) / 15f; if (UnityEngine.Mathf.Abs(x) < 1f) { float w = UnityEngine.Mathf.Cos(x * UnityEngine.Mathf.PI * 0.5f); off += dt.off * w * w; } }
-            var c = At(C, S, UnityEngine.Mathf.Min(d, Lc), out var tan); outp.Add(c + P(-tan.y, tan.x) * off);
+            var c = At(C, S, UnityEngine.Mathf.Min(d, Lc), out var tan); var q = c + P(-tan.y, tan.x) * off;
+            // shore legs keep 6 percent of the lake radii off the water line, so no trail runs through the shallows (8.9a)
+            if (leg.shore) { float re = LakeRe(q); if (re < 1.06f) q = lakeC + (q - lakeC) * (1.06f / re); }
+            outp.Add(q);
         }
         return outp;
     }
@@ -268,7 +271,7 @@ foreach (var q in poiPlaced)
         case "Stepping stones": for (int i = -2; i <= 2; i++) UnityEngine.Object.DestroyImmediate(Prim(Cyl, "Stone", g, V(i * 1.1f, -0.1f, 0f), V(0.9f, 0.12f, 0.9f)).GetComponent<UnityEngine.Collider>()); break;
         case "Footbridge":
             UnityEngine.Object.DestroyImmediate(Prim(Cube, "Deck", g, V(0f, -0.06f, 0f), V(2.6f, 0.12f, 4.5f)).GetComponent<UnityEngine.Collider>());
-            foreach (var sx in new[] { -1.3f, 1.3f }) Prim(Cube, "Rail", g, V(sx, 0.5f, 0f), V(0.08f, 1.0f, 4.5f)); break;
+            foreach (var sx in new[] { -1.3f, 1.3f }) UnityEngine.Object.DestroyImmediate(Prim(Cube, "Rail", g, V(sx, 0.5f, 0f), V(0.08f, 1.0f, 4.5f)).GetComponent<UnityEngine.Collider>()); break;   // looks only: the rails caught the player (Marlow finding 10); the thicket keeps walkers on the trail
         case "Plank bridge": UnityEngine.Object.DestroyImmediate(Prim(Cube, "Deck", g, V(0f, -0.06f, 0f), V(2.6f, 0.12f, 3.5f)).GetComponent<UnityEngine.Collider>()); break;   // low planks, no rails: J opens off its end
         case "Rope handrail": for (int i = -3; i <= 3; i++) Prim(Cube, "Post", g, V(1.2f, 0.5f, i * 2f), V(0.1f, 1.0f, 0.1f)); Prim(Cube, "Rope", g, V(1.2f, 0.95f, 0f), V(0.04f, 0.04f, 12f)); break;
         case "Log steps":
@@ -294,18 +297,22 @@ foreach (var q in poiPlaced)
 // ---------- giants ----------
 var giants = new UnityEngine.GameObject("Giants");
 var heroes = new UnityEngine.GameObject("Heroes"); heroes.transform.SetParent(giants.transform, false);
-UnityEngine.GameObject Giant(string name, UnityEngine.Transform parent, UnityEngine.Vector2 p, float trunkD, float tall, bool crown, bool meshCollider)
+// crown: horizontal radius cr, vertical half ch, centre offset co (the Hollow Giant's crown leans away from the Camp 2 view)
+UnityEngine.GameObject Giant(string name, UnityEngine.Transform parent, UnityEngine.Vector2 p, float trunkD, float tall, bool crown, bool meshCollider, float cr = 9f, float ch = 7f, UnityEngine.Vector2 co = default)
 {
     float gy = H(p.x, p.y);
     var g = Group(name, parent, V(p.x, gy, p.y), 0f).transform;
     var trunk = Prim(Cyl, "Trunk", g, V(0f, tall * 0.5f - 1f, 0f), V(trunkD, tall * 0.5f + 1f, trunkD));   // sunk 1 m into the ground
     if (meshCollider) { UnityEngine.Object.DestroyImmediate(trunk.GetComponent<UnityEngine.Collider>()); trunk.AddComponent<UnityEngine.MeshCollider>(); }
-    if (crown) { var c = Prim(Sph, "Crown", g, V(0f, tall - 7f, 0f), V(18f, 14f, 18f)); UnityEngine.Object.DestroyImmediate(c.GetComponent<UnityEngine.Collider>()); }
+    if (crown) { var c = Prim(Sph, "Crown", g, V(co.x, tall - ch, co.y), V(cr * 2f, ch * 2f, cr * 2f)); UnityEngine.Object.DestroyImmediate(c.GetComponent<UnityEngine.Collider>()); }
     return g.gameObject;
 }
-Giant("Hollow_Giant", heroes.transform, P(202, 140), 9f, 50f - H(202, 140), true, true);
+// Hollow Giant: crown radius 5.5 m, half-height 5 m, centred 2.5 m south, so it clears the Camp 2 view by 3 m (8.9a)
+Giant("Hollow_Giant", heroes.transform, P(202, 140), 9f, 50f - H(202, 140), true, true, 5.5f, 5f, P(0f, -2.5f));
 Giant("Gate_Tree", heroes.transform, P(290, 176), 8f, 15f, false, true);
-Giant("Snag", heroes.transform, P(90, 146), 6f, 54f - H(90, 146), false, true);
+// Snag 6 m east of the map point (90, 146), still on the east rim (r 18), so the tower cab shows past it from the
+// Camp 3 floor and the log steps trail keeps clear of its trunk (8.9a, build notes)
+Giant("Snag", heroes.transform, P(96, 146.5f), 6f, 54f - H(96, 146.5f), false, true);
 
 // giant field: at least 30 m apart, never on a grid, tops at most 50 absolute (46 in the cliff-edge band x < 32),
 // 40 to 50 m tall, none on the spur or wherever that rule leaves no room, none in clearings, trails, the lake, the
@@ -327,7 +334,11 @@ float SegD(UnityEngine.Vector2 p, UnityEngine.Vector2 a, UnityEngine.Vector2 b) 
 float PolyDist(UnityEngine.Vector2 p, UnityEngine.Vector2[] poly) { if (Inside(p, poly)) return 0f; float d = float.MaxValue; for (int i = 0; i < poly.Length; i++) d = UnityEngine.Mathf.Min(d, SegD(p, poly[i], poly[(i + 1) % poly.Length])); return d; }
 var clearings = new (UnityEngine.Vector2 c, float r)[] { (P(170,160), 18f), (P(282,238), 30f), (P(292,108), 20f), (P(78,146), 22f), (P(32,258), 12.5f), (P(104,206), 5f), (P(128,70), 5f), (P(262,172), 4f), (P(240,52), 8f), (P(52,34), 12f) };
 var trailPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (var b in built) for (int i = 0; i < b.path.Count; i += 4) trailPts.Add(b.path[i]);
-var placed = new System.Collections.Generic.List<UnityEngine.Vector2> { P(202, 140), P(290, 176), P(90, 146) };
+var placed = new System.Collections.Generic.List<UnityEngine.Vector2> { P(202, 140), P(290, 176), P(96, 146.5f) };
+// junction sight lines kept clear of giants (next destination visible, 8.9a): pump to the Snag, Camp 2 to the boathouse, Camp 3 and the other junctions to the cab
+var sights = new[] { (P(190, 97), P(96, 146.5f)), (P(286.5f, 102.2f), P(240, 52.4f)), (P(78, 146), P(164, 166)),
+    (P(104, 206), P(164, 166)), (P(262, 172), P(164, 166)), (P(128, 70), P(164, 166)), (P(340, 170), P(164, 166)), (P(190, 97), P(164, 166)),
+    (P(276, 232), P(164, 166)), (P(286, 99), P(164, 166)) };   // and every junction to the tower cab (4.1)
 var rng = new System.Random(8003); int made = 0;
 for (int attempt = 0; attempt < 20000; attempt++)
 {
@@ -342,6 +353,7 @@ for (int attempt = 0; attempt < 20000; attempt++)
     foreach (var c in clearings) if (UnityEngine.Vector2.Distance(p, c.c) < c.r + crownR) { ok = false; break; }
     if (!ok) continue;
     foreach (var cone in cones) if (PolyDist(p, cone) < crownR + 3f) { ok = false; break; }
+    foreach (var s in sights) if (SegD(p, s.Item1, s.Item2) < crownR + 3f) { ok = false; break; }
     if (!ok || PolyDist(p, burn) < crownR || PolyDist(p, ravine) < clear || LakeRe(p) < 1.35f) continue;
     foreach (var t in trailPts) if (UnityEngine.Vector2.Distance(p, t) < clear + 1.5f) { ok = false; break; }
     if (!ok) continue;
@@ -351,6 +363,150 @@ for (int attempt = 0; attempt < 20000; attempt++)
     Giant("Giant_" + made.ToString("00"), giants.transform, p, trunkD, tall, true, false);
 }
 
+
+// ---------- thicket (8.9a): the ground keeps walkers on the trails (DailyLoop.md 1.2, Main3.md 2.10) ----------
+// The walkable area is the union of trail corridors (2.2 m each side), clearings, the lake landings, the front zone's
+// surfaces and buildings, the Ward ledge and the cave mouth approach (positions from Main3.md and the later recipes).
+// Its outline is traced (marching squares on a 0.5 m grid), simplified, and lined with gray hedge stand-ins: 1.2 m of
+// fern thicket and deadfall, 5 m of young regrowth in the old burn (4 m in its last 40 m before the front zone).
+// Hedges are cut to 0.3 m under the Camp 2 junction's view line to the boathouse (never under 0.9 m, still too high to hop).
+// One combined mesh with a MeshCollider per 50 m tile, saved under Assets/Terrain/Main3/Thicket.
+const float cellT = 0.5f; int GW = 800, GH = 600;
+var fld = new float[GW + 1, GH + 1];
+for (int i = 0; i <= GW; i++) for (int j = 0; j <= GH; j++) fld[i, j] = -10f;
+void Stamp(float x0, float x1, float z0, float z1, System.Func<UnityEngine.Vector2, float> val)
+{
+    int i0 = UnityEngine.Mathf.Max(1, (int)(x0 / cellT) - 1), i1 = UnityEngine.Mathf.Min(GW - 1, (int)(x1 / cellT) + 1);
+    int j0 = UnityEngine.Mathf.Max(1, (int)(z0 / cellT) - 1), j1 = UnityEngine.Mathf.Min(GH - 1, (int)(z1 / cellT) + 1);
+    for (int i = i0; i <= i1; i++) for (int j = j0; j <= j1; j++) { float v = val(P(i * cellT, j * cellT)); if (v > fld[i, j]) fld[i, j] = v; }
+}
+void Circle(UnityEngine.Vector2 c, float r) => Stamp(c.x - r - 1f, c.x + r + 1f, c.y - r - 1f, c.y + r + 1f, q => r - UnityEngine.Vector2.Distance(q, c));
+void Rect(float x0, float x1, float z0, float z1) => Stamp(x0 - 1f, x1 + 1f, z0 - 1f, z1 + 1f, q => UnityEngine.Mathf.Min(UnityEngine.Mathf.Min(q.x - x0, x1 - q.x), UnityEngine.Mathf.Min(q.y - z0, z1 - q.y)));
+void Seg(UnityEngine.Vector2 a, UnityEngine.Vector2 b, float hw) => Stamp(UnityEngine.Mathf.Min(a.x, b.x) - hw - 1f, UnityEngine.Mathf.Max(a.x, b.x) + hw + 1f, UnityEngine.Mathf.Min(a.y, b.y) - hw - 1f, UnityEngine.Mathf.Max(a.y, b.y) + hw + 1f, q => hw - SegD(q, a, b));
+void Ring(UnityEngine.Vector2 c, float r0, float r1) => Stamp(c.x - r1 - 1f, c.x + r1 + 1f, c.y - r1 - 1f, c.y + r1 + 1f, q => { float d = UnityEngine.Vector2.Distance(q, c); return UnityEngine.Mathf.Min(d - r0, r1 - d); });
+foreach (var b in built) for (int i = 0; i < b.path.Count - 1; i++) Seg(b.path[i], b.path[i + 1], 2.2f);
+Circle(P(170, 160), 18f); Circle(P(282, 238), 30f); Circle(P(292, 108), 20f); Circle(P(78, 146), 9f);
+Circle(P(104, 206), 5f); Circle(P(128, 70), 5f); Circle(P(262, 172), 4f); Circle(P(340, 170), 4f);
+Circle(P(32, 258), 12.5f); Rect(10.6f, 32f, 247f, 269f);                          // Ward ledge out to the stones on the cliff edge
+Rect(49.5f, 54.5f, 36f, 41f);                                                      // in front of the cave mouth
+Rect(187.5f, 192.5f, 86f, 98f); Rect(236.3f, 248.3f, 49.1f, 55.7f);                // dock notch; boathouse and gangway
+Rect(342f, 374f, 149f, 191f); Rect(373f, 395.6f, 166.5f, 173.5f); Circle(P(384, 160), 9f);   // lot, drive, turning circle
+Rect(342f, 372f, 189f, 206f); Rect(388.5f, 395.6f, 172f, 179f); Rect(385f, 395.6f, 234f, 242f); // office and store, booth, chain
+var spurW = new[] { P(385, 172.5f), P(385, 186), P(390, 196), P(390, 244) };
+for (int i = 0; i < spurW.Length - 1; i++) Seg(spurW[i], spurW[i + 1], 3f);
+Ring(P(372, 262), 9.5f, 21f);                                                      // loop road and pitches
+foreach (var q in poiPlaced) if (q.kind == "side") Circle(q.obj, poiRadius[q.n] + 1.5f);
+// marching squares: segments between edge crossings, keyed by edge so neighbouring cells join
+var ptOf = new System.Collections.Generic.Dictionary<long, UnityEngine.Vector2>();
+var adj = new System.Collections.Generic.Dictionary<long, System.Collections.Generic.List<long>>();
+long EKey(int i, int j, int dir) => ((long)j * (GW + 1) + i) * 2 + dir;
+UnityEngine.Vector2 EPoint(int i, int j, int dir)
+{
+    float va = fld[i, j], vb = dir == 0 ? fld[i + 1, j] : fld[i, j + 1]; float t = va / (va - vb);
+    return dir == 0 ? P((i + t) * cellT, j * cellT) : P(i * cellT, (j + t) * cellT);
+}
+void Link(long a, long b, UnityEngine.Vector2 pa, UnityEngine.Vector2 pb)
+{
+    ptOf[a] = pa; ptOf[b] = pb;
+    if (!adj.TryGetValue(a, out var la)) adj[a] = la = new System.Collections.Generic.List<long>(); la.Add(b);
+    if (!adj.TryGetValue(b, out var lb)) adj[b] = lb = new System.Collections.Generic.List<long>(); lb.Add(a);
+}
+for (int i = 0; i < GW; i++) for (int j = 0; j < GH; j++)
+{
+    int cs = (fld[i, j] > 0 ? 1 : 0) | (fld[i + 1, j] > 0 ? 2 : 0) | (fld[i + 1, j + 1] > 0 ? 4 : 0) | (fld[i, j + 1] > 0 ? 8 : 0);
+    if (cs == 0 || cs == 15) continue;
+    long B = EKey(i, j, 0), R = EKey(i + 1, j, 1), T = EKey(i, j + 1, 0), Lf = EKey(i, j, 1);
+    UnityEngine.Vector2 pB() => EPoint(i, j, 0); UnityEngine.Vector2 pR() => EPoint(i + 1, j, 1); UnityEngine.Vector2 pT() => EPoint(i, j + 1, 0); UnityEngine.Vector2 pL() => EPoint(i, j, 1);
+    bool centre = (fld[i, j] + fld[i + 1, j] + fld[i + 1, j + 1] + fld[i, j + 1]) > 0f;
+    switch (cs)
+    {
+        case 1: case 14: Link(Lf, B, pL(), pB()); break;
+        case 2: case 13: Link(B, R, pB(), pR()); break;
+        case 3: case 12: Link(Lf, R, pL(), pR()); break;
+        case 4: case 11: Link(R, T, pR(), pT()); break;
+        case 6: case 9: Link(B, T, pB(), pT()); break;
+        case 7: case 8: Link(Lf, T, pL(), pT()); break;
+        case 5: if (centre) { Link(B, R, pB(), pR()); Link(T, Lf, pT(), pL()); } else { Link(Lf, B, pL(), pB()); Link(R, T, pR(), pT()); } break;
+        case 10: if (centre) { Link(Lf, B, pL(), pB()); Link(R, T, pR(), pT()); } else { Link(B, R, pB(), pR()); Link(T, Lf, pT(), pL()); } break;
+    }
+}
+// chain the crossings into closed loops and simplify them (Douglas-Peucker, 0.3 m)
+var loops = new System.Collections.Generic.List<System.Collections.Generic.List<UnityEngine.Vector2>>();
+var seen = new System.Collections.Generic.HashSet<long>();
+foreach (var k0 in adj.Keys)
+{
+    if (seen.Contains(k0)) continue;
+    var loop = new System.Collections.Generic.List<UnityEngine.Vector2>(); long prev = -1, cur = k0;
+    while (true)
+    {
+        seen.Add(cur); loop.Add(ptOf[cur]); long next = -1;
+        foreach (var n in adj[cur]) if (n != prev && !seen.Contains(n)) { next = n; break; }
+        if (next < 0) break; prev = cur; cur = next;
+    }
+    if (loop.Count > 2) { loop.Add(loop[0]); loops.Add(loop); }
+}
+System.Collections.Generic.List<UnityEngine.Vector2> Simplify(System.Collections.Generic.List<UnityEngine.Vector2> pts, float tol)
+{
+    var keep = new bool[pts.Count]; keep[0] = keep[pts.Count - 1] = true;
+    var stack = new System.Collections.Generic.Stack<(int, int)>(); stack.Push((0, pts.Count - 1));
+    while (stack.Count > 0)
+    {
+        var (a, b) = stack.Pop(); float best = 0f; int bi = -1;
+        for (int i = a + 1; i < b; i++) { float d = SegD(pts[i], pts[a], pts[b]); if (d > best) { best = d; bi = i; } }
+        if (bi >= 0 && best > tol) { keep[bi] = true; stack.Push((a, bi)); stack.Push((bi, b)); }
+    }
+    var outp = new System.Collections.Generic.List<UnityEngine.Vector2>(); for (int i = 0; i < pts.Count; i++) if (keep[i]) outp.Add(pts[i]); return outp;
+}
+var sightA = P(286.5f, 102.2f); var sightB = P(240f, 52.4f);
+float SightCap(UnityEngine.Vector2 q)
+{
+    var ab = sightB - sightA; float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(q - sightA, ab) / ab.sqrMagnitude);
+    return UnityEngine.Vector2.Distance(q, sightA + ab * t) < 4f ? L(5.6f, -1.0f, t) - 0.3f : float.MaxValue;
+}
+var tileBoxes = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
+int boxes = 0;
+foreach (var raw0 in loops)
+{
+    // a closed loop starts and ends on the same point, so split it at the point farthest from its start before simplifying
+    int far = 0; for (int i = 1; i < raw0.Count; i++) if ((raw0[i] - raw0[0]).sqrMagnitude > (raw0[far] - raw0[0]).sqrMagnitude) far = i;
+    var pl = Simplify(raw0.GetRange(0, far + 1), 0.3f); var back2 = Simplify(raw0.GetRange(far, raw0.Count - far), 0.3f); back2.RemoveAt(0); pl.AddRange(back2);
+    for (int i = 0; i < pl.Count - 1; i++)
+    {
+        var a = pl[i]; var b = pl[i + 1]; float len = UnityEngine.Vector2.Distance(a, b); if (len < 0.05f) continue;
+        int parts = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(len / 4f));   // at most 4 m per box so the top follows the ground
+        for (int k = 0; k < parts; k++)
+        {
+            var sa = UnityEngine.Vector2.Lerp(a, b, k / (float)parts); var sb2 = UnityEngine.Vector2.Lerp(a, b, (k + 1) / (float)parts); var mid = (sa + sb2) * 0.5f;
+            float g0 = H(sa.x, sa.y), g1 = H(sb2.x, sb2.y), gm = H(mid.x, mid.y);
+            float lo = UnityEngine.Mathf.Min(gm, UnityEngine.Mathf.Min(g0, g1)) - 0.4f, gTop = UnityEngine.Mathf.Max(gm, UnityEngine.Mathf.Max(g0, g1));
+            float tall = Inside(mid, burn) ? (mid.x > 300f ? 4f : 5f) : 1.2f;
+            float top = UnityEngine.Mathf.Max(UnityEngine.Mathf.Min(gTop + tall, SightCap(mid)), gTop + 0.9f);
+            var dir = sb2 - sa; float l = dir.magnitude + 0.5f;
+            var m = UnityEngine.Matrix4x4.TRS(V(mid.x, (lo + top) * 0.5f, mid.y), UnityEngine.Quaternion.LookRotation(V(dir.x, 0f, dir.y).normalized, UnityEngine.Vector3.up), V(0.6f, top - lo, l));
+            int key = ((int)(mid.x / 50f)) * 100 + (int)(mid.y / 50f);
+            if (!tileBoxes.TryGetValue(key, out var lst)) tileBoxes[key] = lst = new System.Collections.Generic.List<UnityEngine.Matrix4x4>();
+            lst.Add(m); boxes++;
+        }
+    }
+}
+const string thDir = "Assets/Terrain/Main3/Thicket";
+if (!UnityEditor.AssetDatabase.IsValidFolder(thDir)) UnityEditor.AssetDatabase.CreateFolder("Assets/Terrain/Main3", "Thicket");
+var cubeTmp = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
+var cubeMesh = cubeTmp.GetComponent<UnityEngine.MeshFilter>().sharedMesh; var grayMat = cubeTmp.GetComponent<UnityEngine.MeshRenderer>().sharedMaterial;
+var thicket = new UnityEngine.GameObject("Thicket"); long verts = 0;
+foreach (var kv in tileBoxes)
+{
+    var ci = new UnityEngine.CombineInstance[kv.Value.Count];
+    for (int i = 0; i < ci.Length; i++) ci[i] = new UnityEngine.CombineInstance { mesh = cubeMesh, transform = kv.Value[i] };
+    var mesh = new UnityEngine.Mesh { name = "Thicket_" + kv.Key, indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+    mesh.CombineMeshes(ci, true, true); mesh.uv = null; mesh.tangents = null; mesh.RecalculateBounds(); verts += mesh.vertexCount;
+    UnityEditor.AssetDatabase.CreateAsset(mesh, thDir + "/Thicket_" + kv.Key + ".asset");
+    var go = new UnityEngine.GameObject("Tile_" + kv.Key); go.transform.SetParent(thicket.transform, false);
+    go.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; go.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = grayMat;
+    go.AddComponent<UnityEngine.MeshCollider>().sharedMesh = mesh;
+}
+UnityEngine.Object.DestroyImmediate(cubeTmp);
+report.Append("thicket: " + loops.Count + " outlines, " + boxes + " hedge boxes, " + tileBoxes.Count + " tiles, " + verts + " vertices\n");
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " giants=" + made + " + 3 heroes, POIs=" + poiRoot.transform.childCount + "\n" + report;

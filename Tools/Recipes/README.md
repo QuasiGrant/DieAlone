@@ -136,6 +136,8 @@ One recipe per task, run in task order from a clean Main3 rebuild (see PLAN.md R
 | main3_8_7_ward.cs | Cairn gate at J, the Tor dome, the three Ward stone stand-ins on the ledge. |
 | main3_8_8_cave.cs | Cave mouth hole and rock block, entrance, three switchback legs, turns, chamber, day-one board; prints the terrain clearance and hole check. |
 | main3_8_9_sightlines.cs | Tower sightline report: places seen from the deck grid, W-1 and C-1 hidden margins, cab from the junctions. |
+| main3_rebuild.sh, main3_reset.cs | Runner: rebuilds Main3 from 8.1 in order as detached Editor jobs and stops at the first failure. |
+| main3_8_9a_fix_check.cs | Play-mode check of every spot the 8.9a fix batch changed. |
 | main3_walk_legs.cs | Play-mode reach check along chained trail legs and waypoints. |
 | main3_walk_trails.cs | Play-mode walk of every leg under Trails, both ways. |
 | main3_walk.cs | Play-mode walk template: drives the CharacterController along waypoint routes and reports stalls. |

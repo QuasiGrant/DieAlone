@@ -15,6 +15,7 @@ var V = new System.Func<float, float, float, UnityEngine.Vector3>((x, y, z) => n
 var terrain = Root("Terrain").GetComponent<UnityEngine.Terrain>(); float baseY = terrain.transform.position.y;
 float Hg(float x, float z) => terrain.SampleHeight(V(x, 0f, z)) + baseY;
 var tower = Root("Camp").transform.Find("Tower"); var giants = Root("Giants").transform; var wardRoot = Root("Ward").transform;
+var thicketRoot = Root("Thicket") != null ? Root("Thicket").transform : null;   // counts as trees: off for W-1 and C-1
 bool wasDirty = scene.isDirty;
 // temporary colliders on the crowns so trees block lines (they have none in the scene)
 var temp = new System.Collections.Generic.List<UnityEngine.Component>();
@@ -26,14 +27,14 @@ bool FirstHit(UnityEngine.Vector3 a, UnityEngine.Vector3 b, bool treesOn, out Un
 {
     var d = b - a; var hits = UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude, ~0, UnityEngine.QueryTriggerInteraction.Ignore);
     System.Array.Sort(hits, (p, q) => p.distance.CompareTo(q.distance));
-    foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) continue; if (!treesOn && IsUnder(h.collider.transform, giants)) continue; hit = h; return true; }
+    foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) continue; if (!treesOn && (IsUnder(h.collider.transform, giants) || (thicketRoot != null && IsUnder(h.collider.transform, thicketRoot)))) continue; hit = h; return true; }
     hit = default; return false;
 }
 // height of whatever is under (x, z): terrain, rock, buildings, and giants when trees are on
 float Surface(float x, float z, bool treesOn)
 {
     var hits = UnityEngine.Physics.RaycastAll(V(x, 200f, z), UnityEngine.Vector3.down, 260f, ~0, UnityEngine.QueryTriggerInteraction.Ignore);
-    float best = -999f; foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) continue; if (!treesOn && IsUnder(h.collider.transform, giants)) continue; if (h.point.y > best) best = h.point.y; }
+    float best = -999f; foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) continue; if (!treesOn && (IsUnder(h.collider.transform, giants) || (thicketRoot != null && IsUnder(h.collider.transform, thicketRoot)))) continue; if (h.point.y > best) best = h.point.y; }
     return best;
 }
 // line clearance: min over samples of (line - surface), from 3 m after the eye to 'endSkip' short of the target
@@ -55,7 +56,7 @@ var places = new (string place, (string n, UnityEngine.Vector3 p)[] targets)[] {
     ("Lake", new[] { ("far water (south shore)", V(190f, -5.4f, 34f)), ("mid water", V(190f, -5.4f, 60f)), ("near water", V(190f, -5.4f, 86f)), ("boathouse roof", V(240f, -1.0f, 52.4f)) }),
     ("Camp 1", new[] { ("spar top", V(282f, 29f, 238f)), ("spar at 20 m", V(282f, 20f, 238f)), ("tent", V(292f, Hg(292f, 247f) + 2f, 247f)) }),
     ("Camp 2", new[] { ("stack top", V(292f, 24.2f, 108f)), ("stack west edge", V(287.4f, 23.6f, 108f)), ("boulder field", V(274f, Hg(274f, 104f) + 1f, 104f)) }),
-    ("Camp 3", new[] { ("Snag top", V(90f, 54f, 146f)), ("Snag at 40 m, east face", V(93.1f, 40f, 146.4f)) }),
+    ("Camp 3", new[] { ("Snag top", V(96f, 54f, 146.5f)), ("Snag at 40 m, east face", V(98.9f, 40f, 147.2f)) }),
     ("Office and lot", new[] { ("lot west edge", V(343.5f, 3.1f, 170f)), ("lot centre", V(358f, 3.1f, 170f)), ("resident's car", V(370f, 4.2f, 179.4f)), ("office roof", V(350f, 6.4f, 200f)), ("store roof", V(366f, 6.2f, 200f)), ("mast lamp", V(357f, 33.3f, 205f)) }),
 };
 md.AppendLine("## Places seen from the deck (trees on)\n");
@@ -98,7 +99,7 @@ md.AppendLine("\n## W-1 (Ward) and C-1 (cave), trees off\n");
 md.AppendLine("Every ray must hit the Tor or the terrain before its target. Hidden margin: how deep the least-hidden line passes under the blocking surface.\n");
 md.AppendLine("| Check | Eyes and targets | Rays | Rays blocked | Blocked by | Hidden margin, all eyes | Hidden margin, deck centre |");
 md.AppendLine("|---|---|---|---|---|---|---|");
-bool wardHidden = true, caveHidden = true; string headline = "";
+bool wardHidden = true, caveHidden = true; string headline = ""; float w1Plus3 = float.MaxValue;
 foreach (var chk in new[] { ("W-1", stoneCorners), ("C-1", mouthCorners) })
     foreach (var raise in new[] { 0f, 3f })
         for (int hi = 0; hi < 2; hi++)
@@ -122,6 +123,7 @@ foreach (var chk in new[] { ("W-1", stoneCorners), ("C-1", mouthCorners) })
             md.AppendLine("| " + chk.Item1 + " | " + (raise > 0f ? "+3 m, " : "") + heights[hi].Item1 + " | " + rays + " | " + blocked + " | " + string.Join(", ", by) + " | " + worst.ToString("F1") + " | " + centreWorst.ToString("F1") + " |");
             if (raise == 0f && hi == 0) headline += chk.Item1 + " hidden margin " + worst.ToString("F1") + " m (eye); ";
             if (raise == 3f && hi == 1) headline += chk.Item1 + " +3 m jump " + worst.ToString("F1") + " m; ";
+            if (raise == 3f && chk.Item1 == "W-1") w1Plus3 = UnityEngine.Mathf.Min(w1Plus3, worst);
         }
 
 // ---------------- 4.1: cab from the junctions ----------------
@@ -147,14 +149,58 @@ foreach (var j in junctions)
     md.AppendLine("| " + j.n + " | " + seen + " | " + (seen == cabPts.Count ? "none" : blocker) + " |");
     junc += j.n + " " + (seen > 0 ? "yes" : "no") + " (" + seen + "); ";
 }
+
+// ---------------- next destination from the junctions Marlow found blind (8.9a), eye 1.6 m, trees on ----------------
+bool SeesPoint(UnityEngine.Vector3 a, UnityEngine.Vector3 tgt, UnityEngine.Transform goal, out string blocker)   // a hit on the goal object counts as seen
+{
+    var d = tgt - a; var hits = UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude, ~0, UnityEngine.QueryTriggerInteraction.Ignore);
+    System.Array.Sort(hits, (p, q) => p.distance.CompareTo(q.distance)); blocker = "";
+    foreach (var h in hits) { if (IsUnder(h.collider.transform, goal)) return true; if (UnityEngine.Vector3.Distance(h.point, tgt) < 1.5f) return true; blocker = (h.collider.transform.parent != null ? h.collider.transform.parent.name + "/" : "") + h.collider.name; return false; }
+    return true;
+}
+var snagT = giants.Find("Heroes/Snag"); var boathouseT = Root("Lake").transform.Find("Boathouse");
+var nexts = new (string from, UnityEngine.Vector2 at, string to, UnityEngine.Vector3[] tgts, UnityEngine.Transform goal)[] {
+    ("Pump (190, 97)", new UnityEngine.Vector2(190f, 97f), "the Snag (W1 to Camp 3)", new[] { V(96f, 54f, 146.5f), V(98.7f, 45f, 145.2f), V(98.7f, 30f, 145.2f) }, snagT),
+    ("Camp 2, 8 m out toward the lake (286.5, 102.2)", new UnityEngine.Vector2(286.5f, 102.2f), "boathouse roof", new[] { V(240f, -1.0f, 52.4f), V(242.8f, -1.2f, 52.4f), V(240f, -1.0f, 55.0f) }, boathouseT),
+    ("Camp 3 floor (79, 145)", new UnityEngine.Vector2(79f, 145f), "tower cab", cabPts.ToArray(), tower),
+    ("Camp 3 centre (78, 146)", new UnityEngine.Vector2(78f, 146f), "tower cab", cabPts.ToArray(), tower),
+};
+md.AppendLine("\n## Next destination from the junctions found blind in the walk (eye 1.6 m, trees and thicket on)\n");
+md.AppendLine("| From | Toward | Points seen | First blocker of a missed ray |");
+md.AppendLine("|---|---|---|---|");
+string nextLine = ""; bool nextAll = true;
+foreach (var nx in nexts)
+{
+    var a = V(nx.at.x, Hg(nx.at.x, nx.at.y) + 1.6f, nx.at.y); int seenN = 0; string blk = "";
+    foreach (var tp in nx.tgts) { if (SeesPoint(a, tp, nx.goal, out var b)) seenN++; else if (blk == "") blk = b; }
+    if (seenN == 0) nextAll = false;
+    md.AppendLine("| " + nx.from + " | " + nx.to + " | " + seenN + " of " + nx.tgts.Length + " | " + (blk == "" ? "none" : blk) + " |");
+    nextLine += nx.from + " " + seenN + "/" + nx.tgts.Length + "; ";
+}
+// ---------------- Hollow Giant crown against the Camp 2 view (cone rule 3 m, 5.2) ----------------
+var hgCrown = giants.Find("Heroes/Hollow_Giant/Crown"); float crownClear = float.MaxValue;
+if (hgCrown != null)
+{
+    var mfC = hgCrown.GetComponent<UnityEngine.MeshFilter>().sharedMesh; var eyeC = V(tower.position.x, heights[0].Item2, tower.position.z);
+    var camp2Tgts = new[] { V(292f, 24.2f, 108f), V(287.2f, 24f, 108f), V(292f, 24f, 103.2f), V(292f, 24f, 112.8f), V(296.8f, 24f, 108f) };
+    foreach (var v in mfC.vertices)
+    {
+        var wv = hgCrown.TransformPoint(v);
+        foreach (var t in camp2Tgts) { var ab = t - eyeC; float s = UnityEngine.Mathf.Clamp01(UnityEngine.Vector3.Dot(wv - eyeC, ab) / ab.sqrMagnitude); crownClear = UnityEngine.Mathf.Min(crownClear, UnityEngine.Vector3.Distance(wv, eyeC + ab * s)); }
+    }
+}
+md.AppendLine("\nHollow Giant crown to the deck-centre lines to the Camp 2 stack top and its edges: " + crownClear.ToString("F1") + " m (cone rule 3 m).");
 md.AppendLine("\n## Result\n");
 md.AppendLine("- Places: " + summary);
 md.AppendLine("- Ward hidden from every eye point (W-1, with +3 m): " + (wardHidden ? "yes" : "NO") + ". Cave hidden (C-1, with +3 m): " + (caveHidden ? "yes" : "NO") + ".");
 md.AppendLine("- " + headline);
 md.AppendLine("- Cab from junctions: " + junc);
+md.AppendLine("- W-1 with eyes and targets raised 3 m keeps " + w1Plus3.ToString("F1") + " m (needs 3): " + (w1Plus3 >= 3f ? "yes" : "NO") + ".");
+md.AppendLine("- Next destination from the blind junctions: " + nextLine + (nextAll ? "all seen" : "NOT ALL SEEN"));
+md.AppendLine("- Hollow Giant crown clearance to the Camp 2 lines: " + crownClear.ToString("F1") + " m (needs 3): " + (crownClear >= 3f ? "yes" : "NO") + ".");
 
 foreach (var c in temp) UnityEngine.Object.DestroyImmediate(c);
 if (!wasDirty) UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);   // the temporary colliders are gone; saving the identical scene clears the dirty flag
 string outPath = System.IO.Path.GetFullPath("Docs/Layout/Main3/Main3_sightlines.md");
 System.IO.File.WriteAllText(outPath, md.ToString());
-return "places: " + summary + " | all seen: " + allPlaces + " | Ward hidden: " + wardHidden + ", cave hidden: " + caveHidden + " | " + headline + "| cab from junctions: " + junc + "| report " + outPath;
+return "places: " + summary + " | all seen: " + allPlaces + " | Ward hidden: " + wardHidden + ", cave hidden: " + caveHidden + " | " + headline + "| W-1 +3 m " + w1Plus3.ToString("F1") + " ok " + (w1Plus3 >= 3f) + " | next: " + nextLine + "all " + nextAll + " | Hollow Giant crown clearance " + crownClear.ToString("F1") + " ok " + (crownClear >= 3f) + " | cab from junctions: " + junc + "| report " + outPath;

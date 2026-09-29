@@ -1,7 +1,7 @@
 // Main3 task 8.6: front zone and gate, gray. Run after 8.5 in Main3, edit mode. Main3.md 3.1 and 3.2, map positions.
 // Ground surfaces (lot, drive, turning circle, spur, loop, pitches) are colliderless slabs 2 cm over the flat 3 m ground.
 // Shift walls are built inactive: nothing starts a shift yet (the gate minigame is not designed); a later task turns them on.
-// The gate's PlayerBlocker is always on and replaces 8.1's Bounds/Wall_GateOpening.
+// The gate's PlayerBlocker is always on (8.1 builds no gate wall; the fence gap is closed here).
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -92,15 +92,19 @@ foreach (var gzz in new[] { 167.2f, 172.8f }) Prim(Cube, "Post", gate, V(396f, G
 Prim(Cube, "BarrierArm", gate, V(396f, G + 1.0f, 170f), V(0.12f, 0.12f, 5.4f), 0f, false);
 var blocker = new UnityEngine.GameObject("PlayerBlocker"); blocker.transform.SetParent(gate, false); blocker.transform.position = V(396f, G + 20f, 170f);
 blocker.AddComponent<UnityEngine.BoxCollider>().size = V(0.6f, 60f, 5.2f);
-var oldGap = Root("Bounds").transform.Find("Wall_GateOpening"); bool hadGap = oldGap != null; if (hadGap) UnityEngine.Object.DestroyImmediate(oldGap.gameObject);
 // shift walls (3.2.7), inactive until a shift system exists
 var shift = Group("ShiftWalls", fz);
-var s1 = new UnityEngine.GameObject("SpurMouth"); s1.transform.SetParent(shift, false); s1.transform.position = V(385f, G + 5f, 176f); s1.AddComponent<UnityEngine.BoxCollider>().size = V(4.4f, 10f, 0.4f);
-var s2 = new UnityEngine.GameObject("TurningCircleEdge"); s2.transform.SetParent(shift, false); s2.transform.position = V(384f, G + 5f, 167.3f); s2.AddComponent<UnityEngine.BoxCollider>().size = V(16f, 10f, 0.4f);
+// Walls that cannot be walked around (8.9a, Marlow finding 7): the thicket (8.3) closes everything off the surfaces, so a U
+// across the spur mouth (z 178.8 from x 380.5 to the fence, and down to the drive at x 380.5) and a closed ring round the
+// turning circle (r 9.3) seal both. The drive stays open between them.
+void ShiftWall(string name, UnityEngine.Vector2 a, UnityEngine.Vector2 b) { var w = new UnityEngine.GameObject(name); w.transform.SetParent(shift, false); var d = b - a; w.transform.position = V((a.x + b.x) * 0.5f, G + 5f, (a.y + b.y) * 0.5f); w.transform.rotation = UnityEngine.Quaternion.LookRotation(V(d.x, 0f, d.y).normalized, UnityEngine.Vector3.up); w.AddComponent<UnityEngine.BoxCollider>().size = V(0.4f, 10f, d.magnitude + 0.4f); }
+ShiftWall("SpurMouth", new UnityEngine.Vector2(380.5f, 178.8f), new UnityEngine.Vector2(395.9f, 178.8f));
+ShiftWall("SpurMouthWest", new UnityEngine.Vector2(380.5f, 173.6f), new UnityEngine.Vector2(380.5f, 178.8f));
+for (int i = 0; i < 24; i++) { float a0 = i * UnityEngine.Mathf.PI / 12f, a1 = (i + 1) * UnityEngine.Mathf.PI / 12f; ShiftWall("TurningCircle" + i, new UnityEngine.Vector2(384f + UnityEngine.Mathf.Cos(a0) * 9.3f, 160f + UnityEngine.Mathf.Sin(a0) * 9.3f), new UnityEngine.Vector2(384f + UnityEngine.Mathf.Cos(a1) * 9.3f, 160f + UnityEngine.Mathf.Sin(a1) * 9.3f)); }
 shift.gameObject.SetActive(false);
 
 // warps: booth doorway, closed campground behind the chain
 var warps = Root("DevWarps").transform;
 var wb = warps.Find("Gate_Booth"); if (wb != null) { wb.position = V(389.5f, G + 0.2f, 176.05f); wb.rotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f); }
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " ground at lot " + H(358f, 170f).ToString("F2") + ", gate " + H(395f, 170f).ToString("F2") + ", loop " + H(372f, 244.5f).ToString("F2") + " | shift walls inactive, gate blocker on, Wall_GateOpening removed=" + hadGap;
+return "saved=" + saved + " ground at lot " + H(358f, 170f).ToString("F2") + ", gate " + H(395f, 170f).ToString("F2") + ", loop " + H(372f, 244.5f).ToString("F2") + " | shift walls inactive, gate blocker on";
