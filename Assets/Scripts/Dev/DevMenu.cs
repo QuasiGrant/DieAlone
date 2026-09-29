@@ -26,11 +26,23 @@ public class DevMenu : MonoBehaviour
     private const int HeaderSize = 13;
     private const int RowSize = 17;
     private const int SubRowSize = 15;
+    private const int MinTextSize = 10;           // best-fit floor when a label is wider than a narrow column
+    private const float ReferenceHeight = 720f;   // the canvas scales with screen height
+    private const float ScrollSensitivity = 30f;
     private const int SortingOrder = 100;
 
     private GameObject panel;
     private Behaviour[] gameplay;
     private bool open;
+
+    // Layout that follows the screen: the panel sits inside the safe area, the column never gets wider than it,
+    // and the list scrolls (mouse wheel, or following the keyboard and gamepad selection) when it is taller.
+    private RectTransform safeRect;
+    private RectTransform columnRect;
+    private RectTransform viewportRect;
+    private RectTransform listRect;
+    private Vector2Int fittedScreen;
+    private Rect fittedSafeArea;
 
     // Palette: near-black panel, bone text, one warm accent for what is current.
     private static readonly Color PanelColor = new Color(0.06f, 0.06f, 0.07f, 0.94f);
@@ -52,6 +64,7 @@ public class DevMenu : MonoBehaviour
                    || (gamepad != null && gamepad.selectButton.wasPressedThisFrame);
         bool back = open && gamepad != null && gamepad.buttonEast.wasPressedThisFrame;
         if (back) { Close(); return; }
+        if (open) { FitToScreen(); KeepSelectionVisible(); }
         if (!toggle) return;
         if (!open && GamePause.Instance != null && GamePause.Instance.IsPaused) return;   // not over the pause menu
         if (open) Close(); else Open();
@@ -166,31 +179,55 @@ public class DevMenu : MonoBehaviour
         canvas.sortingOrder = SortingOrder;
         var scaler = panel.AddComponent<UnityEngine.UI.CanvasScaler>();
         scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1280f, 720f);
+        scaler.referenceResolution = new Vector2(ReferenceHeight * 16f / 9f, ReferenceHeight);
         scaler.matchWidthOrHeight = 1f;
         panel.AddComponent<UnityEngine.UI.GraphicRaycaster>();
 
-        // Column background with a thin accent edge on its right side.
-        var bg = Rect("Background", panel.transform, PanelColor);
-        var bgRect = bg.GetComponent<RectTransform>();
-        bgRect.anchorMin = new Vector2(0f, 0f); bgRect.anchorMax = new Vector2(0f, 1f);
-        bgRect.pivot = new Vector2(0f, 0.5f);
-        bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
-        bgRect.sizeDelta = new Vector2(ColumnWidth, 0f);
+        // Safe area: everything sits inside Screen.safeArea (FitToScreen sets the anchors).
+        var safe = new GameObject("SafeArea", typeof(RectTransform));
+        safe.transform.SetParent(panel.transform, false);
+        safeRect = safe.GetComponent<RectTransform>();
+        safeRect.offsetMin = Vector2.zero; safeRect.offsetMax = Vector2.zero;
+
+        // Column background down the left of the safe area, with a thin accent edge on its right side.
+        var bg = Rect("Background", safe.transform, PanelColor);
+        columnRect = bg.GetComponent<RectTransform>();
+        columnRect.anchorMin = new Vector2(0f, 0f); columnRect.anchorMax = new Vector2(0f, 1f);
+        columnRect.pivot = new Vector2(0f, 0.5f);
+        columnRect.offsetMin = Vector2.zero; columnRect.offsetMax = Vector2.zero;
+        columnRect.sizeDelta = new Vector2(ColumnWidth, 0f);
         var edge = Rect("Edge", bg.transform, EdgeColor).GetComponent<RectTransform>();
         edge.anchorMin = new Vector2(1f, 0f); edge.anchorMax = new Vector2(1f, 1f); edge.pivot = new Vector2(1f, 0.5f);
         edge.offsetMin = Vector2.zero; edge.offsetMax = Vector2.zero; edge.sizeDelta = new Vector2(EdgeWidth, 0f);
 
+        // Scrolling list: a clipped viewport inside the column margins, the list growing downward from its top.
+        var viewport = new GameObject("Viewport", typeof(RectTransform));
+        viewport.transform.SetParent(bg.transform, false);
+        viewportRect = viewport.GetComponent<RectTransform>();
+        viewportRect.anchorMin = Vector2.zero; viewportRect.anchorMax = Vector2.one;
+        viewportRect.offsetMin = new Vector2(Margin, Margin); viewportRect.offsetMax = new Vector2(-Margin - EdgeWidth, -Margin);
+        viewport.AddComponent<UnityEngine.UI.RectMask2D>();
+
         var list = new GameObject("List", typeof(RectTransform));
-        list.transform.SetParent(bg.transform, false);
-        var listRect = list.GetComponent<RectTransform>();
-        listRect.anchorMin = new Vector2(0f, 0f); listRect.anchorMax = new Vector2(1f, 1f);
-        listRect.offsetMin = new Vector2(Margin, Margin); listRect.offsetMax = new Vector2(-Margin - EdgeWidth, -Margin);
+        list.transform.SetParent(viewport.transform, false);
+        listRect = list.GetComponent<RectTransform>();
+        listRect.anchorMin = new Vector2(0f, 1f); listRect.anchorMax = new Vector2(1f, 1f); listRect.pivot = new Vector2(0.5f, 1f);
+        listRect.offsetMin = Vector2.zero; listRect.offsetMax = Vector2.zero;
         var layout = list.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
         layout.spacing = RowSpacing;
         layout.childAlignment = TextAnchor.UpperLeft;
         layout.childControlWidth = true; layout.childControlHeight = true;
         layout.childForceExpandWidth = true; layout.childForceExpandHeight = false;
+        list.AddComponent<UnityEngine.UI.ContentSizeFitter>().verticalFit = UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
+
+        var scroll = bg.AddComponent<UnityEngine.UI.ScrollRect>();
+        scroll.viewport = viewportRect; scroll.content = listRect;
+        scroll.horizontal = false; scroll.vertical = true;
+        scroll.movementType = UnityEngine.UI.ScrollRect.MovementType.Clamped;
+        scroll.scrollSensitivity = ScrollSensitivity;
+
+        fittedScreen = Vector2Int.zero;   // force the first fit
+        FitToScreen();
 
         AddText(list.transform, font, "DEV MENU", TitleSize, FontStyle.Bold, TextColor, 36f);
         AddText(list.transform, font, "F1 or gamepad View opens and closes.  B closes.", HintSize, FontStyle.Normal, DimColor, 18f);
@@ -241,6 +278,40 @@ public class DevMenu : MonoBehaviour
         if (events != null && first != null) events.SetSelectedGameObject(first.gameObject);
     }
 
+    /// Keeps the panel inside the safe area and the column no wider than it, whenever the Game view or window changes size.
+    private void FitToScreen()
+    {
+        if (safeRect == null) return;
+        var screen = new Vector2Int(Screen.width, Screen.height);
+        var area = Screen.safeArea;
+        if (screen == fittedScreen && area == fittedSafeArea) return;
+        fittedScreen = screen; fittedSafeArea = area;
+        if (screen.x <= 0 || screen.y <= 0) return;
+        safeRect.anchorMin = new Vector2(area.xMin / screen.x, area.yMin / screen.y);
+        safeRect.anchorMax = new Vector2(area.xMax / screen.x, area.yMax / screen.y);
+        float scale = screen.y / ReferenceHeight;   // the CanvasScaler's factor when it matches height
+        float safeWidth = area.width / scale;
+        columnRect.sizeDelta = new Vector2(Mathf.Min(ColumnWidth, safeWidth), 0f);
+    }
+
+    /// Scrolls the list so the row picked with the keyboard or gamepad is always inside the viewport.
+    private void KeepSelectionVisible()
+    {
+        var events = UnityEngine.EventSystems.EventSystem.current;
+        if (events == null || listRect == null) return;
+        var selected = events.currentSelectedGameObject;
+        if (selected == null || !selected.transform.IsChildOf(listRect)) return;
+        var item = (RectTransform)selected.transform;
+        var itemCorners = new Vector3[4]; var viewCorners = new Vector3[4];
+        item.GetWorldCorners(itemCorners); viewportRect.GetWorldCorners(viewCorners);
+        float above = itemCorners[1].y - viewCorners[1].y;   // item top over the viewport top
+        float below = viewCorners[0].y - itemCorners[0].y;   // item bottom under the viewport bottom
+        float delta = above > 0f ? -above : below > 0f ? below : 0f;
+        if (delta == 0f) return;
+        float scale = listRect.lossyScale.y > 0f ? listRect.lossyScale.y : 1f;
+        listRect.anchoredPosition += new Vector2(0f, delta / scale);
+    }
+
     private static void AddSection(Transform parent, Font font, string title)
     {
         AddGap(parent, SectionGap);
@@ -264,13 +335,20 @@ public class DevMenu : MonoBehaviour
         go.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight = height;
     }
 
+    /// Labels stay on one line at their size and shrink (down to MinTextSize) instead of running past a narrow column.
+    private static void FitText(UnityEngine.UI.Text t, int size)
+    {
+        t.horizontalOverflow = HorizontalWrapMode.Wrap; t.verticalOverflow = VerticalWrapMode.Truncate;
+        t.resizeTextForBestFit = true; t.resizeTextMinSize = Mathf.Min(MinTextSize, size); t.resizeTextMaxSize = size;
+    }
+
     private static void AddText(Transform parent, Font font, string text, int size, FontStyle style, Color color, float height)
     {
         var go = new GameObject("Text", typeof(RectTransform));
         go.transform.SetParent(parent, false);
         var t = go.AddComponent<UnityEngine.UI.Text>();
         t.font = font; t.fontSize = size; t.fontStyle = style; t.color = color; t.text = text;
-        t.alignment = TextAnchor.MiddleLeft; t.horizontalOverflow = HorizontalWrapMode.Overflow;
+        t.alignment = TextAnchor.MiddleLeft; FitText(t, size);
         go.AddComponent<UnityEngine.UI.LayoutElement>().preferredHeight = height;
     }
 
@@ -296,7 +374,7 @@ public class DevMenu : MonoBehaviour
         var label = new GameObject("Text", typeof(RectTransform));
         label.transform.SetParent(go.transform, false);
         var t = label.AddComponent<UnityEngine.UI.Text>();
-        t.font = font; t.fontSize = size; t.color = TextColor; t.text = text; t.alignment = TextAnchor.MiddleLeft; t.horizontalOverflow = HorizontalWrapMode.Overflow;
+        t.font = font; t.fontSize = size; t.color = TextColor; t.text = text; t.alignment = TextAnchor.MiddleLeft; FitText(t, size);
         var r = label.GetComponent<RectTransform>();
         r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = new Vector2(12f + indent, 0f); r.offsetMax = new Vector2(-10f, 0f);
         return button;
