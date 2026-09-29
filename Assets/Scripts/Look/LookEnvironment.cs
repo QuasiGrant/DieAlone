@@ -13,6 +13,8 @@ public class LookEnvironment : MonoBehaviour
     [SerializeField] private FogSet fogSet = FogSet.Night;
     [Tooltip("Material using DieAlone/SkyGradient. Used when the fog set is Sunset.")]
     [SerializeField] private Material skyMaterial;
+    [Tooltip("Optional directional light: the fire's faint warm fill from the west in the Night set. Colour and strength from LookTuning.")]
+    [SerializeField] private Light fireFill;
 
     private static readonly int TopId = Shader.PropertyToID("_TopColor");
     private static readonly int HorizonId = Shader.PropertyToID("_HorizonColor");
@@ -58,6 +60,12 @@ public class LookEnvironment : MonoBehaviour
         }
 
         var cam = targetCamera != null ? targetCamera : Camera.main;
+        if (!sunset)
+        {
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+            RenderSettings.ambientLight = tuning.nightAmbient;
+        }
+        if (fireFill != null) { fireFill.color = tuning.fireFillColor; fireFill.intensity = tuning.fireFillIntensity; }
         if (sunset)
         {
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;

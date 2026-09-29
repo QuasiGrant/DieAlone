@@ -72,7 +72,9 @@ UnityEngine.Material MarkerMat(string path, UnityEngine.Color c)
     if (m == null) { m = new UnityEngine.Material(markerSh); UnityEditor.AssetDatabase.CreateAsset(m, path); }
     m.shader = markerSh; m.SetColor("_Color", c); m.SetFloat("_Intensity", look.farMarkerIntensity); UnityEditor.EditorUtility.SetDirty(m); return m;
 }
-var redLamp = Prim(Sph, "RedLamp", mast, V(357f, G + 30.3f, 205f), V(0.5f, 0.5f, 0.5f), 0f, false);
+// sized to stay a dot through the look filter's low resolution from the tower deck (about 200 m; 8.9f)
+const float markerLamp = 1.0f, lotHeadW = 1.2f, lotHeadD = 0.7f;
+var redLamp = Prim(Sph, "RedLamp", mast, V(357f, G + 30.3f, 205f), V(markerLamp, markerLamp, markerLamp), 0f, false);
 redLamp.GetComponent<UnityEngine.Renderer>().sharedMaterial = MarkerMat("Assets/Materials/Blockout/Blockout_MastLamp.mat", look.mastLampColor);
 // lot lights: two 6 m posts at opposite corners of the lot, a sodium head on each (Main3.md 5.4, "red lamp and sodium")
 const float lotPostH = 6f;
@@ -81,7 +83,7 @@ var lotLights = Group("LotLights", fz);
 foreach (var lp in new[] { new UnityEngine.Vector2(344.5f, 151.5f), new UnityEngine.Vector2(371.5f, 188.5f) })
 {
     Prim(Cyl, "Post", lotLights, V(lp.x, G + lotPostH * 0.5f, lp.y), V(0.15f, lotPostH * 0.5f, 0.15f));
-    Prim(Cube, "Head", lotLights, V(lp.x, G + lotPostH + 0.1f, lp.y), V(0.6f, 0.2f, 0.35f), 0f, false).GetComponent<UnityEngine.Renderer>().sharedMaterial = lotLightMat;
+    Prim(Cube, "Head", lotLights, V(lp.x, G + lotPostH + 0.1f, lp.y), V(lotHeadW, 0.3f, lotHeadD), 0f, false).GetComponent<UnityEngine.Renderer>().sharedMaterial = lotLightMat;
 }
 // the lot resident's car (map (370, 179.4)), gray stand-in
 var car = Group("Resident_Car", fz); car.position = V(370f, G, 179.4f);

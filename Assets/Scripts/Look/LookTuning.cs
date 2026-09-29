@@ -59,6 +59,13 @@ public class LookTuning : ScriptableObject
     [Tooltip("Flat ambient light for sunset scenes. Lifts the forest floor under the canopy where the low sun never reaches.")]
     public Color sunsetAmbient = new Color(0.5f, 0.34f, 0.28f);
 
+    [Header("Night (the Night fog set; LookSlice.md 4)")]
+    [Tooltip("Flat ambient at night. LookSlice #07080A.")]
+    public Color nightAmbient = new Color(0.027f, 0.031f, 0.039f);
+    [Tooltip("Faint warm fill from the fire in the west at night, silhouettes only. Style #5A2412.")]
+    public Color fireFillColor = new Color(0.353f, 0.141f, 0.071f);
+    [Range(0f, 2f)] public float fireFillIntensity = 0.25f;
+
     [Header("Sunset sky")]
     public Color skyTop = new Color(0.22f, 0.11f, 0.10f);
     public Color skyHorizon = new Color(0.85f, 0.40f, 0.18f);

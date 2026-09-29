@@ -33,6 +33,9 @@ MonoBehaviour:
   sunsetFogStart: 40
   sunsetFogEnd: 600
   sunsetAmbient: {r: 0.43137255, g: 0.4, b: 0.34509805, a: 1}
+  nightAmbient: {r: 0.027, g: 0.031, b: 0.039, a: 1}
+  fireFillColor: {r: 0.353, g: 0.141, b: 0.071, a: 1}
+  fireFillIntensity: 0.25
   skyTop: {r: 0.36862746, g: 0.40784314, b: 0.47058824, a: 1}
   skyHorizon: {r: 0.8901961, g: 0.6627451, b: 0.40784314, a: 1}
   skyGround: {r: 0.3529412, g: 0.2901961, b: 0.23529412, a: 1}

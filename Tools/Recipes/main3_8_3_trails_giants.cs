@@ -53,7 +53,7 @@ var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2
     // (61.4, 15.73, 46.5); C (8, 10.96, 59.1), platform (8, 7.96), emerges (41.7, 7.96, 67.0); the pass (91.8, 2.4) at about 78.
     // Then a level 10 m through the notch and west across the plateau to the rock lip. No meander (the legs must stay on the
     // plane); the rune post stands outside the turn at B.
-    ("J to Ward", new[] { P(104,206), P(81.03f,180.48f), P(78.63f,182.28f), P(98.55f,208.84f), P(126.98f,254.76f), P(124.58f,256.56f), P(104.42f,229.68f), P(68.57f,189.82f), P(66.17f,191.62f), P(86.39f,218.58f), P(112,262), P(104,268), P(88,272), P(60,268), P(30,260), P(14.5f,256) }, true, 380f, false, 0.24f, new[] { ("Rune post", P(129.3f,257.6f), "side"), ("Boulder", P(66f,269.4f), "tree") }),
+    ("J to Ward", new[] { P(104,206), P(81.03f,180.48f), P(78.63f,182.28f), P(98.55f,208.84f), P(126.98f,254.76f), P(124.58f,256.56f), P(104.42f,229.68f), P(68.57f,189.82f), P(66.17f,191.62f), P(86.39f,218.58f), P(112,262), P(104,268), P(88,272), P(60,268), P(30,260), P(14.5f,256) }, true, 380f, false, 0.24f, new[] { ("Rune post", P(129.3f,257.6f), "side") }),   // the plateau run to the lip stays straight: the crest reveal (Vesper, 8.9e)
 };
 
 // ---------- centre line sampling ----------

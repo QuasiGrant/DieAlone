@@ -72,7 +72,9 @@ UnityEngine.Material WoodFor(UnityEngine.Vector3 size)
     var d = new[] { size.x, size.y, size.z }; System.Array.Sort(d);
     int u = Step(d[1]), v = Step(d[2]); return SliceMat("Slice_Wood_" + u + "x" + v, planks, wood, new UnityEngine.Vector2(u, v));
 }
-var rustMat = SliceMat("Slice_Rust", metal, rust, UnityEngine.Vector2.one);
+// the tower's rust reads as clean red paint in the flat blockout light (Vesper, 8.9f): weathered a third of the way to char
+const float rustWeathering = 0.35f;
+var rustMat = SliceMat("Slice_Rust", metal, UnityEngine.Color.Lerp(rust, charC, rustWeathering), UnityEngine.Vector2.one);
 var charMat = SliceMat("Slice_Char", metal, charC, UnityEngine.Vector2.one);
 // cab glazing (LookSlice 2): URP Lit transparent, #5E6878 at 12 percent, smoothness 0.3; URP's own Lit GUI sets the keywords
 var urpEditor = System.Linq.Enumerable.First(System.AppDomain.CurrentDomain.GetAssemblies(), a => a.GetName().Name == "Unity.RenderPipelines.Universal.Editor");
@@ -165,6 +167,23 @@ foreach (var r in T.GetComponentsInChildren<UnityEngine.MeshRenderer>(true))
 {
     bool isRail = r.name.Contains("Rail"); r.sharedMaterial = isRail ? rustMat : WoodFor(r.transform.lossyScale); if (isRail) rustN++; else woodN++;
 }
+// deck rails draw as open rails (8.9f): the 8.2 panels keep their collision but stop drawing; a top rail, a mid rail and posts
+// every railPostGap in rust stand on their lines, so the lit cab windows show between the bars from below at night
+const float railPostGap = 1.5f, railBar = 0.07f;
+var deckRails = T.Find("DeckRails"); int railBars = 0;
+if (deckRails != null)
+    foreach (var panel in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(deckRails)))   // a snapshot: the bars are added under the same parent
+    {
+        var pr = panel.GetComponent<UnityEngine.Renderer>(); if (pr == null) continue; pr.enabled = false;
+        var s = panel.localScale; bool alongX = s.x >= s.z; float len = alongX ? s.x : s.z, top = s.y * 0.5f;
+        UnityEngine.Vector3 Axis(float t) => alongX ? V(t, 0f, 0f) : V(0f, 0f, t);
+        UnityEngine.Vector3 Bar(float l) => alongX ? V(l, railBar, railBar) : V(railBar, railBar, l);
+        Slab(panel.name + "_Top", deckRails, panel.localPosition + V(0f, top - railBar * 0.5f, 0f), Bar(len), rustMat, UnityEngine.Vector3.zero);
+        Slab(panel.name + "_Mid", deckRails, panel.localPosition, Bar(len), rustMat, UnityEngine.Vector3.zero);
+        int posts = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(len / railPostGap));
+        for (int k = 0; k <= posts; k++) Slab(panel.name + "_Post", deckRails, panel.localPosition + Axis(-len * 0.5f + len * k / posts), V(railBar, s.y, railBar), rustMat, UnityEngine.Vector3.zero);
+        railBars += 2 + posts + 1;
+    }
 var cab = T.Find("Cab"); if (cab == null) return "no Cab";
 const float cabW = 4.4f, cabWallT = 0.2f, sill = 1.0f, winTop = 2.1f, cabWallH = 2.5f, roofOver = 0.8f;   // 8.2 cab, LookSlice roof overhang
 float ch = cabW * 0.5f - cabWallT * 0.5f;
@@ -183,7 +202,7 @@ Slab("Glass_S", cabDress, V(0.65f, paneY, -ch), V(2.5f, paneH, 0.02f), glass, Un
 Slab("Mullion_S", cabDress, V(0.65f, paneY, -ch), V(0.06f, paneH, 0.08f), null, UnityEngine.Vector3.zero);
 // lit windows at night (8.9e re-walk, Wren): one-sided quads just outside the glass on DieAlone/FireStandIn, facing out, so
 // from the Ward pass the tower reads as a small warm light past the night fog; from inside the cab they are back faces and
-// do not draw; NightMarker hides them in the daylight looks
+// do not draw; LookVisibility (on the cab) switches them off in the daylight looks
 var glowMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(SliceDir + "/Slice_CabWindowGlow.mat");
 if (glowMat == null) { glowMat = new UnityEngine.Material(standIn); UnityEditor.AssetDatabase.CreateAsset(glowMat, SliceDir + "/Slice_CabWindowGlow.mat"); }
 glowMat.shader = standIn; glowMat.SetColor("_Color", look.practicalColor); glowMat.SetFloat("_Intensity", look.cabWindowGlowIntensity); UnityEditor.EditorUtility.SetDirty(glowMat);
@@ -196,8 +215,18 @@ foreach (var (gPos, gSize, gYaw) in new[] { (V(0f, paneY, ch + glowOut), V(cabW 
     UnityEngine.Object.DestroyImmediate(gq.GetComponent<UnityEngine.Collider>());
     var qr = gq.GetComponent<UnityEngine.Renderer>(); qr.sharedMaterial = glowMat; qr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; glowRs.Add(qr);
 }
-var nm = cabDress.gameObject.AddComponent<NightMarker>(); var nmo = new UnityEditor.SerializedObject(nm); var nmr = nmo.FindProperty("renderers");
-nmr.arraySize = glowRs.Count; for (int i = 0; i < glowRs.Count; i++) nmr.GetArrayElementAtIndex(i).objectReferenceValue = glowRs[i]; nmo.ApplyModifiedPropertiesWithoutUndo();
+// eave lamp (8.9f): a lantern hung under the east roof overhang, its bulb unfogged at night, because from the old burn below
+// (S2) the deck and its rails hide the cab windows; the lamp hangs out past them, so the tower still marks itself at night
+const float eaveOut = 0.55f, eaveDrop = 0.45f, eaveBulb = 0.3f;
+var eaveAt = V(ch + eaveOut, cabWallH - eaveDrop, 0f);
+On(CS + "CS_Lantern_Old_Rusted", cabDress, eaveAt.x, eaveAt.y, eaveAt.z, 90f, UnityEngine.Vector3.one, false);
+var eaveBulbGo = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere); eaveBulbGo.name = "EaveLampBulb"; eaveBulbGo.transform.SetParent(cabDress, false);
+eaveBulbGo.transform.localPosition = eaveAt + V(0f, 0.2f, 0f); eaveBulbGo.transform.localScale = V(eaveBulb, eaveBulb, eaveBulb); UnityEngine.Object.DestroyImmediate(eaveBulbGo.GetComponent<UnityEngine.Collider>());
+var ebr = eaveBulbGo.GetComponent<UnityEngine.Renderer>(); ebr.sharedMaterial = bulb; ebr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; glowRs.Add(ebr);
+Practical("EaveLamp", cabDress, eaveAt + V(0f, 0.2f, 0f), 4f, PracticalLight.Kind.Lantern, PracticalLight.ByDay.Off);
+var lv = cabDress.gameObject.AddComponent<LookVisibility>(); var lvo = new UnityEditor.SerializedObject(lv);
+lvo.FindProperty("show").enumValueIndex = (int)LookVisibility.Show.Night; var lvt = lvo.FindProperty("targets");
+lvt.arraySize = glowRs.Count; for (int i = 0; i < glowRs.Count; i++) lvt.GetArrayElementAtIndex(i).objectReferenceValue = glowRs[i].gameObject; lvo.ApplyModifiedPropertiesWithoutUndo();
 // wind vane on the roof: rod and arrow, rust
 float roofTop = cabWallH + 0.2f;
 var vaneRod = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cylinder); vaneRod.name = "WindVaneRod"; vaneRod.transform.SetParent(cabDress, false);
