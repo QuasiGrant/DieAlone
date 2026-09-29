@@ -1,8 +1,10 @@
 # Style guide
 
-**DRAFT, 2026-09-28, Vesper. Nothing here is decided until it is a line in DECISIONS.md and Grant has confirmed it.** Every later review of Main3 checks against this file. Values marked **P** are proposals for Grant. Values marked **now** are what LookTuning.asset holds today. Rook sets LookTuning; I only propose.
+**DRAFT, 2026-09-28, updated 2026-09-29, Vesper. Nothing here is decided until it is a line in DECISIONS.md and Grant has confirmed it.** Every later review of Main3 checks against this file. Values marked **P** are proposals for Grant. Values marked **now** are what LookTuning.asset holds today. Rook sets LookTuning; I only propose.
 
-Binding inputs: DECISIONS.md 2026-09-20 (VHS first, Fears to Fathom, PS1 effects off, own shaders only), 2026-09-27 (SSAO off, render scale 0.5), 2026-09-28 (two states day and night, sun fixed, pass checks, packs for hero pieces).
+Binding inputs: DECISIONS.md 2026-09-20 (VHS first, Fears to Fathom, PS1 effects off, own shaders only), 2026-09-27 (SSAO off, render scale 0.5), 2026-09-28 (two states day and night, sun fixed, pass checks, packs for hero pieces, day one plays as a normal job), 2026-09-29 (no fire visible on day one until nightfall; bought pack shaders replaced with project shaders; every asset licensed for commercial sale).
+
+**Pending:** the day one and day two split below (2.0, 2.1 heading, 6.0, 6.1 heading) waits on Sable's revision 6 and Grant. Until then, treat it as a proposal.
 
 ## 1. Tone
 
@@ -10,13 +12,31 @@ Binding inputs: DECISIONS.md 2026-09-20 (VHS first, Fears to Fathom, PS1 effects
 2. The camp is the only warm, safe-looking place. Everywhere else looks like someone just stopped what they were doing.
 3. Wrongness is one detail, not ten. A site is normal except for one thing.
 4. The monster is punctuation. Nothing in the dressing is a monster tease by default.
-5. Reference: Fears to Fathom, Ironbark Lookout (Rayll, 2023): a fire lookout, same tape look, same everyday-object horror. Read it for density of props and how little light it uses at night.
+5. Day one is an ordinary fire lookout job (DECISIONS 2026-09-29). Its unease comes only from isolation and routine: quiet, distance, an empty radio. No fire, smoke, ash or rune in any frame before nightfall. The reveal only works if day one looks safe.
+6. Reference: Fears to Fathom, Ironbark Lookout (Rayll, 2023): a fire lookout, same tape look, same everyday-object horror. Read it for density of props and how little light it uses at night.
 
 ## 2. Palette
 
-sRGB hex. Day and night only (DECISIONS 2026-09-28: two states).
+sRGB hex. Day and night only (DECISIONS 2026-09-28: two states). Day one has its own day palette (2.0) because the fire is not visible on day one (DECISIONS 2026-09-29). Whether LookTuning can hold a second day set is unverified; Rook to confirm.
 
-### 2.1 Day: the burning sunset
+### 2.0 Day one: ordinary late afternoon, no fire (pending Sable rev 6 and Grant)
+
+All **P**. A clean, warm late afternoon turning to sunset. Nothing in it says fire.
+
+| Role | Hex | Change from day two on |
+|---|---|---|
+| Sky top | #5E6878 | dusty blue-grey, not rust-brown |
+| Sky horizon | #E3A968 | gold, not burnt orange |
+| Sky below horizon | #5A4A3C | brown, less red |
+| Sun glow | #FFC98A | paler, yellower |
+| Fire glow on the ridge | none | absent until nightfall |
+| Haze (far fog) | #A8A08E | pale dust and distance, not smoke |
+| Ambient fill | #6E6658 | slightly cooler, same low value |
+| Ash | none | no falling or settled ash |
+| Forest floor green | #58583A | a touch less dulled, still olive |
+| Surfaces | as 2.1 | wood, rust, granite, canvas, char unchanged |
+
+### 2.1 Day two on: the burning sunset (pending Sable rev 6 and Grant)
 
 | Role | Hex | Source |
 |---|---|---|
@@ -40,7 +60,7 @@ sRGB hex. Day and night only (DECISIONS 2026-09-28: two states).
 | Role | Hex | Source |
 |---|---|---|
 | Night fog and sky | #05080D | now (fogColor) |
-| Fire glow on the horizon | #FF6B1A | now, same as day |
+| Fire glow on the horizon | #FF6B1A | now, same as day two on; first seen at nightfall on day one |
 | Practical light (lantern, cab, stove) | #FFA860 | P |
 | Ward runes, lit | #B8481C | P, dim ember, never above the lantern |
 
@@ -59,10 +79,12 @@ One light colour per place so no two read alike. All **P**.
 
 ### 2.4 Palette rules
 
-1. Warm owns the frame. Cool allowed only in: the night sky and fog, the cave, the Camp 2 lamp. All cool stays desaturated.
+1. Warm owns the frame. Cool allowed only in: the night sky and fog, the cave, the Camp 2 lamp, the day one sky top. All cool stays desaturated.
 2. Saturated colour is reserved for light sources: fire, sun, lanterns, one warning object per site (Mast's red rag and lamp). Surfaces stay dull.
 3. Nothing brighter than #D8CCB4 on a surface. Pure white exists only in the sun and fire cores.
 4. Greens are olive and dulled, never grass green.
+5. Day one has no orange above #E3A968 in the sky and no glow on any horizon. The first fire-orange the player sees is at nightfall on day one.
+6. Day one exception: every fire, fire glow, smoke, ash or fire glimpse line in this file applies only from nightfall on day one (DECISIONS 2026-09-29). Where a line does not say so, 2.0, 6.0 and 8.13 override it.
 
 ## 3. VHS look targets
 
@@ -93,9 +115,10 @@ Notes:
 2. Texel density **P**: 128 px per metre for anything the player can pick up or stand within 2 m of; 64 px per metre for buildings, ground and trunks; 32 px per metre allowed on surfaces taller than 10 m. After the 360-row filter, finer detail is invisible; coarser shows as smear.
 3. No stretched textures. ProBuilder faces use world-space or per-face auto UVs at the density above. A plank or brick should read at the size it is in the world.
 4. One material per surface type across the map (one bark, one granite, one rust metal). No two structures share silhouette and material (DECISIONS 2026-09-28).
-5. Pack materials are converted to URP Lit and retinted to the palette. Pack showcase colours (bright blue roofs, clean paint) are repainted or rejected.
+5. Bought pack shaders are replaced with the project's own shaders (DECISIONS 2026-09-29). "Own" means shaders written for this project plus Unity's built-in URP shaders (URP Lit, Unlit, Particles) already used across the project; it excludes any shader shipped inside a pack (Wren's reading, pending Grant). Pack materials are rebuilt on those shaders and retinted to the palette. Pack showcase colours (bright blue roofs, clean paint) are repainted or rejected.
 6. Emission only on light sources and lit runes. Emission intensity on runes never exceeds the nearest practical light.
-7. Ground: no bare flat dirt within 10 m of the camera in any dressed shot **P**. Break it with litter, roots, ash drift, needles, grass tufts, stones.
+7. Ground: no bare flat dirt within 10 m of the camera in any dressed shot **P**. Break it with litter, roots, ash drift (day two on only), needles, grass tufts, stones.
+8. Every asset used must be licensed for commercial sale (DECISIONS 2026-09-29). CC0 and Asset Store Standard EULA qualify; anything with non-commercial, editorial-only or unclear terms is rejected before it enters the project. Record the source and licence of each pack or texture when it is judged.
 
 ## 5. Structure quality bar
 
@@ -111,14 +134,27 @@ A structure passes a dressing review when all are true:
 
 ## 6. Lighting
 
-### 6.1 Day (waking until the report is filed)
+### 6.0 Day one (waking until nightfall; pending Sable rev 6 and Grant)
+1. One fixed sun, west, higher than day two on: elevation 14 degrees **P**, colour #FFC98A. Late afternoon, not last light.
+2. Shadows medium-long, eastward. Same two cascades.
+3. Same value structure rule as 6.1.3: sky brightest, haze mid, foreground darkest.
+4. Ambient #6E6658 **P**. Canopy floor still dark; clearings still pools of light.
+5. Haze lighter and paler (#A8A08E); far landmarks clear, the ridge a plain blue-grey hill with no glow.
+6. No fire glow, no fire glimpses, no ash particles, no smoke column. The cliff-edge gaps from 6.1.7 show only sky.
+7. Practical lights on as normal (Pim's rule).
+8. Nightfall on day one uses the night rules (6.2). The fire glow appears there for the first time; the full view of the wildfire and the Ward is at the Ward ledge.
+
+### 6.1 Day two on (waking until the report is filed; pending Sable rev 6 and Grant)
+
+What changes from day one: sun lower (6 degrees) and more orange; sky rust-brown to burnt orange; haze becomes smoke; ash falls and settles; fire glow on the ridge; fire glimpses through planned gaps.
+
 1. One fixed sun, low in the west, the fire side. Glow means west (Main3.md 5.7). Elevation 6 degrees **P**, colour #FF8C40.
 2. Shadows long and eastward. Two cascades (DECISIONS 2026-09-27).
 3. Value structure in every frame: sky brightest, haze mid, foreground darkest. The flat single value of Main2 is the failure to avoid.
 4. Ambient low (#734D42 **P**) so the forest floor under canopy goes dark and clearings read as pools of light.
 5. Warm practical lights mark points of interest even by day (Pim's rule): lit cabin desk, pump lantern.
 6. Haze is heavy enough that far landmarks rise out of it; height fog is Rook's open item (Main3.md 5.6).
-7. Fire glimpses on the ground (W1 shore, west bends, Camp 3 rim) need a planned gap in the cliff-edge giant band, not luck.
+7. Fire glimpses on the ground (W1 shore, west bends, Camp 3 rim) need a planned gap in the cliff-edge giant band, not luck. Day two on only; on day one the same gaps show only sky (6.0.6).
 
 ### 6.2 Night
 1. No sun, no moon. Ambient near black.
@@ -149,13 +185,16 @@ A structure passes a dressing review when all are true:
 8. Gore as decoration. Blood only where an event puts it.
 9. Jokey, meme or modern-internet text in any in-world writing.
 10. PS1 vertex jitter, affine textures, SSAO, lens flare, bloom halos, unless Grant decides otherwise.
-11. Pack assets used as-is with their showcase lighting or colours.
+11. Pack assets used as-is with their showcase lighting, colours or shaders.
 12. Anything that looks new and clean, except one deliberate wrong object.
+13. Any fire, fire glow, smoke, ash or lit rune on day one before nightfall.
+14. Any asset without a licence for commercial sale.
 
 ## 9. Reference boards
 
 Per-location boards wait for Main3.md (draft rev 3) to be confirmed. Global boards to assemble for Grant's look, in Docs/Design/Boards when started:
-1. Sunset and haze: value structure, fixed low sun, rust haze.
+0. Day one: ordinary late afternoon in a lookout forest, clean air, gold sun, no smoke.
+1. Sunset and haze (day two on): value structure, fixed low sun, rust haze.
 2. Night: fire glow only, practical lights as markers.
 3. Giant trees: trunk scale against a person, bark, how light falls between them.
 4. The Ward: carved standing stones on a cliff edge, weathered, ember runes.

@@ -1,6 +1,6 @@
 # Tower check: lectern and binoculars
 
-**DRAFT, 2026-09-28, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (daily loop, cave not checked, day and night states, night allows only the Ward). Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. Colours and type sizes wait on Vesper's Style.md **[GAP: Style]**.
+**DRAFT, 2026-09-28, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (daily loop, cave not checked, day and night states, night allows only the Ward), 2026-09-29 (the day ends by filing the report or by an event; no time budget, so no clock in the binocular view). Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. Colours and type sizes wait on Vesper's Style.md **[GAP: Style]**.
 
 ## 1. Purpose
 
@@ -88,6 +88,7 @@ Binocular view (screen space overlay, full screen):
 | Day, already checked | Prompt `Use binoculars` still works. Every target shows its result at once. |
 | Night | No prompt at the lectern. Binoculars cannot be raised (night allows only the Ward). |
 | Paused | Pause menu over the binocular view. Resume returns to the same view. |
+| Event ends the day while binoculars up | Binoculars lower at once (0.3 s fade), no marks added. Event sequence, then WardNight.md section 2.4. No day-end card. |
 | Carrying an object | No prompt (PlayerInteractor only offers Set down while carrying). |
 
 ## 7. Camera and feel

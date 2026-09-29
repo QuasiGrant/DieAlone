@@ -8,7 +8,7 @@
 
   <!-- background and title -->
   <rect x="0" y="0" width="1190" height="1000" fill="#f6f3ec"/>
-  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 5, 2026-09-28, Sable. Nothing here is decided.</text>
+  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 6, 2026-09-29, Sable. Nothing here is decided.</text>
   <text x="60" y="47" font-size="11" fill="#444">400 x 300 m at 2.5 px per m. Origin south-west, x east, z north. Heights absolute. Walk times at 2.5 m/s. The loop is in DailyLoop.md.</text>
 
   <!-- map area -->
@@ -17,7 +17,7 @@
   <!-- fire, west -->
   <rect x="0" y="70" width="60" height="750" fill="url(#fire)"/>
   <text transform="translate(26,445) rotate(-90)" text-anchor="middle" font-size="13" font-weight="bold" fill="#7a1e08">FIRE: burning ridge 300 to 500 m WEST</text>
-  <text transform="translate(44,445) rotate(-90)" text-anchor="middle" font-size="10" fill="#7a1e08">day 1: reads as an ordinary far-off forest fire until the Ward</text>
+  <text transform="translate(44,445) rotate(-90)" text-anchor="middle" font-size="10" fill="#7a1e08">day 1: not visible at all; first seen at the Ward on night 1</text>
   <rect x="60" y="70" width="25" height="750" fill="#d6c6b0"/>
   <line x1="85" y1="70" x2="85" y2="820" stroke="#4d3d2d" stroke-width="3"/>
   <text transform="translate(76,700) rotate(-90)" text-anchor="middle" font-size="9" fill="#5a4a3a">valley -40 m, cliff x 10</text>
@@ -70,7 +70,7 @@
 
   <!-- tower fire view -->
   <polygon points="470,405 85,350 85,790" fill="#f08a3a" fill-opacity="0.09"/>
-  <text x="95" y="600" font-size="9" fill="#a0521c">tower fire view W to SW: smoke and glow over the far ridge, base hidden</text>
+  <text x="95" y="600" font-size="9" fill="#a0521c">tower fire view W to SW, day 2 on if approved: glow and smoke over the far ridge, base hidden</text>
 
   <!-- tower sightline cones -->
   <g fill="#f2cf3c" fill-opacity="0.28" stroke="#c9a41c" stroke-width="0.6">
@@ -206,7 +206,7 @@
     <text x="360" y="452" text-anchor="end">126 m / 50 s</text>
     <text x="455" y="624" text-anchor="middle">80 m / 32 s</text>
     <text x="318" y="572" text-anchor="end">114 m / 46 s</text>
-    <text x="300" y="716" text-anchor="middle">109 m / 44 s, dead end, unsigned (proposed exception)</text>
+    <text x="300" y="716" text-anchor="middle">109 m / 44 s, dead end, unsigned (the approved exception)</text>
     <text x="415" y="316">96 m / 38 s</text>
     <text x="926" y="385" font-size="9">T</text>
   </g>
@@ -282,6 +282,6 @@
     <rect x="640" y="940" width="40" height="12" fill="#e4e1db" stroke="#8c877e"/><text x="686" y="950">front zone, inside the gate</text>
     <rect x="640" y="960" width="40" height="12" fill="url(#fire)"/><text x="686" y="970">fire direction (west)</text>
 
-    <text x="60" y="990" fill="#444">Camp to the Ward at night: 226 m, 90 s. Camp to the office: 270 m. Giant tops at most 50 m absolute. Day 1: everything reads ordinary until the Ward.</text>
+    <text x="60" y="990" fill="#444">Camp to the Ward at night: 226 m, 90 s. Camp to the office: 270 m. Giant tops at most 50 m absolute. Walk times are information, not a budget. Day 1: no fire, everything ordinary until the Ward.</text>
   </g>
 </svg>

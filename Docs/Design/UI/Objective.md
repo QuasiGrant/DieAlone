@@ -1,6 +1,6 @@
 # Objective: logbook day list and the on-screen line
 
-**DRAFT, 2026-09-28, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (daily loop; a NOT SAFE location goes into the logbook and the objective; stats in the logbook only outside the Ward). Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. The full logbook is Docs/Design/UI/Logbook.md (not yet written) **[GAP: Logbook]**. Colours **[GAP: Style]**.
+**DRAFT, 2026-09-28, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (daily loop; a NOT SAFE location goes into the logbook and the objective; stats in the logbook only outside the Ward; the player carries the logbook, which holds notes, questions and settings), 2026-09-29 (the day ends by filing the report or by an event; no time budget for the day). Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. The full logbook is Docs/Design/UI/Logbook.md (not yet written) **[GAP: Logbook]**. Colours **[GAP: Style]**.
 
 ## 1. Purpose
 
@@ -33,7 +33,9 @@
 4. `Then the Ward.` is a plain line with no box, shown from waking. It is a reminder, not a duty.
 5. Lower block: the needs with `met` or `-`. Need words are the same in every UI spec (DayEndConfirm.md uses them too): `Food`, `Water`, `Warmth`, `Social`. Safety is not listed; the location lines are Safety. The list of needs follows DECISIONS 2026-09-28 and stays a **[GAP: DailyLoop]** until Sable's DailyLoop.md sets it.
 6. Numbers never appear on this page. Stats have their own page **[GAP: Logbook]**.
-7. The logbook does not open at night. DECISIONS 2026-09-28: at night the only thing the player can do is go to the Ward. After the report is filed, the desk has no prompt until the next day.
+7. The logbook is carried, so the day list can be read anywhere by day. No clock, time-left line or duty timer appears on this page or anywhere else: the day has no time budget (DECISIONS 2026-09-29).
+8. At night the day list is read-only: `File the report` cannot be chosen, and nothing ticks. DECISIONS 2026-09-28: at night the only thing the player can do is go to the Ward. Whether the logbook opens at night at all is open (section 7), because settings live in it.
+9. If an event ends the day early, today's page stays as it was when the event hit: open lines stay open. What the unfiled report costs **[GAP: DailyLoop]**.
 
 ## 3. The on-screen line
 
@@ -65,6 +67,7 @@
 | A NOT SAFE location resolved | `Logbook: <Location> seen to.` |
 | A need met | `Logbook: Water met.` (same words: `Food`, `Water`, `Warmth`, `Social`) |
 | Report filed | `Logbook: go to the Ward.` |
+| Event ends the day | No line. The player is already at the Ward (WardNight.md section 2). |
 | Event adds or blocks a need (Milestone 14) | Written per event. |
 
 Wording is draft; Quill may rewrite, but need words change in all specs at once.
@@ -76,7 +79,8 @@ Wording is draft; Quill may rewrite, but need words change in all specs at once.
 | Waking | Only `Climb the tower`, `File the report`, `Then the Ward.` | Wake line. |
 | Tower done | NOT SAFE lines added. | One line per location. |
 | Chores | Needs tick. | One line per need met. |
-| Report filed, night | Not reachable: the logbook does not open at night. | `go to the Ward.` |
+| Report filed, night | Read-only (section 2.8). | `go to the Ward.` |
+| Event ended the day | Frozen as the event left it (section 2.9). | None. Held lines are dropped. |
 | Overlay open | Unchanged. | Queued. |
 
 ## 6. Input paths
@@ -93,7 +97,8 @@ The on-screen line takes no input.
 
 ## 7. Open questions
 
-1. Is the logbook fixed to the cabin desk, or carried? If fixed, the player cannot check the list in the field, and the only reminder is the on-screen line. Proposal if fixed: `Tab` / D-pad up re-shows the current top open line for 4 s. Both are free in the Player map. Not a new screen.
-2. What resolves a NOT SAFE location, and can the day list show it before the player arrives? **[GAP: DailyLoop]**
+1. Closed 2026-09-29 (DECISIONS 2026-09-28): the logbook is carried. The re-show proposal is dropped; the player opens the logbook instead. The open button belongs to Logbook.md **[GAP: Logbook]**.
+2. Does the logbook open at night? Settings live in it (DECISIONS 2026-09-28), so a closed logbook at night leaves settings only in the pause menu. Draft: it opens read-only. Wren to confirm with Grant.
+3. What resolves a NOT SAFE location, and can the day list show it before the player arrives? **[GAP: DailyLoop]**
 
 Pim

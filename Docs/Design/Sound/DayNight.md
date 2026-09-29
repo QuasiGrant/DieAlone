@@ -1,36 +1,72 @@
 # Day and night sound
 
-**DRAFT, 2026-09-28, Hollis. Nothing here is decided.** Lines marked **[Grant yes]** need Grant's confirmation and a dated line in DECISIONS.md. Mixer groups and snapshots: Mixer.md. Import settings and sources: Sourcing.md. Binding inputs: DECISIONS.md 2026-09-28 lines on the daily loop, two states, night at the Ward, the cave. Per-location ambience waits for Sable's Main3 map and DailyLoop.md; nothing here fixes a position.
+**DRAFT, 2026-09-29, Hollis. Nothing here is decided.** Lines marked **[Grant yes]** need Grant's confirmation and a dated line in DECISIONS.md. Mixer groups and snapshots: Mixer.md. Import settings and sources: Sourcing.md. Binding inputs: DECISIONS.md 2026-09-28 lines on the daily loop, two states, night at the Ward, the cave, the first day as a normal job; 2026-09-29 lines on the day ending by report or event, and the fire not visible on day one. DailyLoop.md section 6 (day 1 and night 1). Per-location ambience waits for Sable's Main3 map; nothing here fixes a position.
 
-Tone target: psychological first. The world is quiet, thin and a little too even. A jump is punctuation.
+Tone target: psychological first. Day one is ordinary and full. From day two the world is quiet, thin and a little too even. A jump is punctuation.
 
-## 1. Two states
+## 1. Two states, two ways into night
 
 | State | From | To | Snapshot |
 |---|---|---|---|
-| Day | Waking | Report confirmed | Day |
-| Night | Report confirmed | Sleep | Night |
+| Day | Waking | Report confirmed, or an event ends the day | Day (Day1 on day one) |
+| Night | Report confirmed, or event end | Sleep | Night (Night1 on night one) |
 
-The sun is fixed, so sound does not follow a clock. Nothing drifts through the day; the change is one event, the report.
+1. The sun is fixed, so sound does not follow a clock. Nothing drifts through the day; the change is one event.
+2. Report path: the day-end tone and a slow transition (section 9).
+3. Event path: a hard cut, no tone (section 11).
 
-## 2. Day bed (Ambience, 2D stereo, loops)
+## 2. Day one: an ordinary job **[Grant yes]**
+
+Day one is Firewatch (DECISIONS 2026-09-28). No fire is seen (2026-09-29), so none is heard. The ear should believe this is a normal summer posting. Everything below is what later days take away.
+
+Own snapshot, Day1. Beds (Ambience, 2D stereo, loops) and sources (World, 3D, mono):
+1. Wind in the giant trees, same as later days but with more movement at ground level: leaves, branches, a warmer layer.
+2. Birds: full and close. Several species, near and far, including close birdsong on the trails and at camp. This is the one day the forest is fully alive.
+3. Insects: a daytime layer at the lake and forage ground (flies, a bee pass as a one-shot).
+4. Distant road traffic: a car or truck passing on the far road, one-shots on a 3D emitter row along the road, long random interval (roadPassIntervalMin / Max, start 90 / 240 s). Doppler off; a slow gain and lowpass sweep inside the clip does the pass. Heard from the front zone and faintly from camp. Ordinary, never close.
+5. Office radio: ordinary dispatch chatter. World, 3D, from the radio object, battery device rules (hiss, squelch, tone bursts). No voice acting (DESIGN.md), so the voices are band-limited, pitched and garbled past understanding: the rhythm of talk, not words. Built in-house from processed hums and mouth noise, or CC0. Vesper hears it first.
+6. Residents' signature sounds all play, all on time. No anomaly (DailyLoop.md 6.1).
+7. Front zone machines run (section 5).
+8. No fire rumble, no fire cracks, no smoke hiss. Nothing from the west.
+9. The cave is not heard. The chant emitter is disabled on day one.
+10. Not decided here: DailyLoop.md 6.2 still describes an ordinary distant fire seen from the tower on day one. That line predates DECISIONS 2026-09-29 and conflicts with it. This doc follows 2026-09-29: no fire sound at all on day one. If Grant keeps a far smoke column, it stays silent.
+
+## 3. Night one: the reveal **[Grant yes]**
+
+The one sound moment the whole run is built on. The player walks up in an ordinary night and arrives at the fire.
+
+Climb (Night1 snapshot, from the report to the last bend):
+1. Ordinary night. Crickets and night insects, one owl, a soft wind. Tree creak one-shots. The office radio is off. A single far car on the road, once, early in the night.
+2. Nothing hints. No rumble under it, no low end. The climb must sound safe.
+
+Ledge (triggered when the view opens, one timeline, numbers in AudioTuning):
+1. The ordinary night bed cuts out, not fades (revealCutSeconds, start 0.1 s). The insects stopping all at once is the first wrong sound in the game.
+2. A beat of Ward room tone and the player's breath (revealHoldSeconds, start 1.5 s). Nothing else.
+3. The runes wake: the Ward's own voice, one low swell (spec waits for the Ward design, section 7.6).
+4. The fire arrives: the full roar, 3D on a wide emitter row along the fire line below, opened up to full bandwidth, with the far cracks and a deep sub layer. Rise over revealRiseSeconds (start 4 s) to revealRoarGainDb. It is the loudest sound the player has heard so far.
+5. The roar presses against the barrier: a heavy lowpass and a slight flutter on the fire bus where it meets the Ward line, so it reads as held back, not just far.
+6. The first Ward screen opens over the roar. The roar ducks under it (wardScreenDuckDb, start -6 dB) and stays.
+7. Leaving the ledge: the roar stays audible down the climb and into camp, lower. The ordinary night bed does not come back.
+
+## 4. Day bed from day two (Ambience, 2D stereo, loops)
 
 1. Wind high in the giant trees. Slow, far overhead, little at ground level. 60 s loop or longer so the seam is not learned.
-2. Far fire: a low rumble from the fire front. Built as a row of wide 3D emitters along the fire line on Sable's map (mono, Linear rolloff, large min distance), not 2D, so turning your head places the fire.
+2. Far fire: a low rumble from the fire front. A row of wide 3D emitters along the fire line on Sable's map (mono, Linear rolloff, large min distance), not 2D, so turning your head places the fire. Loudest at the three west glimpses (DailyLoop.md 5.4).
 3. Far fire cracks: one-shots on the same emitters, a giant tree splitting far off. Random interval.
-4. Birds: few, far, and fewer as WARD falls (section 8). No close birdsong anywhere. The forest has mostly left.
-5. Ash: nothing. Ash is silent. Resist adding a sound for it.
+4. Birds: few, far, and fewer as WARD falls (section 12). No close birdsong. The forest has mostly left since night one.
+5. Insects: none by day.
+6. Ash: nothing. Ash is silent. Resist adding a sound for it.
 
-## 3. Night bed (Ambience)
+## 5. Night bed from night two (Ambience)
 
 1. The night bed is the day bed with things taken away, not a new bed. The ear should notice what stopped.
 2. Wind drops to a near-still layer with tree creak one-shots (World, 3D, on a few giants near trails).
-3. No birds. No insects. The fire rumble keeps its level; with everything else gone it reads louder without being louder.
-4. Resident signature sounds stop at night (the axe, the canvas chimes, the radio voice), except where an event says otherwise. **[Grant yes]**
-5. Front zone machines keep running (section 4).
-6. Night allows only the Ward (DECISIONS 2026-09-28), so the night bed is heard on the camp, the trail to the Ward and the climb. Nowhere else needs a night mix.
+3. No birds. No insects, unlike night one. The fire rumble keeps its level; with everything else gone it reads louder without being louder.
+4. Resident signature sounds stop at night (the axe, the canvas chimes, the radio), except where an event says otherwise. **[Grant yes]**
+5. Front zone machines keep running (section 6).
+6. Night allows only the Ward (DECISIONS 2026-09-28), so the night bed is heard on the camp, the trail to the Ward and the climb.
 
-## 4. Front zone machines and wild sites **[Grant yes]**
+## 6. Front zone machines and wild sites **[Grant yes]**
 
 Rule: mains electric sound exists only in the front zone (road, fence, parking lot, store, office). Everything past it is hand, animal, water, wind and fire.
 
@@ -40,17 +76,44 @@ Front zone (World, 3D, mono, loops unless noted):
 3. Office: window AC unit rattle.
 4. Road: power line hum on the poles, heard only standing under them.
 5. Gate: chain knocking on the post in wind (one-shots).
-6. Beyond the fence the road is silent. No traffic, ever. That absence is the front zone's wrongness and it costs nothing to build.
+6. Road traffic: day one only (section 2.4). From day two the road beyond the fence is silent. The player heard cars once; now none come. That absence is the front zone's wrongness and costs nothing to build. Whether it goes silent at once or thins over WARD bands is open for Vesper; I would cut it at once, the player should notice on day two.
+7. Office radio: ordinary chatter on day one only. From day two, static with a rare fragment of chatter, fewer fragments as WARD falls.
 
-Wild sites (lake, campsites, cave): no hum, no compressor. Battery devices (a resident's radio) are allowed because they hiss and crackle, they do not hum.
+Wild sites (lake, campsites, cave): no hum, no compressor. Battery devices are allowed because they hiss and crackle, they do not hum.
 
 Machines run day and night at the same level. They do not care what time it is. At night they are the loudest man-made thing on the map.
 
 Early era: no mains power. Front zone replacement is open until the Early era is designed.
 
-## 5. Anomalies heard, not seen
+## 7. Silence at the Ward **[Grant yes]**
 
-Serves Safety events and general dread. Hearing an anomaly is never required: the tower marks locations SAFE or not, and spotting anomalies as a skill belongs to a minigame (DECISIONS 2026-09-28). Sound here is atmosphere and a pull, never a gate.
+1. From the last bend of the climb (trigger volume) the Ward snapshot takes over: every bed and every distant source goes.
+2. Not digital silence. A room tone stays: a very low, close, dead-air bed, mono, 11025 Hz, with the faintest pressure in it, like standing in a closed room. True zero reads as a bug on headphones.
+3. What is left is the player: footsteps, clothing, breath. Player foley at the Ward is dry and close; the lowpass on World is set so it does not carry.
+4. At the Ward the fire is heard only on the ledge at night, held back behind the barrier (section 3.5). This replaces the earlier rule that the fire is never heard at the Ward: 2026-09-29 puts the first sound of the wildfire there.
+5. By day the Ward is silent apart from room tone, even though it sees the fire's base. At night the ledge carries the held-back roar. The climb stays silent both ways.
+6. The Ward's own voice (its hunger, the feeding, what an offering sounds like) is a separate spec after the Ward design. It will be built on top of this silence, sparingly.
+
+## 8. The cave chant **[Grant yes]**
+
+The cultist cave is hidden from the tower and not in the daily check. Sound is how the player learns it is there.
+
+1. A low, wordless chant from inside the cave mouth. World, 3D, mono, loop, 60 s or longer with no obvious seam.
+2. Wordless and processed (hum, drone, no language), so it does not break the no-voice-acting rule. Source: CC0 drone or in-house hum layered and pitched down. Vesper hears it before anything else is decided.
+3. Off on day one. From night one on (DailyLoop.md 5.5) it carries to two trail spots at two volumes, rising down the spur (caveChantRadius, start 60 m, against 35 m for sites), faint enough to doubt.
+4. Day and night from night one. Whether it reaches the Ward climb at night is story, so Quill and Sable decide.
+5. It never stops when looked at. It is not an anomaly; it is a place.
+
+## 9. The day-end tone **[Grant yes]**
+
+1. Plays once when the player confirms the report. Not played when an event ends the day (section 11).
+2. A single held tone, about 3 s, soft attack, slight tape wow, then the Day to Night snapshot transition starts under its tail (dayToNightSeconds, 8 s).
+3. The same tone every day, so it becomes routine. Routine is what an Altered anomaly (section 10) and an event end can break.
+4. Diegetic if the report desk has a radio or receiver: World, 3D, from that object. Otherwise Music, 2D. I prefer diegetic: the day ending because someone received your report is colder than a score cue.
+
+## 10. Anomalies heard, not seen
+
+None on day one (DailyLoop.md 5.2). From day two, serves Safety events and general dread. Hearing an anomaly is never required: the tower marks locations SAFE or not, and spotting as a skill belongs to a minigame (DECISIONS 2026-09-28). Sound here is atmosphere and a pull, never a gate.
 
 Rules **[Grant yes]**:
 1. At most one wrong sound per day, across the whole map. Rarity is what makes it land.
@@ -64,46 +127,37 @@ Four kinds, built from sounds already in the game so they need few new files:
 3. Altered: a known sound is off by a little (the axe beat skips one stroke; the day-end tone a semitone flat).
 4. Echo: the player's own footsteps repeated a beat late, from behind, for four or five steps.
 
+Day one sounds are the reference the player compares against. A Displaced car pass on the silent road is available as a late, low-WARD anomaly.
+
 Which kind fires on which day comes from the event data (Milestone 13 format), not from a random roll in audio code.
 
-## 6. Silence at the Ward **[Grant yes]**
+## 11. An event ends the day **[Grant yes]**
 
-1. From the last bend of the climb (trigger volume) the Ward snapshot takes over: every bed and every distant source goes.
-2. Not digital silence. A room tone stays: a very low, close, dead-air bed, mono, 11025 Hz, with the faintest pressure in it, like standing in a closed room. True zero reads as a bug on headphones.
-3. What is left is the player: footsteps, clothing, breath. Player foley at the Ward is dry and close; the lowpass on World is set so it does not carry.
-4. The fire is not heard at the Ward, though it is the only place that sees its base. That mismatch is the point.
-5. Same at day and night. The Ward is the one place time does not change the sound.
-6. The Ward's own voice (its hunger, the feeding, what an offering sounds like) is a separate spec after the Ward design. It will be built on top of this silence, sparingly.
+DECISIONS 2026-09-29: an event can end the day, for example a monster that catches the player, who then finds themselves at the Ward early. The monster and chase sound are a separate spec. This is the transition only.
 
-## 7. The cave chant **[Grant yes]**
+1. The chase runs at its peak: pursuer, the player's breath and footsteps, the day bed ducked.
+2. At the catch: one short impact or grab one-shot (World, 2D, close), then a hard cut of every bus to nothing (eventCutSeconds, start 0 s). A true zero here is correct, unlike the Ward: it is short and it is meant to read as something taken.
+3. Black and silence for eventBlackSeconds (start 2 s).
+4. Wake at the Ward: room tone first, then the player's breath, ragged and slowing over eventBreathSeconds (start 6 s). Then the Ward's own voice or, at night, the held-back roar (section 7.4), faded in rather than revealed.
+5. No day-end tone. The routine sound is missing, and that is the tell that the day was taken, not ended.
+6. State goes straight to Night; no Day to Night transition plays.
+7. Day one cannot end this way, since day one has no events that threaten. If Quill writes one, it would collide with the reveal; section 3 wins.
 
-The cultist cave is hidden from the tower and not in the daily check. Sound is how the player learns it is there.
+## 12. From day two: the fire closing in **[Grant yes]**
 
-1. A low, wordless chant from inside the cave mouth. World, 3D, mono, loop, 60 s or longer with no obvious seam.
-2. Wordless and processed (hum, drone, no language), so it does not break the no-voice-acting rule. Source: CC0 drone or in-house hum layered and pitched down. Vesper hears it before anything else is decided.
-3. Heard further than a site signature (caveChantRadius, start 60 m, against 35 m for sites) so it reaches a trail the player already uses, but faint enough to doubt.
-4. Day only by default. At night it stops. Open: whether it carries to the Ward climb on some nights. That is story, so Quill and Sable decide.
-5. It never stops when looked at. It is not an anomaly; it is a place.
+1. Everything in sections 4, 5, 6.6, 6.7, 8.3 and 10 switches on from day two. Day one's birds, insects, traffic and chatter do not come back.
+2. Fire loudness and brightness follow the WARD stat, not the day count, because runs have no fixed length (DECISIONS 2026-09-27).
+3. As WARD falls from 12 to 1: fire rumble gain rises by fireGainRangeDb, the fire emitters' lowpass opens from fireLowpassAtFullWard to fireLowpassAtLowWard, far cracks get more frequent, birds thin to none, radio fragments thin to pure static.
+4. Weirdness bands (DailyLoop.md 5.4) for sound, proposed: WARD 9 to 12 as section 4; 6 to 8 the fire rumble reaches camp by day; 3 to 5 the one wrong sound a day becomes likely and the Altered kind is unlocked; 1 to 2 the room tone of the Ward leaks into camp at night. Vesper to check.
+5. Stats are only on screen at the end-of-day phase (DECISIONS 2026-09-28). This makes WARD audible all day without a HUD. Pim and Sable should check it does not undercut that decision.
 
-## 8. The day-end tone **[Grant yes]**
+## 13. AudioTuning fields (this doc)
 
-1. Plays once when the player confirms the report.
-2. A single held tone, about 3 s, soft attack, slight tape wow, then the Day to Night snapshot transition starts under its tail (dayToNightSeconds, 8 s).
-3. The same tone every day, so it becomes routine. Routine is what an Altered anomaly (section 5) can break.
-4. Diegetic if DailyLoop.md puts a radio or receiver at the report desk: then it is World, 3D, from that object. Otherwise Music, 2D. I prefer diegetic: the day ending because someone received your report is colder than a score cue.
+dayWindGainDb, fireRumbleGainDb, fireGainRangeDb (start 6), fireLowpassAtFullWard (start 800 Hz), fireLowpassAtLowWard (start 3500 Hz), fireCrackIntervalMin / Max at full WARD (start 60 / 180 s) and at low WARD (start 15 / 45 s), birdChanceAtFullWard, day1BirdDensity, day1InsectGainDb, roadPassIntervalMin / Max (start 90 / 240 s), radioChatterIntervalMin / Max, radioFragmentChanceAtFullWard, nightCreakIntervalMin / Max, revealCutSeconds (start 0.1), revealHoldSeconds (start 1.5), revealRiseSeconds (start 4), revealRoarGainDb, barrierLowpassHz, wardScreenDuckDb (start -6), eventCutSeconds (start 0), eventBlackSeconds (start 2), eventBreathSeconds (start 6), freezerOnSeconds (40), freezerOffSeconds (20), anomalyStopDistance (start 15 m), anomalyLookAngle (start 20 degrees), anomalyLookSeconds (start 1), caveChantRadius (start 60 m), siteSignatureRadius (35 m, from Main3 draft), campSignatureRadius (40 m), wardRoomToneGainDb, dayEndToneGainDb.
 
-## 9. The fire closing in **[Grant yes]**
+## 14. Waiting on others
 
-1. Fire loudness and brightness follow the WARD stat, not the day count, because runs have no fixed length (DECISIONS 2026-09-27).
-2. As WARD falls from 12 to 1: fire rumble gain rises by fireGainRangeDb, the fire emitters' lowpass opens from fireLowpassAtFullWard to fireLowpassAtLowWard, far cracks get more frequent, birds thin to none.
-3. Stats are only on screen at the end-of-day phase (DECISIONS 2026-09-28). This makes WARD audible all day without a HUD. Pim and Sable should check it does not undercut that decision.
-
-## 10. AudioTuning fields (this doc)
-
-dayWindGainDb, fireRumbleGainDb, fireGainRangeDb (start 6), fireLowpassAtFullWard (start 800 Hz), fireLowpassAtLowWard (start 3500 Hz), fireCrackIntervalMin / Max at full WARD (start 60 / 180 s) and at low WARD (start 15 / 45 s), birdChanceAtFullWard, nightCreakIntervalMin / Max, freezerOnSeconds (40), freezerOffSeconds (20), anomalyStopDistance (start 15 m), anomalyLookAngle (start 20 degrees), anomalyLookSeconds (start 1), caveChantRadius (start 60 m), siteSignatureRadius (35 m, from Main3 draft), campSignatureRadius (40 m), wardRoomToneGainDb, dayEndToneGainDb.
-
-## 11. Waiting on others
-
-1. Sable: Main3 map and DailyLoop.md. Then per-location ambience, the fire line position, the front zone footprint, the Ward climb trigger point.
-2. Quill: whether the cave chant reaches the Ward at night; what the report is sent to.
-3. Vesper: tone words for the chant, the room tone and the Voices treatment.
+1. Sable: Main3 map. Then per-location ambience, the fire line position, the road emitter row, the front zone footprint, the Ward climb trigger and the ledge reveal trigger.
+2. Wren or Grant: DailyLoop.md 6.2 (distant fire seen on day one) against DECISIONS 2026-09-29.
+3. Quill: whether the cave chant reaches the Ward at night; what the report is sent to; whether any day one event can end the day.
+4. Vesper: tone words for the day one radio chatter, the chant, the room tone, the reveal and the Voices treatment; road traffic cut at once or thinned.

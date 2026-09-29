@@ -1,6 +1,6 @@
 # Day end confirm: "This ends your day"
 
-**DRAFT, 2026-09-28, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (filing the report asks to confirm that it ends the day; stats on screen only at the Ward). Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. The logbook screen itself is Docs/Design/UI/Logbook.md (not yet written) **[GAP: Logbook]**. Colours **[GAP: Style]**.
+**DRAFT, 2026-09-28, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (filing the report asks to confirm that it ends the day; stats on screen only at the Ward; the player carries the logbook), 2026-09-29 (the day ends by filing the report or by an event; no time budget for the day). Gaps marked **[GAP: DailyLoop]** wait on Sable's Docs/Design/DailyLoop.md. The logbook screen itself is Docs/Design/UI/Logbook.md (not yet written) **[GAP: Logbook]**. Colours **[GAP: Style]**.
 
 ## 1. Purpose
 
@@ -8,9 +8,11 @@ Filing the report ends the day and starts the night. It cannot be undone. The co
 
 ## 2. Where it opens
 
-1. In the logbook at the cabin desk, on today's page, the player chooses `File the report`.
+1. In the carried logbook, on today's page, the player chooses `File the report`. Whether filing works anywhere or only at a set place (the cabin, the tower) **[GAP: DailyLoop]**.
 2. The confirm opens as a small card over the dimmed logbook page. The logbook stays behind it.
 3. `File the report` is only offered once the tower check is done **[GAP: DailyLoop]**. Before that the logbook line reads `Climb the tower first.` and cannot be chosen.
+4. Event-ended day: when an event ends the day (DECISIONS 2026-09-29, for example a chase that catches the player), this card never opens and the open lines are never shown. If the card or the logbook is open when the event fires, both close at once with no choice made. The event's sequence ends in black and the player comes to at the Ward, on the Ward screen (WardNight.md section 2.4).
+5. The card shows no clock, time left or hour. The day has no time budget.
 
 ## 3. Wireframe
 
@@ -74,6 +76,7 @@ The list of needs (Food, Water, Warmth, Social, with Safety carried by the locat
 | Focus on `File it` | Button highlighted in the warning colour **[GAP: Style]**. |
 | Confirmed | Card and logbook close. Night transition. |
 | Cancelled | Card closes. Logbook page, focus on `File the report`. |
+| Event ends the day while open | Card and logbook close, no choice made. The modal flag clears. Event sequence, then WardNight.md section 2.4. |
 | Pause pressed | Pause is suppressed. `Esc` or `Start` acts as `Not yet` (section 8). The pause menu is one more press away, from the logbook page. |
 
 ## 7. Input paths
@@ -95,12 +98,13 @@ Gamepad:
 
 1. **Pause suppressed (needs a small pause code change).** `Esc` is bound to both Player/Pause and UI/Cancel; `Start` is bound to Pause. PauseMenu.cs subscribes to Pause.performed on its own and calls GamePause.Toggle, so a card cannot swallow the press today. Required: while this card is open, pause is suppressed (the Ward screen lets Pause through, see WardNight.md), and `Esc` or `Start` goes to the card's cancel instead. On this card cancel is `Not yet`. One way: GamePause (or PauseMenu) checks a "modal open" flag that the card sets on open and clears on close, and ignores Pause while it is set. The method is Rook's call; the behaviour is the requirement.
 2. **Player action map off.** While the card is open the Player map is disabled, then re-enabled when the card closes (either button). Otherwise the card's keys fire gameplay actions underneath: `Enter` is Attack, `A` (south) is Jump, `B` (east) is Crouch, D-pad left and right are Previous and Next, `WASD` is Move. Only the UI map (Navigate, Submit, Cancel, Point, Click) is live. If the logbook page behind already turns the Player map off, the card keeps it off; it must not turn it back on when it closes over the logbook.
-3. Reason UI cancel wins over pause here: the card is a yes or no about an irreversible step, and backing out is what `Esc` should mean on it.
+3. **Event close.** An event that ends the day must be able to close this card and the logbook with no button pressed, clear the modal flag, and leave the Player map off for the event sequence and the Ward screen (WardNight.md section 8.2).
+4. Reason UI cancel wins over pause here: the card is a yes or no about an irreversible step, and backing out is what `Esc` should mean on it.
 
 ## 9. Open questions
 
 1. Is the tower check a hard gate on filing? **[GAP: DailyLoop]**
-2. Can the day end any other way than filing (daylight running out)? If so, this card is skipped and the open lines are never shown. **[GAP: DailyLoop]**
+2. Closed 2026-09-29 (DECISIONS 2026-09-29): the day ends by filing or by an event, never by time. An event-ended day skips this card (section 2.4).
 3. Should the card name a cost in words (for example `Water not met. It will cost you.`) without numbers? Draft says no: the line alone.
 
 Pim
