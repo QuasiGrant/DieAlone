@@ -1,62 +1,57 @@
-# Die Alone in a Wildfire Simulator
+# DieAlone
 
-PS1-style first-person psychological horror. Video game adaptation of *Cinderedge* (Grant Mielke, QuasiReal Publishing, 2025), a solo journaling game. Unity 6, URP.
+Rewritten 2026-09-29 by Sable for PLAN.md task 6.6, pending Marlow's check. Where this file and DECISIONS.md disagree, DECISIONS.md wins. Detail lives in Docs/Design: the loop in DailyLoop.md, events in Events.md, the map in Main3.md.
+
+First-person psychological horror with a VHS tape look. Video game adaptation of *Cinderedge* (Grant Mielke, QuasiReal Publishing, 2025), a solo journaling game. Unity 6000.3.24f1, URP.
 
 ## Concept
-You are a Wardkeeper. You volunteered to have your memory wiped and be stationed alone at a firewatch tower on the edge of the burning Doshairiel forest, ancient elven trees larger than anything in our world, a fire that could last decades. A rune-covered stone Ward near the tower holds the fire back. It feeds on you. Maintain the Ward, survive, scavenge, remember who you were, and try to understand why you asked to forget. There is no winning. There is a way out.
+You are a Wardkeeper. You volunteered to have your memory wiped and be posted to a firewatch tower on the edge of the Doshairiel forest, ancient trees larger than anything in our world. You are not alone: six people live around the posting, one at each location. On the first day it is an ordinary lookout job. On the first night you find the real one: a rune-covered stone Ward on a cliff edge holds back a vast wildfire, and it feeds on you. There is no winning.
 
 ## Pillars
-1. Psychological horror first. Inscryption, Mouthwashing, Fears to Fathom. Dread, wrongness, unreliable reality. An actual monster appears occasionally as punctuation, never as the focus.
-2. The Ward feeds on you. Every recovery costs something. HP, MIND, memories, inventory, the Ward: all one economy.
-3. Routine that gets broken. A fixed daily loop the player learns, then events warp it.
-4. Replayable. Random event deck, chained stages, multiple endings, 4-6 hours per full run.
+1. Psychological horror first. Inscryption, Mouthwashing, Fears to Fathom. Dread, wrongness, unreliable reality. A real monster appears now and then as punctuation (a chase), never as the focus.
+2. The Ward feeds on you. HP, MIND and WARD are one economy; every night it takes, and it gets hungrier.
+3. Routine that gets broken. A daily loop the player learns on a very normal first day, then events warp it.
+4. Replayable. Events drawn each day, six residents, multiple endings.
 
 ## Setting
-Firewatch tower and a fixed, hand-built surrounding area (Fears to Fathom scale, not open world). Nearby: the Ward, forage spots, a creek, forest edge. Fire visible on the horizon, rust-orange haze, falling ash. Some locations only exist once an event track unlocks them (meadow, black lake, cave, grave, shrine, pipes, cliffs). Fantasy world of Ancerra. Two eras, Early and Modern, as variants of the same area; the Modern era is built first.
+1. A fixed, hand-built area (Fears to Fathom scale, not open world), about 400 x 300 m in the current Main3 draft (Docs/Design/Main3.md).
+2. The keeper's camp with the tower, raised above giant trees. Six locations, each with one resident: the lake, three campsites, the cultist cave and the office. The front zone inside the gate holds the office, parking lot and a small store; the road stays outside the gate.
+3. The tower sees every location except the Ward and the cultist cave. The cave is not part of the daily check.
+4. The fire lies west, beyond a cliff. It is not visible at all on day 1. From day 2 it may show by day as far glow and smoke, huge in the distance.
+5. Fantasy world of Ancerra. Two eras, Early and Modern, as variants of the same area; the Modern era is built first.
 
-## Time
-One wake-up = one week. A run is roughly a year (45-60 wake-ups). Each wake-up draws one event from the deck; that event's current stage plays out during the day.
+## Time and the loop
+1. One wake-up is one day. There is no time budget for the day and no fixed run length.
+2. The loop is written in one place: Docs/Design/DailyLoop.md, with its drawing DailyLoop_flow.svg. This file does not repeat it.
+3. Two lighting states: day is a burning sunset with the sun fixed, from waking until the report is filed; night is dark except for the fire glow.
+4. The player wakes in the camp cabin.
 
-## Core loop (one day)
-1. Wake up in the tower. The tower and surrounding area contain physical clues to which event is active today (objects moved, sounds, marks, weather, what is on the table).
-2. Forage and do chores. A small variety of chores (wood, water, repairs, traps).
-3. Check the fire from the tower.
-4. Send in a report: write in the log/journal.
-5. Maintain the Ward: feed it HP, MIND, an item, a memory, or nothing.
-6. Sleep.
-Events interrupt this loop in different ways: block a step, replace a step, add a location, hijack the night, or drop the player into a minigame.
+## Stats and needs
+1. HP, MIND and WARD, never above 12. A run ends the first time any of them reaches 0. WARD at 0 means the barrier falls and the world burns.
+2. Needs: Food, Water, Warmth, Safety and Social, each met or missed per day. Details and costs: DailyLoop.md.
+3. No stockpile. Nothing in the cabin is counted or depleted.
+4. The Ward's hunger rises each week, so every run ends. Feeding may raise WARD. Give nothing is a valid choice.
+5. Stats show on screen only during the night Ward screen. The rest of the time they live in the logbook, which the player carries. The logbook also holds questions, notes and settings, and later inventory, memories and collectibles if those are added.
+6. As WARD gets low, the fire gets louder and the world gets weird.
 
 ## Events
-- 15-20 tracks, 3 stages each (45-60 stages), adapted from the Cinderedge deck. A track's stages fire in order across the run; stage 3 is where things get weirdest.
-- Suits carry over as flavor: Hearts = survive/explore/forage, Diamonds = the Ward, Clubs = memories of who you were, Spades = your mind.
-- Some stages are self-contained minigames spoofing PSX and horror genres: spot the difference, hiding, survival-horror inventory, fixed-camera, point-and-click, etc. A best-of PSX anthology inside the loop.
-- Voices mechanic from Chapter 2 onward (Survivor, Devotee, Stranger, Child, Skeptic, You).
+1. Events are drawn each day from day 2 and change the loop: flag a location, block or add a need, cost HP, MIND or WARD by what they are, chase, end the day, open a place, or cause trouble on the climb to the Ward (the night still ends at the Ward screen). Spec: Docs/Design/Events.md.
+2. Tracks run in stages; the last stage is the weirdest. Suits from the book carry over as flavour: Hearts survive and forage, Diamonds the Ward, Clubs memories, Spades the mind.
+3. Minigames: spotting anomalies as a skill lives only in minigames. There will be minigames that progress each of the six residents' dialogue and affect the endings. Some spoof PSX and horror genres. Not designed yet.
+4. Voices (Survivor, Devotee, Stranger, Child, Skeptic, You): kept from the book; when they start is open until chapters are redesigned.
 
-## Stats and resources
-- HP, MIND, WARD, each 0-12, never above 12. Weekly drain: -1 HP, -1 WARD.
-- Recovery: consume an inventory item for HP, dwell on a memory for MIND (the Ward eats part of it), sacrifice HP or MIND to restore WARD.
-- Inventory, memories, scrapbook, map, and Ward runes are real in-game objects the player can pick up, look at, lose, and mark off. Ahmee is in.
-- A stat hitting 0 ends the chapter; stats reset, next chapter begins (Wake Up, Voices, Burn). Third bottom-out ends the run.
-
-## Scares
-Mix, weighted toward the psychological: the Ward's hunger (meat smell, cocoon, runes on your skin, cracks that scream), voices and hallucinations, things in the forest (the cave thing, the presence at the grave, the shrine, the tracks), the fire closing in, memories going wrong in the scrapbook. Occasional real monster the player can see and must hide from.
-
-## Endings
-Mirrors the book. Ending is chosen by which stats bottomed out across the three chapters (Mind, Ward, Health, Everything), each with a neutral and bad variant, plus Ahmee / letter / A-Spades conditions. There are no good endings. The true ending is the "Everything, neutral" ending: you walk away from the fire. You can never go home, but you can't stay here. It still feels like losing, but not really. Losing is shown, not told (the Ward eats you, the fire takes the tower). New run reframed as the memory wipe.
+## Chapters and endings
+1. The book's three strikes are gone: a run ends at the first bottom-out. What chapters mean now is redesigned in Milestone 7.
+2. There are no good endings. Ending conditions stay open until the characters exist (Milestone 12). Losing is shown, not told.
 
 ## Presentation
-VHS tape look first (Fears to Fathom): soft low-resolution picture, colour bleed, grain, scan lines. PS1 effects (vertex jitter, affine textures) stay off unless added later. Low-poly assets. First person. Controller and keyboard/mouse.
+VHS tape look first (Fears to Fathom): soft low-resolution picture, colour bleed, grain, scan lines. PS1 effects (vertex jitter, affine textures) stay off unless added later. Low-poly assets. First person. Controller and keyboard and mouse.
 
-## Scope, first playable
-- Tower + immediate area, daily loop complete end to end.
-- 15-20 event tracks, 3 stages each. A few are minigames.
-- Three chapters, voices, all endings.
-- Scrapbook, inventory, map, Ward as physical objects.
-- Ahmee.
-- Controller support.
+## Later
+Main menu, settings, the physical objects (scrapbook, inventory, map, memories), Ahmee, a pet the player must also feed, scares, the art pass. Order is in PLAN.md.
 
 ## Out of scope
 No combat. No co-op or multiplayer. No voice acting. No big open map. No mobile.
 
 ## Saving
-Autosave when the player goes to sleep, before the next event is drawn. No save anywhere. Sleep is the save point so dream sequences can run between sleep and wake-up.
+Autosave when the player goes to sleep, before the next day's events are drawn. No save anywhere. Sleep is the save point so dream sequences can run between sleep and waking.
