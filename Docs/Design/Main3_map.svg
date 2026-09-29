@@ -8,7 +8,7 @@
 
   <!-- background and title -->
   <rect x="0" y="0" width="1190" height="1170" fill="#f6f3ec"/>
-  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 11, 2026-09-29, Sable. Nothing here is decided.</text>
+  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 12 (as built in gray), 2026-09-29, Sable. Nothing here is decided.</text>
   <text x="60" y="47" font-size="11" fill="#444">400 x 300 m at 2.5 px per m. Origin south-west, x east, z north. Heights absolute. Walk times at 2.5 m/s. The loop is in DailyLoop.md.</text>
 
   <!-- map area -->
@@ -29,7 +29,7 @@
   <text transform="translate(326,150) rotate(-63)" font-size="9" fill="#6a5436">crest 34 m</text>
 
   <!-- cave ravine -->
-  <polygon points="110,770 260,757 297,695 245,670 235,665 135,682" fill="#cfcfcf" stroke="#777" stroke-width="1"/>
+  <polygon points="110,726 270,726 297,695 245,670 235,665 135,682" fill="#cfcfcf" stroke="#777" stroke-width="1"/>
   <polyline points="135,682 235,665 245,670 297,695" fill="none" stroke="#444" stroke-width="3"/>
   <text x="140" y="700" font-size="9" fill="#444">rim 14 m</text>
   <circle cx="245" cy="670" r="4" fill="#444"/>
@@ -114,7 +114,7 @@
   </g>
 
   <!-- creek -->
-  <polyline points="320,282 310,382 270,445 310,545 380,625" fill="none" stroke="#5f98c0" stroke-width="2"/>
+  <polyline points="320,282 320,305 270,445 255,455 270,500 310,545 401,655" fill="none" stroke="#5f98c0" stroke-width="2"/>
 
   <!-- lake -->
   <ellipse cx="535" cy="670" rx="137" ry="69" fill="#a9cde0" stroke="#5d8fae" stroke-width="1.5"/>
@@ -134,8 +134,8 @@
     <circle cx="380" cy="645" r="10" fill="#f8f4e4"/>
     <circle cx="715" cy="390" r="8" fill="#f8f4e4"/>
     <circle cx="910" cy="395" r="8" fill="#f8f4e4"/>
-    <circle cx="190" cy="735" r="12" fill="#c24fc9"/>
-    <path d="M190,735 L190,765 L230,765 L230,777.5 L190,777.5 L190,790 L237.5,790" fill="none" stroke="#c24fc9" stroke-width="2" stroke-dasharray="4 3"/>
+    <circle cx="190" cy="722" r="7" fill="#c24fc9"/>
+    <path d="M190,727 L190,765 L230,765 L230,777.5 L190,777.5 L190,790 L237.5,790" fill="none" stroke="#c24fc9" stroke-width="2" stroke-dasharray="4 3"/>
     <circle cx="260" cy="790" r="22.5" fill="#e9c6ef" stroke="#c24fc9" stroke-width="1.5" stroke-dasharray="4 3"/>
   </g>
   <circle cx="255" cy="455" r="20" fill="none" stroke="#6f8a5f" stroke-width="1" stroke-dasharray="3 3"/>
@@ -164,7 +164,7 @@
   <!-- dead-end spurs -->
   <g fill="none" stroke="#b0703a" stroke-width="3" stroke-dasharray="10 3" stroke-linecap="round">
     <path d="M715,390 Q720,300 765,225"/>
-    <path d="M380,645 C330,700 270,660 190,735"/>
+    <path d="M380,645 C330,700 270,660 190,726"/>
   </g>
   <!-- Ward climb, night only -->
   <polyline points="320,305 335,250 305,215 250,200 215,170 175,185 140,175" fill="none" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4" stroke-linejoin="round"/>
@@ -173,7 +173,7 @@
   <line x1="470" y1="405" x2="287.5" y2="286.8" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/>
   <line x1="287.5" y1="286.8" x2="115" y2="175" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
   <line x1="470" y1="405" x2="245" y2="670" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/>
-  <line x1="245" y1="670" x2="190" y2="735" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
+  <line x1="245" y1="670" x2="190" y2="724" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
   <text transform="translate(385,350) rotate(33)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">Ward hidden by the rock outcrop</text>
   <text transform="translate(360,540) rotate(-49.7)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">cave hidden by the rim</text>
 
@@ -189,6 +189,14 @@
     <rect x="110" y="170" width="9" height="10"/>
     <rect x="110" y="185" width="9" height="10"/>
   </g>
+
+  <!-- keeper's camp layout (as built) -->
+  <rect x="499" y="394" width="13" height="11" fill="#8a6a4a" stroke="#333"/>
+  <circle cx="490" cy="412.5" r="3" fill="#d0602a"/>
+  <rect x="511" y="388" width="5" height="5" fill="#555"/>
+  <text x="519" y="397" font-size="7" fill="#333">cabin, spawn</text>
+  <!-- open build issue -->
+  <text x="575" y="496" font-size="8" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">crown crowds the Camp 2 cone (open)</text>
 
   <!-- tower -->
   <rect x="464" y="399" width="12" height="12" fill="#2c2c2c"/>
@@ -216,7 +224,7 @@
     <text x="722" y="300" text-anchor="end">latrine shed</text>
     <text x="306" y="474">log steps</text>
     <text x="446" y="597" text-anchor="end">truck</text>
-    <text x="355" y="603">footbridge</text>
+    <text x="355" y="603">footbridge (dry)</text>
     <text x="287" y="530" text-anchor="end">camper trailer</text>
     <text x="335" y="690">rope rail, chant 1</text>
     <text x="257" y="686" text-anchor="end">coloured bulbs</text>
@@ -268,6 +276,7 @@
     <text x="845" y="600" text-anchor="start" font-size="12" font-weight="bold">CAMP 2, tiny</text>
     <text x="845" y="613" text-anchor="start" font-size="9">tent on a 20 m granite stack</text>
     <text x="845" y="625" text-anchor="start" font-size="9">cold white lamp, rain barrel</text>
+    <text x="845" y="637" text-anchor="start" font-size="9" fill="#c0282d">top not reachable yet (open)</text>
 
     <text x="218" y="438" text-anchor="end" font-size="12" font-weight="bold">CAMP 3, sunken</text>
     <text x="218" y="451" text-anchor="end" font-size="9">hollow -4 m, green-glass lantern</text>
