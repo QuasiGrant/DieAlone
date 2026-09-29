@@ -1,0 +1,1 @@
+- [Walk method pitfalls](feedback_walk_method.md) — false stuck/hidden results from doors, connectors, push tests, linecasts inside colliders
