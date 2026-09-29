@@ -1,8 +1,9 @@
 // Main3 task 8.2: keeper's camp and tower, gray. Run after main3_8_1_scene_ground.cs in Main3, edit mode.
-// Tower base (164, 166) on the 8 m knoll, deck top 56 m absolute (48 m up), eye 57.6 (Main3.md 5.1).
+// Tower base (164, 166) on the 15 m knoll (rev 13), deck top 56 m absolute (41 m up), eye 57.6 (Main3.md 5.1).
 // Timber-style frame (square posts, beams, X braces; Vesper) in default gray: the office mast stays the only lattice.
-// Stairs: 12 flights of 16 steps (0.25 rise, 0.3 run, 4 m per flight) switching back on two lanes south of the legs,
-// each with a collider-only StairRamp along the nosings (STAIRS RULE). Cab 4.4 x 4.4 on an 8 x 8 deck (1.8 m walkway).
+// Stairs: a square spiral of ten 16-step flights inside the legs with corner landings, arriving through a deck hatch;
+// each flight has a collider-only StairRamp along the nosings (STAIRS RULE). Cab 4.4 x 4.4 on an 8 x 8 deck (1.8 m walkway).
+// Cabin 6 x 4.5 m inside with the rev 13 layout; the player wakes in the bunk.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -44,81 +45,77 @@ var camp = Group("Camp", null, V(0f, 0f, 0f));
 
 // ================= TOWER =================
 float tx = 164f, tz = 166f, ty = H(tx, tz);
-const float deckTop = 48f, deckThick = 0.4f, deckHalf = 4f, legAt = 3.25f;
+float deckTop = 56f - ty;   // the deck stays at 56 m absolute on the raised knoll (rev 13: 41 m of legs on ground 15)
+const float deckThick = 0.4f, deckHalf = 4f, legAt = 3.75f;
 var tower = Group("Tower", camp.transform, V(tx, ty, tz)); var T = tower.transform;
 var frame = Group("Frame", T, V(0f, 0f, 0f)).transform;
 foreach (var sx in new[] { -legAt, legAt }) foreach (var sz in new[] { -legAt, legAt })
     Box("Leg", frame, V(sx, (deckTop - deckThick) * 0.5f, sz), V(0.5f, deckTop - deckThick, 0.5f));
 float span = legAt * 2f;
-for (float lvl = 8f; lvl < deckTop; lvl += 8f)
+for (float lvl = 8f; lvl < deckTop - 1f; lvl += 8f)
 {
     Box("BeamN", frame, V(0f, lvl, legAt), V(span, 0.3f, 0.3f)); Box("BeamS", frame, V(0f, lvl, -legAt), V(span, 0.3f, 0.3f));
     Box("BeamE", frame, V(legAt, lvl, 0f), V(0.3f, 0.3f, span)); Box("BeamW", frame, V(-legAt, lvl, 0f), V(0.3f, 0.3f, span));
 }
-// X braces between beam levels on every face
+// X braces between beam levels on every face; the south face's bottom bay stays open as the way in to the stair
 float bayH = 8f, diag = UnityEngine.Mathf.Sqrt(span * span + bayH * bayH), ang = UnityEngine.Mathf.Atan2(bayH, span) * UnityEngine.Mathf.Rad2Deg;
 for (float b0 = 0f; b0 < deckTop - 1f; b0 += bayH)
 {
     float cy = b0 + bayH * 0.5f;
+    if (cy + bayH * 0.5f > deckTop - deckThick) break;   // only whole bays under the deck
     foreach (var s in new[] { 1f, -1f })
     {
         Box("BraceN", frame, V(0f, cy, legAt), V(diag, 0.2f, 0.2f), V(0f, 0f, s * ang));
-        Box("BraceS", frame, V(0f, cy, -legAt), V(diag, 0.2f, 0.2f), V(0f, 0f, s * ang));
+        if (b0 > 0f) Box("BraceS", frame, V(0f, cy, -legAt), V(diag, 0.2f, 0.2f), V(0f, 0f, s * ang));
         Box("BraceE", frame, V(legAt, cy, 0f), V(0.2f, 0.2f, diag), V(s * ang, 0f, 0f));
         Box("BraceW", frame, V(-legAt, cy, 0f), V(0.2f, 0.2f, diag), V(s * ang, 0f, 0f));
     }
 }
-Box("Deck", frame, V(0f, deckTop - deckThick * 0.5f, 0f), V(deckHalf * 2f, deckThick, deckHalf * 2f));
 
-// ---- stairs: lanes south of the legs; flight k climbs 4k to 4k + 4, even flights east on the north lane, odd west on the south lane
+// ---- square spiral stair inside the legs (rev 13, 3.4.4): ten flights of 16 steps (0.3 run), turning left at 1 x 1 m
+// corner landings, 2.5 turns from the south-west corner to the north-east corner at deck level, arriving through a hatch.
+// Each flight has a collider-only StairRamp along its nosings (STAIRS RULE) and rails on both sides.
 var stairs = Group("Stairs", T, V(0f, 0f, 0f)).transform;
-const float laneN = -4.7f, laneS = -6.1f, laneW = 1.2f, run = 0.3f, rise = 0.25f, stepThick = 0.5f, railH = 1.0f;
-const int steps = 16; float flightRun = steps * run, flightRise = steps * rise, halfRun = flightRun * 0.5f;
+const int flights = 10, steps = 16; const float run = 0.3f, laneW = 1.0f, stepThick = 0.5f, railH = 1.0f;
+float rise = deckTop / (flights * steps), flightRise = rise * steps, flightRun = run * steps;
+float ringC = (flightRun + laneW) * 0.5f;   // corner landing centres at (+-ringC, +-ringC), 2.9 m
+var corners = new[] { V(-ringC, 0f, -ringC), V(ringC, 0f, -ringC), V(ringC, 0f, ringC), V(-ringC, 0f, ringC) };
 float theta = UnityEngine.Mathf.Atan2(rise, run) * UnityEngine.Mathf.Rad2Deg;
 float rampLen = UnityEngine.Mathf.Sqrt(flightRun * flightRun + flightRise * flightRise);
-const float landW = 1.5f, landZ0 = -4.1f, landZ1 = -6.7f;
-float landDepth = landZ0 - landZ1, landCz = (landZ0 + landZ1) * 0.5f;
-int flights = (int)(deckTop / flightRise);
 for (int k = 0; k < flights; k++)
 {
-    bool east = k % 2 == 0; float z = east ? laneN : laneS; float h0 = k * flightRise; float dir = east ? 1f : -1f; float x0 = -dir * halfRun;
-    var g = Group("Flight" + (k + 1), stairs, V(0f, 0f, 0f)).transform;
-    for (int i = 0; i < steps; i++)
+    var from = corners[k % 4]; var to = corners[(k + 1) % 4]; var dir = (to - from).normalized; float h0 = k * flightRise;
+    var g = Group("Flight" + (k + 1), stairs, from + dir * (laneW * 0.5f) + V(0f, h0, 0f), UnityEngine.Mathf.Atan2(dir.x, dir.z) * UnityEngine.Mathf.Rad2Deg).transform;
+    // steps are looks only: the ramp carries the player (a step collider caught the capsule where the ramp meets the landing)
+    for (int i = 0; i < steps; i++) UnityEngine.Object.DestroyImmediate(Box("Step" + (i + 1), g, V(0f, rise * (i + 1) - stepThick * 0.5f, run * i + run * 0.5f), V(laneW, stepThick, run)).GetComponent<UnityEngine.Collider>());
+    // StairRamp: top face on the nosing line, from one run below the first nosing (z -run, y 0) to the top nosing (z run*(steps-1), y rise*steps)
+    var ramp = Group("StairRamp", g, V(0f, 0f, 0f)); ramp.transform.localRotation = UnityEngine.Quaternion.Euler(-theta, 0f, 0f);
+    var up = ramp.transform.localRotation * UnityEngine.Vector3.up;
+    ramp.transform.localPosition = V(0f, rise * steps * 0.5f, run * (steps - 2) * 0.5f) - up * 0.1f;
+    ramp.transform.localScale = V(laneW, 0.2f, rampLen); ramp.AddComponent<UnityEngine.BoxCollider>();
+    foreach (var sx in new[] { -laneW * 0.5f, laneW * 0.5f })
+        Box("Rail", g, V(sx, flightRise * 0.5f + railH * 0.5f + 0.1f, flightRun * 0.5f), V(0.05f, railH, rampLen * (flightRun - 0.8f) / flightRun), V(-theta, 0f, 0f));   // short of both ends, so the tilted rail never pokes into a landing
+    if (k < flights - 1)
     {
-        float top = h0 + rise * (i + 1);
-        Box("Step" + (i + 1), g, V(x0 + dir * (run * i + run * 0.5f), top - stepThick * 0.5f, z), V(run, stepThick, laneW));
+        // corner landing at the top of this flight, rails on its two outer edges
+        var L = Group("Landing" + (k + 1), stairs, to + V(0f, h0 + flightRise, 0f)).transform;
+        Box("Slab", L, V(0f, -0.15f, 0f), V(laneW, 0.3f, laneW));
+        Box("RailX", L, V(UnityEngine.Mathf.Sign(to.x) * laneW * 0.5f, railH * 0.5f, 0f), V(0.05f, railH, laneW));
+        Box("RailZ", L, V(0f, railH * 0.5f, UnityEngine.Mathf.Sign(to.z) * laneW * 0.5f), V(laneW, railH, 0.05f));
     }
-    // StairRamp: top face along the nosings, from one run below the first nosing to the top nosing
-    float nx0 = x0 - dir * run, nx1 = x0 + dir * (run * (steps - 1));
-    float cx = (nx0 + nx1) * 0.5f, cy = h0 + flightRise * 0.5f;
-    float rl = UnityEngine.Mathf.Sqrt((nx1 - nx0) * (nx1 - nx0) + flightRise * flightRise);
-    var up = V(-dir * UnityEngine.Mathf.Sin(theta * UnityEngine.Mathf.Deg2Rad), UnityEngine.Mathf.Cos(theta * UnityEngine.Mathf.Deg2Rad), 0f);
-    var ramp = Group("StairRamp", g, V(cx, cy, z) - up * 0.1f); ramp.transform.localRotation = UnityEngine.Quaternion.Euler(0f, 0f, dir * theta);
-    ramp.transform.localScale = V(rl, 0.2f, laneW); ramp.AddComponent<UnityEngine.BoxCollider>();
-    // side rails
-    float rmid = h0 + flightRise * 0.5f + railH * 0.5f + 0.2f;
-    Box("RailA", g, V(0f, rmid, z + laneW * 0.5f), V(rampLen, railH, 0.05f), V(0f, 0f, dir * theta));
-    Box("RailB", g, V(0f, rmid, z - laneW * 0.5f), V(rampLen, railH, 0.05f), V(0f, 0f, dir * theta));
-    // landing at the top end of this flight
-    float top1 = h0 + flightRise; float lx = dir * (halfRun + landW * 0.5f); bool last = k == flights - 1;
-    var L = Group("Landing" + (k + 1), stairs, V(0f, 0f, 0f)).transform;
-    float z0 = last ? -deckHalf : landZ0;   // the top landing reaches the deck edge
-    Box("Slab", L, V(lx, top1 - 0.15f, (z0 + landZ1) * 0.5f), V(landW, 0.3f, z0 - landZ1));
-    float ry = top1 + railH * 0.5f; float outer = dir * (halfRun + landW);
-    Box("RailOuter", L, V(outer, ry, (z0 + landZ1) * 0.5f), V(0.05f, railH, z0 - landZ1));
-    Box("RailSouth", L, V(lx, ry, landZ1), V(landW, railH, 0.05f));
-    if (!last) Box("RailNorth", L, V(lx, ry, landZ0), V(landW, railH, 0.05f));
-    else { float za = -deckHalf, zb = laneN - laneW * 0.5f - 0.1f; Box("RailOverNorthLane", L, V(-halfRun, ry, (za + zb) * 0.5f), V(0.05f, railH, za - zb)); }   // the void over the north lane beside the top landing
 }
-foreach (var sx in new[] { -(halfRun + landW), halfRun + landW }) Box("StairPost", stairs, V(sx, deckTop * 0.5f, landZ1), V(0.25f, deckTop, 0.25f));
-
-// ---- deck rails, with the opening onto the top landing (south-west corner)
+// deck with the hatch over the last flight (east side, x 2.4 to 3.4, z -2.4 to 2.4); rails round the hatch and the deck edge
+float hx0 = ringC - laneW * 0.5f, hx1 = ringC + laneW * 0.5f, hz = ringC - laneW * 0.5f, dy = deckTop - deckThick * 0.5f;
+Box("Deck_W", frame, V((-deckHalf + hx0) * 0.5f, dy, 0f), V(hx0 + deckHalf, deckThick, deckHalf * 2f));
+Box("Deck_E", frame, V((hx1 + deckHalf) * 0.5f, dy, 0f), V(deckHalf - hx1, deckThick, deckHalf * 2f));
+Box("Deck_HatchN", frame, V(ringC, dy, (hz + deckHalf) * 0.5f), V(laneW, deckThick, deckHalf - hz));
+Box("Deck_HatchS", frame, V(ringC, dy, (-hz - deckHalf) * 0.5f), V(laneW, deckThick, deckHalf - hz));
 var rails = Group("DeckRails", T, V(0f, 0f, 0f)).transform;
-float dry = deckTop + 0.55f; float topLandX0 = -(halfRun + landW), topLandX1 = -halfRun;
-Box("RailN", rails, V(0f, dry, deckHalf), V(deckHalf * 2f, 1.1f, 0.08f));
-Box("RailE", rails, V(deckHalf, dry, 0f), V(0.08f, 1.1f, deckHalf * 2f));
-Box("RailW", rails, V(-deckHalf, dry, 0f), V(0.08f, 1.1f, deckHalf * 2f));
-Box("RailS", rails, V((topLandX1 + deckHalf) * 0.5f, dry, -deckHalf), V(deckHalf - topLandX1, 1.1f, 0.08f));
+float dry = deckTop + 0.55f;
+Box("RailN", rails, V(0f, dry, deckHalf), V(deckHalf * 2f, 1.1f, 0.08f)); Box("RailS", rails, V(0f, dry, -deckHalf), V(deckHalf * 2f, 1.1f, 0.08f));
+Box("RailE", rails, V(deckHalf, dry, 0f), V(0.08f, 1.1f, deckHalf * 2f)); Box("RailW", rails, V(-deckHalf, dry, 0f), V(0.08f, 1.1f, deckHalf * 2f));
+Box("HatchRailW", rails, V(hx0, dry, 0f), V(0.06f, 1.1f, hz * 2f)); Box("HatchRailE", rails, V(hx1, dry, 0f), V(0.06f, 1.1f, hz * 2f));
+Box("HatchRailS", rails, V(ringC, dry, -hz), V(laneW, 1.1f, 0.06f));
 
 // ---- cab: 4.4 x 4.4, 2.5 m walls with a window band from 1.0 to 2.1 m, door in the south wall at x -1.1
 var cab = Group("Cab", T, V(0f, deckTop, 0f)).transform;
@@ -142,45 +139,47 @@ MakeDoor(cab, V(-1.6f, 0f, -ch), 0f);
 var lectern = Box("Lectern", cab, V(0f, 0.55f, 1.3f), V(0.5f, 1.1f, 0.4f));
 Box("LecternTop", lectern.transform.parent, V(0f, 1.12f, 1.2f), V(0.6f, 0.05f, 0.45f), V(-15f, 0f, 0f));
 
-// ================= CABIN: centre (178, 168), door facing the camp centre (south-west) =================
+// ================= CABIN (rev 13, 3.4.1): centre (178, 168), inside 6 m east-west by 4.5 m north-south, ceiling 2.7 m =================
+// Door centred in the south wall; bunk along the north wall, west half (the player wakes in it); stove in the north-east
+// corner with 1 m clear on its open sides; desk under the west window with the report box; a 1.5 m aisle from the door north.
 float kx = 178f, kz = 168f, ky = H(kx, kz);
-var cabin = Group("Cabin", camp.transform, V(kx, ky, kz), 45f); var C = cabin.transform;
-const float cwid = 6f, cdep = 4f, cwh = 2.6f, cwt = 0.2f, floorTop = 0.03f;
-Box("Floor", C, V(0f, floorTop - 0.1f, 0f), V(cwid, 0.2f, cdep));
-float fz = -cdep * 0.5f + cwt * 0.5f, bz = cdep * 0.5f - cwt * 0.5f, sx2 = cwid * 0.5f - cwt * 0.5f;
-Box("Front_W", C, V((-cwid * 0.5f + -0.5f) * 0.5f, cwh * 0.5f, fz), V(cwid * 0.5f - 0.5f, cwh, cwt));
-Box("Front_E", C, V((cwid * 0.5f + 0.5f) * 0.5f, cwh * 0.5f, fz), V(cwid * 0.5f - 0.5f, cwh, cwt));
-Box("Front_Lintel", C, V(0f, (2.1f + cwh) * 0.5f, fz), V(1.0f, cwh - 2.1f, cwt));
-Box("Back_Sill", C, V(0f, 0.5f, bz), V(cwid, 1.0f, cwt));
-Box("Back_Head", C, V(0f, (2.0f + cwh) * 0.5f, bz), V(cwid, cwh - 2.0f, cwt));
-Box("Back_PierW", C, V(-1.75f, 1.5f, bz), V(2.5f, 1.0f, cwt));
-Box("Back_PierE", C, V(1.75f, 1.5f, bz), V(2.5f, 1.0f, cwt));
-Box("Side_W", C, V(-sx2, cwh * 0.5f, 0f), V(cwt, cwh, cdep));
-Box("Side_E", C, V(sx2, cwh * 0.5f, 0f), V(cwt, cwh, cdep));
-Box("Roof", C, V(0f, cwh + 0.1f, 0f), V(cwid + 0.6f, 0.2f, cdep + 0.6f));
-MakeDoor(C, V(-0.5f, floorTop, -cdep * 0.5f + cwt * 0.5f), 0f);
-Box("Bunk", C, V(-2.4f, 0.3f, 0.7f), V(0.9f, 0.6f, 2.0f));
-var desk = Box("Desk", C, V(1.9f, 0.375f, 1.45f), V(1.4f, 0.75f, 0.7f));
-Box("ReportBox", C, V(2.3f, 0.9f, 1.45f), V(0.4f, 0.3f, 0.3f));
-Box("Stove", C, V(-2.35f, 0.45f, -1.2f), V(0.7f, 0.9f, 0.7f));
+var cabin = Group("Cabin", camp.transform, V(kx, ky, kz), 0f); var C = cabin.transform;
+const float cwid = 6f, cdep = 4.5f, cwh = 2.7f, cwt = 0.2f, floorTop = 0.03f;
+float ox = cwid * 0.5f + cwt * 0.5f, oz = cdep * 0.5f + cwt * 0.5f, owid = cwid + cwt * 2f;
+Box("Floor", C, V(0f, floorTop - 0.1f, 0f), V(owid, 0.2f, cdep + cwt * 2f));
+Box("S_West", C, V((-owid * 0.5f - 0.5f) * 0.5f, cwh * 0.5f, -oz), V(owid * 0.5f - 0.5f, cwh, cwt));
+Box("S_East", C, V((owid * 0.5f + 0.5f) * 0.5f, cwh * 0.5f, -oz), V(owid * 0.5f - 0.5f, cwh, cwt));
+Box("S_Lintel", C, V(0f, (2.1f + cwh) * 0.5f, -oz), V(1.0f, cwh - 2.1f, cwt));
+Box("N_Wall", C, V(0f, cwh * 0.5f, oz), V(owid, cwh, cwt));
+Box("E_Wall", C, V(ox, cwh * 0.5f, 0f), V(cwt, cwh, cdep));
+// west wall with a 1 m window (sill 1.0, head 2.0) over the desk
+Box("W_Sill", C, V(-ox, 0.5f, 0f), V(cwt, 1.0f, cdep)); Box("W_Head", C, V(-ox, (2.0f + cwh) * 0.5f, 0f), V(cwt, cwh - 2.0f, cdep));
+Box("W_PierS", C, V(-ox, 1.5f, (-cdep * 0.5f - 0.5f) * 0.5f), V(cwt, 1.0f, cdep * 0.5f - 0.5f));
+Box("W_PierN", C, V(-ox, 1.5f, (cdep * 0.5f + 0.5f) * 0.5f), V(cwt, 1.0f, cdep * 0.5f - 0.5f));
+Box("Roof", C, V(0f, cwh + 0.1f, 0f), V(owid + 0.6f, 0.2f, cdep + cwt * 2f + 0.6f));
+MakeDoor(C, V(-0.5f, floorTop, -oz), 0f);
+Box("Bunk", C, V(-1.9f, 0.3f, 1.8f), V(2.0f, 0.6f, 0.9f));
+Box("Desk", C, V(-2.6f, 0.375f, 0f), V(0.7f, 0.75f, 1.4f));
+Box("ReportBox", C, V(-2.6f, 0.9f, 0.35f), V(0.3f, 0.3f, 0.4f));
+Box("Stove", C, V(2.6f, 0.45f, 1.85f), V(0.7f, 0.9f, 0.7f));
 var pipe = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cylinder); pipe.name = "StovePipe";
-pipe.transform.SetParent(C, false); pipe.transform.localPosition = V(-2.35f, 1.9f, -1.2f); pipe.transform.localScale = V(0.15f, 1.0f, 0.15f);
+pipe.transform.SetParent(C, false); pipe.transform.localPosition = V(2.6f, 1.85f, 1.85f); pipe.transform.localScale = V(0.15f, 1.0f, 0.15f);
 UnityEngine.Object.DestroyImmediate(pipe.GetComponent<UnityEngine.Collider>());
 
 // ================= FIRE PIT and GENERATOR =================
 var pit = Group("FirePit", camp.transform, V(172f, H(172f, 163f), 163f)).transform;
 for (int i = 0; i < 8; i++) { float a = i * UnityEngine.Mathf.PI / 4f; Box("Stone", pit, V(UnityEngine.Mathf.Cos(a) * 0.8f, 0.15f, UnityEngine.Mathf.Sin(a) * 0.8f), V(0.35f, 0.3f, 0.35f), V(0f, i * 45f, 0f)); }
 Box("Logs", pit, V(0f, 0.12f, 0f), V(0.8f, 0.24f, 0.8f), V(0f, 30f, 0f));
-Box("Generator", camp.transform, V(181.5f, H(181.5f, 171.5f) + 0.45f, 171.5f), V(1.2f, 0.9f, 0.7f), V(0f, 45f, 0f));
+Box("Generator", camp.transform, V(183f, H(183f, 172.5f) + 0.45f, 172.5f), V(1.2f, 0.9f, 0.7f));   // behind the cabin
 
 // ================= spawn and warps =================
 UnityEngine.GameObject player = Root("Player");
-player.transform.position = C.TransformPoint(V(0f, floorTop + 0.1f, 0.2f));
-player.transform.rotation = UnityEngine.Quaternion.Euler(0f, 225f, 0f);
+player.transform.position = C.TransformPoint(V(-1.9f, 0.7f, 1.8f));   // wakes in the bunk (rev 13)
+player.transform.rotation = UnityEngine.Quaternion.Euler(0f, 180f, 0f);
 var warps = Root("DevWarps").transform;
 void Warp(string name, UnityEngine.Vector3 pos, float yaw) { var w = Group(name, warps, pos, yaw); w.transform.SetSiblingIndex(1); }
 Warp("Tower_Deck", T.TransformPoint(V(-3f, deckTop + 0.2f, 3f)), 300f);
-Warp("Cabin", C.TransformPoint(V(0f, floorTop + 0.2f, 0.2f)), 225f);
+Warp("Cabin", C.TransformPoint(V(0f, floorTop + 0.2f, 0f)), 180f);
 
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " towerBase=" + ty.ToString("F2") + " deckTop=" + (ty + deckTop).ToString("F2") + " eye=" + (ty + deckTop + 1.6f).ToString("F2") + " cabRoof=" + (ty + deckTop + wh + 0.2f).ToString("F2")

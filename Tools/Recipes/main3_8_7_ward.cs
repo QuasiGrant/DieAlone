@@ -4,8 +4,8 @@
 // and the dev warps reach the ledge meanwhile. The climb itself is 8.3's J to Ward trail.
 // The Tor (5.4): granite dome at (76, 223), radius 18, base 34, top 58 in the doc, raised by torRaise so the W-1 check keeps
 // 3 m with eyes and targets raised 3 m (8.9a): an ellipsoid mesh (horizontal radius 18, vertical 28, centre y 30 + torRaise), so its skirt runs below the ground on the lower south-east side instead of floating.
-// Ward stones: three stones 3.6 x 4 m on the cliff edge (DECISIONS 2026-09-25) at x 12.5, z 252 / 258 / 264 (map z), 12 m
-// tall on the 36 m ledge (tops 48). The cliff wall stands at x 10.
+// Ward ledge (rev 13, 3.6): stones at (16, 262), (21, 259), (18, 266), 3.6 x 4 m, tops 48, to the right of the rock lip at
+// (13, 252), 0.8 m high. Stand-in burning ridge and valley fire beyond the west edge (3.7), built switched off.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -13,6 +13,7 @@ UnityEngine.GameObject Root(string name) { foreach (var r in scene.GetRootGameOb
 if (Root("FrontZone") == null) return "run 8.6 first";
 if (Root("Ward") != null) return "Ward already exists; rebuild Main3 from 8.1";
 var V = new System.Func<float, float, float, UnityEngine.Vector3>((x, y, z) => new UnityEngine.Vector3(x, y, z));
+UnityEngine.Vector2 P2(float x, float z) => new UnityEngine.Vector2(x, z);
 var terrain = Root("Terrain").GetComponent<UnityEngine.Terrain>();
 float H(float x, float z) => terrain.SampleHeight(V(x, 0f, z)) + terrain.transform.position.y;
 UnityEngine.GameObject Prim(UnityEngine.PrimitiveType t, string name, UnityEngine.Transform parent, UnityEngine.Vector3 wp, UnityEngine.Vector3 sc, float yaw = 0f, bool collider = true)
@@ -54,12 +55,70 @@ float torTop = tor.GetComponent<UnityEngine.Renderer>().bounds.max.y;
 // clearance from the climb trail to the Tor's widest ring
 float minD = float.MaxValue; foreach (UnityEngine.Transform m in legT) minD = UnityEngine.Mathf.Min(minD, UnityEngine.Vector2.Distance(new UnityEngine.Vector2(m.position.x, m.position.z), new UnityEngine.Vector2(76f, 223f)));
 
-// Ward stones on the ledge
+// Ward stones (rev 13, 3.6.4): to the player's right from the lip, in the Tor's shadow
 var stones = new UnityEngine.GameObject("Stones").transform; stones.SetParent(ward, false);
-int n = 0; foreach (var z in new[] { 264f, 258f, 252f })
+var stonePos = new[] { P2(16f, 262f), P2(21f, 259f), P2(18f, 266f) };
+for (int n = 0; n < stonePos.Length; n++)
 {
-    n++; float g = H(12.5f, z);
-    Prim(Cube, "Stone_" + n, stones, V(12.5f, g + (48f - g) * 0.5f - 0.5f, z), V(3.6f, 48f - g + 1f, 4f));
+    float g = H(stonePos[n].x, stonePos[n].y);
+    Prim(Cube, "Stone_" + (n + 1), stones, V(stonePos[n].x, g + (48f - g) * 0.5f - 0.5f, stonePos[n].y), V(3.6f, 48f - g + 1f, 4f));
 }
+// rock lip (3.6.3): 0.8 m high across the path end at (13, 252), 3 m in from the cliff edge at x 10
+float gl = H(13f, 252f);
+Prim(Cube, "RockLip", ward, V(13f, gl + 0.4f - 0.3f, 252f), V(1.2f, 1.4f, 7f));
+
+// ---- stand-in burning ridge and valley fire (3.7), beyond the west map edge, gray with plain orange for flame and glow.
+// Built inactive: hidden on day 1 by day; a day and night system turns it on (nightfall on day 1, glow and smoke by day from day 2).
+var fire = new UnityEngine.GameObject("StandInFire"); fire.transform.SetParent(ward, false);
+const string fireMatPath = "Assets/Materials/Blockout/Blockout_Fire.mat";
+var fireMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(fireMatPath);
+if (fireMat == null)
+{
+    var sh = UnityEngine.Shader.Find("Universal Render Pipeline/Unlit"); if (sh == null) return "URP Unlit shader not found";
+    fireMat = new UnityEngine.Material(sh); fireMat.SetColor("_BaseColor", new UnityEngine.Color(1f, 0.45f, 0.1f));
+    UnityEditor.AssetDatabase.CreateAsset(fireMat, fireMatPath);
+}
+UnityEngine.GameObject Stand(UnityEngine.PrimitiveType t, string name, UnityEngine.Transform parent, UnityEngine.Vector3 pos, UnityEngine.Vector3 sc, bool flame, float lean = 0f)
+{
+    var g = UnityEngine.GameObject.CreatePrimitive(t); g.name = name; g.transform.SetParent(parent, false); g.transform.position = pos; g.transform.localScale = sc;
+    g.transform.rotation = UnityEngine.Quaternion.Euler(0f, 0f, lean);
+    UnityEngine.Object.DestroyImmediate(g.GetComponent<UnityEngine.Collider>());   // far scenery, never touched
+    if (flame) g.GetComponent<UnityEngine.Renderer>().sharedMaterial = fireMat;
+    return g;
+}
+var rng = new System.Random(8013);
+float R(float a, float b) => a + (float)rng.NextDouble() * (b - a);
+// valley floor at -40 from the cliff foot out past the ridge, the full length of the ridge
+Stand(UnityEngine.PrimitiveType.Cube, "ValleyFloor", fire.transform, V(-260f, -40.5f, 250f), V(520f, 1f, 2300f), false);
+// ridge: a rolling band of flattened ellipsoids, crest about 30, 300 to 500 m west of the cliff, z -870 to 1370
+var ridge = new UnityEngine.GameObject("Ridge").transform; ridge.SetParent(fire.transform, false);
+for (float z = -870f; z <= 1370f; z += 70f)
+    Stand(UnityEngine.PrimitiveType.Sphere, "Hill", ridge, V(R(-420f, -360f), -40f, z + R(-15f, 15f)), V(R(200f, 260f), R(120f, 150f), R(120f, 160f)), false);
+Stand(UnityEngine.PrimitiveType.Cube, "GlowBand", fire.transform, V(-330f, 30f, 250f), V(6f, 3f, 2240f), true);
+// burning giants on the ridge: gray trunks 40 to 50 m with orange flame shapes to 70 to 100 m above the ridge
+var giants = new UnityEngine.GameObject("BurningGiants").transform; giants.SetParent(fire.transform, false);
+for (float z = -850f; z <= 1350f; z += 45f)
+{
+    float x = R(-390f, -300f), baseY = 25f, tall = R(40f, 50f);
+    Stand(UnityEngine.PrimitiveType.Cylinder, "Trunk", giants, V(x, baseY + tall * 0.5f, z), V(6f, tall * 0.5f, 6f), false);
+    float flame = R(70f, 100f);
+    Stand(UnityEngine.PrimitiveType.Sphere, "Flame", giants, V(x, baseY + flame * 0.5f, z), V(R(18f, 26f), flame, R(18f, 26f)), true);
+}
+// valley fires 135 to 440 m west of the lip (x about -125 to -430): low flame mounds on the floor
+var valley = new UnityEngine.GameObject("ValleyFires").transform; valley.SetParent(fire.transform, false);
+for (int i = 0; i < 90; i++)
+{
+    float x = R(-430f, -125f), z = R(-600f, 1100f), hgt = R(8f, 22f);
+    Stand(UnityEngine.PrimitiveType.Sphere, "Fire", valley, V(x, -40f + hgt * 0.3f, z), V(R(14f, 30f), hgt, R(14f, 30f)), true);
+}
+// smoke: four columns 250 m and more, leaning east over the map, and a sheet roofing the west
+var smoke = new UnityEngine.GameObject("Smoke").transform; smoke.SetParent(fire.transform, false);
+foreach (var z in new[] { -300f, 150f, 520f, 900f })
+{
+    float hgt = R(260f, 340f);
+    Stand(UnityEngine.PrimitiveType.Cylinder, "Column", smoke, V(-360f + hgt * 0.15f, 30f + hgt * 0.5f, z), V(R(60f, 90f), hgt * 0.5f, R(60f, 90f)), false, -12f);
+}
+Stand(UnityEngine.PrimitiveType.Cube, "SmokeSheet", smoke, V(-250f, 330f, 250f), V(500f, 20f, 2200f), false);
+fire.SetActive(false);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " cairn at " + cairnPos.ToString("F1") + " solid chain 4 m up the trail | Tor top " + torTop.ToString("F1") + " ground at Tor centre " + H(76f, 223f).ToString("F1") + " closest climb point " + minD.ToString("F1") + " m from the Tor centre | stones ground " + H(12.5f, 258f).ToString("F1") + " tops 48";
+return "saved=" + saved + " cairn at " + cairnPos.ToString("F1") + " solid chain 4 m up the trail | Tor top " + torTop.ToString("F1") + " ground at Tor centre " + H(76f, 223f).ToString("F1") + " closest climb point " + minD.ToString("F1") + " m from the Tor centre | stones ground " + H(18f, 262f).ToString("F1") + " tops 48 | lip ground " + gl.ToString("F1") + " | stand-in fire built, off";

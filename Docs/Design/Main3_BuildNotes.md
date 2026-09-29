@@ -93,3 +93,10 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 - Lake: the 4 m walls hold every shore trail, the dock and the boathouse against jumping.
 - Ward gate: an invisible block 3 m tall across the whole trail corridor under the chain, so it cannot be crouched under, jumped or passed round the cairn.
 - W1 to the Snag kept clear of giants.
+
+## 8.9c Gray-box feedback (revision 13)
+
+- Knoll 15 with a linear flank to the ground by 63 m (45 m blend, under 25 percent); the knoll no longer feeds the smooth ground field, so the ground round the lake stays low and the pump still sees the Snag.
+- Tower: legs at 3.75 m (7.5 m square) to fit the spiral inside; steps have no colliders (a step edge caught the capsule where a ramp met a landing); flight rails stop short of the landings. Climb walked: 56.0 m, 22.4 s at 2.5 m/s.
+- Ward climb keeps 21 m from the Tor's centre (the meander ran it into the Tor's foot); J to the lip walked 147 m, 59 s.
+- Stand-in fire is built switched off. With the scene's night fog (end 200 m) the Game view from the lip shows none of it; 5.8's fog end past 300 m for Main3 is not done yet (look work). The frame check shot is taken with fog off.

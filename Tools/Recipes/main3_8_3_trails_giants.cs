@@ -36,7 +36,8 @@ var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2
     ("W1 to Camp 3", new[] { P(128,70), P(96,104), P(78,146) }, false, 114f, false, 0.3f, new[] { ("Footbridge", P(114.8f,85.2f), "on"), ("Camper trailer", P(94,114.4f), "side") }),
     ("W1 to cave", new[] { P(128,70), P(108,48), P(84,64), P(52,37.5f) }, false, 109f, false, 0.3f, new[] { ("Rope handrail", P(106.8f,57.6f), "on"), ("Coloured bulbs", P(82,52), "side") }),
     ("Camp to J", new[] { P(170,160), P(136,196), P(104,206) }, false, 96f, false, 0.3f, new[] { ("Burn-map board", P(136.4f,189.6f), "side"), ("Plank bridge", P(104.8f,203.2f), "on") }),
-    ("J to Ward", new[] { P(104,206), P(110,228), P(98,242), P(76,248), P(62,260), P(46,254), P(32,258) }, true, 130f, false, 0.3f, new[] { ("Rune post", P(92,243.6f), "side") }),
+    // rev 13 (3.6): round the Tor's south and west feet to the last bend (60, 250), then a straight run west over the low crest to the rock lip
+    ("J to Ward", new[] { P(104,206), P(88,200), P(66,204), P(54,218), P(56,236), P(60,250), P(27,251), P(14.5f,252) }, true, 150f, false, 0.3f, new[] { ("Rune post", P(66,201.5f), "side"), ("Last bend", P(60,250), "bend") }),
 };
 
 // ---------- centre line sampling ----------
@@ -71,7 +72,7 @@ float Project(System.Collections.Generic.List<UnityEngine.Vector2> pts, float[] 
 float PolyLen(System.Collections.Generic.List<UnityEngine.Vector2> p) { float l = 0; for (int i = 1; i < p.Count; i++) l += UnityEngine.Vector2.Distance(p[i - 1], p[i]); return l; }
 
 // table 2.1 heights at the named trail ends
-var namedEnds = new (UnityEngine.Vector2 p, float h)[] { (P(170,160), 8f), (P(190,96), -4.5f), (P(128,70), -4.5f), (P(104,206), 10f), (P(262,172), 5f), (P(340,170), 3f), (P(282,238), 5f), (P(292,108), 4f), (P(78,146), -4f), (P(52,37.5f), -6f), (P(32,258), 36f) };
+var namedEnds = new (UnityEngine.Vector2 p, float h)[] { (P(170,160), 8f), (P(190,96), -4.5f), (P(128,70), -4.5f), (P(104,206), 10f), (P(262,172), 5f), (P(340,170), 3f), (P(282,238), 5f), (P(292,108), 4f), (P(78,146), -4f), (P(52,37.5f), -6f), (P(14.5f,252), 36f) };
 var built = new System.Collections.Generic.List<(string name, System.Collections.Generic.List<UnityEngine.Vector2> path, float[] prof, float target)>();
 var poiPlaced = new System.Collections.Generic.List<(string leg, string n, UnityEngine.Vector2 at, UnityEngine.Vector2 tan, UnityEngine.Vector2 obj, string kind, float along, float height)>();
 var report = new System.Text.StringBuilder();
@@ -83,6 +84,8 @@ foreach (var leg in legs)
     foreach (var poi in leg.pois) { float s0 = Project(C, S, poi.p, out _); if (s0 > 2f && s0 < Lc - 2f) anchors.Add(s0); }
     anchors.Sort();
     int stepsSeg = -1;   // Camp to Camp 3: no meander from the log steps to the hollow floor
+    int straightFrom = int.MaxValue;   // J to Ward: no meander after the last bend (the straight run west, rev 13)
+    for (int i = 0; i < anchors.Count - 1; i++) foreach (var poi in leg.pois) if (poi.kind == "bend" && UnityEngine.Mathf.Abs(anchors[i] - Project(C, S, poi.p, out _)) < 0.01f) straightFrom = i;
     for (int i = 0; i < anchors.Count - 1; i++) foreach (var poi in leg.pois) if (poi.kind == "steps" && UnityEngine.Mathf.Abs(anchors[i] - Project(C, S, poi.p, out _)) < 0.01f) stepsSeg = i;
     // shore legs: pick the side away from the lake
     float side = 1f;
@@ -103,7 +106,7 @@ foreach (var leg in legs)
         {
             int seg = 0; while (seg < anchors.Count - 2 && d > anchors[seg + 1]) seg++;
             float a0 = anchors[seg], a1 = anchors[seg + 1], l = a1 - a0; float u = l > 1e-3f ? (d - a0) / l : 0f;
-            int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(l / 18f)); float amp = seg == stepsSeg ? 0f : k * l / n;
+            int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(l / 18f)); float amp = seg == stepsSeg || seg >= straightFrom ? 0f : k * l / n;
             // times sin(pi u): zero offset and zero slope at every anchor, so the trail runs straight through anchored pieces
             float f = UnityEngine.Mathf.Sin(UnityEngine.Mathf.PI * n * u) * UnityEngine.Mathf.Sin(UnityEngine.Mathf.PI * u); if (leg.shore) f = UnityEngine.Mathf.Abs(f) * side;
             float off = amp * f;
@@ -111,6 +114,8 @@ foreach (var leg in legs)
             var c = At(C, S, UnityEngine.Mathf.Min(d, Lc), out var tan); var q = c + P(-tan.y, tan.x) * off;
             // shore legs keep 6 percent of the lake radii off the water line, so no trail runs through the shallows (8.9a)
             if (leg.shore) { float re = LakeRe(q); if (re < 1.06f) q = lakeC + (q - lakeC) * (1.06f / re); }
+            // the Ward climb keeps 21 m from the Tor's centre (its skirt is 18 m round at the foot, rev 13 route round it)
+            if (leg.name == "J to Ward") { var tq = q - P(76, 223); if (tq.magnitude < 21f) q = P(76, 223) + tq.normalized * 21f; }
             outp.Add(q);
         }
         return outp;
@@ -348,8 +353,10 @@ for (int attempt = 0; attempt < 20000; attempt++)
     foreach (var q in placed) if (UnityEngine.Vector2.Distance(p, q) < 30f) { ok = false; break; }
     if (!ok) continue;
     float g = H(p.x, p.y); float cap = p.x < 32f ? 46f : 50f; float tall = UnityEngine.Mathf.Min(40f + (float)rng.NextDouble() * 10f, cap - g);
-    if (tall < 40f) continue;
-    if (UnityEngine.Vector2.Distance(p, P(170, 160)) < 45f && tall > 42f) tall = 42f;
+    // on the knoll (ground up to 15, rev 13) giants are at most 35 m tall, still capped at 50 absolute
+    bool onKnoll = UnityEngine.Vector2.Distance(p, P(170, 160)) < 63f && g > 8f;
+    if (onKnoll) tall = UnityEngine.Mathf.Min(tall, 35f);
+    if (tall < (onKnoll ? 30f : 40f)) continue;
     foreach (var c in clearings) if (UnityEngine.Vector2.Distance(p, c.c) < c.r + crownR) { ok = false; break; }
     if (!ok) continue;
     foreach (var cone in cones) if (PolyDist(p, cone) < crownR + 3f) { ok = false; break; }
@@ -386,7 +393,7 @@ void Ring(UnityEngine.Vector2 c, float r0, float r1) => Stamp(c.x - r1 - 1f, c.x
 foreach (var b in built) for (int i = 0; i < b.path.Count - 1; i++) Seg(b.path[i], b.path[i + 1], 2.2f);
 Circle(P(170, 160), 18f); Circle(P(282, 238), 30f); Circle(P(292, 108), 20f); Circle(P(78, 146), 9f);
 Circle(P(104, 206), 5f); Circle(P(128, 70), 5f); Circle(P(262, 172), 4f); Circle(P(340, 170), 4f);
-Circle(P(32, 258), 12.5f); Rect(10.6f, 32f, 247f, 269f);                          // Ward ledge out to the stones on the cliff edge
+Rect(10.6f, 30f, 245f, 271f);                                                      // Ward ledge (rev 13): the lip, the low crest and the stones
 Rect(49.5f, 54.5f, 30f, 41f);                                                      // in front of the cave mouth and into the passage (8.9b: no wall across it)
 Rect(187.5f, 192.5f, 86f, 98f); Rect(236.3f, 248.3f, 49.1f, 55.7f);                // dock notch; boathouse and gangway
 Rect(342f, 374f, 149f, 191f); Rect(373f, 395.6f, 166.5f, 173.5f); Circle(P(384, 160), 9f);   // lot, drive, turning circle

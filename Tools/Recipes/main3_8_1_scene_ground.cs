@@ -38,7 +38,7 @@ var creekBed = new[] { 9.5f, 8f, 3.5f, -4.1f, -4.1f, -4.3f, -4.8f, -5.3f, -5.8f 
 var lakeC = P(190, 60); const float lakeA = 54.8f, lakeB = 27.6f;
 // named ground points: centre, flat radius, blend width, height (table 2.1)
 var named = new (UnityEngine.Vector2 c, float r, float blend, float h)[] {
-    (P(170,160), 18f, 27f, 8f),      // keeper's camp knoll top
+    (P(170,160), 18f, 45f, 15f),     // keeper's camp knoll top at 15 (rev 13), flanks to the ground by 63 m (clear of the pump notch)
     (P(282,238), 30f, 15f, 5f),      // Camp 1
     (P(292,108), 20f, 12f, 4f),      // Camp 2 boulder field
     (P(262,172), 4f, 12f, 5f),       // Jg
@@ -48,10 +48,9 @@ var named = new (UnityEngine.Vector2 c, float r, float blend, float h)[] {
     (P(142.4f,163.6f), 4f, 10f, 6f), // forage B
     (P(104,206), 5f, 10f, 10f),      // J
     (P(128,70), 4f, 8f, -4.5f),      // W1
-    (P(32,258), 12f, 8f, 36f),       // Ward ledge
 };
-// old burn: 8 at the knoll foot (x 185) falling to 3 at the front zone (x 340)
-float BurnH(float x) => 8f - 5f * UnityEngine.Mathf.Clamp01((x - 185f) / 155f);
+// old burn: about 12 on the knoll flank (x 185) falling to 3 at the front zone (x 340), rev 13
+float BurnH(float x) => 12f - 9f * UnityEngine.Mathf.Clamp01((x - 185f) / 155f);   // about 12 on the knoll flank (rev 13)
 
 float SegDist(UnityEngine.Vector2 p, UnityEngine.Vector2 a, UnityEngine.Vector2 b, out float t)
 {
@@ -83,9 +82,11 @@ float L(float a, float b, float t) => UnityEngine.Mathf.Lerp(a, b, t);
 // base: 0 in the south-west rolling up to 5 in the north-east
 float Base(float x, float z) => 2.5f * (x / sizeX + z / sizeZ);
 var ctrl = new System.Collections.Generic.List<(UnityEngine.Vector2 c, float h)>();
-foreach (var n in named) ctrl.Add((n.c, n.h));
+foreach (var n in named) if (n.c != P(170, 160)) ctrl.Add((n.c, n.h));   // the knoll shapes itself (linear flank), so it does not lift the ground round the lake
 for (float bx = 200f; bx <= 330f; bx += 32.5f) ctrl.Add((P(bx, 166f + (bx - 185f) * 0.08f), BurnH(bx)));
 float rimLen = LineLen(rim);
+var wardClimb = new[] { P(104,206), P(88,200), P(66,204), P(54,218), P(56,236), P(60,250) };   // rev 13, 3.6.1
+float wardClimbLen = LineLen(wardClimb);
 float rimS18 = 45.1f;   // arc length of the vertex (74, 60) along the rim line
 
 float Height(float x, float z)
@@ -106,8 +107,20 @@ float Height(float x, float z)
         float target = side > 0f ? 34f + 2f * SS(dc / 40f) : L(34f, h, SS(dc / (dc + db)));
         h = side > 0f ? L(h, target, SS(db / 12f)) : target;
     }
+    // 2b. Ward approach (rev 13, 3.6): the climb from J round the Tor's south and west feet rises evenly from 10 to 36 at the
+    // last bend (60, 250); a level run west at 36 over a 2 m low crest at x 25 to the rock lip; the ledge x 14 to 24, z 254 to 270
+    {
+        float dcl = LineDist(p, wardClimb, out float s);
+        float w = 1f - SS((dcl - 3f) / 9f);
+        if (w > 0f) h = L(h, L(10f, 36f, s / wardClimbLen), w);
+        float dx = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(11f - x, x - 62f)), dz = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(242f - z, z - 272f));
+        float dFlat = UnityEngine.Mathf.Sqrt(dx * dx + dz * dz);
+        if (dFlat < 6f) h = L(36f, h, SS(dFlat / 6f));
+        if (dFlat == 0f && z > 241f && z < 263f) h += 2f * UnityEngine.Mathf.Max(0f, 1f - UnityEngine.Mathf.Abs(x - 25f) / 6f) * SS((z - 241f) / 3f) * SS((263f - z) / 3f);
+    }
     // 3. named flats
-    foreach (var n in named) { float d = UnityEngine.Vector2.Distance(p, n.c); if (d < n.r + n.blend) h = L(n.h, h, SS((d - n.r) / n.blend)); }
+    // the knoll falls linearly (under 20 percent) so trails leaving the camp stay walkable; the other flats blend smoothly
+    foreach (var n in named) { float d = UnityEngine.Vector2.Distance(p, n.c); bool knoll = n.c == P(170, 160); if (d < n.r + n.blend) h = L(n.h, h, knoll ? (d - n.r) / n.blend : SS((d - n.r) / n.blend)); }
     // 4. Camp 3 hollow
     {
         float d = UnityEngine.Vector2.Distance(p, P(78, 146));
@@ -323,7 +336,7 @@ bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 var sb = new System.Text.StringBuilder("saved=" + saved + " warps=" + warps.transform.childCount + " fence pieces=" + fence.transform.childCount);
 sb.Append(" | ground: camp=" + H(170, 160).ToString("F1") + " tower=" + H(164, 166).ToString("F1") + " camp1=" + H(282, 238).ToString("F1") + " camp2=" + H(292, 108).ToString("F1")
     + " hollow=" + H(78, 146).ToString("F1") + " snag=" + H(90, 146).ToString("F1") + " J=" + H(104, 206).ToString("F1") + " bridge=" + H(104.8f, 203.2f).ToString("F1")
-    + " spring=" + H(104, 215.2f).ToString("F1") + " crest=" + H(90, 248).ToString("F1") + " torBase=" + H(76, 223).ToString("F1") + " ward=" + H(32, 258).ToString("F1")
+    + " spring=" + H(104, 215.2f).ToString("F1") + " crest=" + H(90, 248).ToString("F1") + " torBase=" + H(76, 223).ToString("F1") + " wardLip=" + H(13, 252).ToString("F1") + " lowCrest=" + H(25, 252).ToString("F1") + " lastBend=" + H(60, 250).ToString("F1") + " knoll r40=" + H(170, 120).ToString("F1")
     + " lakeC=" + H(190, 60).ToString("F1") + " pump=" + H(190, 96).ToString("F1") + " W1=" + H(128, 70).ToString("F1") + " sill=" + H(110, 55).ToString("F1")
     + " mouthFloor=" + H(52, 38).ToString("F1") + " overPassage=" + H(52, 28).ToString("F1") + " overChamber=" + H(80, 12).ToString("F1") + " rim74=" + H(74, 60).ToString("F1")
     + " rim40=" + H(40, 57).ToString("F1") + " jg=" + H(262, 172).ToString("F1") + " gateTree=" + H(290, 176).ToString("F1") + " hollowGiant=" + H(202, 140).ToString("F1")
