@@ -114,3 +114,8 @@
 - 2026-09-29: Logbook stats show the reading from the last Ward visit, not live values. Provisional; to be checked in playtesting.
 - 2026-09-29: Pack vegetation stays still, with no wind. One new project shader, DieAlone/Smoke, replaces the pack smoke shaders (Docs/Design/ShaderSwap.md).
 - 2026-09-29: Grant sees the proposed starting look from Docs/Design/Style.md in the game before it is adopted.
+- 2026-09-29: A run always ends with a stat running out; the player cannot win. Completing every resident's storyline unlocks the best ending available at that point.
+- 2026-09-29: Residents' storylines can be played in any order. A resident can be lost for good during a run.
+- 2026-09-29: One resident lives around the parking lot, where the drive starts. The three campsites hold one resident each.
+- 2026-09-29: The cultist cave is weird on purpose: rave lights, music, busting the trope of the grim cult cave.
+- 2026-09-29: Endings get their own sessions later, once more of the story is worked out.
