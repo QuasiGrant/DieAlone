@@ -1,6 +1,6 @@
 # Main3 paper brief
 
-**DRAFT, revision 9, 2026-09-29, Sable. Revision 7 approved pending resident placement (DECISIONS 2026-09-29). Revision 9 places the residents, the gate booth (option B) and the cave interior. Nothing else here is decided.** The loop lives in Docs/Design/DailyLoop.md and events in Docs/Design/Events.md; neither is repeated here. Map: Docs/Design/Main3_map.svg. Numbers provisional until the Milestone 7 simulator.
+**DRAFT, revision 10, 2026-09-29, Sable. Revision 7 approved pending resident placement (DECISIONS 2026-09-29). Revision 9 places the residents, the gate booth (option B) and the cave interior. Nothing else here is decided.** The loop lives in Docs/Design/DailyLoop.md and events in Docs/Design/Events.md; neither is repeated here. Map: Docs/Design/Main3_map.svg. Numbers provisional until the Milestone 7 simulator.
 
 Coordinates in metres, origin south-west, x east, z north. Heights absolute (metres above map base 0). Walk times at 2.5 m/s are information for pacing and events; there is no day time budget (DECISIONS 2026-09-29).
 
@@ -45,33 +45,39 @@ Six locations with one resident each, plus the keeper's camp and the Ward. Every
 ### 3.1 Front zone
 1. The strip inside the gate, x 340 to 396. The only man-made ground. The Wardkeeper never goes beyond the fence (DECISIONS 2026-09-29).
 2. Road: outside the gate, off-map to the east. Day 1: ordinary distant traffic. After the night 1 reveal it goes quiet as WARD drops, and creepy sounds replace what drops out (DailyLoop.md 6).
-3. Gate (396, 170). Gravel drive west from the gate to the lot's east edge at x 373, 23 m.
-4. Parking lot 30 x 40 m centred (358, 170), x 343 to 373, z 150 to 190. Moved 10 m west from revision 8 to free room at the gate. Trailhead T at its west side (340, 170).
-5. The front-zone resident's car stands in the lot's north-east corner at (370, 178), where the drive starts, clear of the drive and the turning circle. Where he sleeps (car, office back room, a trailer) is for the story session.
-6. Office (350, 200) and store (366, 200), side by side on the lot's north side, 16 m apart. Store: small, unstaffed, a lit cooler sign.
-7. Sound: mains hum here and nowhere else.
+3. Gate (396, 170) with a lift barrier. Gravel drive west from the gate to the lot's east edge at x 373, 23 m; one lane, 5 m wide (z 167.5 to 172.5).
+4. **The gate and fence are always solid to the player.** Cars pass the lifted barrier; a player-only collider fills the gate opening at all times, like the rest of the fence. During a shift, touching it shows "You can't abandon your post."; outside a shift it is a plain fence, no message.
+5. Parking lot 30 x 40 m centred (358, 170), x 343 to 373, z 150 to 190. Moved 10 m west from revision 8 to free room at the gate. Trailhead T at its west side (340, 170).
+6. The front-zone resident's car stands in the lot's north-east corner at (370, 178), where the drive starts, clear of the drive and the turning circle. Where he sleeps (car, office back room, a trailer) is for the story session.
+7. Office (350, 200) and store (366, 200), side by side on the lot's north side, 16 m apart. Store: small, unstaffed, a lit cooler sign.
+8. Sound: mains hum here and nowhere else.
 
 ### 3.2 Gate booth and closed campground (option B, DECISIONS 2026-09-29)
-1. **Booth** just inside the gate on the drive's north side at (391, 177). The player works the gate from it.
-2. **Turning circle** for refused cars: gravel, 16 m across, centred (384, 160), south of the drive between the lot's east edge (x 373) and the fence (x 396). Clearances: 3 m to the lot, 4 m to the fence, 14 m to the resident's car. Refused cars loop it and leave through the gate.
-3. **Gravel spur** for admitted cars: from the drive at (390, 180) north along the inside of the fence (x 390) to (390, 238), 58 m. It passes 24 m east of the store (fixes the 9 m clash in Marlow's check).
+Order along the drive from the gate, heading west: gate (x 396), booth window (x 392), spur turn-off (x 385), turning circle (x 376 to 392, south side), lot (x 373).
+1. **Booth** beside the lane, on the drive's north side at (392, 176), footprint 2 x 2 m (x 391 to 393, z 175 to 177): 2.5 m from the lane edge, 4.5 m east of the spur. Cars stop in the lane at its window; nothing drives through it.
+2. **Gravel spur** for admitted cars, joined to the drive: it leaves the drive's north edge at (385, 172.5), runs north to (385, 186), bends east to x 390 by (390, 196), then north along the inside of the fence to the chain at (390, 238). 68 m. Closest to the store (366, 200): 24 m.
+3. **Turning circle** for refused cars: gravel, 16 m across, centred (384, 160), joined to the drive's south edge. Clearances: 3 m to the lot, 4 m to the fence, 14 m to the resident's car. Refused cars loop it and leave through the gate.
 4. **Chain** across the spur at (390, 238), lowered for admitted cars.
 5. **Closed campground loop** behind the chain: a gravel loop 40 m across centred (372, 262), x 352 to 392, z 242 to 282, empty pitches. It sits north of the old burn, so the tower sees at most tree gaps; it has no line in the tower check and is never stamped.
-6. **Shift wall:** during a shift an invisible wall across the spur at (390, 184) and at the turning circle's east edge stops the player following a car: "You can't abandon your post." Outside a shift the spur is walkable to the chain; the loop beyond it is for the minigame design.
-7. Cars keep arriving until the office resident's storyline ends (completed, or he dies). They do not thin out as WARD falls. How many cars and days a shift takes is set by playtesting, never the whole game.
-8. Talking to the office resident counts as Social and starts his minigame. Working the booth does not count as Social.
-9. The minigame's rules and documents: not designed yet (story session and Milestone 13).
+6. **Shifts.** A shift starts when the player enters the booth. It ends when that day's cars are done, or when the player leaves the booth between cars. A shift never ends the day and never traps the player. Cars per day is a tuning value set by playtest (Grant).
+7. **Shift wall**, only while in a shift: invisible walls across the spur mouth at (385, 176) and at the turning circle's edge stop the player following a car: "You can't abandon your post." The gate collider (3.1.4) shows the same message during a shift.
+8. **Outside shifts** the player may walk up the spur and around the chain into the loop. That is where the admitted cars are found, parked and empty.
+9. Cars keep arriving until the office resident's storyline ends (completed, or he dies). They do not thin out as WARD falls. How many days the minigame runs is set by playtesting, never the whole game.
+10. Talking to the office resident counts as Social and starts his minigame. Working the booth does not count as Social.
+11. The minigame's rules and documents: not designed yet (story session and Milestone 13).
 
 ### 3.3 Cultist cave interior (walked step by step)
 The cave is a dead end with one way in and one way out. All interior pieces are meshes below the terrain; the mouth needs a terrain hole or a mesh overhang (Rook to confirm which Unity supports here).
 1. **Entrance** (mouth (52, 34), floor -6 m, 4 m tall). A level passage 12 m south to (52, 22), grey rock, lit only from outside. The chant from the trail spots is clear here. On day 1 the mouth is boarded with an ordinary CLOSED, UNSAFE board; from day 2 the boards are down.
-2. **Descent.** A sloped passage 48 m long with two switchback bends, dropping from -6 m to -18 m at about 14 degrees (a ramp, no steps, so the STAIRS RULE is not needed). Footprint x 44 to 64, z 8 to 22. Walk 19 s.
-   - First bend, 16 m down: a bass note starts under the chant.
-   - Second bend, 32 m down: coloured light leaks up the rock; the chant thins, the bass leads.
-   - Last 16 m: chant gone, bass only, the rave light growing.
-3. **Rave chamber** centred (60, 14), 18 m across, floor -18 m, ceiling -10 m (4 m of rock under the ravine floor). Rave lights, music, the resident. Talk (Social) and the cave's own events. The one warm colour burst on a grey map.
-4. **Way out.** Back up the same descent; the bass turns back into chant as the player climbs, and the entrance passage returns to grey and daylight. Mouth to chamber 60 m, 24 s each way.
-5. Nothing inside is seen from the tower; the chamber sits under the ravine, south of the rim line.
+2. **Descent.** A sloped passage 48 m long in three 16 m legs, side by side in plan and 5 m apart (3 m passage, 2 m rock between), so nothing is stacked. Drop from -6 m to -18 m at about 14 degrees (a ramp, no steps, so the STAIRS RULE is not needed). Passage 3.5 m tall. Walk 19 s.
+   - Leg 1, east along z 22 from (52, 22) to (68, 22), floor -6 to -10. A bass note starts under the chant.
+   - Leg 2, west along z 17 from (68, 17) to (52, 17), floor -10 to -14. Coloured light leaks up the rock; the chant thins, the bass leads.
+   - Leg 3, east along z 12 from (52, 12) to (68, 12), floor -14 to -18. Chant gone, bass only, the rave light growing.
+3. **Rave chamber** east of the ramp, reached by a 3 m level passage: centred (80, 12), 18 m across (x 71 to 89, z 3 to 21), floor -18 m, ceiling -10 m. It lies beside the ramp, never under it. Surface above it is forest floor at 0 m, so 10 m of rock over the ceiling. Rave lights, music, the resident. Talk (Social) and the cave's own events. The one warm colour burst on a grey map.
+4. **Way out.** Back up the same descent; the bass turns back into chant as the player climbs, and the entrance passage returns to grey and daylight. Mouth to chamber 63 m, 25 s each way.
+5. **Section drawing:** the map sheet carries a side view of the cave unfolded along the path, with every floor and ceiling height (Main3_map.svg, bottom).
+6. Nothing inside is seen from the tower.
+7. **Chases never enter the cave spur.** The W1 to cave spur and the cave are off limits to chase events; a chase that reaches W1 ends there or turns back along the shore path.
 
 ## 4. Routes
 
@@ -99,7 +105,7 @@ Shapes differ on purpose: winding trails, a west loop, dead-end spurs, and a str
 3. Every leg walked eastward has one bend turning the player west. From day 2 these are glimpses of the glow (DECISIONS 2026-09-29); on day 1 they show only the far ridge. The fire is loudest at the three west glimpses: W1, the Camp 3 rim, the Camp to J bend (Hollis).
 4. Creek: spring by J, through the Camp 3 hollow, to the lake inlet at W1.
 5. Loops: east ring (Camp, pump, boathouse, Camp 2, T, Jg, Camp) 583 m, 233 s; west loop (Camp, pump, W1, Camp 3, Camp) 400 m, 160 s. Camp to the office 270 m, 108 s. Camp to the Ward by J 226 m, 90 s.
-6. Chase events (Events.md) use these legs: the longest unlit stretches are Camp to Jg, Jg to T and W1 to cave. Safe points for a chase: the keeper's camp, any lit camp, the lot.
+6. Chase events (Events.md) use these legs: the longest unlit stretches are Camp to Jg, Jg to T and W1 to Camp 3. Chases never route into the cave spur (3.3.7). Safe points for a chase: the keeper's camp, any lit camp, the lot.
 
 ### 4.1 Junctions
 Every trail leaves its clearing aimed at the next landmark for its first 30 m. Day markers: spar with bulbs (Camp 1), granite stack (Camp 2), the Snag (Camp 3), red mast lamp (office), water glint (lake), pale cairn over the cut (J). The tower cab as a marker from junctions is unverified; Rook tests it in the blockout.
