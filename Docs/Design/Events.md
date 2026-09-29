@@ -17,6 +17,7 @@ One record per event (Rook sets the format, Milestone 13).
 | effects | one or more verbs from section 2 |
 | resolve | the on-foot action that ends it (section 2.2) |
 | if unresolved | what happens when the day ends with it open: its own cost, and whether it carries to tomorrow |
+| day-end needs | for events that END THE DAY: unmet needs paid or waived |
 | stage | 1 to 3 if it is part of a track; the next stage is drawn only after this one ends |
 | residents | which resident it belongs to (placeholder) |
 
@@ -32,7 +33,7 @@ One record per event (Rook sets the format, Milestone 13).
 7. **CLOSE** a trail leg for the day (deadfall, flood).
 8. **OPEN** a place or path that was not there, for the day or for good.
 9. **CHASE**: a pursuer on a named leg. Reach a safe point (keeper's camp, a lit camp, the lot) or be caught.
-10. **END THE DAY**: the day stops; the player wakes into night at the Ward (DailyLoop.md 1.1). Needs are paid as normal.
+10. **END THE DAY**: the day stops; the player wakes into night at the Ward (DailyLoop.md 1.1). Whether needs still unmet are paid varies by event (DECISIONS 2026-09-29): the record's "day-end needs" field says paid or waived.
 11. **HIJACK THE NIGHT**: something on the J to Ward climb or at the stones changes the night.
 12. **MINIGAME**: the event plays as a minigame stage; its result sets the cost.
 13. **CHANGE** a landmark or sound the player knows (a wrong thing in a familiar place), no mechanical effect. Used by WARD bands (DailyLoop.md 5.3).
@@ -97,7 +98,7 @@ Nineteen slots. Costs are proposals. Quill writes what each one is.
 
 ## 5. Open questions
 
-For Grant: see DailyLoop.md 9 (question 3 covers chases ending the day). For the team:
+For Grant: see DailyLoop.md 9. Slots 15 and 19 (chases) are proposed as needs paid; Quill may waive per event. For the team:
 1. Rook: one data format for events and dialogue (Milestone 13).
 2. Marlow: simulate the dawn draw with the cap for 30 days and check the Safety miss rate.
 3. Hollis: a sound cue per slot (Milestone 14).

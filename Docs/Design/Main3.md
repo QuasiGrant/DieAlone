@@ -72,7 +72,7 @@ Shapes differ on purpose: winding trails, a west loop, dead-end spurs, and a str
 
 1. Two points of interest are giant trees (Hollow Giant, Gate Tree), plus the Snag landmark. All three are scene objects with mesh colliders (Rook).
 2. **The cave spur is unsigned at W1**, the one exception to the junction pass check (DECISIONS 2026-09-29). Chant spot 2 is W1 itself, from night 1 on; on day 1 the cave is not heard.
-3. Every leg walked eastward has one bend turning the player west. From day 2 (if Grant takes DailyLoop.md question 2) these are glimpses of the glow; on day 1 they show only the far ridge. The fire is loudest at the three west glimpses: W1, the Camp 3 rim, the Camp to J bend (Hollis).
+3. Every leg walked eastward has one bend turning the player west. From day 2 these are glimpses of the glow (DECISIONS 2026-09-29); on day 1 they show only the far ridge. The fire is loudest at the three west glimpses: W1, the Camp 3 rim, the Camp to J bend (Hollis).
 4. Creek: spring by J, through the Camp 3 hollow, to the lake inlet at W1.
 5. Loops: east ring (Camp, pump, boathouse, Camp 2, T, Jg, Camp) 583 m, 233 s; west loop (Camp, pump, W1, Camp 3, Camp) 400 m, 160 s. Camp to the office 270 m, 108 s. Camp to the Ward by J 226 m, 90 s.
 6. Chase events (Events.md) use these legs: the longest unlit stretches are Camp to Jg, Jg to T and W1 to cave. Safe points for a chase: the keeper's camp, any lit camp, the lot.
@@ -101,7 +101,7 @@ Every trail leaves its clearing aimed at the next landmark for its first 30 m. D
 8. **The fire and the tower:**
    - Day 1: the fire is not visible at all (DECISIONS 2026-09-29). The west view is a clear far ridge over a band of cliff-edge giants at 46 m or lower. No glow, no smoke, no haze colour from the fire.
    - Night 1: the first sight of the roaring wildfire is at the Ward ledge, with the Ward holding it off.
-   - Day 2 on: my recommendation is a far glow and smoke over the ridge, seen from the tower and the west glimpses, growing as WARD drops (DailyLoop.md question 2). The cliff-edge band still hides the valley and the fire's base; only the Ward shows the line it cannot cross.
+   - Day 2 on (DECISIONS 2026-09-29): far glow and smoke over the ridge, seen from the tower and the west glimpses, huge in the distance (a smoke column filling a wide slice of the western sky, glow spanning the ridge), growing as WARD drops. The cliff-edge band still hides the valley and the fire's base; only the Ward shows the line it cannot cross.
    - Build note: the fire needs a day 1 off state for the whole scene (glow, smoke, ash, sound, sky tint). Rook.
 
 ## 6. Break the uniformity

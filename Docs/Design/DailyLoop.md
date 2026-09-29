@@ -18,7 +18,7 @@ Day is the burning sunset, sun fixed, from waking until the day ends.
 
 ### 1.1 When an event ends the day
 1. Some events end the day early (a chase that catches the player, a collapse). Events.md sets which.
-2. The player wakes into night already at the Ward. The report counts as filed with everything unmet listed. Needs are paid as normal; the event adds its own cost.
+2. The player wakes into night already at the Ward. The report counts as filed. Whether needs still unmet are paid varies by event (DECISIONS 2026-09-29); each event says so in its record (Events.md 1). The event adds its own cost.
 
 ### 1.2 Staying on the trails
 Routes are kept to the trails by the ground itself: giant root walls, deadfall, fern thickets and slopes. Walk times in Main3.md are information for pacing and events, not a budget.
@@ -28,14 +28,14 @@ Routes are kept to the trails by the ground itself: giant root walls, deadfall, 
 1. After filing, the objective shows "Go to the Ward" for 3 s. The J gate on the Ward path opens (chain down, cairn lamp lit).
 2. The only action at night is the Ward. Other prompts are closed. Residents are inside.
 3. **The Ward screen** (Pim): the player faces the stones, looking west, the fire behind them. Stats show here and only here: HP, MIND, WARD, tonight's hunger, tonight's unmet needs and their cost. The player gives 0 to 3 points of HP or MIND in any mix; 0 is Give nothing.
-4. **Hunger and feeding** (proposed, question 1):
+4. **Hunger and feeding** (weekly hunger 1, 2, 3 approved, DECISIONS 2026-09-29; the feeding numbers are proposed):
    - The Ward's hunger H is taken from WARD every night: H = 1 on days 1 to 7, 2 on days 8 to 14, 3 on days 15 to 21, and so on.
    - Each point given buys 1 WARD. At most 3 a night.
    - WARD, HP and MIND never go above 12. The screen does not accept a point that would push WARD past 12.
    - WARD change tonight = points given minus H. Give nothing: WARD falls by H.
    - Diegetic: the fire is closer each week; its roar at the Ward grows with H (Hollis).
 5. **The bunk at night:** from night 2, lying in the bunk counts as Give nothing: WARD falls by H, no Ward screen, no stats that night. The only night action is going to the Ward (DECISIONS 2026-09-28). Night 1 is different (section 6).
-6. **Stalling:** a player who never files, or never goes to the Ward or the bunk, has stalled the game. That is not a surviving run and the design does not count it. No fix needed.
+6. **Nothing forces the player to act** (DECISIONS 2026-09-29). A player who never files the report or never goes to the Ward simply does not progress. No pause, no penalty: their choice. It is not a surviving run.
 7. **Sleep.** After the screen, fade out, wake in the cabin. Needs are paid and the game autosaves.
 8. WARD at 0: the barrier falls and the world burns. HP or MIND at 0: the run ends. Giving your last HP or MIND is allowed and ends the run; the screen warns once.
 
@@ -89,7 +89,7 @@ Routes are kept to the trails by the ground itself: giant root walls, deadfall, 
    - **Hoard WARD high early:** the hunger doubles and triples later; the hoard is spent faster.
 6. **Recovery cap:** all recovery together (RESTORE events, and later memories and items) gives back at most 1 point a day, and never lifts a stat past 12. With the full 1 a day, the net minimum loss is H minus 1: 0 in week 1, 1 in week 2, 2 in week 3, 3 in week 4. Total lost: 0 by night 7, 7 by night 14, 21 by night 21, 33 by night 25. **The longest possible run with recovery ends on night 26** (19 without). Any recovery with a fixed daily cap is overtaken once H passes it, so the run always ends.
 7. Typical runs, with needs missed and event costs, end between night 10 and 16. At 10 to 15 real minutes a day, a run is about 2 to 4 hours.
-8. Alternative timer if Grant prefers: event severity rises with the day count instead of hunger. It is weaker: a player who resolves everything is never charged. Recommendation: rising hunger, with events escalating on top (Events.md 3).
+8. Rising hunger is the timer (approved 2026-09-29). Events escalate on top of it (Events.md 3).
 
 ## 5. Variety
 
@@ -107,7 +107,7 @@ Day 1 is an ordinary fire lookout job (DECISIONS 2026-09-29).
 4. **Night 1 is the reveal.** The bunk is not an option; "Go to the Ward" is the only objective. At the ledge the runes wake, the valley opens below, and the player first sees the roaring wildfire and the Ward holding it off. The first Ward screen explains the choice once.
 5. From day 2 events are drawn and WARD bands apply.
 6. The wrongness cues (the silent road, the radio gone to static, the chant) begin only after the night 1 reveal and grow as WARD drops.
-7. **Day 2 on** (question 2): my recommendation is that the fire shows by day from day 2 as glow and smoke over the far ridge, seen from the tower and the west glimpses, growing as WARD drops. The Ward stays the only place that shows its base and the line it cannot cross.
+7. **Day 2 on** (DECISIONS 2026-09-29): the fire shows by day as far glow and smoke over the ridge, seen from the tower and the west glimpses, and it reads as huge in the distance: the smoke column fills a wide slice of the western sky and the glow spans the ridge. It grows louder and closer as WARD drops. Never on day 1. The Ward stays the only place that shows its base and the line it cannot cross.
 
 ## 7. What fills a quiet day
 
@@ -124,8 +124,6 @@ Day 1 is Firewatch played straight. Night 1 tells you the lookout's real job. Fr
 
 ## 9. Open questions for Grant
 
-1. The timer: the Ward gets hungrier every 7 days (takes 1 WARD a night, then 2, then 3). Feeding buys 1 WARD per point, up to 3 a night. The longest possible run is 19 nights, 26 with the most recovery allowed. OK, or should the hunger rise more slowly?
-2. From day 2 on, should the fire show by day as a far glow and smoke that grows as WARD drops (my pick), or only ever at night?
-3. When a chase catches you, the day ends and you wake at the Ward; your report files itself with everything unmet counted. OK?
+1. Feeding buys 1 WARD per HP or MIND point, up to 3 a night, and recovery is capped at 1 point a day. With the approved hunger that makes the longest run 19 nights, 26 with the most recovery. OK?
 
 Sable
