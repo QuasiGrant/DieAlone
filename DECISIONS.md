@@ -174,3 +174,4 @@
 - 2026-09-29: Fonts: Patrick Hand (logbook handwriting), Overpass (forms, menus, settings, dialogue, objective line, warnings), VT323 (tape overlay only). All SIL OFL. Replaces the built-in-font-only rule in Style.md 7.1.
 - 2026-09-29: UI text moves to TextMeshPro (built into ugui 2.0; its Essential Resources are imported, about 4 MB). This replaces the 2026-09-20 line that kept legacy Text.
 - 2026-09-29: The main menu (New run, Continue, Settings, Quit) and the content warning screen are built in Milestone 10.
+- 2026-09-29: Install Microsoft's .NET SDK 8 so plain logic code (game state, simulator, save, rules) can be written and tested outside Unity by a second builder. Tully works out which tasks qualify.
