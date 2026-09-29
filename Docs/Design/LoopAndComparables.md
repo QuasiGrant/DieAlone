@@ -1,6 +1,7 @@
 # Comparables, the warden's day, and the design milestones
 
 **Superseded 2026-09-29.** Kept as a record of how the design got here. The loop now lives in Docs/Design/DailyLoop.md and the plan order in PLAN.md; where this file disagrees with DECISIONS.md, DECISIONS.md wins. Parts 1 and 2 (comparables, duty pool) are still useful background.
+
 Started 2026-09-27 for the Milestone 6 rework. Moved into the repo 2026-09-28 so every agent can read it. This is the standing reference for Milestones 6 to 10. Nothing here is decided until it is written to DECISIONS.md and Grant has confirmed it; Part 4 tracks what has been. Add to Part 4 at the end of every design session.
 
 ## Part 1. Ten comparable games and their loops
