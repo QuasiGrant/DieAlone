@@ -180,3 +180,4 @@
 - 2026-09-29: Event pacing (how often three-stage tracks repeat, when the first chase can come, story choices inside events, the lake ring event) is Sable's call, settled by playtesting.
 - 2026-09-29: Tuesday's survival depends only on her own feeding timer: if she is not fed enough days before it runs out, she dies. Events do not decide it.
 - 2026-09-29: Docs/Private gets its own local git history (not pushed anywhere).
+- 2026-09-29: Backups of Docs/Private: a local git history, plus a dated zip uploaded to Grant's Google Drive (folder DieAlone Private Backups) every time Grant says he is taking a break.

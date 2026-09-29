@@ -1,2 +1,3 @@
 - [Grant](user_grant.md) — answers numbered lists by number; explain Unity terms plainly; archive, never delete
 - [Parallel work](feedback_parallel_work.md) — idle check after every handback; roster line in every report; never make Grant ask
+- [Break backup](feedback_break_backup.md) — on "taking a break": commit Docs/Private, zip, upload to Drive folder DieAlone Private Backups
