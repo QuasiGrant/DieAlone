@@ -55,11 +55,11 @@ Six locations with one resident each, plus the keeper's camp and the Ward. Every
 ### 3.2 Gate booth and closed campground (option B, DECISIONS 2026-09-29)
 Order along the drive from the gate, heading west: gate (x 396), booth window (x 392), spur turn-off (x 385), turning circle (x 376 to 392, south side), lot (x 373).
 1. **Booth** beside the lane, on the drive's north side at (392, 176), footprint 2 x 2 m (x 391 to 393, z 175 to 177): 2.5 m from the lane edge, 4.5 m east of the spur. Cars stop in the lane at its window; nothing drives through it.
-2. **Gravel spur** for admitted cars, joined to the drive: it leaves the drive's north edge at (385, 172.5), runs north to (385, 186), bends east to x 390 by (390, 196), then north along the inside of the fence to the chain at (390, 238). 68 m. Closest to the store (366, 200): 24 m.
+2. **Gravel spur** for admitted cars, joined to the drive: it leaves the drive's north edge at (385, 172.5), runs north to (385, 186), bends east to x 390 by (390, 196), then north along the inside of the fence to the chain at (390, 238). 68 m long, 4 m wide, single lane. Closest to the store (366, 200): 24 m.
 3. **Turning circle** for refused cars: gravel, 16 m across, centred (384, 160), joined to the drive's south edge. Clearances: 3 m to the lot, 4 m to the fence, 14 m to the resident's car. Refused cars loop it and leave through the gate.
 4. **Chain** across the spur at (390, 238), lowered for admitted cars.
-5. **Closed campground loop** behind the chain: a gravel loop 40 m across centred (372, 262), x 352 to 392, z 242 to 282, empty pitches. It sits north of the old burn, so the tower sees at most tree gaps; it has no line in the tower check and is never stamped.
-6. **Shifts.** A shift starts when the player enters the booth. It ends when that day's cars are done, or when the player leaves the booth between cars. A shift never ends the day and never traps the player. Cars per day is a tuning value set by playtest (Grant).
+5. **Closed campground loop** behind the chain: a one-way gravel loop road 5 m wide, 40 m across on its outer edge, centred (372, 262), x 352 to 392, z 242 to 282, empty pitches. It sits north of the old burn, so the tower sees at most tree gaps; it has no line in the tower check and is never stamped.
+6. **Shifts.** A shift starts when the player enters the booth. It ends when that day's cars are done, or when the player leaves the booth between cars. If the player leaves while a car waits, that car waits at the barrier until the player returns or the day ends. Re-entering the booth the same day resumes that day's remaining cars; there is no fresh count. A shift never ends the day and never traps the player. Cars per day is a tuning value set by playtest (Grant).
 7. **Shift wall**, only while in a shift: invisible walls across the spur mouth at (385, 176) and at the turning circle's edge stop the player following a car: "You can't abandon your post." The gate collider (3.1.4) shows the same message during a shift.
 8. **Outside shifts** the player may walk up the spur and around the chain into the loop. That is where the admitted cars are found, parked and empty.
 9. Cars keep arriving until the office resident's storyline ends (completed, or he dies). They do not thin out as WARD falls. How many days the minigame runs is set by playtesting, never the whole game.
@@ -69,15 +69,16 @@ Order along the drive from the gate, heading west: gate (x 396), booth window (x
 ### 3.3 Cultist cave interior (walked step by step)
 The cave is a dead end with one way in and one way out. All interior pieces are meshes below the terrain; the mouth needs a terrain hole or a mesh overhang (Rook to confirm which Unity supports here).
 1. **Entrance** (mouth (52, 34), floor -6 m, 4 m tall). A level passage 12 m south to (52, 22), grey rock, lit only from outside. The chant from the trail spots is clear here. On day 1 the mouth is boarded with an ordinary CLOSED, UNSAFE board; from day 2 the boards are down.
-2. **Descent.** A sloped passage 48 m long in three 16 m legs, side by side in plan and 5 m apart (3 m passage, 2 m rock between), so nothing is stacked. Drop from -6 m to -18 m at about 14 degrees (a ramp, no steps, so the STAIRS RULE is not needed). Passage 3.5 m tall. Walk 19 s.
+2. **Descent.** A sloped passage 48 m long in three 16 m legs, side by side in plan and 5 m apart (3 m passage, 2 m rock between), so nothing is stacked. Drop from -6 m to -18 m at about 14 degrees (a ramp, no steps, so the STAIRS RULE is not needed). Passage 3.5 m tall. The two switchback turns between legs add 5 m each: 58 m walked, 23 s.
    - Leg 1, east along z 22 from (52, 22) to (68, 22), floor -6 to -10. A bass note starts under the chant.
    - Leg 2, west along z 17 from (68, 17) to (52, 17), floor -10 to -14. Coloured light leaks up the rock; the chant thins, the bass leads.
    - Leg 3, east along z 12 from (52, 12) to (68, 12), floor -14 to -18. Chant gone, bass only, the rave light growing.
 3. **Rave chamber** east of the ramp, reached by a 3 m level passage: centred (80, 12), 18 m across (x 71 to 89, z 3 to 21), floor -18 m, ceiling -10 m. It lies beside the ramp, never under it. Surface above it is forest floor at 0 m, so 10 m of rock over the ceiling. Rave lights, music, the resident. Talk (Social) and the cave's own events. The one warm colour burst on a grey map.
-4. **Way out.** Back up the same descent; the bass turns back into chant as the player climbs, and the entrance passage returns to grey and daylight. Mouth to chamber 63 m, 25 s each way.
+4. **Way out.** Back up the same descent; the bass turns back into chant as the player climbs, and the entrance passage returns to grey and daylight. Mouth to chamber about 73 m (entrance 12, ramp 48, two turns 10, passage 3), 29 s each way.
 5. **Section drawing:** the map sheet carries a side view of the cave unfolded along the path, with every floor and ceiling height (Main3_map.svg, bottom).
 6. Nothing inside is seen from the tower.
 7. **Chases never enter the cave spur.** The W1 to cave spur and the cave are off limits to chase events; a chase that reaches W1 ends there or turns back along the shore path.
+8. **Rook, blockout terrain check:** rock cover is thin at the start. Over the entrance passage the ceiling (-2 m) is only 2 m under the surface (0 m); over leg 1 it grows from 2.5 m to 6.5 m. Check the terrain never dips into these ceilings and no hole shows from above except at the mouth.
 
 ## 4. Routes
 
