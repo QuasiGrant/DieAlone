@@ -79,4 +79,14 @@ public class LookTuning : ScriptableObject
     [Range(0f, 1f)] public float fireFlicker = 0.3f;
     [Tooltip("Speed of that breathing. Low is a slow smoulder.")]
     [Range(0.1f, 5f)] public float fireFlickerSpeed = 0.8f;
+
+    [Header("Smoke (DieAlone/Smoke shader)")]
+    [Tooltip("Colour of the smoke body where the sun reaches it. Style.md #4A3A32.")]
+    public Color smokeBodyColor = new Color(0.290f, 0.227f, 0.196f);
+    [Tooltip("Colour the fire lights the smoke underside with. Style.md #6B2A12.")]
+    public Color smokeFireColor = new Color(0.420f, 0.165f, 0.071f);
+    [Tooltip("How bright the side of the smoke facing away from the sun stays. 0 is black, 1 is no shading.")]
+    [Range(0f, 1f)] public float smokeShadowFloor = 0.45f;
+    [Tooltip("Strength of the fire light on the smoke underside. 0 turns it off.")]
+    [Range(0f, 4f)] public float smokeFireStrength = 1.0f;
 }

@@ -103,3 +103,12 @@ Copied from the scratchpad on 2026-09-27. Later scripts supersede earlier ones f
 |---|---|
 | create_loop_tuning.cs | Creates Assets/Settings/LoopTuning.asset with the draft loop numbers (task 7.1). |
 | create_simulator_tuning.cs | Creates Assets/Settings/SimulatorTuning.asset pointing at LoopTuning (task 7.2). |
+
+## Pack shaders (task 7.6)
+
+| File | Builds or does |
+|---|---|
+| swap_pack_shaders_7_6.cs | Moves every bought-pack material off BK, NatureManufacture and Legacy shaders onto URP Lit, Unlit, Particles Unlit or DieAlone Smoke, Sky and Water. Rerun after any pack re-import. |
+| fix_swap_keywords_7_6.cs | One-off cleanup of materials swapped by the first run (stale keywords, detail maps, flame emission). |
+| list_material_shaders.cs | Counts every material by shader; done-check is pack shaders = 0 and broken shaders = 0. |
+| shoot_shader_swap_7_6.cs | One shot per swapped group in a temporary additive scene, closed unsaved. |

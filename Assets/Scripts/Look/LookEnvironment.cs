@@ -20,6 +20,19 @@ public class LookEnvironment : MonoBehaviour
     private static readonly int SunGlowId = Shader.PropertyToID("_SunGlowColor");
     private static readonly int SunSizeId = Shader.PropertyToID("_SunGlowSize");
     private static readonly int SunDirId = Shader.PropertyToID("_SunDir");
+    private static readonly int SmokeBodyId = Shader.PropertyToID("_DA_SmokeBodyColor");
+    private static readonly int SmokeFireId = Shader.PropertyToID("_DA_SmokeFireColor");
+    private static readonly int SmokeShadowFloorId = Shader.PropertyToID("_DA_SmokeShadowFloor");
+    private static readonly int SmokeFireStrengthId = Shader.PropertyToID("_DA_SmokeFireStrength");
+
+    /// Pushes the DieAlone/Smoke globals. Static so edit-mode tools can set them without a scene.
+    public static void ApplySmokeGlobals(LookTuning tuning)
+    {
+        Shader.SetGlobalColor(SmokeBodyId, tuning.smokeBodyColor);
+        Shader.SetGlobalColor(SmokeFireId, tuning.smokeFireColor);
+        Shader.SetGlobalFloat(SmokeShadowFloorId, tuning.smokeShadowFloor);
+        Shader.SetGlobalFloat(SmokeFireStrengthId, tuning.smokeFireStrength);
+    }
 
     private void OnEnable() => Apply();
     private void Update() => Apply();
@@ -27,6 +40,7 @@ public class LookEnvironment : MonoBehaviour
     private void Apply()
     {
         if (tuning == null) return;
+        ApplySmokeGlobals(tuning);
         bool sunset = fogSet == FogSet.Sunset;
         Color color = sunset ? tuning.sunsetFogColor : tuning.fogColor;
         float start = sunset ? tuning.sunsetFogStart : tuning.fogStart;
