@@ -58,3 +58,9 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 - Cairn gate: pale cairn 2.2 m beside the trail start at J with a chain across the trail to a post. The chain has no collider: nothing makes the climb night only yet, and a solid chain would stop the climb.
 - The Tor: dome of radius 18 m, top 58, built as an ellipsoid (vertical radius 28, centre y 30) so it meets the lower ground on its south-east side (its base circle runs 7 m past the spur edge) without floating. Closest point of the climb trail is 22 m from its centre.
 - Ward stones at the map positions, 3.6 x 4 m, tops 48 (5.4); they stand 11.8 m in from the cliff, as in the 8.1 note.
+
+## 8.8 Cultist cave
+
+- Ramp legs: 3.3.2 "16 m legs at about 14 degrees" -> each leg slopes over 13 m (17 degrees) between level 3 m turns centred on x 52 and x 68, so the legs keep their 16 m spacing, the turns are level, and the east turn stays 1.5 m clear of the chamber (x 71). Walked mouth to chamber: 73 m of floor as in 3.3.4.
+- Entrance passage 3 m wide (the doc gives the legs' width; the entrance width is not stated), 4 m tall, running from the mouth face at z 37.4 to z 20.5.
+- Mouth: terrain hole of 35 cells, x 50.0 to 53.9, z 33.4 to 37.5; a rock block fills it above the passage ceiling. The day-one board (CLOSED, UNSAFE) has no collider until a day system exists.
