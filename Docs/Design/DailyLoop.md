@@ -60,6 +60,7 @@ Routes are kept to the trails by the ground itself: giant root walls, deadfall, 
 4. **Social with no one reachable:** missed. No fallback.
 5. **An event left unresolved** costs what that event says (Events.md), on top of the Safety miss. There is no fixed aging timer.
 6. Resident roles (notes only, visits the tower, sometimes absent), whether the cave resident talks, and what that costs: placeholders for the story session.
+7. **Placeholder hook, character minigames** (DECISIONS 2026-09-29): there will be minigames that progress each of the six residents' dialogue and affect the multiple endings. Where they sit in the day, whether they count as Social, and how they feed the endings: not designed yet.
 7. Borrowed: the nightly ledger of unpaid needs is Papers, Please. Forage chance against the sure, far store is Dredge's risk against a safe haul.
 
 ### 3.1 Edge rules

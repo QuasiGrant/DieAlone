@@ -35,7 +35,7 @@ One record per event (Rook sets the format, Milestone 13).
 9. **CHASE**: a pursuer on a named leg. Reach a safe point (keeper's camp, a lit camp, the lot) or be caught.
 10. **END THE DAY**: the day stops; the player wakes into night at the Ward (DailyLoop.md 1.1). Whether needs still unmet are paid varies by event (DECISIONS 2026-09-29): the record's "day-end needs" field says paid or waived.
 11. **HIJACK THE NIGHT**: something on the J to Ward climb or at the stones changes the night.
-12. **MINIGAME**: the event plays as a minigame stage; its result sets the cost.
+12. **MINIGAME**: the event plays as a minigame stage; its result sets the cost. Placeholder hook (DECISIONS 2026-09-29): some minigames progress one of the six residents' dialogue and affect the multiple endings. Not designed yet; they may be events, visits or their own track.
 13. **CHANGE** a landmark or sound the player knows (a wrong thing in a familiar place), no mechanical effect. Used by WARD bands (DailyLoop.md 5.3).
 
 ### 2.2 Resolve actions (on foot)

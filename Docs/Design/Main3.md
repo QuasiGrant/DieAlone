@@ -1,6 +1,6 @@
 # Main3 paper brief
 
-**DRAFT, revision 6, 2026-09-29, Sable. Nothing here is decided.** The loop lives in Docs/Design/DailyLoop.md and events in Docs/Design/Events.md; neither is repeated here. Map: Docs/Design/Main3_map.svg. Numbers provisional until the Milestone 7 simulator.
+**DRAFT, revision 7, 2026-09-29, Sable. Nothing here is decided.** The loop lives in Docs/Design/DailyLoop.md and events in Docs/Design/Events.md; neither is repeated here. Map: Docs/Design/Main3_map.svg. Numbers provisional until the Milestone 7 simulator.
 
 Coordinates in metres, origin south-west, x east, z north. Heights absolute (metres above map base 0). Walk times at 2.5 m/s are information for pacing and events; there is no day time budget (DECISIONS 2026-09-29).
 
@@ -20,6 +20,7 @@ Coordinates in metres, origin south-west, x east, z north. Heights absolute (met
 7. **The fence and gate are the map edge.** Chain-link along x 396, the full height of the map. The gate at (396, 170). The road comes from off-map to the gate and never enters. Inside the gate: a gravel drive, the parking lot, the office and the store.
 8. Giant trees: emergents 40 to 50 m tall, trunks 6 to 10 m. Tops never above 50 m absolute; on the knoll at most 42 m tall; on the spur tops below 55 m (under the tower eye, Rook). One stated exemption: the Snag at Camp 3, top 54 m, 3.6 m under the tower eye. It stands in no other location's cone and is itself Camp 3's landmark.
 9. Routes stay on trails (DailyLoop.md 1.2).
+10. **The old burn** (DECISIONS 2026-09-29: the tower sees more of the office and lot). A years-old burn scar runs from the foot of the knoll east to the front zone: 30 m wide at the knoll (x 185, z 151 to 181), widening to 70 m at the front zone (x 340, z 143 to 213). No giants and no mid canopy in it: dense young regrowth 4 to 6 m tall, 4 m in the last 40 m before the front zone. The thicket is impassable off the trails, so it opens the view, not a shortcut. An old burn under a lookout is ordinary on day 1.
 
 ## 3. Places
 
@@ -32,7 +33,7 @@ Six locations with one resident each, plus the keeper's camp and the Ward. Every
 | Camp 1 | (282, 238), ground 5 m | big by kit, one tent: a sprawling workshop camp, 60 m, pale harsh light | cookfire meal (Food, some days); talk; events | a lashed timber spar 24 m with a string of bulbs | pots |
 | Camp 2 | (292, 108), ground 4 m | tiny: one tent on top of a 20 m granite stack in a 40 m boulder field, ladder up, dim amber tent lamp | rain barrel (Water, some days); talk; events | the granite stack | wind |
 | Camp 3 | (78, 146), hollow floor -4 m | sunk 8 m below its rim, 25 m across, dense, green-glass lantern | sit at the fire (Warmth, some days); talk; events | the Snag: a bleached dead giant on the east rim, top 54 m | creek through the hollow, a low fire |
-| Office | (360, 200), front zone, ground 3 m | prefab ranger office on the north side of the lot; store 16 m east at (376, 200) | talk; events; store (Food) | steel lattice mast 30 m with a red lamp | mains hum; radio with ordinary chatter on day 1, going to static after the reveal |
+| Office | (360, 200), front zone, ground 3 m | prefab ranger office on the north side of the lot; store 16 m east at (376, 200) | talk; events; store (Food) | the whole parking lot, office, store and mast (30 m, red lamp), in a wide view across the old burn | mains hum; radio with ordinary chatter on day 1, going to static after the reveal |
 | Cultist cave | mouth (52, 34), ravine floor -6 m, mouth 4 m tall | the one cold place: grey rock, no sunset colour | placeholder (story session); its own events | hidden (5.5) | chant from night 1, heard only at two trail spots |
 | Ward ledge | (32, 258), ground 36 m | stones on the cliff edge facing west, 25 m clearing | night only: the Ward screen | hidden (5.4) | silence from the last bend |
 
@@ -59,8 +60,8 @@ Shapes differ on purpose: winding trails, a west loop, dead-end spurs, and a str
 | Pump to boathouse | shore path | 84 | 34 | 42: overturned rowboat |
 | Boathouse to Camp 2 | trail | 95 | 38 | 48: phone pole with handset box (Early: bell post) |
 | Camp 2 to T | trail | 94 | 38 | 47: ring of rusted food lockers |
-| Camp to Jg | winding | 125 | 50 | 45: Hollow Giant; 95: forage patch A |
-| Jg to T | winding | 105 | 42 | 40: Gate Tree; 85: first sight of the lot |
+| Camp to Jg | winding, along the south edge of the old burn | 125 | 50 | 45: Hollow Giant, 10 m south of the burn edge at (202, 140); 95: forage patch A, berries in the burn |
+| Jg to T | winding, through the burn regrowth | 105 | 42 | 40: Gate Tree, a burned-out giant stub cut to 15 m; 85: first sight of the lot |
 | Jg to Camp 1 | dead-end spur | 83 | 33 | 42: latrine shed and wash stand |
 | T to office / store | across the lot | 40 / 48 | 16 / 19 | office and store 16 m apart |
 | Camp to Camp 3 | winding descent | 126 | 50 | 40: forage patch B; 90: log steps down the rim (STAIRS RULE ramp) |
@@ -92,13 +93,14 @@ Every trail leaves its clearing aimed at the next landmark for its first 30 m. D
 | Camp 1 | ENE | 138 | spar top 29 | 9.2 |
 | Camp 2 | ESE | 141 | granite stack top 24, boulder field r 20 | 3.8 |
 | Camp 3 | W | 88 | Snag top 54 | 4.0 over every giant cap |
-| Office | E | 199 | mast lamp 33 | about 12 |
+| Office and lot | E, 75 to 95 | 189 to 212 | lot surface from its west edge, cars, office, store, mast | 2.6 over the 4 m regrowth at the lot edge; buildings and mast far more |
 
-4. **Ward hidden:** the Tor, a granite dome on the crest at (76, 223), radius 18 m, base 34 m, top 58 m. The line from the deck centre to the stone tops (48 m) crosses it 6.4 m under the top, about 5.4 m at the outer stone edges.
+4. **Ward hidden:** the Tor (a rock outcrop; "tor" is the plain word for a bare rock hill), a granite dome on the crest at (76, 223), radius 18 m, base 34 m, top 58 m. The line from the deck centre to the stone tops (48 m) crosses it 6.4 m under the top, about 5.4 m at the outer stone edges.
 5. **Cave hidden:** the ravine rim, 14 m, north of the mouth (mouth top -2 m). The line from the deck centre crosses the rim 8.3 m under it.
-6. **Checks W-1 and C-1** (blockout, rerun after any change): trees off. Eye points on a 1 m grid over the whole deck and walkway, at eye height and jump height. Rays to every stone corner (W-1) and to the cave mouth's corners (C-1). Every ray must hit the Tor, rim or terrain. Repeat with eyes and targets raised 3 m: every ray must still hit. The margins above are from the deck centre only until this runs.
-7. Haze: landmarks at 137 to 199 m. First try a distance fog end past 300 m for Main3 and emissive lamps. Height fog is new shader work; only if the blockout shows landmarks lost (Rook).
-8. **The fire and the tower:**
+6. **Recheck after the old burn:** the burn lies east of the tower (bearings 75 to 95). The Ward line runs north-west (314) and the cave line south-west; neither crosses the burn, and the Tor and rim are unchanged. Margins stay 6.4 m (Ward) and 8.3 m (cave) from the deck centre. The only giant moved, the Hollow Giant, is south of the burn and in no hiding line.
+7. **Checks W-1 and C-1** (blockout, rerun after any change): trees off. Eye points on a 1 m grid over the whole deck and walkway, at eye height and jump height. Rays to every stone corner (W-1) and to the cave mouth's corners (C-1). Every ray must hit the Tor, rim or terrain. Repeat with eyes and targets raised 3 m: every ray must still hit. The margins above are from the deck centre only until this runs.
+8. Haze: landmarks at 137 to 212 m. First try a distance fog end past 300 m for Main3 and emissive lamps. Height fog is new shader work; only if the blockout shows landmarks lost (Rook).
+9. **The fire and the tower:**
    - Day 1: the fire is not visible at all (DECISIONS 2026-09-29). The west view is a clear far ridge over a band of cliff-edge giants at 46 m or lower. No glow, no smoke, no haze colour from the fire.
    - Night 1: the first sight of the roaring wildfire is at the Ward ledge, with the Ward holding it off.
    - Day 2 on (DECISIONS 2026-09-29): far glow and smoke over the ridge, seen from the tower and the west glimpses, huge in the distance (a smoke column filling a wide slice of the western sky, glow spanning the ridge), growing as WARD drops. The cliff-edge band still hides the valley and the fire's base; only the Ward shows the line it cannot cross.

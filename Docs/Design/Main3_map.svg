@@ -8,7 +8,7 @@
 
   <!-- background and title -->
   <rect x="0" y="0" width="1190" height="1000" fill="#f6f3ec"/>
-  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 6, 2026-09-29, Sable. Nothing here is decided.</text>
+  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 7, 2026-09-29, Sable. Nothing here is decided.</text>
   <text x="60" y="47" font-size="11" fill="#444">400 x 300 m at 2.5 px per m. Origin south-west, x east, z north. Heights absolute. Walk times at 2.5 m/s. The loop is in DailyLoop.md.</text>
 
   <!-- map area -->
@@ -72,13 +72,19 @@
   <polygon points="470,405 85,350 85,790" fill="#f08a3a" fill-opacity="0.09"/>
   <text x="95" y="600" font-size="9" fill="#a0521c">tower fire view W to SW, day 2 on if approved: glow and smoke over the far ridge, base hidden</text>
 
+  <!-- old burn: view corridor to the front zone -->
+  <polygon points="522.5,367.5 910,287.5 910,462.5 522.5,442.5" fill="#ece0bf" stroke="#b39a5e" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="820" y="305" text-anchor="middle" font-size="10" font-weight="bold" fill="#7a6430" style="paint-order:stroke;stroke:#ece0bf;stroke-width:3px">OLD BURN</text>
+  <text x="820" y="318" text-anchor="middle" font-size="9" fill="#7a6430" style="paint-order:stroke;stroke:#ece0bf;stroke-width:3px">regrowth 4 to 6 m, no giants:</text>
+  <text x="820" y="330" text-anchor="middle" font-size="9" fill="#7a6430" style="paint-order:stroke;stroke:#ece0bf;stroke-width:3px">wide tower view of the lot</text>
+
   <!-- tower sightline cones -->
   <g fill="#f2cf3c" fill-opacity="0.28" stroke="#c9a41c" stroke-width="0.6">
     <polygon points="470,405 626.7,712.2 693.3,667.8"/>
     <polygon points="470,405 804.1,289.0 725.9,161.0"/>
     <polygon points="470,405 769.4,595.6 810.6,504.4"/>
     <polygon points="470,405 281.9,443.4 288.1,466.6"/>
-    <polygon points="470,405 964.3,344.6 955.7,295.4"/>
+    <polygon points="470,405 1017,300 1017,450"/>
   </g>
 
   <!-- creek -->
@@ -114,7 +120,7 @@
     <path d="M535,580 Q640,590 660,690"/>
     <path d="M660,690 Q760,660 790,550"/>
     <path d="M790,550 Q870,500 910,395"/>
-    <path d="M485,420 C560,340 640,460 715,390"/>
+    <path d="M485,420 C560,480 640,440 715,390"/>
     <path d="M715,390 C780,330 850,450 910,395"/>
     <path d="M485,420 C420,360 330,500 255,455"/>
     <path d="M535,580 Q450,590 380,645"/>
@@ -140,13 +146,14 @@
   <line x1="287.5" y1="286.8" x2="115" y2="175" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
   <line x1="470" y1="405" x2="245" y2="670" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/>
   <line x1="245" y1="670" x2="190" y2="735" stroke="#888" stroke-width="1.5" stroke-dasharray="2 4"/>
-  <text transform="translate(385,350) rotate(33)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">Ward hidden by the Tor</text>
+  <text transform="translate(385,350) rotate(33)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">Ward hidden by the rock outcrop</text>
   <text transform="translate(360,540) rotate(-49.7)" text-anchor="middle" font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">cave hidden by the rim</text>
 
   <!-- Tor -->
   <circle cx="250" cy="262" r="45" fill="#8b8274" stroke="#5a5348" stroke-width="1.5"/>
-  <text x="250" y="259" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">TOR</text>
-  <text x="250" y="272" text-anchor="middle" font-size="9" fill="#fff">top 58 m</text>
+  <text x="250" y="254" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">ROCK OUTCROP</text>
+  <text x="250" y="266" text-anchor="middle" font-size="9" fill="#fff">(the Tor)</text>
+  <text x="250" y="278" text-anchor="middle" font-size="9" fill="#fff">top 58 m</text>
 
   <!-- Ward stones -->
   <g fill="#3b3a44">
@@ -162,7 +169,7 @@
   <!-- points of interest -->
   <g fill="#333">
     <circle cx="515" cy="500" r="3.5"/><circle cx="619" cy="612" r="3.5"/><circle cx="742" cy="640" r="3.5"/><circle cx="860" cy="486" r="3.5"/>
-    <circle cx="567" cy="393" r="3.5"/><circle cx="785" cy="378" r="3.5"/><circle cx="880" cy="410" r="3.5"/><circle cx="730" cy="304" r="3.5"/>
+    <circle cx="565" cy="470" r="3.5"/><circle cx="785" cy="378" r="3.5"/><circle cx="880" cy="410" r="3.5"/><circle cx="730" cy="304" r="3.5"/>
     <circle cx="300" cy="458" r="3.5"/><circle cx="454" cy="601" r="3.5"/><circle cx="347" cy="607" r="3.5"/><circle cx="295" cy="534" r="3.5"/>
     <circle cx="327" cy="676" r="3.5"/><circle cx="265" cy="690" r="3.5"/><circle cx="401" cy="346" r="3.5"/><circle cx="322" cy="312" r="3.5"/>
     <circle cx="290" cy="211" r="3.5"/><circle cx="175" cy="185" r="3.5"/>
@@ -175,8 +182,8 @@
     <text x="611" y="608" text-anchor="end">rowboat</text>
     <text x="734" y="636" text-anchor="end">phone pole</text>
     <text x="852" y="482" text-anchor="end">food lockers</text>
-    <text x="567" y="384" text-anchor="middle">Hollow Giant</text>
-    <text x="785" y="369" text-anchor="middle">Gate Tree</text>
+    <text x="565" y="484" text-anchor="middle">Hollow Giant</text>
+    <text x="785" y="369" text-anchor="middle">Gate Tree stub</text>
     <text x="876" y="428" text-anchor="middle">first sight of the lot</text>
     <text x="722" y="300" text-anchor="end">latrine shed</text>
     <text x="306" y="474">log steps</text>
@@ -200,7 +207,7 @@
     <text x="630" y="596">84 m / 34 s</text>
     <text x="752" y="664">95 m / 38 s</text>
     <text x="892" y="520" text-anchor="middle">94 m / 38 s</text>
-    <text x="600" y="362">125 m / 50 s</text>
+    <text x="640" y="466">125 m / 50 s</text>
     <text x="830" y="448" text-anchor="middle">105 m / 42 s</text>
     <text x="740" y="320">83 m / 33 s, dead end</text>
     <text x="360" y="452" text-anchor="end">126 m / 50 s</text>
@@ -276,7 +283,7 @@
     <circle cx="370" cy="962" r="5" fill="#3d7a2a"/><text x="396" y="966">forage patch (Food, about 60 percent)</text>
 
     <polygon points="640,856 680,850 680,872" fill="#f2cf3c" fill-opacity="0.45" stroke="#c9a41c" stroke-width="0.6"/><text x="686" y="866">tower sightline to a checked location</text>
-    <line x1="640" y1="886" x2="680" y2="886" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/><text x="686" y="890">tower line blocked (Ward by the Tor, cave by the rim)</text>
+    <line x1="640" y1="886" x2="680" y2="886" stroke="#c0282d" stroke-width="2" stroke-dasharray="6 4"/><text x="686" y="890">tower line blocked (Ward by the rock outcrop, cave by the rim)</text>
     <rect x="640" y="900" width="40" height="12" fill="#dccfb8" stroke="#a08c6c"/><text x="686" y="910">spur high ground</text>
     <rect x="640" y="920" width="40" height="12" fill="#cfcfcf" stroke="#777"/><text x="686" y="930">cave ravine</text>
     <rect x="640" y="940" width="40" height="12" fill="#e4e1db" stroke="#8c877e"/><text x="686" y="950">front zone, inside the gate</text>
