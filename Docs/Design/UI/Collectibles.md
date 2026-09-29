@@ -1,6 +1,6 @@
 # Collectibles page
 
-**DRAFT, 2026-09-29, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (the player carries the logbook; later collectibles live in it), 2026-09-29 (the last page of the logbook is a collectible page of achievements that reference other games, for example the lamppost from The Beginner's Guide and the phone booth from Disco Elysium; a camp has a payphone as a Disco Elysium homage; unlocking the best ending is an achievement; the game saves only when the player sleeps; many more homages are wanted, in their own milestone later; the collectibles name the games they shout out, the team's favourite games and inspirations; a find counts straight away; collectibles are also Steam achievements; the page shows only inspiration collectibles, never other game achievements). Host: Logbook.md. Type per Style.md 7 (Vesper). The homage list is Vesper's (section 2); where each stands in Main3 is Vesper and Sable's, not this spec.
+**DRAFT, 2026-09-29, revised 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-28 (the player carries the logbook; later collectibles live in it), 2026-09-29 (the last page of the logbook is a collectible page of achievements that reference other games, for example the lamppost from The Beginner's Guide and the phone booth from Disco Elysium; a camp has a payphone as a Disco Elysium homage; unlocking the best ending is an achievement; the game saves only when the player sleeps; many more homages are wanted, in their own milestone later; the collectibles are the team's favourite games and inspirations; the page does not name the games, the shout-out lives in the object (replacing the earlier naming line); a find counts straight away; collectibles are also Steam achievements; the page shows only inspiration collectibles, never other game achievements). Host: Logbook.md. Type per Style.md 7 (Vesper). The homage list is Vesper's (section 2); where each stands in Main3 is Vesper and Sable's, not this spec.
 
 ## 1. Purpose
 
@@ -9,11 +9,11 @@ A quiet page at the back of the logbook that keeps the homages the player has fo
 ## 2. What counts as a homage
 
 1. A world object that nods to another game. Each one is an ordinary object in the world first. It fits the place and passes Style.md; the nod is for players who know.
-2. Each has a stable ID, a page drawing, a title, one line of text, and the name of the game it shouts out. Quill writes the words, Vesper draws. The game names are the team's favourite games and inspirations (DECISIONS 2026-09-29).
+2. Each has a stable ID, a page drawing, a title naming the object, and one line in the keeper's voice. Quill writes the words, Vesper draws. The references are the team's favourite games and inspirations (DECISIONS 2026-09-29). The page never names a game (DECISIONS 2026-09-29, replacing the earlier naming line): the shout-out lives in the object itself.
 3. Only inspiration collectibles appear here. No other game achievement (the best ending or any later one) is ever a frame on this page.
 4. The current list, Vesper's five (placements and reasons are in a private note, Vesper and Sable own them):
 
-| Frame | ID | Object | Game named | Find kind (draft) |
+| Frame | ID | Object | Reference (team only, never shown in game) | Find kind (draft) |
 |---|---|---|---|---|
 | 1 | `homage_lamppost` | A lit lamppost in the woods | The Beginner's Guide | Stand, in its light |
 | 2 | `homage_payphone` | The camp payphone | Disco Elysium | Use, lift the receiver |
@@ -58,7 +58,7 @@ The last tab of the logbook, after Settings. This follows DECISIONS 2026-09-29 (
 |  +-----+ +-----+ +-----+    |   |    the payphone)    |   |
 |  +-----+ +-----+            |   |                     |   |
 |  |  4  | | (5) |            |   +---------------------+   |
-|  |     | |draw.|            |   Disco Elysium             |
+|  |     | |draw.|            |                             |
 |  +-----+ +-----+            |   (one line, Quill). Day 6. |
 |                             |                             |
 |                             |                             |
@@ -70,8 +70,8 @@ The last tab of the logbook, after Settings. This follows DECISIONS 2026-09-29 (
 2. Top line: `KEPT` and `n of total`. The total is the real count of homages in the build.
 3. Found frame: a small ink drawing (uGUI Image).
 4. Unfound frame: an empty ruled frame with its number only. No silhouette, no title, no hint, no place name. The number shows the gap without saying what fills it.
-5. Right page: the focused frame. Found: the title, a large drawing, the name of the game it shouts out, one line of text, and the day and run it was first found (`Day 6`). Unfound: the frame number and `Not yet.`
-6. The game name is shown on the page only after the find. In the world the object stays an ordinary object with its normal prompt; the name never appears on it or in its prompt. The name is plain text, the game's title as its makers write it, no logo. Whether naming the games needs any trademark check before release is unverified (MullinsNotes 4.4); Grant's call.
+5. Right page: the focused frame. Found: the title naming the object, a large drawing of it, one line in the keeper's voice, and the day and run it was first found (`Day 6`). Unfound: the frame number and `Not yet.`
+6. No game title, logo, maker's name or quoted line anywhere on the page, in the world or in a prompt (DECISIONS 2026-09-29). The keeper's line talks about the object as he finds it, never about where it comes from. The player who knows the game knows it from the object.
 7. Legacy Text only. No colour-only states: found and unfound differ by drawing and text.
 
 ### 4.3 Across runs
@@ -120,7 +120,7 @@ Collectibles are also Steam achievements (DECISIONS 2026-09-29). The Steamworks 
 1. Each homage ID maps to one Steam achievement with the same ID. The page is the source of truth; Steam is a copy.
 2. On a find, the game unlocks the matching Steam achievement at the same moment it writes the profile file.
 3. On every launch, the game sends every found ID again, so a find made offline, or before the Steam layer existed, is unlocked later. Whether re-sending an unlocked achievement is harmless on Steam is unverified.
-4. Steam names follow the page: the title, and the game it names in the description. Unfound ones are set hidden in the Steam achievement settings, if Steam supports hidden achievements (unverified), so the list does not spoil what to look for.
+4. Steam names follow the page: the object title as the name, the keeper's line as the description, no game title. Draft reading: the DECISIONS line covers the page, and Steam is a copy of the page **[GAP: Grant]**. Unfound ones are set hidden in the Steam achievement settings, if Steam supports hidden achievements (unverified), so the list does not spoil what to look for.
 5. Other achievements (the best ending, DECISIONS 2026-09-29, and any later) are Steam achievements only. They never appear on this page (DECISIONS 2026-09-29: the page shows only inspiration collectibles). This spec does not cover them.
 
 Requirements for Rook:
@@ -141,11 +141,11 @@ Requirements for Rook:
 
 ## 10. Open questions
 
-1. Closed 2026-09-29: the page names the games (section 4.2).
+1. Closed 2026-09-29: the page does not name the games; the shout-out is the object (section 4.2).
 2. Closed 2026-09-29: a find counts straight away (section 7).
 3. Closed 2026-09-29: the best ending is not on this page (section 8.5).
 4. Closed 2026-09-29: Steam. Open: the SDK or wrapper, and when it is added. Grant, after Rook verifies.
-5. Trademark check on naming the games before release: unverified. Grant.
+5. Steam achievement text without game titles (section 8.4): Grant to confirm.
 6. Placements in Main3 dressing (Milestone 11), and whether a homage inside an activity that can be lost for good stays findable in a later run. Vesper and Sable.
 
 Pim
