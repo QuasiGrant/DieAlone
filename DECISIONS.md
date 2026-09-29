@@ -133,3 +133,5 @@
 - 2026-09-29: Talking to the office resident counts as Social and starts his minigame. The booth itself does not count as Social.
 - 2026-09-29: How many cars and days the gate minigame takes is set by playtesting. It must not last the whole game.
 - 2026-09-29: During a shift, trying to follow a car hits an invisible wall with the message "You can't abandon your post."
+- 2026-09-29: Main3 map revision 10 is approved for the gray blockout, for now.
+- 2026-09-29: Chases never lead into the cultist cave.
