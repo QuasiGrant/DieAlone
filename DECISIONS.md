@@ -164,3 +164,7 @@
 - 2026-09-29: A collectible find counts straight away. Collectibles are also Steam achievements.
 - 2026-09-29: The logbook's collectibles page shows only inspiration collectibles, never other game achievements.
 - 2026-09-29: Content warnings include depression, and jump scares if the game uses them; both can be adjusted later.
+- 2026-09-29: The Ward moves to a high plateau at about 70 m, above the tower deck, behind a rock wall whose crest is about 88 m and hides it from the tower. The climb turns back at a pass to look down on the tower, then crosses the rim to the stones facing the fire.
+- 2026-09-29: The map is made to feel bigger with distance layers first (far hills north, south and east; fog that starts near; giant tree groves with gaps; curving trails). Scaling the whole map up is held back unless it still feels small.
+- 2026-09-29: A dressed slice of the camp and tower (bought packs, real look, fixed shots in day one, day two and night) is built before the rest of the dressing, so Grant can see the design.
+- 2026-09-29: The store, studio and roulette minigame rules are approved as drafted; details settle in playtesting. The two drafted losses and the roulette rule of not seeing HP at the table stand (details private).
