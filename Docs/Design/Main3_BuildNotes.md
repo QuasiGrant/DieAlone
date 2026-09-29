@@ -44,3 +44,11 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 - Camp 1: the spar stands at the camp centre where the map draws it, with the bulb string running 14 m west to a stake; one tent, three workbenches, lumber, cookfire (Food), resident spot, all placed by me (the doc gives only "sprawling workshop, 60 m").
 - Camp 2: granite stack 12 m across at the base (map), tapering to 9.6 m, top 24; trails that end at (292, 108) now end at the stack foot. Ladder on the west-south-west face toward the arriving trail is looks only: the game has no ladder climb, so the tent and resident spot on top cannot be reached on foot yet.
 - Camp 3: tent, fire (Warmth) and seat log in the hollow west of the creek; the green-glass lantern hangs on the Snag's hollow side 3 m above the rim (the doc's event state "the Snag's lantern missing" implies it hangs there).
+
+## 8.6 Front zone and gate
+
+- Office doorway on the lot side at x 348, store doorway at x 366, booth doorway on its west wall (toward the spur), booth window on the lane side; none of these are in the doc.
+- Mast: map base at the office north-east corner, built at (357, 205) just outside the walls; three-leg lattice stand-in with the red lamp at 30 m.
+- Resident's car at the map point (370, 179.4), doc (370, 178).
+- Shift walls (3.2.7) are built but off: nothing starts a shift until the gate minigame exists; the "You can't abandon your post." message also waits for it. The gate PlayerBlocker is always on; it blocks everything for now, so cars will need their own layer when they exist.
+- Closed campground: loop road ring (5 m wide, 40 m outside) with eight empty pitches; the spur runs on to the loop at z 242.

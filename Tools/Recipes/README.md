@@ -131,6 +131,8 @@ One recipe per task, run in task order from a clean Main3 rebuild (see PLAN.md R
 | main3_8_3_trails_giants.cs | Every route flattened and painted to its table 4 length, points of interest as gray stand-ins, the three hero trees with mesh colliders and the giant field; prints route lengths. |
 | main3_8_4_lake.cs | Lake water, wade limit, dock with the pump, boathouse on stilts with gangway and the resident spot. |
 | main3_8_5_campsites.cs | Camp 1 workshop with spar and bulbs, Camp 2 granite stack with boulder field, ladder, tent on top and rain barrel, Camp 3 tent, fire and Snag lantern; resident spots. |
+| main3_8_6_front_zone.cs | Lot, drive, turning circle, spur and loop surfaces, office, store, mast, resident car, booth, chain, gate with the always-on blocker, inactive shift walls. |
+| main3_8_6_fence_check.cs | Play-mode check that the player cannot pass the gate or fence. |
 | main3_walk_legs.cs | Play-mode reach check along chained trail legs and waypoints. |
 | main3_walk_trails.cs | Play-mode walk of every leg under Trails, both ways. |
 | main3_walk.cs | Play-mode walk template: drives the CharacterController along waypoint routes and reports stalls. |
