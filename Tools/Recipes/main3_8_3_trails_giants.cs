@@ -70,6 +70,8 @@ float Project(System.Collections.Generic.List<UnityEngine.Vector2> pts, float[] 
 }
 float PolyLen(System.Collections.Generic.List<UnityEngine.Vector2> p) { float l = 0; for (int i = 1; i < p.Count; i++) l += UnityEngine.Vector2.Distance(p[i - 1], p[i]); return l; }
 
+// table 2.1 heights at the named trail ends
+var namedEnds = new (UnityEngine.Vector2 p, float h)[] { (P(170,160), 8f), (P(190,96), -4.5f), (P(128,70), -4.5f), (P(104,206), 10f), (P(262,172), 5f), (P(340,170), 3f), (P(282,238), 5f), (P(292,108), 4f), (P(78,146), -4f), (P(52,37.5f), -6f), (P(32,258), 36f) };
 var built = new System.Collections.Generic.List<(string name, System.Collections.Generic.List<UnityEngine.Vector2> path, float[] prof, float target)>();
 var poiPlaced = new System.Collections.Generic.List<(string leg, string n, UnityEngine.Vector2 at, UnityEngine.Vector2 tan, UnityEngine.Vector2 obj, string kind, float along, float height)>();
 var report = new System.Text.StringBuilder();
@@ -116,8 +118,8 @@ foreach (var leg in legs)
     int N = path.Count; var raw = new float[N]; var prof = new float[N];
     for (int i = 0; i < N; i++) raw[i] = H(path[i].x, path[i].y);
     for (int i = 0; i < N; i++) { float sum = 0; int cnt = 0; for (int j = UnityEngine.Mathf.Max(0, i - 8); j <= UnityEngine.Mathf.Min(N - 1, i + 8); j++) { sum += raw[j]; cnt++; } prof[i] = sum / cnt; }
-    // pin both ends to the ground at the junction or clearing (highest point within 1.5 m, so a creek channel at J does not pull the end down); legs meeting there then agree
-    float EndH(UnityEngine.Vector2 q) { float m = -999f; for (float ex = -1.5f; ex <= 1.5f; ex += 0.5f) for (float ez = -1.5f; ez <= 1.5f; ez += 0.5f) if (ex * ex + ez * ez <= 2.25f) m = UnityEngine.Mathf.Max(m, H(q.x + ex, q.y + ez)); return m; }
+    // pin both ends: to the table 2.1 height where the end is a named point (so J is 10 beside its creek and the pump -4.5), else the ground there; legs meeting at a point then agree
+    float EndH(UnityEngine.Vector2 q) { foreach (var np in namedEnds) if (UnityEngine.Vector2.Distance(q, np.p) < 1f) return np.h; return H(q.x, q.y); }
     prof[0] = EndH(path[0]); prof[N - 1] = EndH(path[N - 1]);
     float stepsFrom = stepsSeg >= 0 ? anchors[stepsSeg] - 1f : float.MaxValue;
     for (int pass = 0; pass < 6; pass++)   // ends stay pinned; interior points clamp toward them

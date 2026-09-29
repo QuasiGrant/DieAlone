@@ -31,3 +31,10 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 - Points of interest along the leg (m, table 4 -> built): water tank 40 -> 42; rowboat 42 -> 43; phone pole 48 -> 41; food lockers 47 -> 45; Hollow Giant 45 -> 39; forage A 95 -> 96; Gate Tree 40 -> 34; first sight of the lot 85 -> 89; latrine 42 -> 42; forage B 40 -> 40; log steps 90 -> 107; truck 40 -> 39; stepping stones 80 -> 74; footbridge 25 -> 27; camper 70 -> 71; rope handrail 36 -> 35; bulbs 72 -> 68; burn-map board 48 -> 53; plank bridge 90 -> 95; rune post 50 -> 57. Positions follow the map; the log steps and plank bridge differ most because the map places them near the leg ends.
 - Giant field: the doc places no giants except the three heroes. Built by rule: 46 giants 30 m or more apart, 40 to 50 m tall, tops at most 50 (46 west of x 32), none on the spur (its ground leaves no 40 m giant under the caps), none in clearings, trails, the lake, ravine, hollow, old burn, front zone, or within 3 m plus crown of the five tower cones on the map.
 - Lot walks T to office / store / booth are not trails (8.6 gravels the lot): straight segments 36.4 / 41.0 / 53.4 m against 35 / 42 / 52.
+
+## 8.4 Lake
+
+- Dock: map dock (z 86.4 to 96) reaches only 1.2 m past the water line; built as drawn: deck -4.8 from z 86.4 to 90, then a gentle ramp to the -4.5 root at z 96, pump at (190, 94.8).
+- Boathouse door and gangway (not in the doc): door in the east wall at z 52.4 facing the shore, a 3.8 m gangway to the ground; the lake resident's spot is inside by the west wall.
+- Wade limit: invisible boxes at 0.97 of the lake radii, tops at -5.0 under the dock deck, so the player wades the edge and never walks into deep water.
+- Trail ends at named points are pinned to their table 2.1 heights (J 10, pump -4.5, W1 -4.5 and the rest).
