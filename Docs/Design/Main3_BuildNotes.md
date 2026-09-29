@@ -38,3 +38,9 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 - Boathouse door and gangway (not in the doc): door in the east wall at z 52.4 facing the shore, a 3.8 m gangway to the ground; the lake resident's spot is inside by the west wall.
 - Wade limit: invisible boxes at 0.97 of the lake radii, tops at -5.0 under the dock deck, so the player wades the edge and never walks into deep water.
 - Trail ends at named points are pinned to their table 2.1 heights (J 10, pump -4.5, W1 -4.5 and the rest).
+
+## 8.5 Campsites
+
+- Camp 1: the spar stands at the camp centre where the map draws it, with the bulb string running 14 m west to a stake; one tent, three workbenches, lumber, cookfire (Food), resident spot, all placed by me (the doc gives only "sprawling workshop, 60 m").
+- Camp 2: granite stack 12 m across at the base (map), tapering to 9.6 m, top 24; trails that end at (292, 108) now end at the stack foot. Ladder on the west-south-west face toward the arriving trail is looks only: the game has no ladder climb, so the tent and resident spot on top cannot be reached on foot yet.
+- Camp 3: tent, fire (Warmth) and seat log in the hollow west of the creek; the green-glass lantern hangs on the Snag's hollow side 3 m above the rim (the doc's event state "the Snag's lantern missing" implies it hangs there).
