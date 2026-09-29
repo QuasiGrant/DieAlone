@@ -1,4 +1,5 @@
-// Main3 8.9a check (Play mode): walks each spot the fix batch changed and reports pass or fail per finding.
+// Main3 8.9a and 8.9b check (Play mode): walks, hops and crouches at each spot the fix batches changed and reports pass or
+// fail per finding.
 // Drives the CharacterController in 0.06 m steps with gravity pushed each step, like Marlow's walk. Reset runInBackground after.
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 UnityEngine.Application.runInBackground = true;
@@ -56,5 +57,23 @@ Put(52f, 39.5f); bool inCave = To(52f, 30f, true); Check("9b cave board closes t
 // 8. boathouse trail end meets the gangway: from the end straight into the boathouse
 var legB = Root("Trails").transform.Find("Pump to boathouse"); var bEnd = legB.GetChild(legB.childCount - 1).position;
 Put(bEnd.x, bEnd.z); bool gw = To(241f, 52.4f); Check("8 boathouse trail end to the gangway and inside", gw, "trail end (" + bEnd.x.ToString("F1") + ", " + bEnd.z.ToString("F1") + "), end " + P3());
+// ---- 8.9b (Marlow's re-walk): jumping, crouching, the cave passage, the loop ----
+bool Crouched(System.Func<bool> walk) { cc.height = 1.0f; cc.center = new UnityEngine.Vector3(0f, 0.5f, 0f); bool r = walk(); cc.height = 1.8f; cc.center = new UnityEngine.Vector3(0f, 0.9f, 0f); return r; }
+float LakeRe(UnityEngine.Vector3 p) { float dx = (p.x - 190f) / 54.8f, dz = (p.z - 60f) / 27.6f; return UnityEngine.Mathf.Sqrt(dx * dx + dz * dz); }
+var board = Root("Cave").transform.Find("Mouth/DayOneBoard").gameObject; board.SetActive(false); UnityEngine.Physics.SyncTransforms();
+Put(52f, 40f); bool pass1 = To(52f, 22f) && To(52f, 40f); Check("b1 cave passage open once the board is down", pass1, "end " + P3());
+board.SetActive(true); UnityEngine.Physics.SyncTransforms();
+Put(390f, 242f); bool loop1 = To(389.4f, 260.6f); Put(385.3f, 250.7f); bool loop2 = To(390f, 242f);
+Check("b2 closed campground loop joins the spur", loop1 && loop2, "end " + P3());
+Put(204.5f, 96.1f); To(197.4f, 78.3f, true); Check("b3a jump from the pump-to-boathouse shore toward the lake stays out", LakeRe(pc.transform.position) > 1.0f && pc.transform.position.y > -5.3f, "stopped at " + P3());
+Put(247.6f, 52.4f); To(240f, 64f, true); Check("b3b jump from the boathouse trail end toward the lake stays out", LakeRe(pc.transform.position) > 1.0f && pc.transform.position.y > -5.3f, "stopped at " + P3());
+Put(189f, 88f, -4.8f); To(189f, 80f, true); Check("b3c jump off the dock end stays on the dock", pc.transform.position.z > 86f && pc.transform.position.y > -5f, "stopped at " + P3());
+var gb = Root("Ward").transform.Find("CairnGate/GateBlocker");
+Put(j0.x, j0.z); bool crouchUnder = Crouched(() => To(j6.x, j6.z)); Check("b4a Ward chain cannot be crouched under", !crouchUnder, "stopped at " + P3());
+Put(j0.x, j0.z); bool hopRound = To(gb.position.x - 3.5f * gb.right.x, gb.position.z - 3.5f * gb.right.z, true) && To(j6.x, j6.z, true); Check("b4b Ward gate cannot be jumped round the cairn end", !hopRound, "stopped at " + P3());
+Put(303.2f, 96f); bool camp2East = To(313.2f, 94.3f, true); Check("b5a Camp 2 east: no jumping out over the edge", !camp2East, "stopped at " + P3());
+Put(96f, 113f); bool w1c3 = To(110f, 133f, true); Check("b5b W1 to Camp 3: no jumping up the side", !w1c3, "stopped at " + P3());
+var legC = Root("Trails").transform.Find("W1 to cave"); var c30 = legC.GetChild(System.Math.Min(30, legC.childCount - 1)).position;
+Put(c30.x, c30.z); bool overCave = To(c30.x, 20f, true); Check("b6 W1 to cave: no jumping onto the ground over the cave", !overCave && pc.transform.position.z > c30.z - 4f, "stopped at " + P3());
 pc.enabled = true;
 return (fails == 0 ? "ALL PASS" : fails + " FAIL") + "\n" + sb;

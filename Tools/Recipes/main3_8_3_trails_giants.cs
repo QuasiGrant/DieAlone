@@ -338,7 +338,7 @@ var placed = new System.Collections.Generic.List<UnityEngine.Vector2> { P(202, 1
 // junction sight lines kept clear of giants (next destination visible, 8.9a): pump to the Snag, Camp 2 to the boathouse, Camp 3 and the other junctions to the cab
 var sights = new[] { (P(190, 97), P(96, 146.5f)), (P(286.5f, 102.2f), P(240, 52.4f)), (P(78, 146), P(164, 166)),
     (P(104, 206), P(164, 166)), (P(262, 172), P(164, 166)), (P(128, 70), P(164, 166)), (P(340, 170), P(164, 166)), (P(190, 97), P(164, 166)),
-    (P(276, 232), P(164, 166)), (P(286, 99), P(164, 166)) };   // and every junction to the tower cab (4.1)
+    (P(276, 232), P(164, 166)), (P(286, 99), P(164, 166)), (P(128, 70), P(96, 146.5f)) };   // every junction to the tower cab (4.1); W1 to the Snag (8.9b)
 var rng = new System.Random(8003); int made = 0;
 for (int attempt = 0; attempt < 20000; attempt++)
 {
@@ -367,10 +367,9 @@ for (int attempt = 0; attempt < 20000; attempt++)
 // ---------- thicket (8.9a): the ground keeps walkers on the trails (DailyLoop.md 1.2, Main3.md 2.10) ----------
 // The walkable area is the union of trail corridors (2.2 m each side), clearings, the lake landings, the front zone's
 // surfaces and buildings, the Ward ledge and the cave mouth approach (positions from Main3.md and the later recipes).
-// Its outline is traced (marching squares on a 0.5 m grid), simplified, and lined with gray hedge stand-ins: 1.2 m of
-// fern thicket and deadfall, 5 m of young regrowth in the old burn (4 m in its last 40 m before the front zone).
-// Hedges are cut to 0.3 m under the Camp 2 junction's view line to the boathouse (never under 0.9 m, still too high to hop).
-// One combined mesh with a MeshCollider per 50 m tile, saved under Assets/Terrain/Main3/Thicket.
+// Its outline is traced (marching squares on a 0.5 m grid) and simplified. Off-trail blocking in the blockout is invisible walls
+// too high to jump with low gray markers (8.9b); real vegetation comes in Milestone 11. Meshes per 50 m tile under
+// Assets/Terrain/Main3/Thicket: Wall_* (collider only, Ignore Raycast layer) and Marker_* (visible, no collider).
 const float cellT = 0.5f; int GW = 800, GH = 600;
 var fld = new float[GW + 1, GH + 1];
 for (int i = 0; i <= GW; i++) for (int j = 0; j <= GH; j++) fld[i, j] = -10f;
@@ -388,13 +387,14 @@ foreach (var b in built) for (int i = 0; i < b.path.Count - 1; i++) Seg(b.path[i
 Circle(P(170, 160), 18f); Circle(P(282, 238), 30f); Circle(P(292, 108), 20f); Circle(P(78, 146), 9f);
 Circle(P(104, 206), 5f); Circle(P(128, 70), 5f); Circle(P(262, 172), 4f); Circle(P(340, 170), 4f);
 Circle(P(32, 258), 12.5f); Rect(10.6f, 32f, 247f, 269f);                          // Ward ledge out to the stones on the cliff edge
-Rect(49.5f, 54.5f, 36f, 41f);                                                      // in front of the cave mouth
+Rect(49.5f, 54.5f, 30f, 41f);                                                      // in front of the cave mouth and into the passage (8.9b: no wall across it)
 Rect(187.5f, 192.5f, 86f, 98f); Rect(236.3f, 248.3f, 49.1f, 55.7f);                // dock notch; boathouse and gangway
 Rect(342f, 374f, 149f, 191f); Rect(373f, 395.6f, 166.5f, 173.5f); Circle(P(384, 160), 9f);   // lot, drive, turning circle
 Rect(342f, 372f, 189f, 206f); Rect(388.5f, 395.6f, 172f, 179f); Rect(385f, 395.6f, 234f, 242f); // office and store, booth, chain
 var spurW = new[] { P(385, 172.5f), P(385, 186), P(390, 196), P(390, 244) };
 for (int i = 0; i < spurW.Length - 1; i++) Seg(spurW[i], spurW[i + 1], 3f);
 Ring(P(372, 262), 9.5f, 21f);                                                      // loop road and pitches
+Seg(P(390, 243), P(387, 255), 3f);                                                 // spur on into the loop (8.9b)
 foreach (var q in poiPlaced) if (q.kind == "side") Circle(q.obj, poiRadius[q.n] + 1.5f);
 // marching squares: segments between edge crossings, keyed by edge so neighbouring cells join
 var ptOf = new System.Collections.Generic.Dictionary<long, UnityEngine.Vector2>();
@@ -457,13 +457,11 @@ System.Collections.Generic.List<UnityEngine.Vector2> Simplify(System.Collections
     }
     var outp = new System.Collections.Generic.List<UnityEngine.Vector2>(); for (int i = 0; i < pts.Count; i++) if (keep[i]) outp.Add(pts[i]); return outp;
 }
-var sightA = P(286.5f, 102.2f); var sightB = P(240f, 52.4f);
-float SightCap(UnityEngine.Vector2 q)
-{
-    var ab = sightB - sightA; float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(q - sightA, ab) / ab.sqrMagnitude);
-    return UnityEngine.Vector2.Distance(q, sightA + ab * t) < 4f ? L(5.6f, -1.0f, t) - 0.3f : float.MaxValue;
-}
-var tileBoxes = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
+// Each outline segment gets two boxes (8.9b): an invisible wall 4 m over the highest ground under it (the player jumps 0.6 m,
+// so it cannot be climbed from a slope or a boulder), on the Ignore Raycast layer so no sight line or landmark check sees it;
+// and a low visible marker 0.3 m over the lowest ground, no collider, so the edge reads in gray without hiding anything.
+var tileWalls = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
+var tileMarks = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
 int boxes = 0;
 foreach (var raw0 in loops)
 {
@@ -473,19 +471,19 @@ foreach (var raw0 in loops)
     for (int i = 0; i < pl.Count - 1; i++)
     {
         var a = pl[i]; var b = pl[i + 1]; float len = UnityEngine.Vector2.Distance(a, b); if (len < 0.05f) continue;
-        int parts = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(len / 4f));   // at most 4 m per box so the top follows the ground
+        int parts = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(len / 4f));   // at most 4 m per box so heights follow the ground
         for (int k = 0; k < parts; k++)
         {
             var sa = UnityEngine.Vector2.Lerp(a, b, k / (float)parts); var sb2 = UnityEngine.Vector2.Lerp(a, b, (k + 1) / (float)parts); var mid = (sa + sb2) * 0.5f;
             float g0 = H(sa.x, sa.y), g1 = H(sb2.x, sb2.y), gm = H(mid.x, mid.y);
-            float lo = UnityEngine.Mathf.Min(gm, UnityEngine.Mathf.Min(g0, g1)) - 0.4f, gTop = UnityEngine.Mathf.Max(gm, UnityEngine.Mathf.Max(g0, g1));
-            float tall = Inside(mid, burn) ? (mid.x > 300f ? 4f : 5f) : 1.2f;
-            float top = UnityEngine.Mathf.Max(UnityEngine.Mathf.Min(gTop + tall, SightCap(mid)), gTop + 0.9f);
-            var dir = sb2 - sa; float l = dir.magnitude + 0.5f;
-            var m = UnityEngine.Matrix4x4.TRS(V(mid.x, (lo + top) * 0.5f, mid.y), UnityEngine.Quaternion.LookRotation(V(dir.x, 0f, dir.y).normalized, UnityEngine.Vector3.up), V(0.6f, top - lo, l));
+            float gLow = UnityEngine.Mathf.Min(gm, UnityEngine.Mathf.Min(g0, g1)), gTop = UnityEngine.Mathf.Max(gm, UnityEngine.Mathf.Max(g0, g1));
+            float lo = gLow - 0.4f, wallTop = gTop + 4f, markTop = gLow + 0.3f;
+            var dir = sb2 - sa; float l = dir.magnitude + 0.5f; var rot = UnityEngine.Quaternion.LookRotation(V(dir.x, 0f, dir.y).normalized, UnityEngine.Vector3.up);
             int key = ((int)(mid.x / 50f)) * 100 + (int)(mid.y / 50f);
-            if (!tileBoxes.TryGetValue(key, out var lst)) tileBoxes[key] = lst = new System.Collections.Generic.List<UnityEngine.Matrix4x4>();
-            lst.Add(m); boxes++;
+            if (!tileWalls.TryGetValue(key, out var lw)) { tileWalls[key] = lw = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); tileMarks[key] = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); }
+            lw.Add(UnityEngine.Matrix4x4.TRS(V(mid.x, (lo + wallTop) * 0.5f, mid.y), rot, V(0.6f, wallTop - lo, l)));
+            tileMarks[key].Add(UnityEngine.Matrix4x4.TRS(V(mid.x, (lo + markTop) * 0.5f, mid.y), rot, V(0.5f, markTop - lo, l)));
+            boxes++;
         }
     }
 }
@@ -494,19 +492,24 @@ if (!UnityEditor.AssetDatabase.IsValidFolder(thDir)) UnityEditor.AssetDatabase.C
 var cubeTmp = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
 var cubeMesh = cubeTmp.GetComponent<UnityEngine.MeshFilter>().sharedMesh; var grayMat = cubeTmp.GetComponent<UnityEngine.MeshRenderer>().sharedMaterial;
 var thicket = new UnityEngine.GameObject("Thicket"); long verts = 0;
-foreach (var kv in tileBoxes)
+UnityEngine.Mesh Combine(string name, System.Collections.Generic.List<UnityEngine.Matrix4x4> ms, bool keepNormals)
 {
-    var ci = new UnityEngine.CombineInstance[kv.Value.Count];
-    for (int i = 0; i < ci.Length; i++) ci[i] = new UnityEngine.CombineInstance { mesh = cubeMesh, transform = kv.Value[i] };
-    var mesh = new UnityEngine.Mesh { name = "Thicket_" + kv.Key, indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
-    mesh.CombineMeshes(ci, true, true); mesh.uv = null; mesh.tangents = null; mesh.RecalculateBounds(); verts += mesh.vertexCount;
-    UnityEditor.AssetDatabase.CreateAsset(mesh, thDir + "/Thicket_" + kv.Key + ".asset");
-    var go = new UnityEngine.GameObject("Tile_" + kv.Key); go.transform.SetParent(thicket.transform, false);
-    go.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; go.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = grayMat;
-    go.AddComponent<UnityEngine.MeshCollider>().sharedMesh = mesh;
+    var ci = new UnityEngine.CombineInstance[ms.Count];
+    for (int i = 0; i < ci.Length; i++) ci[i] = new UnityEngine.CombineInstance { mesh = cubeMesh, transform = ms[i] };
+    var mesh = new UnityEngine.Mesh { name = name, indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+    mesh.CombineMeshes(ci, true, true); mesh.uv = null; mesh.tangents = null; if (!keepNormals) mesh.normals = null; mesh.RecalculateBounds(); verts += mesh.vertexCount;
+    UnityEditor.AssetDatabase.CreateAsset(mesh, thDir + "/" + name + ".asset"); return mesh;
+}
+foreach (var kv in tileWalls)
+{
+    var wallMesh = Combine("Wall_" + kv.Key, kv.Value, false); var markMesh = Combine("Marker_" + kv.Key, tileMarks[kv.Key], true);
+    var wgo = new UnityEngine.GameObject("Wall_" + kv.Key); wgo.transform.SetParent(thicket.transform, false); wgo.layer = 2;   // Ignore Raycast
+    wgo.AddComponent<UnityEngine.MeshCollider>().sharedMesh = wallMesh;
+    var mgo = new UnityEngine.GameObject("Marker_" + kv.Key); mgo.transform.SetParent(thicket.transform, false);
+    mgo.AddComponent<UnityEngine.MeshFilter>().sharedMesh = markMesh; mgo.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = grayMat;
 }
 UnityEngine.Object.DestroyImmediate(cubeTmp);
-report.Append("thicket: " + loops.Count + " outlines, " + boxes + " hedge boxes, " + tileBoxes.Count + " tiles, " + verts + " vertices\n");
+report.Append("thicket: " + loops.Count + " outlines, " + boxes + " wall and marker pairs, " + tileWalls.Count + " tiles, " + verts + " vertices\n");
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " giants=" + made + " + 3 heroes, POIs=" + poiRoot.transform.childCount + "\n" + report;

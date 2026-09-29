@@ -31,7 +31,7 @@ void Strip(string name, UnityEngine.Vector2 a, UnityEngine.Vector2 b, float w)
 Slab("ParkingLot", 343f, 373f, 150f, 190f);                          // 3.1.5
 Slab("Drive", 373f, 396f, 167.5f, 172.5f);                            // 3.1.3, one lane 5 m
 Prim(Cyl, "TurningCircle", ground, V(384f, G + slab * 0.5f, 160f), V(16f, slab * 0.5f, 16f), 0f, false);   // 3.2.3
-var spur = new[] { new UnityEngine.Vector2(385f, 172.5f), new UnityEngine.Vector2(385f, 186f), new UnityEngine.Vector2(390f, 196f), new UnityEngine.Vector2(390f, 242f) };
+var spur = new[] { new UnityEngine.Vector2(385f, 172.5f), new UnityEngine.Vector2(385f, 186f), new UnityEngine.Vector2(390f, 196f), new UnityEngine.Vector2(390f, 242f), new UnityEngine.Vector2(387.5f, 252f) };   // the last piece joins the loop ring (8.9b)
 for (int i = 0; i < spur.Length - 1; i++) Strip("Spur" + i, spur[i], spur[i + 1], 4f);   // 3.2.2, 4 m, on to the loop
 for (int i = 0; i < 40; i++)   // 3.2.5 loop road 5 m wide, 40 m across outside, centred (372, 262)
 {

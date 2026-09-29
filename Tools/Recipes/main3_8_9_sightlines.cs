@@ -25,7 +25,7 @@ bool IsUnder(UnityEngine.Transform t, UnityEngine.Transform root) { for (var p =
 // first hit along a segment that is not the tower (and, with trees off, not a giant)
 bool FirstHit(UnityEngine.Vector3 a, UnityEngine.Vector3 b, bool treesOn, out UnityEngine.RaycastHit hit)
 {
-    var d = b - a; var hits = UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude, ~0, UnityEngine.QueryTriggerInteraction.Ignore);
+    var d = b - a; var hits = UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore);
     System.Array.Sort(hits, (p, q) => p.distance.CompareTo(q.distance));
     foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) continue; if (!treesOn && (IsUnder(h.collider.transform, giants) || (thicketRoot != null && IsUnder(h.collider.transform, thicketRoot)))) continue; hit = h; return true; }
     hit = default; return false;
@@ -33,7 +33,7 @@ bool FirstHit(UnityEngine.Vector3 a, UnityEngine.Vector3 b, bool treesOn, out Un
 // height of whatever is under (x, z): terrain, rock, buildings, and giants when trees are on
 float Surface(float x, float z, bool treesOn)
 {
-    var hits = UnityEngine.Physics.RaycastAll(V(x, 200f, z), UnityEngine.Vector3.down, 260f, ~0, UnityEngine.QueryTriggerInteraction.Ignore);
+    var hits = UnityEngine.Physics.RaycastAll(V(x, 200f, z), UnityEngine.Vector3.down, 260f, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore);
     float best = -999f; foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) continue; if (!treesOn && (IsUnder(h.collider.transform, giants) || (thicketRoot != null && IsUnder(h.collider.transform, thicketRoot)))) continue; if (h.point.y > best) best = h.point.y; }
     return best;
 }
@@ -140,7 +140,7 @@ foreach (var j in junctions)
     var a = V(j.x, Hg(j.x, j.z) + 1.6f, j.z); int seen = 0; string blocker = "";
     foreach (var c in cabPts)
     {
-        var d = c - a; var hits = UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude + 0.5f, ~0, UnityEngine.QueryTriggerInteraction.Ignore);
+        var d = c - a; var hits = UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude + 0.5f, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore);
         System.Array.Sort(hits, (p, q) => p.distance.CompareTo(q.distance));
         bool vis = true;
         foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) break; if (h.distance < d.magnitude - 0.3f) { vis = false; if (blocker == "") blocker = h.collider.transform.parent != null ? h.collider.transform.parent.name + "/" + h.collider.name : h.collider.name; break; } }
@@ -153,7 +153,7 @@ foreach (var j in junctions)
 // ---------------- next destination from the junctions Marlow found blind (8.9a), eye 1.6 m, trees on ----------------
 bool SeesPoint(UnityEngine.Vector3 a, UnityEngine.Vector3 tgt, UnityEngine.Transform goal, out string blocker)   // a hit on the goal object counts as seen
 {
-    var d = tgt - a; var hits = UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude, ~0, UnityEngine.QueryTriggerInteraction.Ignore);
+    var d = tgt - a; var hits = UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore);
     System.Array.Sort(hits, (p, q) => p.distance.CompareTo(q.distance)); blocker = "";
     foreach (var h in hits) { if (IsUnder(h.collider.transform, goal)) return true; if (UnityEngine.Vector3.Distance(h.point, tgt) < 1.5f) return true; blocker = (h.collider.transform.parent != null ? h.collider.transform.parent.name + "/" : "") + h.collider.name; return false; }
     return true;

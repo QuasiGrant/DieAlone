@@ -84,3 +84,12 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 - Shift walls: a U across the spur mouth and a closed ring round the turning circle; still off until shifts exist.
 - Cairn gate 4 m up the J to Ward trail with the cairn on its west side; the chain and the cave's day-one board are solid, so the Ward climb and the cave are closed by day (dev warps reach both).
 - Boathouse trail end moved from (246, 57) to (247.6, 52.4), the gangway foot. Footbridge rails have no colliders. 8.1 builds no gate wall.
+
+## 8.9b Fix batch 2 (after Marlow's re-walk)
+
+- Off-trail blocking: the gray hedges became invisible walls 4 m over the highest ground under them (Ignore Raycast layer, so no sight line sees them) with 0.3 m gray markers; real vegetation is Milestone 11. The lot's west edge is seen from the tower again.
+- Cave: the walkable ground runs 7 m into the mouth, so no wall crosses the passage.
+- Closed campground: the spur's walkable ground and gravel run on to the loop ring at (387.5, 252).
+- Lake: the 4 m walls hold every shore trail, the dock and the boathouse against jumping.
+- Ward gate: an invisible block 3 m tall across the whole trail corridor under the chain, so it cannot be crouched under, jumped or passed round the cairn.
+- W1 to the Snag kept clear of giants.
