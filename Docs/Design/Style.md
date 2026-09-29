@@ -2,9 +2,9 @@
 
 **DRAFT, 2026-09-28, updated 2026-09-29, Vesper. Nothing here is decided until it is a line in DECISIONS.md and Grant has confirmed it.** Every later review of Main3 checks against this file. Values marked **P** are proposals for Grant. Values marked **now** are what LookTuning.asset holds today. Rook sets LookTuning; I only propose.
 
-Binding inputs: DECISIONS.md 2026-09-20 (VHS first, Fears to Fathom, PS1 effects off, own shaders only), 2026-09-27 (SSAO off, render scale 0.5), 2026-09-28 (two states day and night, sun fixed, pass checks, packs for hero pieces, day one plays as a normal job), 2026-09-29 (no fire visible on day one until nightfall; bought pack shaders replaced with project shaders; every asset licensed for commercial sale).
+Binding inputs: DECISIONS.md 2026-09-20 (VHS first, Fears to Fathom, PS1 effects off, own shaders only), 2026-09-27 (SSAO off, render scale 0.5), 2026-09-28 (two states day and night, sun fixed, pass checks, packs for hero pieces, day one plays as a normal job), 2026-09-29 (no fire visible on day one until nightfall; bought pack shaders replaced with project shaders; every asset licensed for commercial sale; from day two the fire may show by day as far glow and smoke, never on day one, and it is huge in the distance).
 
-**Pending:** the day one and day two split below (2.0, 2.1 heading, 6.0, 6.1 heading) waits on Sable's revision 6 and Grant. Until then, treat it as a proposal.
+**Pending:** the day one split below (2.0, 6.0) waits on Sable's revision 6 and Grant. Until then, treat it as a proposal. The day two fire lines (2.1, 6.1, 6.3) rest on DECISIONS 2026-09-29; their values stay **P**.
 
 ## 1. Tone
 
@@ -36,7 +36,7 @@ All **P**. A clean, warm late afternoon turning to sunset. Nothing in it says fi
 | Forest floor green | #58583A | a touch less dulled, still olive |
 | Surfaces | as 2.1 | wood, rust, granite, canvas, char unchanged |
 
-### 2.1 Day two on: the burning sunset (pending Sable rev 6 and Grant)
+### 2.1 Day two on: the burning sunset
 
 | Role | Hex | Source |
 |---|---|---|
@@ -61,6 +61,9 @@ All **P**. A clean, warm late afternoon turning to sunset. Nothing in it says fi
 |---|---|---|
 | Night fog and sky | #05080D | now (fogColor) |
 | Fire glow on the horizon | #FF6B1A | now, same as day two on; first seen at nightfall on day one |
+| Fire core (flame base, hottest tongues) | #FFE8C0 | P, the brightest value in any night frame |
+| Sky lit by the fire, above the front | #5A2412 | P, fades to #05080D by 30 degrees above the horizon |
+| Smoke underside, lit | #6B2A12 | P |
 | Practical light (lantern, cab, stove) | #FFA860 | P |
 | Ward runes, lit | #B8481C | P, dim ember, never above the lantern |
 
@@ -144,7 +147,7 @@ A structure passes a dressing review when all are true:
 7. Practical lights on as normal (Pim's rule).
 8. Nightfall on day one uses the night rules (6.2). The fire glow appears there for the first time; the full view of the wildfire and the Ward is at the Ward ledge.
 
-### 6.1 Day two on (waking until the report is filed; pending Sable rev 6 and Grant)
+### 6.1 Day two on (waking until the report is filed)
 
 What changes from day one: sun lower (6 degrees) and more orange; sky rust-brown to burnt orange; haze becomes smoke; ash falls and settles; fire glow on the ridge; fire glimpses through planned gaps.
 
@@ -162,6 +165,24 @@ What changes from day one: sun lower (6 degrees) and more orange; sky rust-brown
 3. Practical lights only: cab light, cabin window, lanterns, the cairn lamp. Each is a destination or a marker.
 4. Night fog closes in. Fog 8 to 60 m **P** (now 20 to 200 m, which is day-far).
 5. Ward runes glow dim ember (#B8481C), readable at 10 m, not at 50 m.
+
+### 6.3 Wildfire scale (Grant, 2026-09-29: "Make sure the fire is BIG in the distance!")
+
+The fire is never small. It is the biggest thing the player ever sees. Distances from Main3.md: ridge 300 to 500 m west of the cliff (x 10), Ward ledge ground 36 m, tower eye 57.6 m, giants 40 to 50 m. Angles are measured from the eye, level gaze; they hold at any FOV. All **P**; Rook checks each with a Game view screenshot.
+
+Night one, from the Ward ledge (first sight):
+1. Width: the fire front fills at least 150 degrees of the western horizon, and runs out past both edges of the frame when the player looks west. There is no end to it in view.
+2. Flame height: tongues stand 1.5 to 2 times the height of the giants burning in them (70 to 100 m), about 10 to 15 degrees above the horizon at the ridge. The valley below the cliff burns too, so the front reads as a sea, not a line on a hill.
+3. Smoke: columns rise at least 5 times giant height (250 m and up), past the top of the frame at level gaze, leaning east over the player. Undersides lit #6B2A12; tops lost in the black.
+4. Brightness: the fire core (#FFE8C0) is the brightest value in the frame, brighter than any lantern or rune. The sky above the front glows #5A2412, fading to night black by 30 degrees up. Foreground stones and giants read only as black silhouettes against it.
+5. Frame test: looking level west from the Ward, fire and lit smoke cover at least half of the sky between the horizon line and the top of the frame.
+
+Day two on, from the tower (by day):
+6. Fire base stays hidden behind the cliff-edge giant band (Main3.md 5.8). What shows is glow along the ridge line and flame tips over it in places.
+7. Width: glow and smoke span at least 90 degrees of the western horizon from the tower cab. If growth with WARD is confirmed (DailyLoop.md question 2), 90 degrees is the floor and it widens from there; never smaller.
+8. Smoke: three to five columns, each rising at least 4 times giant height above the ridge (200 m and up), about 20 degrees above the horizon or more, merging into a brown sheet that roofs the western sky. Smoke is darker than the sky horizon (#4A3A32 **P**), lit orange from below.
+9. Brightness: the ridge glow (#FF6B1A) is brighter than the sky horizon (#D9662E) behind it. Sun and fire are the two brightest things in the frame.
+10. The same scale holds at the ground glimpses (W1 shore, west bends, Camp 3 rim): through a gap, the smoke still towers over the nearest giants.
 
 ## 7. UI type (Vesper owns type, Pim owns reading and layout)
 
@@ -189,6 +210,7 @@ What changes from day one: sun lower (6 degrees) and more orange; sky rust-brown
 12. Anything that looks new and clean, except one deliberate wrong object.
 13. Any fire, fire glow, smoke, ash or lit rune on day one before nightfall.
 14. Any asset without a licence for commercial sale.
+15. A small fire: a thin strip of flame on the horizon, a single smoke plume, or flames shorter than the giants. Below the 6.3 targets is a fail.
 
 ## 9. Reference boards
 
