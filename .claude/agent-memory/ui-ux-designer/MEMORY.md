@@ -1,1 +1,1 @@
-- [UI daily-loop spec drafts](project_ui_specs_2026-09-28.md) — 2026-09-28 drafts, open [GAP:] markers, input binding facts
+- [UI spec drafts and terms](project_ui_specs_2026-09-28.md) — seven UI drafts, CHECK ON FOOT terms, no Ward name before night 1, open gaps
