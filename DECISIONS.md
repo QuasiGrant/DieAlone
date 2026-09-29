@@ -175,3 +175,8 @@
 - 2026-09-29: UI text moves to TextMeshPro (built into ugui 2.0; its Essential Resources are imported, about 4 MB). This replaces the 2026-09-20 line that kept legacy Text.
 - 2026-09-29: The main menu (New run, Continue, Settings, Quit) and the content warning screen are built in Milestone 10.
 - 2026-09-29: Install Microsoft's .NET SDK 8 so plain logic code (game state, simulator, save, rules) can be written and tested outside Unity by a second builder. Tully works out which tasks qualify.
+- 2026-09-29: Jump scares are welcome in a range, alongside slow dread; the game uses the full psychological horror toolkit. Jump scares are listed in the content warnings.
+- 2026-09-29: Some severe events end the day.
+- 2026-09-29: Event pacing (how often three-stage tracks repeat, when the first chase can come, story choices inside events, the lake ring event) is Sable's call, settled by playtesting.
+- 2026-09-29: Tuesday's survival depends only on her own feeding timer: if she is not fed enough days before it runs out, she dies. Events do not decide it.
+- 2026-09-29: Docs/Private gets its own local git history (not pushed anywhere).
