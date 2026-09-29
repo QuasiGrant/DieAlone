@@ -51,10 +51,10 @@ MonoBehaviour:
   fireEmbers: 1
   fireFlicker: 0.3
   fireFlickerSpeed: 0.8
-  smokeBodyColor: {r: 0.29, g: 0.227, b: 0.196, a: 1}
+  smokeBodyColor: {r: 0.16941176, g: 0.13686275, b: 0.11921569, a: 1}
   smokeFireColor: {r: 0.42, g: 0.165, b: 0.071, a: 1}
   smokeShadowFloor: 0.45
-  smokeFireStrength: 1
+  smokeFireStrength: 1.6
   practicalColor: {r: 1, g: 0.659, b: 0.376, a: 1}
   firePitIntensity: 3
   stoveIntensity: 1.2
