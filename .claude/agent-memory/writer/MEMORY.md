@@ -1,2 +1,3 @@
 - [Grant as author](user_grant_author.md) — Grant wrote Cinderedge; manuscript path, tone targets, session format
 - [Personal material](feedback_personal_material.md) — Grant's allegory: care, no therapy language; canon only in StoryBible, memory stays twist-free
+- [Drafts are rough](feedback_drafts_rough.md) — Grant keeps flagged lines for now; care goes on story facts, not line polish
