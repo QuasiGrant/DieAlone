@@ -183,3 +183,5 @@
 - 2026-09-29: Backups of Docs/Private: a local git history, plus a dated zip uploaded to Grant's Google Drive (folder DieAlone Private Backups) every time Grant says he is taking a break.
 - 2026-09-29: The second builder starts once at least three plain-logic tasks are queued (expected Milestone 13); Tully tags them. Decided by Wren and Tully at Grant's request.
 - 2026-09-29: Process (Wren's call): Marlow's walk checks become a committed recipe that Rook runs before every scene handback; Sable and Marlow check the design doc against the map on paper before each build starts.
+- 2026-09-29: All menus and screens are responsive to screen size and aspect; nothing may sit off screen.
+- 2026-09-29: The wildfire is never switched off to hide it; the land hides it. The Ward sits on a hill even higher than the tower. Grant is considering setting the whole game in a valley; the team drafts it on paper first.
