@@ -30,8 +30,8 @@ MonoBehaviour:
   fogStart: 20
   fogEnd: 200
   sunsetFogColor: {r: 0.65882355, g: 0.627451, b: 0.5568628, a: 1}
-  sunsetFogStart: 25
-  sunsetFogEnd: 320
+  sunsetFogStart: 40
+  sunsetFogEnd: 600
   sunsetAmbient: {r: 0.43137255, g: 0.4, b: 0.34509805, a: 1}
   skyTop: {r: 0.36862746, g: 0.40784314, b: 0.47058824, a: 1}
   skyHorizon: {r: 0.8901961, g: 0.6627451, b: 0.40784314, a: 1}
@@ -41,7 +41,7 @@ MonoBehaviour:
   sunColor: {r: 1, g: 0.7882353, b: 0.5411765, a: 1}
   sunElevation: 14
   sunBearing: 270
-  sunIntensity: 1.2
+  sunIntensity: 1.1
   fireGlowColor: {r: 1, g: 0.42, b: 0.1, a: 1}
   fireGlowIntensity: 0
   fireSmoke: 0
@@ -52,3 +52,10 @@ MonoBehaviour:
   smokeFireColor: {r: 0.42, g: 0.165, b: 0.071, a: 1}
   smokeShadowFloor: 0.45
   smokeFireStrength: 1
+  practicalColor: {r: 1, g: 0.659, b: 0.376, a: 1}
+  firePitIntensity: 3
+  stoveIntensity: 1.2
+  lampIntensity: 1
+  lanternIntensity: 0.8
+  practicalDayScale: 0.4
+  cabLampBulbIntensity: 3

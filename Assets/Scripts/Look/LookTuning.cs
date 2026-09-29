@@ -99,4 +99,20 @@ public class LookTuning : ScriptableObject
     [Range(0f, 1f)] public float smokeShadowFloor = 0.45f;
     [Tooltip("Strength of the fire light on the smoke underside. 0 turns it off.")]
     [Range(0f, 4f)] public float smokeFireStrength = 1.0f;
+
+    [Header("Practical lights (lamps, lanterns, stove, fire pit; LookSlice.md 4)")]
+    [Tooltip("Colour of every practical light, the warmest light on the map. LookSlice #FFA860.")]
+    public Color practicalColor = new Color(1.0f, 0.659f, 0.376f);
+    [Tooltip("Fire pit light at night. The brightest practical; nothing else beats it.")]
+    [Range(0f, 8f)] public float firePitIntensity = 3.0f;
+    [Tooltip("Wood stove light inside the cabin.")]
+    [Range(0f, 8f)] public float stoveIntensity = 1.2f;
+    [Tooltip("Oil lamps: the desk lamp and the cab lamp.")]
+    [Range(0f, 8f)] public float lampIntensity = 1.0f;
+    [Tooltip("Lanterns: the porch lantern and the tower foot lantern (night only).")]
+    [Range(0f, 8f)] public float lanternIntensity = 0.8f;
+    [Tooltip("Share of the night brightness a practical keeps in a daylight look (low, modest).")]
+    [Range(0f, 1f)] public float practicalDayScale = 0.4f;
+    [Tooltip("Brightness of the cab lamp bulb, drawn without fog so it marks the tower at night.")]
+    [Range(0f, 10f)] public float cabLampBulbIntensity = 3.0f;
 }

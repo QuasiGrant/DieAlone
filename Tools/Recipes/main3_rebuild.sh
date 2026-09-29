@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Main3 runner (8.9a): rebuilds Main3 from 8.1 in task order through the connected Editor and stops at the first failure.
+# Main3 runner (8.9a; 8.9d dressing added before the sightlines): rebuilds Main3 from 8.1 in task order through the connected Editor and stops at the first failure.
 # Usage: bash Tools/Recipes/main3_rebuild.sh   (from the project root, Editor open, not in Play mode, nothing unsaved)
 # Each recipe runs as a detached Editor job (long recipes outlive the bridge's 5 s request limit) and must return its
 # success text; 8.8 and 8.9 must also pass their own checks. Output: one line per step.
@@ -29,6 +29,7 @@ run main3_8_5_campsites.cs "saved=True"
 run main3_8_6_front_zone.cs "saved=True"
 run main3_8_7_ward.cs "saved=True"
 run main3_8_8_cave.cs "saved=True" "terrain never enters the passage or chamber: YES" "only at the mouth: YES"
+run main3_8_9d_dress_camp.cs "saved=True" "missing: none"
 run main3_8_9_sightlines.cs "all seen: True" "Ward hidden: True, cave hidden: True" "ok True | next:" "all True" "ok True | cab from"
 run main3_topdown.cs "wrote"
 echo "Main3 rebuilt. Commit Main3.unity.meta with ProjectSettings/EditorBuildSettings.asset (the scene GUID changes on every rebuild)."
