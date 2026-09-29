@@ -13,6 +13,15 @@ if (scene.path != scenePath) return "wrong scene after recipe: " + scene.path;
 var V = new System.Func<float, float, float, UnityEngine.Vector3>((x, y, z) => new UnityEngine.Vector3(x, y, z));
 UnityEngine.Vector2 P(float x, float z) => new UnityEngine.Vector2(x, z);
 foreach (var r in scene.GetRootGameObjects()) if (r.name == "Ground") UnityEngine.Object.DestroyImmediate(r);
+// A rebuild makes a new scene GUID; CreateScene skips a path already in the build list, so refresh that entry's GUID.
+// Replacing the entry in place keeps the old GUID; it must be removed, saved, then added again.
+{
+    var list = new System.Collections.Generic.List<UnityEditor.EditorBuildSettingsScene>();
+    foreach (var s in UnityEditor.EditorBuildSettings.scenes) if (s.path != scenePath) list.Add(s);
+    UnityEditor.EditorBuildSettings.scenes = list.ToArray(); UnityEditor.AssetDatabase.SaveAssets();
+    list.Add(new UnityEditor.EditorBuildSettingsScene(scenePath, true));
+    UnityEditor.EditorBuildSettings.scenes = list.ToArray(); UnityEditor.AssetDatabase.SaveAssets();
+}
 
 // ---------- map data (metres, x east, z north) ----------
 const float sizeX = 400f, sizeZ = 300f, baseY = -45f, sizeY = 90f;

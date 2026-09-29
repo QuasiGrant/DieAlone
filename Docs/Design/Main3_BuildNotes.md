@@ -22,3 +22,12 @@ Rook, Milestone 8 blockout, 2026-09-29. Source: Main3.md revision 11 and Main3_m
 
 - Camp items the doc places only by name -> fire pit (172, 163), generator (181.5, 171.5) behind the cabin, stove inside the cabin, lectern inside the cab facing north, report box on the cabin desk.
 - Tower frame: Vesper's timber legs built (square posts, beams every 8 m, X braces), gray. Deck 8 x 8 m, cab 4.4 x 4.4 m with a 1.8 m walkway, stairs a south switchback of 12 flights, arriving at the deck's south-west corner.
+
+## 8.3 Trails and giants
+
+- Trails inside the keeper's camp clearing (15 m) are not built: the tower stands on the Camp to J line 8.5 m from the camp centre.
+- Footbridge: the map creek passes 8 m north of the map footbridge (114.8, 85.2), and the W1 to Camp 3 trail runs on the creek's south-west bank without crossing it -> the footbridge stands on the trail at its map point over dry ground.
+- W1 to cave: the trail ends on the ravine floor at (52, 37.5), in front of the mouth face; the last 3.5 m to the mouth (52, 34) is 8.8's passage.
+- Points of interest along the leg (m, table 4 -> built): water tank 40 -> 42; rowboat 42 -> 43; phone pole 48 -> 41; food lockers 47 -> 45; Hollow Giant 45 -> 39; forage A 95 -> 96; Gate Tree 40 -> 34; first sight of the lot 85 -> 89; latrine 42 -> 42; forage B 40 -> 40; log steps 90 -> 107; truck 40 -> 39; stepping stones 80 -> 74; footbridge 25 -> 27; camper 70 -> 71; rope handrail 36 -> 35; bulbs 72 -> 68; burn-map board 48 -> 53; plank bridge 90 -> 95; rune post 50 -> 57. Positions follow the map; the log steps and plank bridge differ most because the map places them near the leg ends.
+- Giant field: the doc places no giants except the three heroes. Built by rule: 46 giants 30 m or more apart, 40 to 50 m tall, tops at most 50 (46 west of x 32), none on the spur (its ground leaves no 40 m giant under the caps), none in clearings, trails, the lake, ravine, hollow, old burn, front zone, or within 3 m plus crown of the five tower cones on the map.
+- Lot walks T to office / store / booth are not trails (8.6 gravels the lot): straight segments 36.4 / 41.0 / 53.4 m against 35 / 42 / 52.
