@@ -8,7 +8,7 @@
 
   <!-- background and title -->
   <rect x="0" y="0" width="1190" height="1170" fill="#f6f3ec"/>
-  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 13, 2026-09-29, Sable. Nothing here is decided.</text>
+  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Main3 map. DRAFT revision 14, 2026-09-29, Sable. Nothing here is decided.</text>
   <text x="60" y="47" font-size="11" fill="#444">400 x 300 m at 2.5 px per m. Origin south-west, x east, z north. Heights absolute. Walk times at 2.5 m/s. The loop is in DailyLoop.md.</text>
 
   <!-- map area -->
@@ -140,12 +140,14 @@
     <circle cx="260" cy="790" r="22.5" fill="#e9c6ef" stroke="#c24fc9" stroke-width="1.5" stroke-dasharray="4 3"/>
   </g>
   <circle cx="255" cy="455" r="20" fill="none" stroke="#6f8a5f" stroke-width="1" stroke-dasharray="3 3"/>
-  <circle cx="285" cy="455" r="5" fill="#fbfbf6" stroke="#666" stroke-width="1.2"/>
+  <circle cx="300" cy="454" r="5" fill="#fbfbf6" stroke="#666" stroke-width="1.2"/>
+  <ellipse cx="157.5" cy="177.5" rx="37.5" ry="6" fill="#8b8274" stroke="#5a5348" stroke-width="1"/>
+  <text x="157.5" y="171" text-anchor="middle" font-size="8" fill="#5a5348" style="paint-order:stroke;stroke:#efe2cc;stroke-width:3px">stone screen, top 47</text>
   <line x1="765" y1="225" x2="765" y2="190" stroke="#8a6a4a" stroke-width="3"/>
 
   <!-- trails -->
   <g fill="none" stroke="#7a4a2a" stroke-width="3.5" stroke-linecap="round">
-    <path d="M485,420 Q520,500 535,580"/>
+    <path d="M485,420 L502,458 L470,478 L528,505 L505,532 L535,580"/>
     <path d="M535,580 Q640,590 660,690"/>
     <path d="M660,690 Q760,660 790,550"/>
     <path d="M790,550 Q870,500 910,395"/>
@@ -188,7 +190,7 @@
   <circle cx="250" cy="262" r="45" fill="#8b8274" stroke="#5a5348" stroke-width="1.5"/>
   <text x="250" y="254" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff">ROCK OUTCROP</text>
   <text x="250" y="266" text-anchor="middle" font-size="9" fill="#fff">(the Tor)</text>
-  <text x="250" y="278" text-anchor="middle" font-size="9" fill="#fff">top 58 m</text>
+  <text x="250" y="278" text-anchor="middle" font-size="9" fill="#fff">top 63.5 m</text>
 
   <!-- Ward stones -->
   <g fill="#3b3a44">
@@ -241,12 +243,12 @@
     <text x="216" y="190">last bend, silence</text>
     <text x="668" y="430" fill="#3d7a2a">forage A</text>
     <text x="424" y="424" fill="#3d7a2a">forage B</text>
-    <text x="292" y="444">the Snag, 54 m (cap exemption)</text>
+    <text x="307" y="444">the Snag, 54 m (cap exemption)</text>
   </g>
 
   <!-- leg lengths -->
   <g font-size="10" font-weight="bold" fill="#5a2f14" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">
-    <text x="524" y="532">80 m / 32 s</text>
+    <text x="536" y="540">110 m / 44 s, two switchbacks</text>
     <text x="630" y="596">84 m / 34 s</text>
     <text x="752" y="664">95 m / 38 s</text>
     <text x="892" y="520" text-anchor="middle">94 m / 38 s</text>
@@ -261,7 +263,7 @@
     <text x="926" y="385" font-size="9">T</text>
   </g>
   <g font-size="10" font-weight="bold" fill="#7b2d6b" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">
-    <text x="345" y="236">Ward climb 150 m / 60 s</text>
+    <text x="345" y="236">Ward climb 157 m / 63 s</text>
     <text x="345" y="249">night only</text>
   </g>
 
@@ -336,7 +338,7 @@
     <rect x="640" y="940" width="40" height="12" fill="#e4e1db" stroke="#8c877e"/><text x="686" y="950">front zone, inside the gate</text>
     <rect x="640" y="960" width="40" height="12" fill="url(#fire)"/><text x="686" y="970">fire direction (west)</text>
 
-    <text x="60" y="990" fill="#444">Camp to the Ward at night: 246 m, 98 s. Camp to the office: 266 m. Tower: knoll 15, deck 56, spiral stair about 24 s up. Giant tops at most 50 m absolute. Walk times are information, not a budget. Day 1: no fire, everything ordinary until the Ward.</text>
+    <text x="60" y="990" fill="#444">Camp to the Ward at night: 253 m, 101 s. Camp to the office: 266 m. Tower: knoll 15, deck 56, spiral stair 22.4 s up. Giant tops at most 50 m absolute. Walk times are information, not a budget. Day 1: no fire, everything ordinary until the Ward.</text>
   </g>
 
   <!-- cave section, unfolded along the path: X = 180 + 7 per m along the path, Y = 1040 at 0 m, 5 px per m down -->
