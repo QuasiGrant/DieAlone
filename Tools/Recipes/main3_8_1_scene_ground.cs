@@ -414,6 +414,15 @@ float Rugged(float x, float z, float h)
     float ledge = strataH * (1f - UnityEngine.Mathf.Pow(1f - f, strataPow) - f);
     return h + (rugBigH * n1 + rugSmallH * n2 + ledge) * mask;
 }
+// 8.15 gate (Vesper: the knob reads as a pyramid, no saddle): two summits raised on the knob's top, the south one lower, and the
+// saddle between them; raise-only, rounded (gaussian), inside the knob's footprint
+var knobSummits = new (UnityEngine.Vector2 c, float h, float r)[] { (P(13f, 207f), 7f, 7f), (P(15f, 237f), 10f, 8f) };
+float KnobSummits(float x, float z, float h)
+{
+    if (x < knobX0 - 6f || x > knobX1 + 6f || z < knobZ0 - 6f || z > knobZ1 + 6f) return h;
+    float add = 0f; foreach (var s in knobSummits) { float d2 = (P(x, z) - s.c).sqrMagnitude; add = UnityEngine.Mathf.Max(add, s.h * UnityEngine.Mathf.Exp(-d2 / (s.r * s.r))); }
+    return h + add;
+}
 const float roadEastX = 440f, roadEastRamp = 120f;
 float Height(float x, float z, float footWG, float footNG, float footSG)
 {
@@ -430,6 +439,7 @@ float Height(float x, float z, float footWG, float footNG, float footSG)
         if (z > -60f && z < 360f) h = UnityEngine.Mathf.Max(h, WEast(x, z));
         if (x < 70f && z > 270f && z < 360f) h = UnityEngine.Mathf.Max(h, UnityEngine.Mathf.Max(Leg3(x, z), UnityEngine.Mathf.Max(NWTop(x, z), CwmRim(x, z))));
         h = Rugged(x, z, h);
+        h = UnityEngine.Mathf.Max(h, KnobSummits(x, z, h));
         // the chute: ribs, then the trench cut into them and into the knob's face
         if (x < armX + 1f && x > 40f && z > 195f && z < 232f) { h = UnityEngine.Mathf.Max(h, ChuteRib(x, z)); h = UnityEngine.Mathf.Min(h, ChuteCut(x, z)); }
         // west of the top the W face falls to the -40 floor at x -40; past the ridge's ends it folds onto the outer ground
@@ -501,6 +511,25 @@ for (int pass = 0; pass < spikePasses; pass++)
             float cap = sum / cnt + spikeRise / sizeY; if (hm[zi, xi] > cap) hm[zi, xi] = cap;
         }
     }
+// pits filled (8.15 gate, Marlow: a hollow on leg 3's outer face at (48.7, 282) with steep ground all round held the player): inside each
+// circle the ground rises to the plane fitted through pitRing samples on its edge, so the face runs through without a pit (raise only)
+var pits = new (UnityEngine.Vector2 c, float r)[] { (P(48.7f, 282f), 5f), (P(44.8f, 286.5f), 5f) };   // the second: where the first fill moved the hollow (the trap scan)
+const int pitRing = 16;
+float HmAt(float x, float z) { int xi = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt((x - originX) / sizeX * (res - 1)), 0, res - 1), zi = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt((z - originZ) / sizeZ * (res - 1)), 0, res - 1); return hm[zi, xi]; }
+foreach (var pit in pits)
+{
+    // least squares for h = a + b (x - cx) + c (z - cz) over the ring (symmetric samples, so the sums separate)
+    float sa = 0f, sbx = 0f, scz = 0f, sxx = 0f, szz = 0f;
+    for (int k = 0; k < pitRing; k++) { float ang = k * 2f * UnityEngine.Mathf.PI / pitRing; float dx = UnityEngine.Mathf.Cos(ang) * pit.r, dz = UnityEngine.Mathf.Sin(ang) * pit.r; float hv = HmAt(pit.c.x + dx, pit.c.y + dz); sa += hv; sbx += hv * dx; scz += hv * dz; sxx += dx * dx; szz += dz * dz; }
+    float pa = sa / pitRing, pb = sbx / sxx, pc = scz / szz;
+    int xi0 = UnityEngine.Mathf.Max(0, (int)((pit.c.x - pit.r - originX) / sizeX * (res - 1))), xi1 = UnityEngine.Mathf.Min(res - 1, (int)((pit.c.x + pit.r - originX) / sizeX * (res - 1)) + 1);
+    int zi0 = UnityEngine.Mathf.Max(0, (int)((pit.c.y - pit.r - originZ) / sizeZ * (res - 1))), zi1 = UnityEngine.Mathf.Min(res - 1, (int)((pit.c.y + pit.r - originZ) / sizeZ * (res - 1)) + 1);
+    for (int zi = zi0; zi <= zi1; zi++) for (int xi = xi0; xi <= xi1; xi++)
+    {
+        float x = originX + xi * sizeX / (res - 1), z = originZ + zi * sizeZ / (res - 1); if (UnityEngine.Vector2.Distance(P(x, z), pit.c) > pit.r) continue;
+        hm[zi, xi] = UnityEngine.Mathf.Max(hm[zi, xi], pa + pb * (x - pit.c.x) + pc * (z - pit.c.y));
+    }
+}
 data.SetHeights(0, 0, hm);
 UnityEditor.EditorUtility.SetDirty(data);
 UnityEditor.AssetDatabase.SaveAssets();
@@ -603,11 +632,14 @@ void RockWall(string name, UnityEngine.Transform parent, System.Collections.Gene
     rockMeshes++; rockLength += along[n - 1];
 }
 // a wall from explicit end points: level top, base under the lowest ground along it
-void FlatWall(string name, UnityEngine.Transform parent, UnityEngine.Vector2[] poly, float top, float thick, float jag)
+// 8.15 gate (Vesper, Marlow: the ledge back wall read as a pleated curtain): the top swells smoothly (jag over flatWave samples of slow
+// noise, not a new random height every metre) and a wall may lean back by lean over its height
+const float flatWave = 4f;
+void FlatWall(string name, UnityEngine.Transform parent, UnityEngine.Vector2[] poly, float top, float thick, float jag, float lean = 0f)
 {
     var pts = Resample(poly, 1f); var yb = new float[pts.Count]; var yt = new float[pts.Count];
-    for (int i = 0; i < pts.Count; i++) { var nl = LeftN(pts, i); yb[i] = UnityEngine.Mathf.Min(H(pts[i].x, pts[i].y), H(pts[i].x + nl.x * thick, pts[i].y + nl.y * thick)) - 1f; yt[i] = top + RR(0f, jag); }
-    RockWall(name, parent, pts, yb, yt, thick, 0f, 0.15f);
+    for (int i = 0; i < pts.Count; i++) { var nl = LeftN(pts, i); yb[i] = UnityEngine.Mathf.Min(H(pts[i].x, pts[i].y), H(pts[i].x + nl.x * thick, pts[i].y + nl.y * thick)) - 1f; yt[i] = top + jag * UnityEngine.Mathf.PerlinNoise(i / flatWave + pts[0].x * 0.13f, pts[0].y * 0.17f); }
+    RockWall(name, parent, pts, yb, yt, thick, 0f, 0.15f, lean);
 }
 // bands: front face 0.7 m in front of the foot line, so the terrain's one-cell step up at the foot stays inside the rock
 // 8.14a: the band face leans back bandLean over its height (about 75 degrees on a 4 m band), its top swells in bandWave-sample waves,
@@ -663,7 +695,7 @@ const float rimHeight = 1.1f;
 // rim was sprint-jumped before the slide rule); its walls stand 3.5 m over the walkable ground beside them, tops broken in blocks
 const float ringRimHeight = 1.2f;
 var ledgeRock = new UnityEngine.GameObject("Ledge").transform; ledgeRock.SetParent(rockRoot.transform, false);
-const float lipH = rimHeight, lipThick = 1.2f, endWallTop = 66.5f, endWallThick = 2f, backWallH = 3f, backWallThick = 1.5f, finTop = 78f;
+const float lipH = rimHeight, lipThick = 1.2f, endWallTop = 66.5f, endWallThick = 2f, backWallH = 3f, backWallThick = 1.5f, finTop = 78f, backWallJag = 0.8f, backWallLean = 0.6f;
 void LipPart(string name, float z0, float z1, float height, float thick, float fall)
 {
     var lip = Resample(new[] { P(ledgeX0, z0), P(ledgeX0, z1) }, 1f); var yb = new float[lip.Count]; var yt = new float[lip.Count];
@@ -688,8 +720,8 @@ for (int k = 0, tries = 0; k < knobRocks && tries < knobRocks * 20; tries++)
 FlatWall("EndWall_N", ledgeRock, new[] { P(-12f, ledgeZ1), P(ledgeX1 + 0.5f, ledgeZ1) }, endWallTop, endWallThick, 0.4f);
 FlatWall("EndWall_S", ledgeRock, new[] { P(knobX0 + 0.5f, ledgeZ0), P(-12f, ledgeZ0) }, endWallTop, endWallThick, 0.4f);
 // the back wall runs on north to the slot's south wall, so the terrain's one-cell slope at the slot mouth's south corner shows no sky
-FlatWall("BackWall_S", ledgeRock, new[] { P(ledgeX1, slotEnd.y - slotHalf - 0.05f), P(ledgeX1, ledgeZ0 - 1f) }, endH + backWallH, backWallThick, 0.3f);
-FlatWall("BackWall_N", ledgeRock, new[] { P(ledgeX1, ledgeZ1 + 0.5f), P(ledgeX1, 270f) }, endH + backWallH, backWallThick, 0.3f);
+FlatWall("BackWall_S", ledgeRock, new[] { P(ledgeX1, slotEnd.y - slotHalf - 0.05f), P(ledgeX1, ledgeZ0 - 1f) }, endH + backWallH, backWallThick, backWallJag, backWallLean);
+FlatWall("BackWall_N", ledgeRock, new[] { P(ledgeX1, ledgeZ1 + 0.5f), P(ledgeX1, 270f) }, endH + backWallH, backWallThick, backWallJag, backWallLean);
 // the fin at the cleft mouth (4.6): x 1 to 3 from the exit north to z 270, and the rock over the slot's last metres (z 266.8 to 270)
 // to the shoulder, top 78, so no flame top shows from inside the slot; the way runs south between the fin and the back wall and
 // turns round the fin's end, just past the exit
@@ -814,6 +846,7 @@ var boulders = new UnityEngine.GameObject("RimBoulders").transform; boulders.Set
         float sc = RR(boulderLow, boulderHigh) / UnityEngine.Mathf.Max(0.2f, hi - lo); g.transform.localScale = V(sc, sc, sc);
         g.transform.position = V(s.x, 0f, s.z); lo = float.MaxValue; foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) lo = UnityEngine.Mathf.Min(lo, r.bounds.min.y);
         g.transform.position = V(s.x, s.y - boulderSink - lo, s.z);   // tops about rimH over the walkable ground, under eye height, so views stay open
+        foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) r.sharedMaterial = rockMat;   // 8.15 gate (Marlow: the pack rock rendered near black at P4): the granite rock of the walls
         long k = Key(s.x, s.z); if (!placed.TryGetValue(k, out var l2)) placed[k] = l2 = new System.Collections.Generic.List<UnityEngine.Vector3>(); l2.Add(s); boulderN++;
     }
 }

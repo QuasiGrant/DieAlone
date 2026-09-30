@@ -31,7 +31,7 @@ const int mapTiles = 5, mapPx = 512; const float mapTileM = 100f, mapX0 = -50f, 
 // every drawn mesh within wardNear m of the Ward warp a temporary collider
 // compassOut: the deck walkway, the cab's half width 2.2 plus half the 2.2 m walkway; markerBack: marker frames stand this far along
 // the trail from the point nearest the marker
-const float markerBack = 5f, markerLookUp = 1.4f, markerRise = 1.5f;   // markerRise: a stand this much above or below the marker is on a bank
+const float markerBack = 5f, markerLookUp = 1.4f, markerRise = 1.5f, hedgeSample = 0.5f, hedgeNeed = 0.8f, hedgeTopSlack = 0.5f, warpNear = 1.5f, roadZoomFov = 15f;   // hedge and warp checks (Pim 8.15), the road zoom   // markerRise: a stand this much above or below the marker is on a bank
 const float wardNear = 60f, compassOut = 3.3f, compassDip = 15f, p4Dip = 10f, finStep = 2f, fireLookX = -230f, fireLookY = 40f, valleyLookY = -40f, eastLookX = 440f;
 var slotExit = new UnityEngine.Vector2(4f, 257.3f); var pumpBack = new[] { 30f, 15f, 5f };
 var inv = System.Globalization.CultureInfo.InvariantCulture;
@@ -200,13 +200,14 @@ string GreyTrails(string lookName)
     int passN = 0;
     foreach (var leg in legs)
     {
-        float len = Length(leg.pts); float[] tSum = new float[2], fSum = new float[2]; int[] tN = new int[2], fN = new int[2]; int nFrames = 0;
+        float len = Length(leg.pts); float[] tSum = new float[2], fSum = new float[2]; int[] tN = new int[2], fN = new int[2]; int nFrames = 0; float ofT = 0f, ofF = 0f; int ofTN = 0, ofFN = 0;
         for (float s = 0f; s <= len + 0.01f; s += greyStep)
         {
             var p = At(leg.pts, s); var c = p + UnityEngine.Vector3.up * eye; var ahead = At(leg.pts, s + 3f); var far = At(leg.pts, s + trailStep);
             var yawDir = new UnityEngine.Vector3(ahead.x - p.x, 0f, ahead.z - p.z).normalized;
             Pose(c, c + yawDir * 10f + UnityEngine.Vector3.up * (far.y - p.y)); var src = Capture(); nFrames++;
             terrain.drawTreesAndFoliage = false; var bare = Capture(); terrain.drawTreesAndFoliage = true;
+            bool fogWas = UnityEngine.RenderSettings.fog; UnityEngine.RenderSettings.fog = false; var fogless = Capture(); UnityEngine.RenderSettings.fog = fogWas;
             string label = leg.name + " " + s.ToString("F0", inv) + " M";
             var marks = new System.Collections.Generic.List<(float x, float y, bool trail)>();
             for (int k = 0; k < 2; k++)
@@ -222,6 +223,7 @@ string GreyTrails(string lookName)
                 }
                 if (tg >= 0f) { tSum[k] += tg; tN[k]++; }
                 if (fn > 0) { fSum[k] += fg / fn; fN[k]++; }
+                if (k == 1) { float ot = PatchGrey(fogless, tp, bare); if (ot >= 0f) { ofT += ot; ofTN++; } float of = 0f; int on = 0; foreach (var sgn in new[] { -1f, 1f }) { var fx = q + side * greySide * sgn; float g = PatchGrey(fogless, new UnityEngine.Vector3(fx.x, Ground(fx.x, fx.z, q.y), fx.z), null); if (g >= 0f) { of += g; on++; } } if (on > 0) { ofF += of / on; ofFN++; } }
                 label += " " + ds.ToString("F0", inv) + ": " + (tg >= 0f ? tg.ToString("F0", inv) : "-") + "/" + (fn > 0 ? (fg / fn).ToString("F0", inv) : "-");
             }
             var small = Shrink(src, greyDiv); for (int i = 0; i < small.Length; i++) { byte g = (byte)UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(Grey(small[i])), 0, 255); small[i] = new UnityEngine.Color32(g, g, g, 255); }
@@ -230,7 +232,7 @@ string GreyTrails(string lookName)
         string Cell(float sum, int n) => n > 0 ? (sum / n).ToString("F0", inv) : "-";
         float d5 = tN[0] > 0 && fN[0] > 0 ? tSum[0] / tN[0] - fSum[0] / fN[0] : 0f, d20 = tN[1] > 0 && fN[1] > 0 ? tSum[1] / tN[1] - fSum[1] / fN[1] : 0f;
         bool pass = UnityEngine.Mathf.Abs(d5) >= greyNeed && UnityEngine.Mathf.Abs(d20) >= greyNeed; if (pass) passN++;
-        greyMd.Append("| " + leg.name + " | " + nFrames + " | " + Cell(tSum[0], tN[0]) + " | " + Cell(fSum[0], fN[0]) + " | " + d5.ToString("F0", inv) + " | " + Cell(tSum[1], tN[1]) + " | " + Cell(fSum[1], fN[1]) + " | " + d20.ToString("F0", inv) + " | " + (pass ? "PASS" : "FAIL") + " |\n");
+        greyMd.Append("| " + leg.name + " | " + nFrames + " | " + Cell(tSum[0], tN[0]) + " | " + Cell(fSum[0], fN[0]) + " | " + d5.ToString("F0", inv) + " | " + Cell(tSum[1], tN[1]) + " | " + Cell(fSum[1], fN[1]) + " | " + d20.ToString("F0", inv) + " | " + (ofTN > 0 && ofFN > 0 ? (ofT / ofTN - ofF / ofFN).ToString("F0", inv) : "-") + " | " + (pass ? "PASS" : "FAIL") + " |\n");
     }
     int tw = shotW / greyDiv, th = shotH / greyDiv, rows = (frames.Count + greyCols - 1) / greyCols;
     NewCanvas(greyCols * (tw + gap) + gap, headH + rows * (labelH + th + gap) + gap);
@@ -497,6 +499,60 @@ try
     }
     sb.Append("invisible colliders " + invisibleCount + " in " + invGroups.Count + " groups (InvisibleColliders.md)\n");
 
+    // 3e2. hedge boxes under brush (Gate_8_15_Pim.md 6): each HedgeCollider's top face sampled every hedgeSample m; a sample is covered
+    // when a drawn bush or log (Ground815/Stops) stands over it (its bounds hold the point across and reach the box's top)
+    int hedgeBoxes = 0, hedgeUnder = 0; float hedgeWorst = 1f; string hedgeWorstAt = "";
+    {
+        var stopsT = UnityEngine.GameObject.Find("Ground815/Stops"); if (stopsT == null) return "no Ground815/Stops";
+        var brushB = new System.Collections.Generic.List<UnityEngine.Bounds>(); foreach (var r in stopsT.GetComponentsInChildren<UnityEngine.Renderer>()) if (r.name != "Rims") brushB.Add(r.bounds);
+        var hl = new System.Text.StringBuilder("# Hedge boxes under brush\n\nFrom Tools/Recipes/main3_review_capture.cs. Each hedge collider's top face is sampled every " + hedgeSample.ToString("F1", inv) + " m; a sample is covered when a bush or log placed with the hedge stands over it (its bounds hold the point across and reach the box's top). Listed: every box under " + (hedgeNeed * 100f).ToString("F0", inv) + " percent.\n\n| Box | Centre x, z | Covered |\n|---|---|---|\n");
+        foreach (var bc in stopsT.GetComponentsInChildren<UnityEngine.BoxCollider>())
+        {
+            if (bc.name != "HedgeCollider") continue; hedgeBoxes++; int n = 0, cov = 0; var tr = bc.transform;
+            for (float lx = -bc.size.x * 0.5f; lx <= bc.size.x * 0.5f; lx += hedgeSample) for (float lz = -bc.size.z * 0.5f; lz <= bc.size.z * 0.5f; lz += hedgeSample)
+            {
+                var w = tr.TransformPoint(bc.center + new UnityEngine.Vector3(lx, bc.size.y * 0.5f, lz)); n++;
+                foreach (var b in brushB) if (w.x >= b.min.x && w.x <= b.max.x && w.z >= b.min.z && w.z <= b.max.z && b.max.y >= w.y - hedgeTopSlack) { cov++; break; }
+            }
+            float share = n > 0 ? cov / (float)n : 1f; if (share >= hedgeNeed) hedgeUnder++; else hl.Append("| " + tr.parent.name + "/" + tr.name + " | " + tr.position.x.ToString("F0", inv) + ", " + tr.position.z.ToString("F0", inv) + " | " + (share * 100f).ToString("F0", inv) + " percent |\n");
+            if (share < hedgeWorst) { hedgeWorst = share; hedgeWorstAt = tr.position.x.ToString("F0", inv) + ", " + tr.position.z.ToString("F0", inv); }
+        }
+        System.IO.File.WriteAllText(System.IO.Path.Combine(outDir, "HedgeCover.md"), hl.ToString().Replace("\r", ""));
+    }
+    sb.Append("hedge boxes " + hedgeUnder + " of " + hedgeBoxes + " at least " + (hedgeNeed * 100f).ToString("F0", inv) + " percent under brush; least " + (hedgeWorst * 100f).ToString("F0", inv) + " percent at (" + hedgeWorstAt + ")\n");
+
+    // 3e3. foliage at each warp (Gate_8_15_Pim.md 7): the nearest bush, fir, pine or branch renderer within warpNear of a point 1 m ahead of
+    // the eye, facing N, E, S and W
+    var warpLines = new System.Collections.Generic.List<string>();
+    {
+        var fol = new System.Collections.Generic.List<UnityEngine.Renderer>();
+        foreach (var r in UnityEngine.Object.FindObjectsByType<UnityEngine.Renderer>(UnityEngine.FindObjectsSortMode.None)) { var n = r.name; if (n.StartsWith("CS_Bush") || n.StartsWith("RedFir") || n.StartsWith("RedPine") || n.StartsWith("Branchs") || n.StartsWith("Bush")) fol.Add(r); }
+        foreach (var w in warpList)
+        {
+            var e = Eye(w.position);
+            foreach (var d in new[] { ("N", 0f), ("E", 90f), ("S", 180f), ("W", 270f) })
+            {
+                var q = Toward(e, d.Item2, 1f); float best = float.MaxValue; string what = "";
+                foreach (var r in fol) { float dd = UnityEngine.Mathf.Sqrt(r.bounds.SqrDistance(q)); if (dd < best) { best = dd; what = r.name; } }
+                if (best < warpNear) warpLines.Add(w.name + " " + d.Item1 + ": " + what + " " + best.ToString("F1", inv) + " m");
+            }
+        }
+    }
+    sb.Append("warp directions with foliage within " + warpNear.ToString("F1", inv) + " m: " + warpLines.Count + "\n");
+
+    // 3e4. the road from the lot at full size (Wren, Vesper, Pim): the Lot Highway warp's own view, and a zoom (fov roadZoomFov) on the gate T set
+    {
+        var lw = warpsRoot.transform.Find("Lot_Highway"); var gt = UnityEngine.GameObject.Find("FrontZone/GateT"); if (lw == null || gt == null) return "no Lot_Highway warp or GateT";
+        var c = Eye(lw.position); float fov0 = cam.fieldOfView;
+        void Full(string file, UnityEngine.Vector3 look)
+        {
+            Pose(c, look); var px = Capture(); var t = new UnityEngine.Texture2D(shotW, shotH, UnityEngine.TextureFormat.RGB24, false); t.SetPixels32(px); t.Apply();
+            System.IO.File.WriteAllBytes(System.IO.Path.Combine(outDir, file), t.EncodeToJPG(jpgQuality)); UnityEngine.Object.DestroyImmediate(t); written.Add((file, "full size, 1920 x 988", 1));
+        }
+        Full("Lot_Road_Full.jpg", c + lw.forward * 40f);
+        cam.fieldOfView = roadZoomFov; try { Full("GateT_Zoom.jpg", new UnityEngine.Vector3(gt.transform.GetChild(0).position.x, c.y - 0.5f, gt.transform.GetChild(0).position.z)); } finally { cam.fieldOfView = fov0; }
+    }
+
     // 3f. grayscale trail frames, day one
     sb.Append(GreyTrails("Day one") + "\n");
 
@@ -560,6 +616,8 @@ try
     md.Append("| [Pairs_DayOne_Night.jpg](Pairs_DayOne_Night.jpg) | Day one (left) and Night (right) at the " + pairs.Length + " pair spots below | " + (pairs.Length * 2) + " |\n");
     md.Append("| [Grey_Trails_Night.jpg](Grey_Trails_Night.jpg) | Grayscale trails, Night (step night; its table is at the end) | |\n");
     md.Append("| [InvisibleColliders.md](InvisibleColliders.md) | Every collider without a renderer, scene-wide, active or not (" + invisibleCount + ") | |\n");
+    md.Append("| [HedgeCover.md](HedgeCover.md) | Hedge boxes under brush: " + hedgeUnder + " of " + hedgeBoxes + " at least " + (hedgeNeed * 100f).ToString("F0", inv) + " percent covered | |\n");
+    md.Append("\n## Warp foliage\n\nWarp directions with a bush, fir, pine or branch within " + warpNear.ToString("F1", inv) + " m of a point 1 m ahead of the eye: " + (warpLines.Count == 0 ? "none" : string.Join("; ", warpLines)) + ".\n");
     md.Append("\n## Hand-walk views\n\n" + walkNotes + "\n## Colliders without a renderer, by group\n\n| Group | Colliders | Active | Bounds x | Bounds y | Bounds z |\n|---|---|---|---|---|---|\n");
     foreach (var kv in invGroups) md.Append("| " + kv.Key + " | " + kv.Value.n + " | " + kv.Value.active + " | " + kv.Value.b.min.x.ToString("F0", inv) + " to " + kv.Value.b.max.x.ToString("F0", inv) + " | " + kv.Value.b.min.y.ToString("F0", inv) + " to " + kv.Value.b.max.y.ToString("F0", inv) + " | " + kv.Value.b.min.z.ToString("F0", inv) + " to " + kv.Value.b.max.z.ToString("F0", inv) + " |\n");
     md.Append("\n## Warps\n\n");

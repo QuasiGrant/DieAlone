@@ -67,7 +67,7 @@ void SetLayer(UnityEngine.TerrainLayer l, UnityEngine.Texture2D albedo, UnityEng
     l.diffuseTexture = albedo; l.normalMapTexture = normal; l.tileSize = new UnityEngine.Vector2(tile, tile);
     l.diffuseRemapMin = UnityEngine.Vector4.zero; l.diffuseRemapMax = new UnityEngine.Vector4(remap.r, remap.g, remap.b, 1f); UnityEditor.EditorUtility.SetDirty(l);
 }
-const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f, trailLift = 1.5f, burnDim = 0.8f;   // trailLift: the dirt brightened so the tread stands 20 grey over the floor 20 m ahead (Gate.md 4; 8.14a measured about 10)
+const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f, trailLift = 1.65f, burnDim = 0.65f;   // trailLift: the dirt brightened so the tread stands 20 grey over the floor 20 m ahead (Gate.md 4; 8.14a measured about 10)
 // rockTile: rock at 10 m so its forms read at a distance through the look filter (8.14a)
 UnityEngine.ColorUtility.TryParseHtmlString("#6E6660", out var granite);   // Style.md granite; Rocks_a's mean luma is 0.55 (AssetCatalogue)
 var white = UnityEngine.Color.white;
@@ -104,6 +104,46 @@ const float soilBlend = 4f, wallX0 = 90f, wallX1 = 300f, wallZ0 = 285f, wallZ1 =
     data.SetAlphamaps(0, 0, alpha);
 }
 
+// 8.15 gate (Pim W1: beside Jg to Camp 1 the pale clearing grass read as light as the dirt): a strip of darker duff (SoilPine dimmed to
+// duffDim) from duffIn to duffOut off every trail's centre points (2 m apart), taken duffShare from the floor layers
+const string duffPath = "Assets/Terrain/Main3/Layer_Duff.terrainlayer"; const float duffDim = 0.65f, duffIn = 1.3f, duffOut = 3.5f, duffBlend = 0.8f, duffShare = 0.8f;
+var lDuff = new UnityEngine.TerrainLayer { name = "Layer_Duff" }; UnityEditor.AssetDatabase.CreateAsset(lDuff, duffPath);
+SetLayer(lDuff, Tex(surf + "SoilPine_a.png"), Tex(surf + "SoilPine_n.png"), floorTile, new UnityEngine.Color(duffDim, duffDim, duffDim));
+layerList.Add(lDuff); data.terrainLayers = layerList.ToArray(); int iDuff = layerList.IndexOf(lDuff);
+{
+    int ares = data.alphamapResolution; var alpha = data.GetAlphamaps(0, 0, ares, ares); float aX = size.x / ares, aZ = size.z / ares;
+    var near = new float[ares, ares]; for (int zi = 0; zi < ares; zi++) for (int xi = 0; xi < ares; xi++) near[zi, xi] = float.MaxValue;
+    foreach (var p in allPts)
+    {
+        int x0 = UnityEngine.Mathf.Max(0, (int)((p.x - tOrg.x - duffOut) / aX)), x1 = UnityEngine.Mathf.Min(ares - 1, (int)((p.x - tOrg.x + duffOut) / aX) + 1);
+        int z0 = UnityEngine.Mathf.Max(0, (int)((p.y - tOrg.z - duffOut) / aZ)), z1 = UnityEngine.Mathf.Min(ares - 1, (int)((p.y - tOrg.z + duffOut) / aZ) + 1);
+        for (int zi = z0; zi <= z1; zi++) for (int xi = x0; xi <= x1; xi++) { float d = UnityEngine.Vector2.Distance(p, P(tOrg.x + (xi + 0.5f) * aX, tOrg.z + (zi + 0.5f) * aZ)); if (d < near[zi, xi]) near[zi, xi] = d; }
+    }
+    for (int zi = 0; zi < ares; zi++) for (int xi = 0; xi < ares; xi++)
+    {
+        float d = near[zi, xi]; if (d < duffIn || d > duffOut + duffBlend) continue;
+        float w = duffShare * (1f - SS((d - duffOut) / duffBlend));
+        foreach (int l in new[] { iGround, iBurn, iSoil }) { float take = alpha[zi, xi, l] * w; alpha[zi, xi, l] -= take; alpha[zi, xi, iDuff] += take; }
+    }
+    data.SetAlphamaps(0, 0, alpha);
+}
+
+// 8.15 gate (Marlow, Vesper: banks over 35 degrees carry burn and grass stripes): the terrain is final here (8.3 re-cut the banks after
+// 8.1 painted rock), so every slope over rockFrom takes the rock layer, fully at rockFull, from every layer but the trail's dirt
+const float rockFrom = 32f, rockFull = 40f;
+int iRockL = layerList.IndexOf(lRock), iTrailL = layerList.IndexOf(lTrail); int rockCells = 0;
+{
+    int ares = data.alphamapResolution; var alpha = data.GetAlphamaps(0, 0, ares, ares); int layersN = alpha.GetLength(2);
+    for (int zi = 0; zi < ares; zi++) for (int xi = 0; xi < ares; xi++)
+    {
+        float st = data.GetSteepness((xi + 0.5f) / ares, (zi + 0.5f) / ares); if (st <= rockFrom) continue;
+        float w = UnityEngine.Mathf.Clamp01((st - rockFrom) / (rockFull - rockFrom)); float moved = 0f;
+        for (int l = 0; l < layersN; l++) { if (l == iRockL || l == iTrailL) continue; float take = alpha[zi, xi, l] * w; alpha[zi, xi, l] -= take; moved += take; }
+        alpha[zi, xi, iRockL] += moved; if (moved > 0.5f) rockCells++;
+    }
+    data.SetAlphamaps(0, 0, alpha);
+}
+
 // ---------- 1b. the climb's four grounds (Valley.md 1.6 and 4; ForestPlan 6; 8.14a): each leg its own ground and edge ----------
 // Leg 1 the chute: bare stone (the rock layer) between rock walls, the cut steps; leg 2 the shelf: scree (Rocks_a at a small tile,
 // lighter) and sparse rubble; leg 3 the burned cwm: ash (Mud_darker greyed), charred snags and burnt wood; leg 4 under the wall:
@@ -115,7 +155,7 @@ var climbS = new float[climbPts.Count]; for (int i = 1; i < climbPts.Count; i++)
 float SAtPt(float x, float z) { int bi = 0; float bd = float.MaxValue; for (int i = 0; i < climbPts.Count; i++) { float d = UnityEngine.Vector2.Distance(P(climbPts[i].x, climbPts[i].z), P(x, z)); if (d < bd) { bd = d; bi = i; } } return climbS[bi]; }
 float sP1 = SAtPt(52f, 216f), sP2 = SAtPt(57f, 276f), sP3 = SAtPt(26f, 304f), sP4 = SAtPt(26f, 262f), sSlot = SAtPt(24.5f, 262f);
 const string screePath = "Assets/Terrain/Main3/Layer_Scree.terrainlayer", ashPath = "Assets/Terrain/Main3/Layer_Ash.terrainlayer";
-const float screeTile = 1.2f, screeLift = 1.25f, ashGrey = 0.62f, climbPaint = 12f, climbMouthX = 86f, climbSteep = 42f;
+const float screeTile = 1.2f, screeLift = 0.9f, ashGrey = 0.5f, climbPaint = 12f, climbMouthX = 86f, climbSteep = 42f;   // scree 0.9 and ash 0.5 (were 1.25, 0.62; 8.15 gate: darker beside the climb's tread)
 var lScree = new UnityEngine.TerrainLayer { name = "Layer_Scree" }; UnityEditor.AssetDatabase.CreateAsset(lScree, screePath);
 SetLayer(lScree, Tex(BK + "Models/Rocks/Textures/Rocks_a.png"), Tex(BK + "Models/Rocks/Textures/Rocks_n.png"), screeTile, new UnityEngine.Color(granite.r / rockLuma * screeLift, granite.g / rockLuma * screeLift, granite.b / rockLuma * screeLift));
 var lAsh = new UnityEngine.TerrainLayer { name = "Layer_Ash" }; UnityEditor.AssetDatabase.CreateAsset(lAsh, ashPath);
@@ -124,7 +164,7 @@ layerList.Add(lScree); layerList.Add(lAsh); data.terrainLayers = layerList.ToArr
 int iRock = layerList.IndexOf(lRock), iScree = layerList.IndexOf(lScree), iAsh = layerList.IndexOf(lAsh), iTrail = layerList.IndexOf(lTrail);
 // 8.15 (Pim W1: the climb read -2 grey against its ground): a worn tread climbTread m either side of the line keeps the trail's dirt,
 // blended over climbTreadBlend into the leg's own ground
-const float climbTread = 0.6f, climbTreadBlend = 0.4f;
+const float climbTread = 0.8f, climbTreadBlend = 0.4f;   // 0.8 (was 0.6; 8.15 gate, Marlow: the chute and cleft tread could not be told from the floor)
 {
     int ares = data.alphamapResolution; var alpha = data.GetAlphamaps(0, 0, ares, ares); float aX = size.x / ares, aZ = size.z / ares; int layersN = alpha.GetLength(2);
     int x0 = 0, x1 = UnityEngine.Mathf.Min(ares - 1, (int)((climbMouthX - tOrg.x) / aX)), z0 = (int)((190f - tOrg.z) / aZ), z1 = UnityEngine.Mathf.Min(ares - 1, (int)((340f - tOrg.z) / aZ));
@@ -211,23 +251,35 @@ var clearings = new (UnityEngine.Vector2 c, float r)[] { (campC, campR), (P(282f
 }
 UnityEditor.EditorUtility.SetDirty(data);
 
-// ---------- 3. trail edges: a pale stone or a log every 4 m on one edge, sides alternating ----------
+// ---------- 3. trail edges: a stone, a root or a log every edgeLow to edgeHigh m, on one edge or the other ----------
+// 8.15 gate (Vesper: one pale faceted stone every 10 m, the same each time, brighter than the trail): mixed pieces at 3 to 5 m, the side
+// picked at random, stones in varied sizes and tilts on 8.1's granite rock (#6E6660 lit, tops under #B8B0A4), roots from the pack's
+// branch pieces, logs from the firewood and CITW logs
 var edges = new UnityEngine.GameObject("TrailEdges").transform; edges.SetParent(root, false);
-var paleStone = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Concrete034_1.0x1.0.mat"); if (paleStone == null) return "no Concrete034_1.0x1.0.mat";
-const float edgeStep = 4f, edgeOff = 1.05f, stoneLow = 0.35f, stoneHigh = 0.6f, logEvery = 4f;
+var paleStone = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Concrete034_1.0x1.0.mat"); if (paleStone == null) return "no Concrete034_1.0x1.0.mat";   // the painted blazes (below)
+var edgeRock = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_BandRock.mat"); if (edgeRock == null) return "no Blockout_BandRock.mat (8.1)";
+const float edgeLow = 3f, edgeHigh = 5f, edgeOff = 1.05f, stoneLow = 0.2f, stoneHigh = 0.55f, stoneTilt = 20f, logShare = 0.2f, rootShare = 0.2f;
+string[] edgeLogs = { CS + "Wood/CS_Log_Firewood_Short", CS + "Wood/CS_Firewood_Short_Thick_1", CS + "Wood/CS_Firewood_Short_Thick_2" };
+const string edgeRoot = BK + "Prefabs/Plants/Branchs";
 int edgeN = 0;
 foreach (var lg in legs)
 {
-    var ps = lg.pts; float acc = 0f, next = edgeStep; int k = 0;
+    var ps = lg.pts; float acc = 0f, next = R(edgeLow, edgeHigh);
     for (int i = 1; i < ps.Count; i++)
     {
-        var a = P(ps[i - 1].x, ps[i - 1].z); var b = P(ps[i].x, ps[i].z); acc += UnityEngine.Vector2.Distance(a, b); if (acc < next) continue; next += edgeStep; k++;
+        var a = P(ps[i - 1].x, ps[i - 1].z); var b = P(ps[i].x, ps[i].z); acc += UnityEngine.Vector2.Distance(a, b); if (acc < next) continue; next += R(edgeLow, edgeHigh);
         if (UnityEngine.Vector2.Distance(b, campC) < campR || b.x > coverFrontX) continue;
-        var t = (b - a).normalized; var n = P(-t.y, t.x) * (k % 2 == 0 ? 1f : -1f); var q = b + n * edgeOff;
-        bool isLog = k % (int)logEvery == 0;
-        var g = Spawn(isLog ? CS + "Wood/CS_Log_Firewood_Short" : CS + "Rocks and Stones/CS_Stone_" + (1 + rng.Next(8)), edges); if (g == null) continue;
-        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, isLog ? UnityEngine.Mathf.Atan2(t.x, t.y) * UnityEngine.Mathf.Rad2Deg + R(-20f, 20f) : R(0f, 360f), 0f);
-        if (!isLog) { float s = R(stoneLow, stoneHigh) / UnityEngine.Mathf.Max(0.1f, Top(g) - Bottom(g)); g.transform.localScale = V(s, s, s); foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) r.sharedMaterial = paleStone; }
+        var t = (b - a).normalized; var n = P(-t.y, t.x) * (rng.NextDouble() < 0.5 ? 1f : -1f); var q = b + n * (edgeOff + R(0f, 0.3f));
+        double pick = rng.NextDouble(); bool isLog = pick < logShare, isRoot = !isLog && pick < logShare + rootShare;
+        var g = Spawn(isLog ? edgeLogs[rng.Next(edgeLogs.Length)] : isRoot ? edgeRoot : CS + "Rocks and Stones/CS_Stone_" + (1 + rng.Next(8)), edges); if (g == null) continue;
+        float along = UnityEngine.Mathf.Atan2(t.x, t.y) * UnityEngine.Mathf.Rad2Deg;
+        if (isLog || isRoot) g.transform.rotation = UnityEngine.Quaternion.Euler(0f, along + R(-25f, 25f), 0f);
+        else
+        {
+            g.transform.rotation = UnityEngine.Quaternion.Euler(R(-stoneTilt, stoneTilt), R(0f, 360f), R(-stoneTilt, stoneTilt));
+            float s = R(stoneLow, stoneHigh) / UnityEngine.Mathf.Max(0.1f, Top(g) - Bottom(g)); g.transform.localScale = V(s * R(0.8f, 1.4f), s, s * R(0.8f, 1.4f));
+            foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) r.sharedMaterial = edgeRock;
+        }
         SitOn(g, q.x, q.y, 0.08f); edgeN++;
     }
 }
@@ -303,7 +355,8 @@ Signpost("Sign_J", P(107f, 203f), new[] { ("CAMP", LegToward("Camp to J", P(104f
     Label(board.transform, "VALLEY TRAILS");
 }
 Blaze("Blaze_W1_Camp3", LegBeside("W1 to Camp 3", P(128f, 70f), 6f, blazeSide), false);
-Blaze("Blaze_Camp1_Stump", P(272f, 246f), true);
+// 8.15 gate (Pim: a workbench stood between the trail and the stump): the stump blaze on the north loop blazeLoopAlong m out of Camp 1
+const float blazeLoopAlong = 14f; Blaze("Blaze_Camp1_Stump", LegBeside("Camp 1 to J", P(282f, 238f), blazeLoopAlong, blazeSide), true);
 
 // ---------- 5. stops ----------
 var stops = new UnityEngine.GameObject("Stops").transform; stops.SetParent(root, false);
@@ -342,7 +395,7 @@ System.Collections.Generic.List<UnityEngine.Vector2> Line(params UnityEngine.Vec
 // (a) the old burn and the knoll switchbacks: closed ground traced round the trail corridors (marching squares on a 0.5 m grid, as
 // the rev 7 thicket traced its walls), so the hedge follows each trail and junctions and side pieces stay open
 var knollHull = new[] { P(152f, 145f), P(170f, 160f), P(188f, 133f), P(190f, 96f), P(176f, 105f) };
-const float corridorHW = 2.5f, gridCell = 0.5f, gx0 = 145f, gx1 = 345f, gz0 = 90f, gz1 = 220f, poiPad = 2.5f;
+const float corridorHW = 3.5f, gridCell = 0.5f, gx0 = 145f, gx1 = 345f, gz0 = 90f, gz1 = 220f, poiPad = 2.5f;   // corridorHW 3.5 (was 2.5, 8.15 gate: hedges 1 m further from the band so it takes sun)
 int GW = UnityEngine.Mathf.RoundToInt((gx1 - gx0) / gridCell), GH = UnityEngine.Mathf.RoundToInt((gz1 - gz0) / gridCell);
 var fld = new float[GW + 1, GH + 1];   // > 0 walkable, < 0 closed
 for (int i = 0; i <= GW; i++) for (int j = 0; j <= GH; j++)
@@ -499,7 +552,23 @@ for (float x = 142f; x <= 246f; x += 2.2f)
     SitOn(g, x + R(-0.6f, 0.6f), shoreZ - R(1.5f, 4f), 0.1f); shoreBush++;
 }
 
+// 8.15 gate (Vesper: the hedges are grass green, Style.md 2.4.4): every Campsite bush this recipe placed takes an olive copy of the pack's
+// vegetation material (its colour multiplied by bushOlive); the pack material itself is untouched
+UnityEngine.ColorUtility.TryParseHtmlString("#E0CC80", out var bushOlive);
+var oliveCache = new System.Collections.Generic.Dictionary<UnityEngine.Material, UnityEngine.Material>(); int oliveN = 0;
+foreach (var r in root.GetComponentsInChildren<UnityEngine.Renderer>(true))
+{
+    var src = r.sharedMaterial; if (src == null || src.name != "CS_Vegetation") continue;
+    if (!oliveCache.TryGetValue(src, out var ol))
+    {
+        string path = "Assets/Materials/Slice/Slice_BushOlive.mat"; ol = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(path);
+        if (ol == null) { ol = new UnityEngine.Material(src); UnityEditor.AssetDatabase.CreateAsset(ol, path); } else ol.CopyPropertiesFromMaterial(src);
+        ol.shader = src.shader; ol.SetColor("_BaseColor", bushOlive); UnityEditor.EditorUtility.SetDirty(ol); oliveCache[src] = ol;
+    }
+    r.sharedMaterial = ol; oliveN++;
+}
+
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " | layers: floor GrassPine, SoilPine added, shore and burn GrassMud, trail Ground054, rock Rocks_a | cover " + detailNames.Length + " detail kinds | trail edges " + edgeN
-    + " | markers " + markers.childCount + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes | rims " + rimSegs + " pieces | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));
+    + " | markers " + markers.childCount + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes, " + oliveN + " bush renderers olive, rock on " + rockCells + " slope cells | rims " + rimSegs + " pieces | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));

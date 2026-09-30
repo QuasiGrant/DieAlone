@@ -41,7 +41,7 @@ MonoBehaviour:
   fireFillIntensity: 0.25
   skyTop: {r: 0.36862746, g: 0.40784314, b: 0.47058824, a: 1}
   skyHorizon: {r: 0.65882355, g: 0.65882355, b: 0.6431373, a: 1}
-  skyBandHeight: 30
+  skyBandHeight: 6
   skyGround: {r: 0.3529412, g: 0.2901961, b: 0.23529412, a: 1}
   sunGlowColor: {r: 0.65882355, g: 0.6431373, b: 0.6117647, a: 1}
   sunGlowSize: 200

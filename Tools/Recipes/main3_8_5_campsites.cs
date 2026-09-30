@@ -47,7 +47,22 @@ var str = Prim(Cube, "BulbString", spar, spar.InverseTransformPoint((sparTop + s
 str.transform.rotation = UnityEngine.Quaternion.LookRotation(sparTop - stake, UnityEngine.Vector3.up);
 for (int i = 1; i < 12; i++) { var p = UnityEngine.Vector3.Lerp(stake, sparTop, i / 12f); var bulb = Prim(Sph, "Bulb", spar, spar.InverseTransformPoint(p) + V(0f, -0.15f, 0f), V(0.18f, 0.18f, 0.18f), null, false); }
 var t1 = Group("Tent", c1, 292f, 247f, 20f).transform; Tent(t1, 4f, 5f, 2.4f);
-foreach (var wb in new[] { (270f, 245f, 10f), (275f, 251f, 40f), (293f, 232f, -30f) }) { var g = Group("Workbench", c1, wb.Item1, wb.Item2, wb.Item3).transform; Prim(Cube, "Top", g, V(0f, 0.85f, 0f), V(2.2f, 0.1f, 0.9f)); foreach (var lx in new[] { -1f, 1f }) Prim(Cube, "Legs", g, V(lx, 0.4f, 0f), V(0.1f, 0.8f, 0.8f)); }
+// the workbenches: the owned Celestia table stretched to 2.2 x 0.9 x 0.9 m (8.15 gate, Vesper: a grey bench slab in trail frames; the gray
+// top and legs are in git history), one box collider over it so it still stops the player
+const string tablePath = "Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Furniture/Table.prefab"; var benchSize = V(2.2f, 0.9f, 0.9f);
+var tablePf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(tablePath); if (tablePf == null) return "missing " + tablePath;
+foreach (var wb in new[] { (270f, 245f, 10f), (275f, 251f, 40f), (293f, 232f, -30f) })
+{
+    var g = Group("Workbench", c1, wb.Item1, wb.Item2, wb.Item3).transform;
+    var t = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(tablePf, g); foreach (var c in t.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+    t.transform.localPosition = UnityEngine.Vector3.zero; t.transform.localRotation = UnityEngine.Quaternion.identity; t.transform.localScale = UnityEngine.Vector3.one;
+    var b = new UnityEngine.Bounds(); bool first = true; foreach (var r in t.GetComponentsInChildren<UnityEngine.Renderer>()) { var mn = g.InverseTransformPoint(r.bounds.min); var mx = g.InverseTransformPoint(r.bounds.max); var bb = new UnityEngine.Bounds((mn + mx) * 0.5f, UnityEngine.Vector3.zero); bb.Encapsulate(mn); bb.Encapsulate(mx); if (first) { b = bb; first = false; } else b.Encapsulate(bb); }
+    bool turn = b.size.z > b.size.x; var sz = turn ? V(benchSize.z, benchSize.y, benchSize.x) : benchSize;
+    var s = V(sz.x / UnityEngine.Mathf.Max(0.01f, b.size.x), sz.y / UnityEngine.Mathf.Max(0.01f, b.size.y), sz.z / UnityEngine.Mathf.Max(0.01f, b.size.z));
+    t.transform.localScale = s; if (turn) t.transform.localRotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f);
+    var off = t.transform.localRotation * UnityEngine.Vector3.Scale(b.center, s); t.transform.localPosition = V(-off.x, -(b.center.y - b.size.y * 0.5f) * s.y, -off.z);
+    var col = g.gameObject.AddComponent<UnityEngine.BoxCollider>(); col.center = V(0f, benchSize.y * 0.5f, 0f); col.size = benchSize;
+}
 var lumber = Group("LumberPile", c1, 300f, 240f, 70f).transform; for (int i = 0; i < 4; i++) Prim(Cube, "Board", lumber, V(0f, 0.1f + i * 0.2f, 0f), V(0.3f, 0.18f, 4f), V(0f, i * 6f, 0f));
 Fire(Group("Cookfire", c1, 276f, 232f, 0f).transform);
 Prim(Cap, "Resident_Camp1_Spot", Group("Resident", c1, 285f, 244f, 200f).transform, V(0f, 0.9f, 0f), V(0.6f, 0.9f, 0.6f), null, false);

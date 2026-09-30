@@ -299,6 +299,29 @@ UnityEngine.GameObject Prim(UnityEngine.PrimitiveType t, string name, UnityEngin
     if (eul.HasValue) g.transform.localRotation = UnityEngine.Quaternion.Euler(eul.Value); return g;
 }
 var Cube = UnityEngine.PrimitiveType.Cube; var Cyl = UnityEngine.PrimitiveType.Cylinder; var Sph = UnityEngine.PrimitiveType.Sphere;
+// 8.15 gate (Vesper: grey pucks, cubes and the pad at J in trail frames): an owned prefab scaled to fill a box of the given size (local
+// axes), its bottom on lp.y, no colliders (on-trail pieces are looks only, side pieces are passed round)
+var fitMissing = new System.Collections.Generic.List<string>();
+UnityEngine.GameObject Fit(string path, string name, UnityEngine.Transform parent, UnityEngine.Vector3 lp, UnityEngine.Vector3 size, UnityEngine.Vector3? eul = null, bool longAlongZ = false)
+{
+    // size is in the prefab's own axes, measured unrotated; longAlongZ turns the prefab so its longer level side runs along the parent's z
+    var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path); if (pf == null) { fitMissing.Add(path); return null; }
+    var g = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(pf, parent); g.name = name;
+    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+    g.transform.localPosition = UnityEngine.Vector3.zero; g.transform.localRotation = UnityEngine.Quaternion.identity; g.transform.localScale = UnityEngine.Vector3.one;
+    var b = new UnityEngine.Bounds(); bool first = true;
+    foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) { var mn = parent.InverseTransformPoint(r.bounds.min); var mx = parent.InverseTransformPoint(r.bounds.max); var bb = new UnityEngine.Bounds((mn + mx) * 0.5f, UnityEngine.Vector3.zero); bb.Encapsulate(mn); bb.Encapsulate(mx); if (first) { b = bb; first = false; } else b.Encapsulate(bb); }
+    if (first) return g;
+    var rot = eul.HasValue ? UnityEngine.Quaternion.Euler(eul.Value) : UnityEngine.Quaternion.identity;
+    if (longAlongZ && b.size.x > b.size.z) { rot = rot * UnityEngine.Quaternion.Euler(0f, 90f, 0f); size = new UnityEngine.Vector3(size.z, size.y, size.x); }
+    var s = new UnityEngine.Vector3(size.x / UnityEngine.Mathf.Max(0.01f, b.size.x), size.y / UnityEngine.Mathf.Max(0.01f, b.size.y), size.z / UnityEngine.Mathf.Max(0.01f, b.size.z));
+    var centre = UnityEngine.Vector3.Scale(b.center, s); float bottom = (b.center.y - b.size.y * 0.5f) * s.y;
+    g.transform.localScale = s; g.transform.localRotation = rot;
+    var off = rot * new UnityEngine.Vector3(centre.x, 0f, centre.z);
+    g.transform.localPosition = new UnityEngine.Vector3(lp.x - off.x, lp.y - bottom, lp.z - off.z); return g;
+}
+const string csStone = "Assets/Revolving Pizza Games/Campsite/Prefabs/Rocks and Stones/CS_Stone_", plankPf = "Assets/Revolving Pizza Games/Catacombs/Prefabs/Props/C_Plank_A_Thick.prefab", crateLong = "Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Marketplace_Assets/WoodenCrate_Long_Big.prefab";
+const float plankW = 0.3f, deckLen = 3.5f, deckW = 2.6f, deckT = 0.12f;
 // centre-line markers: one empty per leg holding its centre line as child points every 2 m (walk checks use them)
 foreach (var b in built)
 {
@@ -339,7 +362,7 @@ foreach (var q in poiPlaced)
         case "Water tank": foreach (var sx in new[] { -1f, 1f }) foreach (var sz in new[] { -1f, 1f }) Prim(Cube, "Leg", g, V(sx, 1.5f, sz), V(0.15f, 3f, 0.15f)); Prim(Cyl, "Tank", g, V(0f, 4.2f, 0f), V(2.6f, 1.2f, 2.6f)); break;
         case "Overturned rowboat": Prim(Cube, "Hull", g, V(0f, 0.3f, 0f), V(1.3f, 0.6f, 3.8f), V(0f, 30f, 180f)); break;
         case "Phone pole": Prim(Cyl, "Pole", g, V(0f, 4f, 0f), V(0.3f, 4f, 0.3f)); Prim(Cube, "Handset", g, V(0f, 1.4f, 0.25f), V(0.4f, 0.5f, 0.25f)); Prim(Cube, "Crossarm", g, V(0f, 7.6f, 0f), V(1.8f, 0.12f, 0.12f)); break;
-        case "Food lockers": for (int i = 0; i < 6; i++) { float a = i * 60f * UnityEngine.Mathf.Deg2Rad; Prim(Cube, "Locker", g, V(UnityEngine.Mathf.Sin(a) * 3f, 0.6f, UnityEngine.Mathf.Cos(a) * 3f), V(1f, 1.2f, 0.8f), V(0f, i * 60f, 0f)); } break;
+        case "Food lockers": for (int i = 0; i < 6; i++) { float a = i * 60f * UnityEngine.Mathf.Deg2Rad; Fit(crateLong, "Locker", g, V(UnityEngine.Mathf.Sin(a) * 3f, 0f, UnityEngine.Mathf.Cos(a) * 3f), V(1f, 1.2f, 0.8f), V(0f, i * 60f, 0f)); } break;   // owned crates (8.15)
         case "First sight of the lot": Prim(Cube, "Post", g, V(0f, 0.6f, 0f), V(0.2f, 1.2f, 0.2f)); break;
         case "Latrine shed": Prim(Cube, "Shed", g, V(0f, 1.1f, 0f), V(1.3f, 2.2f, 1.3f)); Prim(Cube, "WashStand", g, V(1.6f, 0.45f, 0f), V(0.8f, 0.9f, 0.5f)); break;
         case "Forage patch A": case "Forage patch B": for (int i = 0; i < 5; i++) { float a = i * 72f * UnityEngine.Mathf.Deg2Rad; Prim(Sph, "Bush", g, V(UnityEngine.Mathf.Sin(a) * 1.4f, 0.4f, UnityEngine.Mathf.Cos(a) * 1.4f), V(1.1f, 0.8f, 1.1f)); } break;
@@ -349,11 +372,11 @@ foreach (var q in poiPlaced)
         case "Burn-map board": Prim(Cube, "PostL", g, V(-0.8f, 0.9f, 0f), V(0.12f, 1.8f, 0.12f)); Prim(Cube, "PostR", g, V(0.8f, 0.9f, 0f), V(0.12f, 1.8f, 0.12f)); Prim(Cube, "Board", g, V(0f, 1.4f, 0f), V(1.8f, 1.0f, 0.08f)); break;
         case "Rune post": Prim(Cube, "Post", g, V(0f, 1f, 0f), V(0.3f, 2f, 0.3f)); break;
         // on-trail pieces are looks only: the player walks on the flattened trail under them, so no lip can stop the capsule
-        case "Stepping stones": for (int i = -2; i <= 2; i++) UnityEngine.Object.DestroyImmediate(Prim(Cyl, "Stone", g, V(i * 1.1f, -0.1f, 0f), V(0.9f, 0.12f, 0.9f)).GetComponent<UnityEngine.Collider>()); break;
+        case "Stepping stones": for (int i = -2; i <= 2; i++) Fit(csStone + (1 + (i + 2) * 2 % 8) + ".prefab", "Stone", g, V(i * 1.1f, -0.15f, 0f), V(0.9f, 0.3f, 0.8f), V(0f, i * 47f, 0f)); break;   // owned stones (8.15; the gray cylinders are in git history)
         case "Footbridge":
             UnityEngine.Object.DestroyImmediate(Prim(Cube, "Deck", g, V(0f, -0.06f, 0f), V(2.6f, 0.12f, 4.5f)).GetComponent<UnityEngine.Collider>());
             foreach (var sx in new[] { -1.3f, 1.3f }) UnityEngine.Object.DestroyImmediate(Prim(Cube, "Rail", g, V(sx, 0.5f, 0f), V(0.08f, 1.0f, 4.5f)).GetComponent<UnityEngine.Collider>()); break;   // looks only: the rails caught the player (Marlow finding 10); the thicket keeps walkers on the trail
-        case "Plank bridge": UnityEngine.Object.DestroyImmediate(Prim(Cube, "Deck", g, V(0f, -0.06f, 0f), V(2.6f, 0.12f, 3.5f)).GetComponent<UnityEngine.Collider>()); break;   // low planks, no rails: J opens off its end
+        case "Plank bridge": for (float px = -deckW * 0.5f + plankW * 0.5f; px < deckW * 0.5f; px += plankW) Fit(plankPf, "Plank", g, V(px, -deckT, 0f), V(plankW - 0.02f, deckT, deckLen), null, true); break;   // low owned planks, no rails: J opens off its end (8.15; the gray slab is in git history)
         case "Rope handrail": for (int i = -3; i <= 3; i++) Prim(Cube, "Post", g, V(1.2f, 0.5f, i * 2f), V(0.1f, 1.0f, 0.1f)); Prim(Cube, "Rope", g, V(1.2f, 0.95f, 0f), V(0.04f, 0.04f, 12f)); break;
         case "Log steps":
         {
@@ -486,4 +509,4 @@ report.Append(")");
 // for the rest of the valley come with 8.15.
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " giants=" + made + " + 3 heroes, POIs=" + poiRoot.transform.childCount + "\n" + report;
+return "saved=" + saved + " giants=" + made + " + 3 heroes, POIs=" + poiRoot.transform.childCount + " | owned pieces missing: " + (fitMissing.Count == 0 ? "none" : string.Join(", ", fitMissing)) + "\n" + report;

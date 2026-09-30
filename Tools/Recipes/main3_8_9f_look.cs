@@ -187,7 +187,8 @@ foreach (var r in Root("FrontZone").GetComponentsInChildren<UnityEngine.MeshRend
     if (r.transform.parent != null && r.transform.parent.parent != null && (r.transform.parent.name == "VergeTree" || r.transform.parent.parent.name == "VergeTree")) continue;   // 8.14a: the verge tree is pack art, it keeps its own material
     if (n == "ParkingLot" || n == "Drive" || n == "TurningCircle" || n == "Road" || n == "Drive_To_T") m = matAsphalt;
     else if (n == "Brush") m = matBrush;
-    else if (n == "PowerPole" || n == "Crossarm" || n == "StopSignPost" || n == "EntranceSignPost" || n == "MailboxPost" || n == "EntranceSign") m = matSiding;
+    else if (n == "PowerPole" || n == "Crossarm") m = matSteel;   // 8.15 gate (Marlow: from the office only the lamp and posts show): weathered grey poles read against the hills
+    else if (n == "StopSignPost" || n == "EntranceSignPost" || n == "MailboxPost" || n == "EntranceSign") m = matSiding;
     else if (n.StartsWith("Spur") || n.StartsWith("Loop") || n == "Pitch") m = matGravel;
     else if (n == "Roof") m = matRoof;
     else if (n.StartsWith("Wall") || n == "Floor") m = matSiding;
@@ -247,7 +248,7 @@ int markerN = 0;   // 8.14: the thicket and its markers are gone (Valley.md rev 
 // the old burn: dense young regrowth 4 to 6 m (4 m in the last 40 m before the front zone), off the trails (Main3.md 2.10)
 var burnPoly = new[] { new UnityEngine.Vector2(185f, 181f), new UnityEngine.Vector2(340f, 213f), new UnityEngine.Vector2(340f, 143f), new UnityEngine.Vector2(185f, 151f) };
 bool InBurn(UnityEngine.Vector2 p) { bool c = false; for (int i = 0, j = burnPoly.Length - 1; i < burnPoly.Length; j = i++) if (((burnPoly[i].y > p.y) != (burnPoly[j].y > p.y)) && (p.x < (burnPoly[j].x - burnPoly[i].x) * (p.y - burnPoly[i].y) / (burnPoly[j].y - burnPoly[i].y) + burnPoly[i].x)) c = !c; return c; }
-const float regrowthStep = 5f, regrowthJitter = 2.5f, regrowthTrailGap = 3.5f, regrowthLowX = 300f;
+const float regrowthStep = 5f, regrowthJitter = 2.5f, regrowthTrailGap = 4.5f, regrowthLowX = 300f;   // gap 4.5 (was 3.5; 8.15 gate: the burn trails take sun)
 // a view lane from the S2 camera on Camp to Jg to the tower foot stays open, so the tower reads base to cab (LookSlice 6)
 const float s2LaneHalf = 6f; var s2Cam = new UnityEngine.Vector2(235f, 168f); var s2Tower = new UnityEngine.Vector2(164f, 166f);
 bool InS2Lane(UnityEngine.Vector2 p, float extra = 0f) { var ab = s2Tower - s2Cam; float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(p - s2Cam, ab) / ab.sqrMagnitude); return UnityEngine.Vector2.Distance(p, s2Cam + ab * t) < s2LaneHalf + extra; }

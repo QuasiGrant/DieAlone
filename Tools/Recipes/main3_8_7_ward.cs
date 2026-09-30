@@ -126,7 +126,11 @@ Mark("BentFir", sFir, 2.2f, Cyl, V(0.35f, 2f, 0.35f), 0.5f, 90f);
 // 8.14a (Vesper: pale untextured pillars, a flat untextured overhang slab, a white disc): the split snag, the platform hides and the root
 // plate from owned art, colliders removed (the climb's pieces never catch the player); the chute steps take 8.1's rock
 var bandRock = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_BandRock.mat"); if (bandRock == null) return "no Blockout_BandRock (8.1)";
-foreach (var r in steps.GetComponentsInChildren<UnityEngine.MeshRenderer>()) r.sharedMaterial = bandRock;
+// 8.15 gate (Marlow: the chute tread read the same as its floor): the steps take a worn, paler copy of the rock, stepLift times as light
+const float stepLift = 1.5f; const string treadPath = "Assets/Materials/Blockout/Blockout_TreadRock.mat";
+var treadRock = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(treadPath); if (treadRock == null) { treadRock = new UnityEngine.Material(bandRock); UnityEditor.AssetDatabase.CreateAsset(treadRock, treadPath); } else treadRock.CopyPropertiesFromMaterial(bandRock);
+{ var bc = bandRock.GetColor("_BaseColor"); treadRock.SetColor("_BaseColor", new UnityEngine.Color(bc.r * stepLift, bc.g * stepLift, bc.b * stepLift, 1f)); } UnityEditor.EditorUtility.SetDirty(treadRock);
+foreach (var r in steps.GetComponentsInChildren<UnityEngine.MeshRenderer>()) r.sharedMaterial = treadRock;
 const string climbDeadTree = "Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Decoration_Out/Tree_Dead.prefab", bkRocks = "Assets/BK/PureNature_Redwood/Prefabs/Rocks/";
 const float deadTreeUnitGirth = 0.6f;
 UnityEngine.GameObject Owned(string name, string path, float s, float side, float sink, UnityEngine.Vector3 scale, UnityEngine.Vector3 euler)

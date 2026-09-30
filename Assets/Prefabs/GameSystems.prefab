@@ -891,6 +891,9 @@ MonoBehaviour:
   - label: D1 before 8.14a
     tuning: {fileID: 11400000, guid: dde8c9a7d6af6744991e0472dc62e519, type: 2}
     daylight: 1
+  - label: D1 band 30
+    tuning: {fileID: 11400000, guid: 86e6113c1f0582847a51ac9dc0d991bc, type: 2}
+    daylight: 1
   skyMaterial: {fileID: 2100000, guid: 721ffb968b88cd94d96a758bcbbabb0b, type: 2}
   startLook: 1
 --- !u!1 &3815159851938191409

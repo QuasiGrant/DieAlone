@@ -465,6 +465,9 @@ void SetLook(string path, string sun, float elev, float bearing, float inten, st
 // crush 0.28, wash 0.18, corners 0.4, glow 80 #C8A070) with Trilight ambient #6A7080 / #6E6658 / #3A3228 and a 30 degree gold band.
 // The 8.9g/8.9j values (sun 32 from 200, fill #998A73, crush 0.15, corners 0.3) are in this recipe's history.
 // 8.15 (Vesper, Wren: the next single lighting change): sun elevation 24 to 20, for longer east shadows and a rim on the crests
+// 8.15 gate (Vesper, the next single change): the gold band from 30 degrees down to skyBandDayOne, so the sky blends from the #E3A968
+// horizon to the #5E6878 top inside the frame (at 30 the whole frame sat under the band: one flat ochre)
+const float skyBandDayOne = 6f;
 SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 20f, 205f, 1.25f, "#6E6658", "#5E6878", "#E3A968", "#9A9A94", 110f, 850f);
 {
     var dayOneLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayOne.asset");
@@ -472,7 +475,7 @@ SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 20f, 205f, 1.25f, 
     {
         dayOneLook.crushBlacks = 0.28f; dayOneLook.washOut = 0.18f; dayOneLook.darkCorners = 0.4f;
         dayOneLook.sunGlowSize = 80f; dayOneLook.sunGlowColor = Hex("#C8A070");
-        dayOneLook.sunsetTrilight = true; dayOneLook.sunsetAmbientSky = Hex("#6A7080"); dayOneLook.sunsetAmbientGround = Hex("#3A3228"); dayOneLook.skyBandHeight = 30f;
+        dayOneLook.sunsetTrilight = true; dayOneLook.sunsetAmbientSky = Hex("#6A7080"); dayOneLook.sunsetAmbientGround = Hex("#3A3228"); dayOneLook.skyBandHeight = skyBandDayOne;
         UnityEditor.EditorUtility.SetDirty(dayOneLook);
     }
 }
