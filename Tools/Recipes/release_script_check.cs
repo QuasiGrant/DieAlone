@@ -4,7 +4,7 @@
 // into Temp/ReleaseScripts, then lists the declared members of each named type in DieAlone.dll.
 // Edit TypeNames to the dev-only classes being checked. Touches no assets.
 if (UnityEditor.EditorApplication.isPlaying) return "edit mode only";
-string[] TypeNames = { "DevMenu", "LookPreview" };
+string[] TypeNames = { "DevMenu", "LookPreview", "DevStepRow", "DevWarpLabels" };
 const string OutDir = "Temp/ReleaseScripts";
 var settings = new UnityEditor.Build.Player.ScriptCompilationSettings
 {
