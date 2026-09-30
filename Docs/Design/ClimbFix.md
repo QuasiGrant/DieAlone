@@ -1,0 +1,27 @@
+# ClimbFix: the Ward climb, open, varied, never oppressive
+**DRAFT 1, 2026-09-30, Sable, for Rook.** Replaces Valley.md rev 11 4.4 and the section 8 row "between climb benches". Binding: DECISIONS 2026-09-30 ("small and never oppressive"). Cause of the F: 3.5 m uphill walls within 2 m of the tread (Marlow: 11 of 26 frames 70 percent rock). Chainage from J, bearings in degrees. Nothing here is decided until it is a dated line in DECISIONS.md and Grant confirms.
+## 1. The walk
+| Leg | Do, see, feel | Opens (bearing: what) | Ground | Edges and closure (owned, AssetCatalogue.md) |
+|---|---|---|---|---|
+| Leg 1 chute, 20 to 54, W | up three flights in a gully; boulders shoulder-high, sky over both; the seep ahead. Close, not shut | P1 back, 95 to 115: J's lamp, the bridge, the tower's legs over the gully mouth | stone steps as built; ramps Rocks_a small tile with RubbleSparse | both sides: rim (2.1) of BK Boulder_0-5 and CS_Rock_1-8, tops 1.4 to 1.8 m; suffercord Bush1-4 in the gaps; 2 BK RedFir1-4 per side in gaps; gully sides beyond lay back under 35 degrees, Moss01 |
+| Leg 2 shelf, 58 to 119, N | 61 m straight, the drop on the right, rune post at 88. On show, wind | whole leg, right third, 60 to 150: valley floor, tower cab above you (126), J below (129), Camp 1 (92), highway on the horizon (90) | Rocks_a small tile plus RubbleSparse (scree is a GAP) | right: rim 1.2 m, CS_Rock_1-8 in 1.5 to 3 m pieces, brush between, set 1.5 m outboard; BK RedFir5-8 rooted 12 m or more below the tread, tops under eye. Left: Moss01 bank 2 m, then terraces (2.3) |
+| Leg 3 cwm, 123 to 169, NW | up into the bowl; grey snags in ash; the split snag at 145. First wrong-looking place | BACK 120 to 140, 135: over P2's lip to the tower and floor | Mud_darker_a (ash is a GAP) with RedFirBranches debris | rims stand 10 m or more back behind aprons; Celestia Tree_Dead and BK snags in front of the head wall; crest-belt RedFir knots on the head wall ledges; south side to leg 4: rim plus terraces |
+| Leg 4 under the wall, 173 to 216, S | on needles, crest face right, fir screen left, bent fir at 193, the knob ahead. Quiet; the wall leans | none by design (Valley 4.5) | SoilPine_a | right: apron 4 m or more under 35 degrees with BigBoulders_0-5 and RedFir1-4, crest face above it; left: fir screen RedFir5-8 and RedPine1-5 on the terrace top; a knot of 4 firs on the shoulder at z 250 to 258 hides the knob's lower half from 200 to 215 |
+| P4 and cleft, 216 to 252 | look-back, then the slot | P4, 90 to 125: tower cab level, cabin window, lot, highway | bare stone as built | cleft unchanged (exempt from all-wall, Wren); P4 rim as leg 2 |
+## 2. Closures now that jump-climb is gone
+1. No 3.5 m ring wall on the climb. Tall rock stays only at the W foot band and IW2 arms, the cleft and fin, and the ledge end walls. A closure is one of: (a) a **rim**, rock 1.3 m over the highest standable ground within 3 m, top rounded over 45 degrees, collider continuous inside rock and brush; (b) a **face** over 50 degrees, which the mover slides off, 4 m or more from the tread behind a walkable apron under 35 degrees dressed as ground.
+2. Uphill sides drop to (b) wherever the ground above rises over 45 degrees. Nothing else is needed there.
+3. **Skip points** (leg 2 west to leg 4; leg 3 south to leg 4; chute north to the slope under leg 2): a rim at the foot, then **terraces**: faces 1 to 4 m over 50 degrees, treads 2 m or deeper carrying fir knots and brush, so trees, not rock, fill the rise.
+4. Valley sides keep 1.2 m rims, in pieces with brush between, set outboard so their tops sit 10 degrees or more under eye level at P1, leg 2 and P4. CS_Rock (grey 0.34), never near-black.
+5. Proof: Marlow's reach flood from J (real mover, sprint-walks and sprint-jumps, 16 headings, falls and slides) ends on no later leg than it started; his push grid on every rim, 0 over. A failing piece rises 0.2 m, 1.8 m at most.
+6. **F-1 and W-1:** nothing at x 20 or less between z 40 and 345 changes; the knob stays 80 or more everywhere (crags to 88 break the pyramid, none lower); fin and cleft unchanged. Climb work east of x 20 cannot open a daytime line, since each ray still meets the 80 crest behind it. Rook reruns F-1 and W-1 anyway.
+## 3. Frame targets (Climb sheet, FWD and BACK every 10 m)
+1. Rock (rock layer, rock meshes, rims) 30 percent or less of every frame outside the cleft (222 to 252); no two frames in a row over 25 percent.
+2. Sky 15 percent or more of every frame outside the cleft; every cleft frame shows a sky strip.
+3. The valley shows at P1 BACK, in the right third of every leg 2 frame, leg 3 BACK 120 to 140, and P4. Leg 4 shows none.
+4. Each leg reads by what fills it: leg 1 boulders and small firs, leg 2 the valley, leg 3 grey snags, leg 4 fir trunks.
+5. Style 10 lines hold: rock on faces over 35 degrees, a stone, root or log every 3 to 5 m, trees within 30 m both sides in 4 of 5 frames. Out: pale pillar FWD 170, pale quad FWD 220, grey plank BACK 60, the curtain BACK 0 and 10.
+## 4. Open questions
+1. Rim 1.3 m over ground within 3 m is inferred from 8.14 (0.8 m crossed, 1.1 m held); unverified for a sprint-hop off a slope. The push grid decides.
+2. Whether the capture can count rock and sky pixels by layer is unverified; if not, Marlow estimates by eye as on the 8.15 gate.
+3. Whether the cwm can set its rims 10 m back without moving P3 or the crest: Rook reports where it cannot.
