@@ -237,7 +237,7 @@ int res = data.heightmapResolution; var hm = data.GetHeights(0, 0, res, res);
 var bestD = new float[res, res]; var nearH = new float[res, res]; var sumW = new float[res, res]; var sumH = new float[res, res];
 for (int z = 0; z < res; z++) for (int x = 0; x < res; x++) bestD[z, x] = float.MaxValue;
 var tOrg = terrain.transform.position;   // 8.9j: the terrain starts at (-40, -200); heightmap and alphamap indices count from there
-float cellX = size.x / (res - 1), cellZ = size.z / (res - 1); const float flatR = 1.5f, blendR = 2.5f, reach = flatR + blendR, stackTol = 1f;
+float cellX = size.x / (res - 1), cellZ = size.z / (res - 1); const float flatR = 1.5f, blendR = 5f, reach = flatR + blendR, stackTol = 1f;   // 8.14a: a 5 m blend, so a trail cut into a slope has sloping banks, not walls (was 2.5)
 void EachCell(System.Action<int, int, float, float> visit)
 {
     foreach (var b in built) if (b.name != CarvedLeg)   // the climb is carved by 8.1

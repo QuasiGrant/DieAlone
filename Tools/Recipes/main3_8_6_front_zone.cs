@@ -162,12 +162,23 @@ foreach (var ez in new[] { 164f, 166.5f }) Prim(Cube, "EntranceSignPost", tJ, V(
 Prim(Cube, "EntranceSign", tJ, V(roadX - roadW * 0.5f - 3f, G + 1.7f, 165.25f), V(0.1f, 1.2f, 3.2f), 0f, false);   // faces the road (east)
 Prim(Cube, "MailboxPost", tJ, V(roadX - roadW * 0.5f - 1.2f, G + 0.6f, 176f), V(0.1f, 1.2f, 0.1f), 0f, false);
 Prim(Cube, "Mailbox", tJ, V(roadX - roadW * 0.5f - 1.2f, G + 1.3f, 176f), V(0.5f, 0.3f, 0.25f), 0f, false);
-// the verge tree: a dead giant with a broken top, 6 m off the road edge, read from the deck at 250 m (3.4)
-const float vergeTall = 30f, vergeGirth = 3f;
+// the verge tree: a dead giant with a broken top, 6 m off the road edge, read from the deck at 250 m (3.4). 8.14a: the owned dead tree
+// (Celestia Tree_Dead) stretched to a giant, with its snapped top lying on the verge beside it, no colliders (the player
+// never reaches it); the gray cylinders are in git history
+const float vergeTall = 30f, vergeGirth = 3f, deadTreeGirth = 0.6f, topShare = 0.25f;
 var verge = Group("VergeTree", fz); var vp = new UnityEngine.Vector2(418f, 136f);
-Prim(Cyl, "Trunk", verge, V(vp.x, H(vp.x, vp.y) + vergeTall * 0.5f - 1f, vp.y), V(vergeGirth, vergeTall * 0.5f + 1f, vergeGirth), 0f, false);
-var snapped = Prim(Cyl, "BrokenTop", verge, V(vp.x + 1.2f, H(vp.x, vp.y) + vergeTall + 2f, vp.y), V(vergeGirth * 0.6f, 3f, vergeGirth * 0.6f), 0f, false);
-snapped.transform.rotation = UnityEngine.Quaternion.Euler(0f, 0f, -35f);
+{
+    var deadPf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Decoration_Out/Tree_Dead.prefab"); if (deadPf == null) return "missing Tree_Dead";
+    var dt = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(deadPf, verge); dt.name = "DeadGiant";
+    foreach (var c in dt.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+    float h0 = 0f; foreach (var r in dt.GetComponentsInChildren<UnityEngine.Renderer>()) h0 = UnityEngine.Mathf.Max(h0, r.bounds.max.y);
+    float full = vergeTall, sxz = vergeGirth / deadTreeGirth; dt.transform.localScale = V(sxz, full / UnityEngine.Mathf.Max(0.5f, h0), sxz);
+    dt.transform.SetPositionAndRotation(V(vp.x, H(vp.x, vp.y) - 0.5f, vp.y), UnityEngine.Quaternion.Euler(0f, 35f, 3f));
+    var stub = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(deadPf, verge); stub.name = "SnappedTop";
+    foreach (var c in stub.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+    stub.transform.localScale = V(sxz * 0.5f, (full * topShare) / UnityEngine.Mathf.Max(0.5f, h0), sxz * 0.5f);
+    stub.transform.SetPositionAndRotation(V(vp.x + 4f, H(vp.x + 4f, vp.y + 3f), vp.y + 3f), UnityEngine.Quaternion.Euler(0f, 110f, 80f));   // lying on the verge
+}
 
 // warps: booth doorway, closed campground behind the chain
 var warps = Root("DevWarps").transform;

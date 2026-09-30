@@ -184,9 +184,9 @@ foreach (var r in Root("FrontZone").GetComponentsInChildren<UnityEngine.MeshRend
     if (r.sharedMaterial != null && r.sharedMaterial.shader.name.StartsWith("DieAlone/")) continue;
     string n = r.name; UnityEngine.Material m;
     if (n == "CentreLine") continue;   // 8.14: the highway centre line keeps its paint
+    if (r.transform.parent != null && r.transform.parent.parent != null && (r.transform.parent.name == "VergeTree" || r.transform.parent.parent.name == "VergeTree")) continue;   // 8.14a: the verge tree is pack art, it keeps its own material
     if (n == "ParkingLot" || n == "Drive" || n == "TurningCircle" || n == "Road" || n == "Drive_To_T") m = matAsphalt;
     else if (n == "Brush") m = matBrush;
-    else if (n == "Trunk" || n == "BrokenTop") m = matRoof;   // the dead verge giant, charred
     else if (n == "PowerPole" || n == "Crossarm" || n == "ReflectorPost" || n == "StopSignPost" || n == "EntranceSignPost" || n == "MailboxPost" || n == "EntranceSign") m = matSiding;
     else if (n.StartsWith("Spur") || n.StartsWith("Loop") || n == "Pitch") m = matGravel;
     else if (n == "Roof") m = matRoof;

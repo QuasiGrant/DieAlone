@@ -67,7 +67,7 @@ void SetLayer(UnityEngine.TerrainLayer l, UnityEngine.Texture2D albedo, UnityEng
     l.diffuseTexture = albedo; l.normalMapTexture = normal; l.tileSize = new UnityEngine.Vector2(tile, tile);
     l.diffuseRemapMin = UnityEngine.Vector4.zero; l.diffuseRemapMax = new UnityEngine.Vector4(remap.r, remap.g, remap.b, 1f); UnityEditor.EditorUtility.SetDirty(l);
 }
-const float floorTile = 4f, trailTile = 2f, rockTile = 4f, rockLuma = 0.55f;
+const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f;   // rock at 10 m so its forms read at a distance through the look filter (8.14a)
 UnityEngine.ColorUtility.TryParseHtmlString("#6E6660", out var granite);   // Style.md granite; Rocks_a's mean luma is 0.55 (AssetCatalogue)
 var white = UnityEngine.Color.white;
 var lGround = LayerNamed("Layer_Ground"); var lRock = LayerNamed("Layer_Rock"); var lBurn = LayerNamed("Layer_Burn"); var lTrail = LayerNamed("Layer_Trail"); var lBed = LayerNamed("Layer_LakeBed");
@@ -102,6 +102,65 @@ const float soilBlend = 4f, wallX0 = 90f, wallX1 = 300f, wallZ0 = 285f, wallZ1 =
     }
     data.SetAlphamaps(0, 0, alpha);
 }
+
+// ---------- 1b. the climb's four grounds (Valley.md 1.6 and 4; ForestPlan 6; 8.14a): each leg its own ground and edge ----------
+// Leg 1 the chute: bare stone (the rock layer) between rock walls, the cut steps; leg 2 the shelf: scree (Rocks_a at a small tile,
+// lighter) and sparse rubble; leg 3 the burned cwm: ash (Mud_darker greyed), charred snags and burnt wood; leg 4 under the wall:
+// needles (SoilPine) with a screen of young firs on the valley side that ends before P4, so P4 opens east; the cleft and the ledge:
+// bare stone. Painted over every gentle cell within climbPaint of the climb trail west of the chute mouth (the trail's dirt band
+// there is replaced).
+var climbPts = legs.Find(x => x.name == "J to Ward").pts; if (climbPts == null) return "no J to Ward trail";
+var climbS = new float[climbPts.Count]; for (int i = 1; i < climbPts.Count; i++) climbS[i] = climbS[i - 1] + UnityEngine.Vector2.Distance(P(climbPts[i - 1].x, climbPts[i - 1].z), P(climbPts[i].x, climbPts[i].z));
+float SAtPt(float x, float z) { int bi = 0; float bd = float.MaxValue; for (int i = 0; i < climbPts.Count; i++) { float d = UnityEngine.Vector2.Distance(P(climbPts[i].x, climbPts[i].z), P(x, z)); if (d < bd) { bd = d; bi = i; } } return climbS[bi]; }
+float sP1 = SAtPt(52f, 216f), sP2 = SAtPt(57f, 276f), sP3 = SAtPt(26f, 304f), sP4 = SAtPt(26f, 262f), sSlot = SAtPt(24.5f, 262f);
+const string screePath = "Assets/Terrain/Main3/Layer_Scree.terrainlayer", ashPath = "Assets/Terrain/Main3/Layer_Ash.terrainlayer";
+const float screeTile = 1.2f, screeLift = 1.25f, ashGrey = 0.62f, climbPaint = 12f, climbMouthX = 86f, climbSteep = 42f;
+var lScree = new UnityEngine.TerrainLayer { name = "Layer_Scree" }; UnityEditor.AssetDatabase.CreateAsset(lScree, screePath);
+SetLayer(lScree, Tex(BK + "Models/Rocks/Textures/Rocks_a.png"), Tex(BK + "Models/Rocks/Textures/Rocks_n.png"), screeTile, new UnityEngine.Color(granite.r / rockLuma * screeLift, granite.g / rockLuma * screeLift, granite.b / rockLuma * screeLift));
+var lAsh = new UnityEngine.TerrainLayer { name = "Layer_Ash" }; UnityEditor.AssetDatabase.CreateAsset(lAsh, ashPath);
+SetLayer(lAsh, Tex(surf + "Mud_darker_a.png"), Tex(surf + "Mud_darker_n.png"), floorTile, new UnityEngine.Color(ashGrey, ashGrey, ashGrey));
+layerList.Add(lScree); layerList.Add(lAsh); data.terrainLayers = layerList.ToArray();
+int iRock = layerList.IndexOf(lRock), iScree = layerList.IndexOf(lScree), iAsh = layerList.IndexOf(lAsh);
+{
+    int ares = data.alphamapResolution; var alpha = data.GetAlphamaps(0, 0, ares, ares); float aX = size.x / ares, aZ = size.z / ares; int layersN = alpha.GetLength(2);
+    int x0 = 0, x1 = UnityEngine.Mathf.Min(ares - 1, (int)((climbMouthX - tOrg.x) / aX)), z0 = (int)((190f - tOrg.z) / aZ), z1 = UnityEngine.Mathf.Min(ares - 1, (int)((340f - tOrg.z) / aZ));
+    for (int zi = z0; zi <= z1; zi++) for (int xi = x0; xi <= x1; xi++)
+    {
+        float x = tOrg.x + (xi + 0.5f) * aX, z = tOrg.z + (zi + 0.5f) * aZ;
+        if (data.GetSteepness((xi + 0.5f) / ares, (zi + 0.5f) / ares) > climbSteep) continue;
+        int bi = -1; float bd = float.MaxValue; for (int i = 0; i < climbPts.Count; i++) { float d = UnityEngine.Vector2.Distance(P(climbPts[i].x, climbPts[i].z), P(x, z)); if (d < bd) { bd = d; bi = i; } }
+        if (bd > climbPaint || UnityEngine.Mathf.Abs(H(x, z) - climbPts[bi].y) > 2f) continue;   // the bench the trail is on, not the one below
+        float s = climbS[bi]; int k = s < sP1 ? iRock : s < sP2 ? iScree : s < sP3 ? iAsh : s < sSlot ? iSoil : iRock;
+        for (int l = 0; l < layersN; l++) alpha[zi, xi, l] = 0f; alpha[zi, xi, k] = 1f;
+    }
+    data.SetAlphamaps(0, 0, alpha);
+}
+var climbDress = new UnityEngine.GameObject("ClimbGrounds").transform; climbDress.SetParent(root, false);
+UnityEngine.Vector3 ClimbAt(float s, out UnityEngine.Vector2 tan)
+{
+    int i = 1; while (i < climbPts.Count - 1 && climbS[i] < s) i++;
+    float t = UnityEngine.Mathf.InverseLerp(climbS[i - 1], climbS[i], s); tan = (P(climbPts[i].x, climbPts[i].z) - P(climbPts[i - 1].x, climbPts[i - 1].z)).normalized;
+    return UnityEngine.Vector3.Lerp(climbPts[i - 1], climbPts[i], t);
+}
+const float rubbleStep = 9f, snagStep = 7f, firStep = 5f, dressOff = 2.4f, firEndBeforeP4 = 6f;
+int climbDressN = 0;
+void Dress(string path, float s, float side, float height, float tiltMax)
+{
+    var c = ClimbAt(s, out var tan); var n = P(-tan.y, tan.x) * side; var q = P(c.x, c.z) + n;
+    var g = Spawn(path, climbDress); if (g == null) return;
+    g.transform.rotation = UnityEngine.Quaternion.Euler(R(-tiltMax, tiltMax), R(0f, 360f), R(-tiltMax, tiltMax));
+    float sc = height / UnityEngine.Mathf.Max(0.2f, Top(g) - Bottom(g)); g.transform.localScale = V(sc, sc, sc); SitOn(g, q.x, q.y, 0.15f); climbDressN++;
+}
+// leg 2: rubble patches on both edges; leg 3: charred snags and burnt wood; leg 4: young firs on the valley (east, left going south) side
+for (float s = sP1 + 4f; s < sP2 - 2f; s += rubbleStep) Dress(BK + "Prefabs/Rocks/RubbleSparse_" + (1 + rng.Next(3)), s, (rng.NextDouble() < 0.5 ? 1f : -1f) * dressOff, 0.6f, 0f);
+var charred = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Slice/Slice_RoofChar.mat");
+for (float s = sP2 + 4f; s < sP3 - 2f; s += snagStep)
+{
+    int before = climbDress.childCount; Dress("Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Decoration_Out/Tree_Dead", s, (rng.NextDouble() < 0.5 ? 1f : -1f) * (dressOff + R(0.5f, 3f)), R(5f, 9f), 6f);
+    if (charred != null && climbDress.childCount > before) foreach (var r in climbDress.GetChild(climbDress.childCount - 1).GetComponentsInChildren<UnityEngine.Renderer>()) r.sharedMaterial = charred;
+    Dress(CS + "Wood/CS_Log_Firewood_Burnt", s + 3f, (rng.NextDouble() < 0.5 ? 1f : -1f) * dressOff, 0.4f, 0f);
+}
+for (float s = sP3 + 3f; s < sP4 - firEndBeforeP4; s += firStep) Dress(BK + "Prefabs/Trees/RedFir" + (1 + rng.Next(4)), s, dressOff + R(0.3f, 1.2f), R(3f, 6f), 0f);
 
 // ---------- 2. ground cover: grass and fern details from 0.4 m off the trail edge ----------
 string[] detailNames = { "Detail_Grass1", "Detail_Grass2", "Detail_Grass3", "Detail_Fern1", "Detail_Fern2" };

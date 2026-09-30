@@ -15,7 +15,7 @@ MonoBehaviour:
   filterEnabled: 1
   lowResHeight: 360
   colorBleed: 0.5
-  washOut: 0.25
+  washOut: 0.18
   crushBlacks: 0.3
   grainStrength: 0.2
   grainSpeed: 24

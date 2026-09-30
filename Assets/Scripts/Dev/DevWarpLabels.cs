@@ -18,16 +18,18 @@ public static class DevWarpLabels
     /// Route order, top to bottom.
     public static readonly Row[] Rows =
     {
-        new Row("TOWER AND CAMP", "Keepers_Camp", "Keeper's camp (tower foot)"),
-        new Row("TOWER AND CAMP", "Cabin", "Cabin (wake spot)"),
-        new Row("TOWER AND CAMP", "Tower_Deck", "Tower deck"),
+        // Valley.md 14: the climb group sits directly under the Ward row, so J at night is F1, Left, Down, Down, Enter
         new Row("WARD CLIMB", "Junction_J", "Ward trail start (cairn)"),
         new Row("WARD CLIMB", "Ward_P3", "Ward climb, burned cwm"),
         new Row("WARD CLIMB", "Ward_P4", "Ward climb, look-back"),
+        new Row("TOWER AND CAMP", "Keepers_Camp", "Keeper's camp (tower foot)"),
+        new Row("TOWER AND CAMP", "Cabin", "Cabin (wake spot)"),
+        new Row("TOWER AND CAMP", "Tower_Deck", "Tower deck"),
         new Row("LAKE", "Lake_Pump", "Lake pump"),
         new Row("LAKE", "Lake_Boathouse", "Boathouse"),
         new Row("LAKE", "Junction_W1", "Lake west fork (Camp 3, cave)"),
         new Row("CAMPS", "Camp_1", "Camp 1"),
+        new Row("CAMPS", "Junction_Jg", "Burn fork (to Camp 1 and the lot)"),   // Valley.md 14: Jg follows Camp 1
         new Row("CAMPS", "Camp_2", "Camp 2"),
         new Row("CAMPS", "Camp_2_Top", "Camp 2, top of the stack"),
         new Row("CAMPS", "Camp_3", "Camp 3"),
@@ -39,7 +41,6 @@ public static class DevWarpLabels
         new Row("FRONT", "Lot_Highway", "Lot, facing the highway"),
         new Row("FRONT", "Closed_Campground", "Closed campground"),
         new Row("FRONT", "Old_Burn", "Old burn"),
-        new Row("FRONT", "Junction_Jg", "Burn fork (to Camp 1 and the lot)"),
         new Row("CAVE", "Cave_Mouth", "Cave mouth"),
         new Row("CAVE", "Cave_Chamber", "Cave chamber"),
     };

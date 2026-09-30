@@ -461,10 +461,19 @@ void SetLook(string path, string sun, float elev, float bearing, float inten, st
 }
 // day one brightened in 8.9g (Vesper): sun 14 to 28, fill #6E6658 to #998A73, crushed blacks 0.3 to 0.15, dark corners 0.45 to 0.3
 // 8.9j valley (Edges.md 8): the day-one sun from bearing 200 (SSW) at 32, so the W ridge shadow ends near x 57
-SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 32f, 200f, 1.1f, "#998A73", "#5E6878", "#E3A968", "#A8A08E", 40f, 600f);
+// 8.14a (Wren, LightingOptions.md 6 pick): day one is "A Tri": candidate A (sun 24 from 205 at 1.25, fog #9A9A94 110 to 850,
+// crush 0.28, wash 0.18, corners 0.4, glow 80 #C8A070) with Trilight ambient #6A7080 / #6E6658 / #3A3228 and a 30 degree gold band.
+// The 8.9g/8.9j values (sun 32 from 200, fill #998A73, crush 0.15, corners 0.3) are in this recipe's history.
+SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 24f, 205f, 1.25f, "#6E6658", "#5E6878", "#E3A968", "#9A9A94", 110f, 850f);
 {
     var dayOneLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayOne.asset");
-    if (dayOneLook != null) { dayOneLook.crushBlacks = 0.15f; dayOneLook.darkCorners = 0.3f; UnityEditor.EditorUtility.SetDirty(dayOneLook); }
+    if (dayOneLook != null)
+    {
+        dayOneLook.crushBlacks = 0.28f; dayOneLook.washOut = 0.18f; dayOneLook.darkCorners = 0.4f;
+        dayOneLook.sunGlowSize = 80f; dayOneLook.sunGlowColor = Hex("#C8A070");
+        dayOneLook.sunsetTrilight = true; dayOneLook.sunsetAmbientSky = Hex("#6A7080"); dayOneLook.sunsetAmbientGround = Hex("#3A3228"); dayOneLook.skyBandHeight = 30f;
+        UnityEditor.EditorUtility.SetDirty(dayOneLook);
+    }
 }
 // cabin daylight fill (8.9g, Vesper: the ceiling planks separate): on in both day looks; the night look keeps 0 (8.9f)
 foreach (var dayPath in new[] { "Assets/Settings/LookTuning_DayOne.asset", "Assets/Settings/LookTuning_DayTwo.asset" })

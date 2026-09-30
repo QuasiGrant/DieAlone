@@ -150,10 +150,11 @@ public class PlayerController : MonoBehaviour
         if (planar.sqrMagnitude > 1f) planar.Normalize();
 
         bool steep = false; Vector3 downhill = Vector3.zero;
-        if (controller.isGrounded && SteepGround(out Vector3 normal))
+        if (controller.isGrounded && SteepGround(out Vector3 normal, out Vector3 away))
         {
             steep = true;
-            downhill = Vector3.ProjectOnPlane(Vector3.down, normal).normalized;
+            // down the face, and out over the drop: on a near-vertical face edge the down-the-face part alone points into the edge
+            downhill = (Vector3.ProjectOnPlane(Vector3.down, normal).normalized + away).normalized;
             Vector3 uphill = new Vector3(-downhill.x, 0f, -downhill.z).normalized;
             float into = Vector3.Dot(planar, uphill);
             if (into > 0f) planar -= uphill * into;   // no walking up it either
@@ -181,16 +182,19 @@ public class PlayerController : MonoBehaviour
 
     // The surface under the capsule's foot, found by a sphere cast from the foot sphere's centre; true when it is steeper than
     // the controller's slope limit. An edge under the foot gives a tilted normal, so the player also slides off rims and walls.
-    private bool SteepGround(out Vector3 normal)
+    // away: level direction from the contact point to the foot's centre, so a player perched on a steep face's edge slides off it.
+    private bool SteepGround(out Vector3 normal, out Vector3 away)
     {
         float r = controller.radius * 0.9f;
         Vector3 origin = transform.position + Vector3.up * (controller.radius + controller.skinWidth);
         if (Physics.SphereCast(origin, r, Vector3.down, out RaycastHit hit, tuning.groundProbeDistance + controller.skinWidth, ~0, QueryTriggerInteraction.Ignore))
         {
             normal = hit.normal;
+            Vector3 centre = origin + Vector3.down * hit.distance;
+            away = hit.distance > 0f ? Vector3.ProjectOnPlane(centre - hit.point, Vector3.up).normalized : Vector3.zero;
             return Vector3.Angle(normal, Vector3.up) > controller.slopeLimit;
         }
-        normal = Vector3.up;
+        normal = Vector3.up; away = Vector3.zero;
         return false;
     }
 
