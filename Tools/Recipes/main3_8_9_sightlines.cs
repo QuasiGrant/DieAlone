@@ -7,6 +7,7 @@
 // W-1 / C-1 (trees off): rays to every Ward stone corner and every cave mouth corner must hit the terrain (the Wall, rev 15; the rim for the cave); hidden
 //   margin = how deep the least-hidden line passes under the blocking surface. Repeated with eyes and targets raised 3 m.
 // 4.1: from each junction at 1.6 m eye height, is any part of the cab visible (trees on)?
+// F-1 (8.9j): rays from every place, trail point at 10 m and the deck grid to every flame top must hit terrain; see its section.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -126,6 +127,89 @@ foreach (var chk in new[] { ("W-1", stoneCorners), ("C-1", mouthCorners) })
             if (raise == 3f && chk.Item1 == "W-1") w1Plus3 = UnityEngine.Mathf.Min(w1Plus3, worst);
         }
 
+// ---------------- F-1: the fire is hidden by the land (Valley.md; 8.9j) ----------------
+// Flame tops are read from the scene, so the check follows the fire when it moves: every mesh drawn with DieAlone/FlameCard
+// (active or not) is a set of 4-vertex cards (main3_8_7_ward.cs Cards); a card's top is the midpoint of its top edge, and
+// its visible top about two thirds up (the flipbook flame fills the lower two thirds of each card). Origins: every DevWarps
+// point at 1.6 m over it, every trail point at 10 m steps (Trails/<leg>/P<metres>, 1.6 m eye) and the deck grid at eye, jump,
+// and both +3 m. A ray passes if it hits a terrain collider before the flame top, or runs under the terrain surface anywhere
+// (a terrain collider cannot be hit from below, so an origin underground, like the cave chamber, needs the second test).
+// Trees and buildings do not count.
+// Hidden margin: how deep the least-hidden passing line runs under the terrain, sampled every 4 m inside the terrain.
+const float FlameVisibleShare = 2f / 3f, EyeHeight = 1.6f, TrailStep = 10f, F1Sample = 4f;
+var flameCardShader = UnityEngine.Shader.Find("DieAlone/FlameCard");
+var flameTops = new System.Collections.Generic.List<(UnityEngine.Vector3 card, UnityEngine.Vector3 visible, string group)>();
+foreach (var mf in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshFilter>(UnityEngine.FindObjectsInactive.Include, UnityEngine.FindObjectsSortMode.None))
+{
+    var mr = mf.GetComponent<UnityEngine.MeshRenderer>();
+    if (mr == null || mr.sharedMaterial == null || mr.sharedMaterial.shader != flameCardShader || mf.sharedMesh == null) continue;
+    var vs = mf.sharedMesh.vertices;
+    for (int i = 0; i + 3 < vs.Length; i += 4)
+    {
+        var b = mf.transform.TransformPoint((vs[i] + vs[i + 1]) * 0.5f); var top = mf.transform.TransformPoint((vs[i + 2] + vs[i + 3]) * 0.5f);
+        flameTops.Add((top, UnityEngine.Vector3.Lerp(b, top, FlameVisibleShare), mf.name));
+    }
+}
+var f1Origins = new System.Collections.Generic.List<(string kind, string name, UnityEngine.Vector3 p)>();
+var warpRoot = Root("DevWarps");
+if (warpRoot != null) foreach (UnityEngine.Transform w in warpRoot.transform) f1Origins.Add(("place", w.name, w.position + V(0f, EyeHeight, 0f)));
+var trailRoot = Root("Trails");
+if (trailRoot != null) foreach (UnityEngine.Transform leg in trailRoot.transform) foreach (UnityEngine.Transform pt in leg)
+    if (pt.name.Length > 1 && int.TryParse(pt.name.Substring(1), out int metres) && metres % (int)TrailStep == 0) f1Origins.Add(("trail", leg.name + "/" + pt.name, pt.position + V(0f, EyeHeight, 0f)));
+foreach (var raise in new[] { 0f, 3f }) foreach (var h in heights) foreach (var e in eyes) f1Origins.Add(("deck", h.Item1 + (raise > 0f ? " +3 m" : ""), V(e.x, h.Item2 + raise, e.y)));
+var terrainCols = new System.Collections.Generic.List<UnityEngine.TerrainCollider>();
+foreach (var tc in UnityEngine.Object.FindObjectsByType<UnityEngine.TerrainCollider>(UnityEngine.FindObjectsSortMode.None)) if (tc.enabled) terrainCols.Add(tc);
+var tPos = terrain.transform.position; var tSize = terrain.terrainData.size;
+bool TerrainBlocks(UnityEngine.Vector3 a, UnityEngine.Vector3 b)
+{
+    var d = b - a; var ray = new UnityEngine.Ray(a, d.normalized);
+    foreach (var tc in terrainCols) if (tc.Raycast(ray, out _, d.magnitude)) return true;
+    return false;
+}
+float UnderDepth(UnityEngine.Vector3 a, UnityEngine.Vector3 b)   // how far the line runs under the terrain at its deepest, inside the terrain
+{
+    float len = UnityEngine.Vector3.Distance(a, b), depth = float.MinValue;
+    for (float s = 0f; s < len; s += F1Sample)
+    {
+        var p = UnityEngine.Vector3.Lerp(a, b, s / len);
+        if (p.x < tPos.x || p.z < tPos.z || p.x > tPos.x + tSize.x || p.z > tPos.z + tSize.z) continue;
+        depth = UnityEngine.Mathf.Max(depth, Hg(p.x, p.z) - p.y);
+    }
+    return depth;
+}
+md.AppendLine("\n## F-1 (fire hidden by the land), from every place, trail point at 10 m and the deck grid\n");
+md.AppendLine("Flame tops read from the scene: " + flameTops.Count + " cards. Card top = top of the card; visible top = two thirds up it. A ray passes when a terrain collider blocks it or it runs under the terrain surface. Hidden margin = depth of the least-hidden line under the terrain (negative: the line passes over it).\n");
+md.AppendLine("| Origins | Count | Rays to card tops | Seen (card top) | Seen (visible top) | Hidden margin (visible top) |");
+md.AppendLine("|---|---|---|---|---|---|");
+bool f1Pass = flameTops.Count > 0; float f1Least = float.MaxValue; string f1Line = "";
+var worstSeen = new System.Collections.Generic.List<string>();
+foreach (var kind in new[] { "place", "trail", "deck" })
+{
+    int count = 0, rays = 0, seenCard = 0, seenVis = 0; float least = float.MaxValue;
+    var seenBy = new System.Collections.Generic.Dictionary<string, int>();
+    foreach (var o in f1Origins)
+    {
+        if (o.kind != kind) continue; count++; int oSeen = 0;
+        foreach (var f in flameTops)
+        {
+            rays++;
+            float dCard = UnderDepth(o.p, f.card), dVis = UnderDepth(o.p, f.visible);
+            if (dCard <= 0f && !TerrainBlocks(o.p, f.card)) seenCard++;
+            if (dVis <= 0f && !TerrainBlocks(o.p, f.visible)) { seenVis++; oSeen++; }
+            least = UnityEngine.Mathf.Min(least, dVis);
+        }
+        if (oSeen > 0) { string key = kind == "deck" ? "deck " + o.name : o.name; seenBy[key] = (seenBy.TryGetValue(key, out var n) ? n : 0) + oSeen; }
+    }
+    if (seenCard > 0 || seenVis > 0) f1Pass = false;
+    f1Least = UnityEngine.Mathf.Min(f1Least, least);
+    md.AppendLine("| " + kind + " | " + count + " | " + rays + " | " + seenCard + " | " + seenVis + " | " + least.ToString("F1") + " |");
+    f1Line += kind + " " + seenVis + "/" + rays + " seen; ";
+    var ordered = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<string, int>>(seenBy); ordered.Sort((p, q) => q.Value.CompareTo(p.Value));
+    for (int i = 0; i < ordered.Count && i < 8; i++) worstSeen.Add(kind + " " + ordered[i].Key + " sees " + ordered[i].Value);
+}
+if (worstSeen.Count > 0) { md.AppendLine("\nOrigins that see the most visible flame tops:\n"); foreach (var s in worstSeen) md.AppendLine("- " + s); }
+string f1Head = "F-1 " + (f1Pass ? "hidden: True" : "hidden: False") + ", least margin " + f1Least.ToString("F1") + " m, cards " + flameTops.Count + ", " + f1Line;
+
 // ---------------- 4.1: cab from the junctions ----------------
 var cab = tower.Find("Cab");
 var cabPts = new System.Collections.Generic.List<UnityEngine.Vector3>();
@@ -198,9 +282,10 @@ md.AppendLine("- Cab from junctions: " + junc);
 md.AppendLine("- W-1 with eyes and targets raised 3 m keeps " + w1Plus3.ToString("F1") + " m (needs 3): " + (w1Plus3 >= 3f ? "yes" : "NO") + ".");
 md.AppendLine("- Next destination from the blind junctions: " + nextLine + (nextAll ? "all seen" : "NOT ALL SEEN"));
 md.AppendLine("- Hollow Giant crown clearance to the Camp 2 lines: " + crownClear.ToString("F1") + " m (needs 3): " + (crownClear >= 3f ? "yes" : "NO") + ".");
+md.AppendLine("- " + f1Head);
 
 foreach (var c in temp) UnityEngine.Object.DestroyImmediate(c);
 if (!wasDirty) UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);   // the temporary colliders are gone; saving the identical scene clears the dirty flag
 string outPath = System.IO.Path.GetFullPath("Docs/Layout/Main3/Main3_sightlines.md");
 System.IO.File.WriteAllText(outPath, md.ToString());
-return "places: " + summary + " | all seen: " + allPlaces + " | Ward hidden: " + wardHidden + ", cave hidden: " + caveHidden + " | " + headline + "| W-1 +3 m " + w1Plus3.ToString("F1") + " ok " + (w1Plus3 >= 3f) + " | next: " + nextLine + "all " + nextAll + " | Hollow Giant crown clearance " + crownClear.ToString("F1") + " ok " + (crownClear >= 3f) + " | cab from junctions: " + junc + "| report " + outPath;
+return "places: " + summary + " | all seen: " + allPlaces + " | Ward hidden: " + wardHidden + ", cave hidden: " + caveHidden + " | " + headline + "| W-1 +3 m " + w1Plus3.ToString("F1") + " ok " + (w1Plus3 >= 3f) + " | next: " + nextLine + "all " + nextAll + " | Hollow Giant crown clearance " + crownClear.ToString("F1") + " ok " + (crownClear >= 3f) + " | cab from junctions: " + junc + "| " + f1Head + "| report " + outPath;

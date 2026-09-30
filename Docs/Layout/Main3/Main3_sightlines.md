@@ -40,6 +40,39 @@ Every ray must hit the terrain (the Wall for the Ward, the rim for the cave) bef
 | C-1 | +3 m, eye | 256 | 256 | terrain | 4.9 | 5.2 |
 | C-1 | +3 m, jump | 256 | 256 | terrain | 4.8 | 5.1 |
 
+## F-1 (fire hidden by the land), from every place, trail point at 10 m and the deck grid
+
+Flame tops read from the scene: 713 cards. Card top = top of the card; visible top = two thirds up it. A ray passes when a terrain collider blocks it or it runs under the terrain surface. Hidden margin = depth of the least-hidden line under the terrain (negative: the line passes over it).
+
+| Origins | Count | Rays to card tops | Seen (card top) | Seen (visible top) | Hidden margin (visible top) |
+|---|---|---|---|---|---|
+| place | 23 | 16399 | 3839 | 3513 | -42.8 |
+| trail | 141 | 100533 | 20090 | 17739 | -1.8 |
+| deck | 256 | 182528 | 85732 | 84217 | -53.2 |
+
+Origins that see the most visible flame tops:
+
+- place Camp_2_Top sees 447
+- place Ward_Pass sees 351
+- place Tower_Deck sees 322
+- place Keepers_Camp sees 212
+- place Ward sees 189
+- place Cabin sees 180
+- place Camp_1 sees 172
+- place Camp_2 sees 169
+- trail J to Ward/P300 sees 378
+- trail J to Ward/P310 sees 278
+- trail J to Ward/P320 sees 261
+- trail J to Ward/P250 sees 220
+- trail J to Ward/P260 sees 218
+- trail J to Ward/P270 sees 216
+- trail Camp to Jg/P20 sees 215
+- trail J to Ward/P280 sees 214
+- deck deck jump +3 m sees 21112
+- deck deck eye +3 m sees 21103
+- deck deck jump sees 21019
+- deck deck eye sees 20983
+
 ## 4.1 Tower cab seen from the junctions (eye 1.6 m, trees on)
 
 | Junction | Cab points seen (of 18) | First blocker of a missed ray |
@@ -73,3 +106,4 @@ Hollow Giant crown to the deck-centre lines to the Camp 2 stack top and its edge
 - W-1 with eyes and targets raised 3 m keeps 8.1 m (needs 3): yes.
 - Next destination from the blind junctions: Pump (190, 97) 2/3; Camp 2, 8 m out toward the lake (286.5, 102.2) 3/3; Camp 3 floor (79, 145) 4/18; Camp 3 centre (78, 146) 18/18; all seen
 - Hollow Giant crown clearance to the Camp 2 lines: 5.4 m (needs 3): yes.
+- F-1 hidden: False, least margin -53.2 m, cards 713, place 3513/16399 seen; trail 17739/100533 seen; deck 84217/182528 seen; 
