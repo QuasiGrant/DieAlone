@@ -120,8 +120,10 @@ public class LookTuning : ScriptableObject
     [Range(0f, 8f)] public float lanternIntensity = 0.8f;
     [Tooltip("Share of the night brightness a practical keeps in a daylight look (low, modest).")]
     [Range(0f, 1f)] public float practicalDayScale = 0.4f;
-    [Tooltip("Extra on practicals marked interior (the cabin inside), so a room still reads in this look. 1 is no change.")]
-    [Range(0f, 3f)] public float interiorFillScale = 1f;
+    [Tooltip("Daylight fill inside the cabin (InteriorFill: a no-shadow point light under the ceiling). 0 turns it off, as at night.")]
+    [Range(0f, 8f)] public float interiorFillIntensity = 0f;
+    [Tooltip("Colour of the cabin interior fill: daylight bounced off the floor and walls.")]
+    public Color interiorFillColor = new Color(0.6f, 0.541f, 0.451f);
     [Tooltip("Brightness of the cab lamp bulb, drawn without fog so it marks the tower at night.")]
     [Range(0f, 10f)] public float cabLampBulbIntensity = 3.0f;
     [Tooltip("Brightness of the cab's lit windows at night, drawn without fog so the tower reads from the Ward pass.")]
