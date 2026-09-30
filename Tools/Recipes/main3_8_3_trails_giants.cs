@@ -31,8 +31,8 @@ const string CarvedLeg = "J to Ward";   // 8.9j: carved into the terrain by 8.1,
 UnityEngine.Vector2[] ClimbPts()
 {
     UnityEngine.Vector2 Tw(UnityEngine.Vector2 a, UnityEngine.Vector2 b, float d) => a + (b - a).normalized * d;
-    var j = P(104f, 206f); var mouth = P(86f, 213f); var p1 = P(52f, 216f); var p2 = P(57f, 276f); var l3 = P(44f, 278f); var p3 = P(26f, 304f); var l4 = P(30f, 284f); var p4 = P(26f, 262f);
-    return new[] { j, mouth, Tw(p1, mouth, 2f), p1, Tw(p1, p2, 2f), Tw(p2, p1, 1.5f), p2, Tw(p2, l3, 1.5f), l3, Tw(p3, l3, 1.5f), p3, Tw(p3, l4, 1.5f), l4, Tw(p4, l4, 3f), p4,
+    var j = P(104f, 206f); var mouth = P(86f, 213f); var p1 = P(52f, 216f); var p2 = P(57f, 276f); var l3 = P(44f, 278f); var l3b = P(34f, 300f); var p3 = P(26f, 304f); var l4 = P(30f, 284f); var p4 = P(26f, 262f);
+    return new[] { j, mouth, Tw(p1, mouth, 2f), p1, Tw(p1, p2, 2f), Tw(p2, p1, 1.5f), p2, Tw(p2, l3, 1.5f), l3, l3b, Tw(p3, l3b, 1.5f), p3, Tw(p3, l4, 1.5f), l4, Tw(p4, l4, 3f), p4,
         P(24.5f, 262f), P(18f, 262f), P(14.5f, 265.5f), P(4f, 265.5f), P(4f, 257.3f), P(-8.5f, 246f) };
 }
 const float boulderR = 2.5f, boulderH = 4f;
@@ -142,7 +142,8 @@ foreach (var leg in legs)
         return outp;
     }
     float lo = 0f, hi = 1.5f; var path = Build(0f);
-    if (PolyLen(path) < leg.target) { for (int it = 0; it < 40; it++) { float mid = (lo + hi) * 0.5f; if (PolyLen(Build(mid)) < leg.target) lo = mid; else hi = mid; } path = Build((lo + hi) * 0.5f); }
+    // the carved climb keeps 8.1's centre line exactly (no meander: it runs in a 3.2 m chute and a 2.5 m slot)
+    if (PolyLen(path) < leg.target && leg.name != CarvedLeg) { for (int it = 0; it < 40; it++) { float mid = (lo + hi) * 0.5f; if (PolyLen(Build(mid)) < leg.target) lo = mid; else hi = mid; } path = Build((lo + hi) * 0.5f); }
     // height profile: terrain along the path, smoothed over 8 m, grade clamped both ways; the log steps segment may reach 0.85
     int N = path.Count; var raw = new float[N]; var prof = new float[N];
     // the Ward climb (8.9j) is carved by 8.1: its profile is the ground under it, with no smoothing, pins or grade clamps

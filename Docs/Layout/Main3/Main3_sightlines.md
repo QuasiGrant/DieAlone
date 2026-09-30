@@ -59,7 +59,7 @@ Targets read from the scene: 264 flame cards and 72 points on the day-one smoke 
 | deck | jump | 64 | 21504 | 0 | 0 | 4.9 |
 | deck | jump +3 | 64 | 21504 | 0 | 0 | 1.9 |
 
-Origins on the ledge (the reveal, not counted): 3. Flame tops first show on the way round the fin: eye (4.00, 258.50), 17.5 m from the dogleg's end, 10 tops; jump (4.00, 258.50), 17.5 m from the dogleg's end, 10 tops; 
+Origins on the ledge (the reveal, not counted): 4. Flame tops first show on the way round the fin: eye (4.00, 258.50), 17.5 m from the dogleg's end, 10 tops; jump (4.00, 258.50), 17.5 m from the dogleg's end, 10 tops; 
 
 W crest, lowest top over x 5 to 20, z 40 to 345 (cleft left out): 79.99 at z 40 (needs 80): yes.
 
@@ -96,4 +96,4 @@ Hollow Giant crown to the deck-centre lines to the Camp 2 stack top and its edge
 - W-1 with eyes and targets raised 3 m keeps 12.1 m (needs 3): yes.
 - Next destination from the blind junctions: Pump (190, 97) 2/3; Camp 2, 8 m out toward the lake (286.5, 102.2) 3/3; Camp 3 floor (79, 145) 4/18; Camp 3 centre (78, 146) 18/18; all seen
 - Hollow Giant crown clearance to the Camp 2 lines: 3.5 m (needs 3): yes.
-- F-1 hidden: True, least margin -5.2 m, cards 264, sheet points 72, rock colliders 25, place eye 0/8064; place jump 0/8064; place jump +3 0/8064; trail eye 0/41328; trail jump 0/41328; trail jump +3 0/41328; section 7 eye 0/3696; section 7 jump 0/3696; section 7 jump +3 0/3696; deck eye 0/21504; deck jump 0/21504; deck jump +3 0/21504; crest low 79.99 at z 40, reveal first shows: eye (4.00, 258.50), 17.5 m from the dogleg's end, 10 tops; jump (4.00, 258.50), 17.5 m from the dogleg's end, 10 tops; on the ledge; 
+- F-1 hidden: True, least margin -5.2 m, cards 264, sheet points 72, rock colliders 12, place eye 0/8064; place jump 0/8064; place jump +3 0/8064; trail eye 0/41328; trail jump 0/41328; trail jump +3 0/41328; section 7 eye 0/3696; section 7 jump 0/3696; section 7 jump +3 0/3696; deck eye 0/21504; deck jump 0/21504; deck jump +3 0/21504; crest low 79.99 at z 40, reveal first shows: eye (4.00, 258.50), 17.5 m from the dogleg's end, 10 tops; jump (4.00, 258.50), 17.5 m from the dogleg's end, 10 tops; on the ledge; 

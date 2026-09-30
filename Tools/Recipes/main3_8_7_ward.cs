@@ -74,7 +74,7 @@ var steps = new UnityEngine.GameObject("ChuteSteps").transform; steps.SetParent(
 {
     // 8.1's leg 1: from the chute mouth, ramp and flight in turn; the chute runs straight, so the flights start at fixed distances
     var mouth = new UnityEngine.Vector2(86f, 213f); var p1In = new UnityEngine.Vector2(52f, 216f) + (mouth - new UnityEngine.Vector2(52f, 216f)).normalized * 2f;
-    const int stepsPerFlight = 18; const float stepRise = 0.25f, stepRun = 0.3f, stepWidth = 3f;
+    const int stepsPerFlight = 18; const float stepRise = 0.25f, stepRun = 0.3f, stepWidth = 3f, stairRampThick = 0.2f;
     float leg1 = UnityEngine.Vector2.Distance(mouth, p1In), flightRun = stepsPerFlight * stepRun, rampRun = (leg1 - 3f * flightRun) / 4f;
     var dir2 = (p1In - mouth).normalized; float yaw = UnityEngine.Mathf.Atan2(dir2.x, dir2.y) * UnityEngine.Mathf.Rad2Deg;
     for (int f = 0; f < 3; f++)
@@ -85,6 +85,14 @@ var steps = new UnityEngine.GameObject("ChuteSteps").transform; steps.SetParent(
             var q = mouth + dir2 * (s0 + (k + 0.5f) * stepRun); float top = H(mouth.x + dir2.x * (s0 + (k + 1) * stepRun), mouth.y + dir2.y * (s0 + (k + 1) * stepRun));
             Prim(Cube, "Step", steps, V(q.x, top - stepRise * 0.5f, q.y), V(stepWidth, stepRise, stepRun), yaw, false);
         }
+        // STAIRS RULE: a collider-only StairRamp whose top face runs along the flight's nosing line, from one run below the first
+        // nosing to the top nosing (8.14: on the bare terrain the flight's triangles reach past the 45 degree slope limit and stop the player)
+        var a2 = mouth + dir2 * (s0 - stepRun); var b2 = mouth + dir2 * (s0 + flightRun);
+        var a3 = V(a2.x, H(a2.x, a2.y), a2.y); var b3 = V(b2.x, H(b2.x, b2.y), b2.y); var along3 = b3 - a3;
+        var nUp = UnityEngine.Vector3.Cross(along3, V(dir2.y, 0f, -dir2.x)).normalized; if (nUp.y < 0f) nUp = -nUp;
+        var ramp = new UnityEngine.GameObject("StairRamp"); ramp.transform.SetParent(steps, false);
+        ramp.transform.SetPositionAndRotation((a3 + b3) * 0.5f - nUp * stairRampThick * 0.5f, UnityEngine.Quaternion.LookRotation(along3.normalized, nUp));
+        ramp.AddComponent<UnityEngine.BoxCollider>().size = V(stepWidth, stairRampThick, along3.magnitude);
     }
 }
 void Mark(string name, float s, float sideOff, UnityEngine.PrimitiveType t, UnityEngine.Vector3 size, float up, float tilt = 0f)
