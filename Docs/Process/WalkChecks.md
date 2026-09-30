@@ -4,6 +4,8 @@ Marlow, 2026-09-29. DECISIONS 2026-09-29: Rook runs these before every scene han
 
 Revised 2026-09-29 for the valley (8.9j, 8.9k; Valley.md rev 7): the Wall, pass, plateau and lip are gone. The climb is J to leg 1, four benched legs on the W ridge face with platforms P1 to P4, leg 5, the cleft (parts A and B, the fin), the ramp and the ledge. The fire is always on. New checks 13 (E-1) and 14 (visible stops); F-1 joins check 10.
 
+Retargeted 2026-09-30 for Valley.md rev 10 as built in 8.14 (3b61464): four legs (chute west, shelf north, cwm north-west, under the wall south), P4, the cleft with its dogleg and fin, the ledge. Rook's deviations are the targets: cleft exit (4, 257.3), leg 3 bend (34, 300), P2 41.5, P3 51.5, leg 2 a 61 m straight. The rev 7 targets (benches, leg 5, parts A and B, the ramp, P1 to P4 at 32 to 92) are gone; a recipe still aimed at them passes by missing.
+
 ## Common rules for every play-mode check
 
 - **Editor state:** run `unity status` first, then `editor_status`. Run each check as a detached job: `unity command --detach eval_file`, then `unity job wait`.
@@ -16,7 +18,7 @@ Revised 2026-09-29 for the valley (8.9j, 8.9k; Valley.md rev 7): the Wall, pass,
 - **Drop:** air-top minus landing height, recorded on every landing.
 - **Sight rays:** use Physics.DefaultRaycastLayers, so the Thicket walls on layer 2 are ignored. Give every Crown a temporary MeshCollider (play mode only) and destroy it afterwards. A ray that hits the target object itself counts as seen. Keep eye points off structures.
 - **Terrain:** the terrain sits at (-40, -200). Any probe that samples heights, alphamaps or holes adds terrain.transform.position (PLAN Rules and Tips, MAIN3 VALLEY).
-- **Climb names:** J (104, 206); leg 1 x 72 north, P1 (65, 291) 32; leg 2 x 59 south, P2 (52, 204) 52; leg 3 x 46 north, P3 (39, 291) 72; leg 4 x 33 south, P4 (33, 204) 92; leg 5 to the cleft east mouth (20, 230) 95; part A west to (4.25, 230); part B north to the fin's north end (z 237.2); the ramp; the ledge path end (-2, 258) 98. Ledge x -9 to 4, z 232 to 275. The reveal zone: x under 5.5 and z over 237.2.
+- **Climb names (rev 10 as built; 8.1's climb array and 8.3's ClimbPts):** J (104, 206) 10; chute mouth and IW2 (86, 213) 12.6, gap x 86, z 211.5 to 214.5; leg 1, the chute, west to P1 (52, 216) 30 (three stair flights with StairRamp colliders); leg 2, the shelf, north, a 61 m straight to P2 (57, 276) 41.5; leg 3, the cwm, via (44, 278) and (34, 300) to P3 (26, 304) 51.5; leg 4, under the wall, via (30, 284) south to P4 (26, 262) 60, the look-back, facing east; the cleft: entry (24.5, 262), dogleg (18, 262) to (14.5, 265.5), slot end (4, 265.5), exit (4, 257.3) 61; the ledge path end (-8.5, 246) 62. Ledge x -10 to 6, z 215 to 285. Lip along x -10, 1.1 m over the ledge; end walls at z 215 and 285, top 66.5; fin at x 3, z 257.5 to 270, top 78. Climb ring: walls 3.5 m over the highest walkable ground within 12 m; rims 1.3 m high, 1.2 m thick. The reveal zone: past the slot exit, x under 4 and z under 257.3.
 - **False results to rule out before reporting** (from .claude/agent-memory/playtester/feedback_walk_method.md):
   - straight connectors that hit small colliders
   - doors opened from a spot a player would not stand in
@@ -45,6 +47,7 @@ Revised 2026-09-29 for the valley (8.9j, 8.9k; Valley.md rev 7): the Wall, pass,
 | main3_8_9e_edit_check.cs | edit | leg lengths, steepest 10 m, ground at P1 to P4, cleft A and B, path end; groves |
 | main3_8_9e_play_check.cs | play | Wall_100 (the ravine), Camp 2 ends, rev 15 leftovers |
 | main3_8_9e_rewalk_check.cs | play | Wall_100 repro, rim pocket, cairn gate (still aimed at the rev 16 point (99.5, 209.9)), bench pushes 4 m up to the cleft east mouth |
+| main3_8_14_climb_check.cs | play | rev 10: camp to J and J to the path end timed (real mover), climb skip and face pushes, ledge lip and end walls, IW2, IW3 |
 | main3_day_one_state_check.cs | edit | check 12 |
 | main3_edge_shots_8_9k.cs | play | edge shots to Docs/Look/Edges (human eyes, not a pass) |
 
@@ -57,12 +60,12 @@ Marlow's own probes are not committed; they are in the scratchpad.
 - **Pass:**
   - 0 stalls.
   - Largest drop 1.5 m or less, not counting jump arcs.
-  - Walking time within 3 s, or 5 percent, of Main3.md table 4; J to Ward against Valley.md 5.7 (489 m, 196 s as built).
+  - Walking time within 3 s, or 5 percent, of Main3.md table 4; J to Ward against Valley.md rev 10 4.1 (265 m, 106 s); camp to the path end 150 s or less (paper 138 s).
 - **Recipe:** main3_walk_trails.cs, walk mode only. Replace its push mover with the real mover above; until then check 1 passes for walk reachability only, and jump, crouch, drop and time are open.
 
 ### 2. Every place is reachable both ways
 - **Input:**
-  - Every place's walkable centre: camp clearing, cabin interior, tower deck, pump and dock end, boathouse interior, Camp 1, Camp 2 ramp foot and stack top, Camp 3 floor, office, store, booth, car spot, closed loop, cave chamber (board off), P1 to P4, the cleft (A and B), the ledge path end and the stone area.
+  - Every place's walkable centre: camp clearing, cabin interior, tower deck, pump and dock end, boathouse interior, Camp 1, Camp 2 ramp foot and stack top, Camp 3 floor, office, store, booth, car spot, closed loop, cave chamber (board off), P1 to P4, the cleft (entry, dogleg, exit), the ledge path end and the stone area.
   - Walk from the nearest leg end into the place and back out.
   - The camp gets its own test: a 24-point fan. From each camp leg start, walk to 24 points at r 10 round (170, 160). Then walk from r 12 down to each leg start.
 - **Pass:**
@@ -73,26 +76,26 @@ Marlow's own probes are not committed; they are in the scratchpad.
 ### 3. Slope caps
 - **Input (edit mode):** sample terrain every 0.5 m along each leg's centre points. For each window 10 m along the path, take the rise over the run.
 - **Pass:**
-  - Every window 25 percent or less, except the log-step segments on Camp to Camp 3 and W1 to Camp 3. J to Ward has no exception, joins included (J to leg 1, each platform, leg 5, the ramp).
+  - Every window 25 percent or less, except the log-step segments on Camp to Camp 3 and W1 to Camp 3, and leg 1's three stair flights (0.25 rise, 0.3 run; the ramps between them stay at 25 percent or less). J to Ward has no other exception, joins included (J to the chute mouth, each platform, the cleft, the ledge).
   - Inside the camp clearing (r 15) the ground is 15 +/- 0.3.
   - Every trail end sits within 0.5 m of the ground height of the place it joins.
-  - J to Ward ground within 0.5 m of Valley.md 5.2: P1 32, P2 52, P3 72, P4 92, cleft 95, path end 98.
+  - J to Ward ground within 0.5 m of the built heights: mouth 12.6, P1 30, P2 41.5, P3 51.5, P4 60, cleft exit 61, path end 62.
 - **Recipe:** main3_8_9e_edit_check.cs and main3_8_9c_rewalk2_edit_check.cs.
 
 ### 4. Side pushes (thicket walls, shortcuts, drops)
 - **Input:**
   - Every leg point except the ends, both sides, perpendicular to the trail, 25 m.
   - Three modes: walk, sprint-jump, crouch.
-  - For the Ward climb, also sprint-jump 12 m in 12 directions from every point from J to the cleft east mouth, and from every point on P1 to P4. The benches are stacked 13 m apart across and 20 m up: a push off a downhill edge that lands on the leg below is a FAIL, and so is one that climbs onto the leg above.
+  - For the Ward climb, also sprint-jump 12 m in 12 directions from every point from the chute mouth to the cleft entry, and from every point on P1 to P4. Legs 2 and 4 are 30 m apart in plan, and leg 3 turns back over leg 4 near P3: a push that lands on an earlier or later leg (a skip), or gets over a ring wall or rim, is a FAIL. The player jump-climbs any terrain face (8.14), so only the ring walls and rims stop a push.
 - **Pass:** every push ends in one of these ways:
   - within 4.5 m of a trail point (any leg);
   - inside a named clearing or a point-of-interest pocket from which the trail can be walked back to;
-  - on the Ward climb, on the same bench: the nearest trail point along the climb less than 15 m away, and no gain over 2.5 m.
+  - on the Ward climb, on the same leg: the nearest trail point along the climb less than 15 m away, and no gain over 2.5 m.
 - **Fail when any of these happen:**
   - a push ends on a wall top, in the thicket, or off every trail;
-  - a push reaches another bench of the climb, uphill or downhill;
+  - a push reaches another leg of the climb, uphill or downhill;
   - a push drops more than 2.5 m.
-- **Recipe:** none committed that covers every leg. main3_8_9e_rewalk_check.cs part d covers the benches with 4 m pushes only; that is not this check.
+- **Recipe:** none committed that covers every leg. The Ward climb part: main3_8_14_climb_check.cs CLIMB (real mover). main3_8_9e_rewalk_check.cs part d and main3_climb_push_check_8_9k.cs aim at rev 7 benches: retire them.
 
 ### 5. Lake and water
 - **Input:**
@@ -100,18 +103,18 @@ Marlow's own probes are not committed; they are in the scratchpad.
   - Headings toward (190, 60) and +/- 35 degrees, 30 m, walk and sprint-jump.
   - Also: the dock end and dock sides, the gangway, and west from (247.2, 54.9).
 - **Pass:** 0 ends inside the lake ellipse below -5.2. If a player is placed inside, jumping must get them out.
-- **Recipe:** main3_8_9a_fix_check.cs covers the dock and wade limits only. The full sweep is not committed. The terrain was resampled in 8.9j (1025 heights, new origin), so the lake bed and banks are rebuilt ground Grant walked on rev 16.
+- **Recipe:** main3_8_9a_fix_check.cs covers the dock and wade limits only. The full sweep is not committed. Expected FAIL until 8.15 builds the lake edge stop (Rook, 8.14: the lake can be walked into).
 
 ### 6. Gates and fence hold
 - **Cairn gate (by day):**
-  - Straight on: from 3 m on the J side of CairnGate/GateBlocker, across the blocker's full width plus 1 m past each end, to 3 m on the climb side, along the trail's direction there (west, about z 205.5), in walk, sprint-jump and crouch. Aim from the blocker's own transform, never from fixed rev 16 points.
-  - Round the gate: from 8 points at r 3 round J and the last 12 Camp to J points, toward climb points 6 to 60, in all three modes. Also from the ridge foot north and south of the gate (x 78 to 82, z 195 to 215) toward leg 1.
+  - Straight on: from 3 m on the J side of CairnGate/GateBlocker, across the blocker's full width plus 1 m past each end, to 3 m on the climb side, along the trail's direction there (bearing 290, J to the chute mouth; IW2 is x 86, z 211.5 to 214.5), in walk, sprint-jump and crouch. Aim from the blocker's own transform, never from fixed points.
+  - Round the gate: from 8 points at r 3 round J and the last 12 Camp to J points, toward climb points 6 to 60, in all three modes. Also from the valley side of both rock arms (x 80 to 87, z 198 to 228) toward leg 1, and from the W foot pocket (x 46 to 80, z 165 to 200) toward the chute.
   - Pass: 0 ends within 3 m of a climb point past the gate.
 - **Cave board (day one):** from (50.7 / 52 / 53.3, 40) south, in all three modes. Pass: 0 ends south of z 37.3.
 - **Gate and fence:**
   - Push east at z 5, 160, 170, 262, 290 and 299, walking and jumping.
   - Pass: x never over 395.7. Shift walls, when on, hold from the booth, drive, lot and spur mouth.
-- **Recipe:** main3_8_6_fence_check.cs, main3_8_9a_fix_check.cs (b4a, b4b: blocker-relative), main3_8_9e_rewalk_check.cs part c (retarget: its aim point (99.5, 209.9) is rev 16).
+- **Recipe:** main3_8_6_fence_check.cs, main3_8_14_climb_check.cs (IW2, IW3), main3_8_9a_fix_check.cs (b4a, b4b: blocker-relative). main3_8_9e_rewalk_check.cs part c aims at (99.5, 209.9), rev 16: retire it.
 
 ### 7. Stairs, tower and hatch
 - **Input:**
@@ -128,15 +131,16 @@ Marlow's own probes are not committed; they are in the scratchpad.
 ### 8. Ward climb, cleft and ledge
 - **Input:**
   - J to the ledge path end and back in walk, jump, crouch and sprint.
-  - Ledge edges: push off the west edge (toward x -15) at every 1.5 m from z 232 to 275, and off the north edge (toward z 282) every 1.5 m from x -9 to 4, in walk, sprint-jump and crouch; round both corners.
-  - Ramp and part B: sprint-jump in 12 directions from every 1 m; the fin and cleft walls must hold (no standing on the fin top, no exit over a wall).
+  - Ledge edges: push off the west edge (toward x -15) at every 1.5 m from z 217 to 283, and off the north and south end walls (toward z 290 and z 210) every 1.5 m from x -9.5 to 5.5, in walk, sprint-jump and crouch; round all four corners.
+  - The cleft and the fin: sprint-jump in 12 directions from every 1 m from the slot entry (24.5, 262) to the exit (4, 257.3); the fin and slot walls must hold (no standing on the fin top, no exit over a wall).
+  - Ring rims: sprint-jump outward every 1.5 m along P4's east edge, leg 2's outer edge and the cwm rims.
   - Every platform (P1 to P4): push off the downhill edge in all three modes.
   - Stone area: walk to 6 points and back.
 - **Pass:**
-  - Walked length within 5 percent of Valley.md 5.7 (489 m as built).
-  - No player gets past x -9.5, north of z 275.5, or below 97 on the ledge; nobody stands on the fin or a cleft wall.
+  - Walked length within 5 percent of 265 m (Valley.md rev 10 4.1).
+  - No player gets past x -10.5, north of z 285.5, south of z 214.5, or below 61 on the ledge; nobody stands on the fin, a cleft wall or a ring rim.
   - Every stone point can be reached and left.
-- **Recipe:** main3_8_9c_check.cs and main3_8_9j_climb_check.cs (timing; one west-edge point and one leg 1 point, push mover). The edge sweep, ramp, part B and platforms are not committed. The bench side pushes are check 4.
+- **Recipe:** main3_8_14_climb_check.cs (timed climb with the real mover; LEDGE: lip, both end walls, corners). The cleft and fin sweep, the ring rim sweep and the stone area are not committed. main3_8_9c_check.cs (climb part) and main3_8_9j_climb_check.cs aim at rev 7 points: retire them. The leg side pushes are check 4.
 
 ### 9. Earlier repros, run every time
 Each must stay fixed.
@@ -146,7 +150,7 @@ Each must stay fixed.
 - **Cave passage, board off:** in to (52, 22.2) and out, at x 51, 52 and 53, in all modes.
 - **Closed loop:** spur to (387.5, 252) and on to (372, 244.6), in all modes.
 - **Cabin:** from the bunk spawn, out the door and back (main3_8_9d_check.cs; run twice, the door swings over frames).
-- **Recipe:** main3_8_9e_play_check.cs, main3_8_9e_rewalk_check.cs, main3_8_9a_fix_check.cs.
+- **Recipe:** main3_8_9e_play_check.cs, main3_8_9e_rewalk_check.cs, main3_8_9a_fix_check.cs. Expected FAIL until 8.15 builds the stops (PLAN Rules and Tips, CHECKS (8.14)): 8.9a fix check parts 2b, 3a, 3d, 7a to 7d, 9a, b3, b4a, b5, b6 and 8.9e Wall_100 relied on the thicket and the lake edge. Rerun after 8.15; a FAIL then is real.
 
 ### 10. Sightlines and hidden margins
 - **Input:** main3_8_9_sightlines.cs (edit mode, trees on for places, trees off for W-1, C-1 and F-1).
@@ -154,18 +158,18 @@ Each must stay fixed.
   - Every place is seen from the deck.
   - W-1 (every stone corner, behind the knob) and C-1: every ray blocked at eye and jump height, and again with eyes and targets raised 3 m. Least margin 3 m or more.
   - F-1: rays from every place, every trail point at 10 m and the deck grid (eye, jump, +3 m) to every flame top hit terrain. Visible tops (two thirds up each card) must be 0 seen outside the reveal zone. Card tops seen are reported with the count; the card-top exemption holds only while Marlow's human-eyes item on the flame cards passes.
-  - F-1 from part B and the ramp every 0.5 m, eye and jump: record where visible tops first show; none before the fin's north end.
+  - F-1 from the cleft every 0.5 m, slot entry (24.5, 262) through the dogleg to the exit (4, 257.3), eye and jump: record where visible tops first show; none before the exit (Valley.md 4.6).
   - Cab seen from every junction.
   - Next destination seen from every junction except the cave spur at W1.
 - **Also check:**
   - Stones from the deck: 1 m grid, eye 57.6, jump 58.2, +3 m on the walkway, 18 points per stone. Pass: 0 rays reach a stone.
-  - Stones along the climb, every 0.5 m of trail. Pass: 0 seen before the reveal zone (main3_8_9c_rewalk2_edit_check.cs part 2).
+  - Stones along the climb, every 0.5 m of trail. Pass: 0 seen before the reveal zone. main3_8_9c_rewalk2_edit_check.cs part 2 walks rev 7 points: retarget it to 8.3's ClimbPts.
   - When the smoke sheet is built: the same F-1 rays to its top surface and edges (Valley.md 3.2, table 4 sheet rows).
 
 ### 11. Straight view along each trail
 - **Input:** from every point of each leg, both directions. The view reaches the farthest later point for which every trail point up to it is visible (eye 1.6, target 0.3 m over the ground, default layers, crowns on).
-- **Pass:** 60 m or less, except the switchback legs on the W ridge face (Sable's ruling, 2026-09-29: covers the four benched legs). Report every leg of J to Ward separately; J to leg 1, leg 5, the cleft and the ramp are not switchback legs. Also covered (Wren's ruling, 2026-09-29, pending Grant's confirmation): J to leg 1 (91 m) and leg 5 (78 m), as views up and across the W ridge face. The cleft and the ramp stay at 60 m or less.
-- **Recipe:** main3_straight_view_climb_8_9k.cs for J to Ward only (must exempt J to leg 1 and leg 5 by name and print PASS). None for the other trails.
+- **Pass:** 60 m or less. The 2026-09-29 exemptions (Sable: the four benched legs; Wren: J to leg 1 and leg 5) were for rev 7's benched face and do not carry over. Rev 10 leg 2 is a 61 m straight (Rook's deviation): it fails unless Wren rules an exemption. Report every leg of J to Ward separately; the cleft stays at 60 m or less.
+- **Recipe:** main3_straight_view_climb_8_9k.cs for J to Ward only; it aims at rev 7 points and exempts rev 7 legs by name: retarget it to 8.3's ClimbPts and drop the old exemptions. None for the other trails.
 
 ### 12. Day-one state
 - **Input:** the saved scene, edit mode.
@@ -193,8 +197,9 @@ Each must stay fixed.
   - the flame cards: no flame pixel in the upper third of any card in any flipbook frame (the F-1 card-top exemption rests on it);
   - silhouettes and crest profiles against Valley.md 2;
   - fog legibility of trails at night;
-  - whether the look-back from P3 and P4 reads as "the tower under me".
-- Whether a place reads as ordinary on day one, and whether a reveal lands: the ramp crest into the fire, the stones against the glow.
-- First-time player: can the way in be found without circling (stair entry, the ramp at Camp 2, J to leg 1 through the ridge foot, the next destination at each junction as seen, not as ray counts)?
+  - whether the look-back from P4 reads as "the tower under me" (tower cab, cabin window, lake, lot and highway in one frame, no ring wall across it).
+- Whether a place reads as ordinary on day one, and whether a reveal lands: stepping round the fin into the fire, the stones against the glow.
+- Whether the climb stays "small and never oppressive" (DECISIONS 2026-09-30) inside the ring walls, and whether the four legs look different at eye height.
+- First-time player: can the way in be found without circling (stair entry, the ramp at Camp 2, J to the chute through the band gap, the next destination at each junction as seen, not as ray counts)?
 - Anything the numbers pass but that looks wrong: markers in a frame, clipping into collider-free stop rocks, floating slabs, props floating or buried.
 - New repros that no script covers yet, before they become a check here.
