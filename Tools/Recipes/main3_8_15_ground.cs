@@ -248,7 +248,7 @@ void Label(UnityEngine.Transform board, string text)   // world-space text on bo
         var tg = new UnityEngine.GameObject("Text", typeof(UnityEngine.RectTransform)); tg.transform.SetParent(cg.transform, false);
         var trt = tg.GetComponent<UnityEngine.RectTransform>(); trt.anchorMin = UnityEngine.Vector2.zero; trt.anchorMax = UnityEngine.Vector2.one; trt.offsetMin = trt.offsetMax = UnityEngine.Vector2.zero;
         var tx = tg.AddComponent<UnityEngine.UI.Text>(); tx.font = font; tx.fontSize = 14; tx.fontStyle = UnityEngine.FontStyle.Bold; tx.alignment = UnityEngine.TextAnchor.MiddleCenter;
-        tx.color = new UnityEngine.Color(0.95f, 0.9f, 0.8f); tx.text = text; tx.horizontalOverflow = UnityEngine.HorizontalWrapMode.Overflow;
+        tx.color = new UnityEngine.Color(0.95f, 0.9f, 0.8f); tx.text = text; tx.horizontalOverflow = UnityEngine.HorizontalWrapMode.Wrap; tx.resizeTextForBestFit = true; tx.resizeTextMinSize = 6; tx.resizeTextMaxSize = 24;
     }
 }
 UnityEngine.Vector2 LegToward(string leg, UnityEngine.Vector2 from, float along)   // a point 'along' metres down the named leg from its end nearest 'from'
@@ -263,7 +263,9 @@ UnityEngine.Vector2 LegBeside(string leg, UnityEngine.Vector2 from, float along,
 {
     var a = LegToward(leg, from, along); var b = LegToward(leg, from, along + 2f); var t = (b - a).normalized; return a + new UnityEngine.Vector2(t.y, -t.x) * side;
 }
-const float postH = 2.4f, armLen = 1.1f, armH = 0.22f, armT = 0.05f, signAlong = 8f;
+// 8.14a gate (Pim, Marlow: "CMP1" for Camp 1, and one arm's label read into the next): arms 1.5 m by 0.3 m, 0.4 m apart, the text
+// fitted inside its arm
+const float postH = 2.6f, armLen = 1.5f, armH = 0.3f, armT = 0.05f, armGap = 0.4f, signAlong = 8f;
 void Signpost(string name, UnityEngine.Vector2 at, (string text, UnityEngine.Vector2 toward)[] arms)
 {
     var s = new UnityEngine.GameObject(name).transform; s.SetParent(markers, false); float gy = H(at.x, at.y); s.position = V(at.x, gy, at.y);
@@ -271,7 +273,7 @@ void Signpost(string name, UnityEngine.Vector2 at, (string text, UnityEngine.Vec
     for (int i = 0; i < arms.Length; i++)
     {
         var d = (arms[i].toward - at).normalized; var rot = UnityEngine.Quaternion.LookRotation(V(d.x, 0f, d.y)) * UnityEngine.Quaternion.Euler(0f, 90f, 0f);
-        var b = Box("Arm_" + arms[i].text, s, V(at.x + d.x * armLen * 0.5f, gy + postH - 0.2f - i * 0.3f, at.y + d.y * armLen * 0.5f), V(armLen, armH, armT), rot, plank, false);
+        var b = Box("Arm_" + arms[i].text, s, V(at.x + d.x * armLen * 0.5f, gy + postH - 0.2f - i * armGap, at.y + d.y * armLen * 0.5f), V(armLen, armH, armT), rot, plank, false);
         Label(b.transform, arms[i].text);
     }
 }
@@ -428,17 +430,23 @@ if (fzBrush != null) foreach (UnityEngine.Transform b in fzBrush)
 // (e) rock rims: 1.3 m over the ground outside, 1.2 m thick, open where a trail goes in (gap within rimGap of a trail point)
 const float rimH = 1.3f, rimThick = 1.2f, rimGap = 2.6f, rimStep = 0.5f;
 var rockMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_BandRock.mat"); if (rockMat == null) return "no Blockout_BandRock.mat (8.1)";
-var boxes = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); int rimSegs = 0;
+// 8.14a gate (Marlow: 0.5 m blocks each at its own height made every top edge a staircase): each run between trail gaps is one
+// continuous wall, its top the ground's high side plus rimH, smoothed over rimSmooth samples either way
+const int rimSmooth = 4;
+var runs = new System.Collections.Generic.List<System.Collections.Generic.List<(UnityEngine.Vector2 c, UnityEngine.Vector2 o, float hi, float lo)>>(); int rimSegs = 0;
 void Rim(UnityEngine.Vector2[] poly, float outSide)   // outSide +1: the high (outer) ground is on the line's left; the rock sits there
 {
+    System.Collections.Generic.List<(UnityEngine.Vector2 c, UnityEngine.Vector2 o, float hi, float lo)> run = null;
     for (int i = 0; i < poly.Length - 1; i++)
     {
         var a = poly[i]; var b = poly[i + 1]; float len = UnityEngine.Vector2.Distance(a, b); var t = (b - a) / len; var o = P(-t.y, t.x) * outSide;
         for (float s = 0f; s < len; s += rimStep)
         {
-            var c = a + t * (s + rimStep * 0.5f) + o * (rimThick * 0.5f); bool gap = false; foreach (var q in allPts) if (UnityEngine.Vector2.Distance(q, c) < rimGap) { gap = true; break; } if (gap) continue;
+            var c = a + t * s; bool gap = false; foreach (var q in allPts) if (UnityEngine.Vector2.Distance(q, c + o * (rimThick * 0.5f)) < rimGap) { gap = true; break; }
+            if (gap) { run = null; continue; }
+            if (run == null) { run = new System.Collections.Generic.List<(UnityEngine.Vector2, UnityEngine.Vector2, float, float)>(); runs.Add(run); }
             float gHi = UnityEngine.Mathf.Max(H(c.x, c.y), H(c.x + o.x * rimThick, c.y + o.y * rimThick)), gLo = UnityEngine.Mathf.Min(H(c.x, c.y), H(c.x - o.x * rimThick, c.y - o.y * rimThick));
-            boxes.Add(UnityEngine.Matrix4x4.TRS(V(c.x, (gLo - 1f + gHi + rimH) * 0.5f, c.y), UnityEngine.Quaternion.LookRotation(V(t.x, 0f, t.y)), V(rimThick, gHi + rimH - (gLo - 1f), rimStep + 0.04f))); rimSegs++;
+            run.Add((c, o, gHi, gLo)); rimSegs++;
         }
     }
 }
@@ -446,12 +454,31 @@ void Rim(UnityEngine.Vector2[] poly, float outSide)   // outSide +1: the high (o
 Rim(new[] { P(38f, 21.6f), P(80f, 25.2f), P(94.8f, 50f), P(74f, 60f), P(70f, 62f), P(38f, 56.6f) }, -1f);
 { var hol = new UnityEngine.Vector2[33]; for (int i = 0; i <= 32; i++) { float a = -i * UnityEngine.Mathf.PI * 2f / 32f; hol[i] = P(78f + UnityEngine.Mathf.Cos(a) * 12.5f, 146f + UnityEngine.Mathf.Sin(a) * 12.5f); } Rim(hol, 1f); }
 {
-    var cubeTmp = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube); var cubeMesh = cubeTmp.GetComponent<UnityEngine.MeshFilter>().sharedMesh;
-    var ci = new UnityEngine.CombineInstance[boxes.Count]; for (int k = 0; k < ci.Length; k++) ci[k] = new UnityEngine.CombineInstance { mesh = cubeMesh, transform = boxes[k] };
-    var mesh = new UnityEngine.Mesh { name = "Rims815", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 }; mesh.CombineMeshes(ci, true, true);
-    var vs = mesh.vertices; var nr = mesh.normals; var uv = new UnityEngine.Vector2[vs.Length];
-    for (int k = 0; k < vs.Length; k++) uv[k] = nr[k].y > 0.5f ? P(vs[k].x / 4f, vs[k].z / 4f) : P((vs[k].x + vs[k].z) / 4f, vs[k].y / 4f);
-    mesh.uv = uv; mesh.RecalculateBounds(); UnityEngine.Object.DestroyImmediate(cubeTmp);
+    var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var uv = new System.Collections.Generic.List<UnityEngine.Vector2>(); var tris = new System.Collections.Generic.List<int>();
+    void Quad(UnityEngine.Vector3 p0, UnityEngine.Vector3 p1, UnityEngine.Vector3 p2, UnityEngine.Vector3 p3, UnityEngine.Vector3 outward)
+    {
+        if (UnityEngine.Vector3.Dot(UnityEngine.Vector3.Cross(p1 - p0, p2 - p0), outward) < 0f) { var sw = p1; p1 = p3; p3 = sw; }
+        bool top = outward.y > 0.5f; int i0 = vs.Count;
+        foreach (var v in new[] { p0, p1, p2, p3 }) { vs.Add(v); uv.Add(top ? P(v.x / 4f, v.z / 4f) : P((v.x + v.z) / 4f, v.y / 4f)); }
+        tris.AddRange(new[] { i0, i0 + 1, i0 + 2, i0, i0 + 2, i0 + 3 });
+    }
+    foreach (var run in runs)
+    {
+        if (run.Count < 2) continue; int n = run.Count; var top = new float[n];
+        for (int i = 0; i < n; i++) { float sum = 0f; int k = 0; for (int j = UnityEngine.Mathf.Max(0, i - rimSmooth); j <= UnityEngine.Mathf.Min(n - 1, i + rimSmooth); j++) { sum += run[j].hi; k++; } top[i] = UnityEngine.Mathf.Max(run[i].hi, sum / k) + rimH; }
+        for (int i = 0; i < n - 1; i++)
+        {
+            var r0 = run[i]; var r1 = run[i + 1]; var o3 = V(r0.o.x, 0f, r0.o.y); var t3 = V(r1.c.x - r0.c.x, 0f, r1.c.y - r0.c.y);
+            UnityEngine.Vector3 F(UnityEngine.Vector2 c, float y) => V(c.x, y, c.y);
+            var f0b = F(r0.c, r0.lo - 1f); var f1b = F(r1.c, r1.lo - 1f); var f0t = F(r0.c, top[i]); var f1t = F(r1.c, top[i + 1]);
+            var b0b = F(r0.c + r0.o * rimThick, r0.lo - 1f); var b1b = F(r1.c + r1.o * rimThick, r1.lo - 1f); var b0t = F(r0.c + r0.o * rimThick, top[i]); var b1t = F(r1.c + r1.o * rimThick, top[i + 1]);
+            Quad(f0b, f1b, f1t, f0t, -o3); Quad(b0b, b1b, b1t, b0t, o3); Quad(f0t, f1t, b1t, b0t, UnityEngine.Vector3.up);
+            if (i == 0) Quad(f0b, f0t, b0t, b0b, -t3);
+            if (i == n - 2) Quad(f1b, f1t, b1t, b1b, t3);
+        }
+    }
+    var mesh = new UnityEngine.Mesh { name = "Rims815", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+    mesh.SetVertices(vs); mesh.SetUVs(0, uv); mesh.SetTriangles(tris, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
     UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/Terrain/Main3/Rims815.asset");
     var go = new UnityEngine.GameObject("Rims"); go.transform.SetParent(stops, false);
     go.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; go.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = rockMat; go.AddComponent<UnityEngine.MeshCollider>().sharedMesh = mesh;

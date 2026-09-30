@@ -464,7 +464,8 @@ void SetLook(string path, string sun, float elev, float bearing, float inten, st
 // 8.14a (Wren, LightingOptions.md 6 pick): day one is "A Tri": candidate A (sun 24 from 205 at 1.25, fog #9A9A94 110 to 850,
 // crush 0.28, wash 0.18, corners 0.4, glow 80 #C8A070) with Trilight ambient #6A7080 / #6E6658 / #3A3228 and a 30 degree gold band.
 // The 8.9g/8.9j values (sun 32 from 200, fill #998A73, crush 0.15, corners 0.3) are in this recipe's history.
-SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 24f, 205f, 1.25f, "#6E6658", "#5E6878", "#E3A968", "#9A9A94", 110f, 850f);
+// 8.15 (Vesper, Wren: the next single lighting change): sun elevation 24 to 20, for longer east shadows and a rim on the crests
+SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 20f, 205f, 1.25f, "#6E6658", "#5E6878", "#E3A968", "#9A9A94", 110f, 850f);
 {
     var dayOneLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayOne.asset");
     if (dayOneLook != null)

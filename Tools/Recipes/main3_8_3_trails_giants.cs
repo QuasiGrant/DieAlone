@@ -237,8 +237,13 @@ int res = data.heightmapResolution; var hm = data.GetHeights(0, 0, res, res);
 var bestD = new float[res, res]; var nearH = new float[res, res]; var sumW = new float[res, res]; var sumH = new float[res, res];
 for (int z = 0; z < res; z++) for (int x = 0; x < res; x++) bestD[z, x] = float.MaxValue;
 var tOrg = terrain.transform.position;   // 8.9j: the terrain starts at (-40, -200); heightmap and alphamap indices count from there
-float cellX = size.x / (res - 1), cellZ = size.z / (res - 1); const float flatR = 1.5f, blendR = 5f, reach = flatR + blendR, stackTol = 1f;   // 8.14a: a 5 m blend, so a trail cut into a slope has sloping banks, not walls (was 2.5)
-void EachCell(System.Action<int, int, float, float> visit)
+float cellX = size.x / (res - 1), cellZ = size.z / (res - 1); const float flatR = 1.5f, blendR = 5f, stackTol = 1f;   // 8.14a: a 5 m blend, so a trail cut into a slope has sloping banks, not walls (was 2.5)
+// 8.14a gate (Marlow, Pim: the last 45 m of Camp to pump ran in a trench with 4 to 8 m banks, the lake out of sight): that leg's banks
+// blend over trenchBlendR
+const float trenchBlendR = 14f; const string trenchLeg = "Camp to pump";
+float BlendFor(string leg) => leg == trenchLeg ? trenchBlendR : blendR;
+var bestBlend = new float[res, res]; const float reach = flatR + trenchBlendR;   // flatR plus the widest blend: the cells any leg can touch
+void EachCell(System.Action<int, int, float, float, float> visit)
 {
     foreach (var b in built) if (b.name != CarvedLeg)   // the climb is carved by 8.1
         for (int i = 0; i < b.path.Count; i++)
@@ -249,16 +254,16 @@ void EachCell(System.Action<int, int, float, float> visit)
             for (int z = z0; z <= z1; z++) for (int x = x0; x <= x1; x++)
             {
                 float d = UnityEngine.Vector2.Distance(p, P(tOrg.x + x * cellX, tOrg.z + z * cellZ));
-                if (d < reach) visit(z, x, d, b.prof[i]);
+                if (d < flatR + BlendFor(b.name)) visit(z, x, d, b.prof[i], BlendFor(b.name));
             }
         }
 }
-EachCell((cz, cx, dist, ph) => { if (dist < bestD[cz, cx]) { bestD[cz, cx] = dist; nearH[cz, cx] = ph; } });
-EachCell((cz, cx, dist, ph) => { if (UnityEngine.Mathf.Abs(ph - nearH[cz, cx]) > stackTol) return; float wk = UnityEngine.Mathf.Exp(-(dist * dist) / (1.2f * 1.2f)); sumW[cz, cx] += wk; sumH[cz, cx] += wk * ph; });
+EachCell((cz, cx, dist, ph, br) => { if (dist < bestD[cz, cx]) { bestD[cz, cx] = dist; nearH[cz, cx] = ph; bestBlend[cz, cx] = br; } });
+EachCell((cz, cx, dist, ph, br) => { if (UnityEngine.Mathf.Abs(ph - nearH[cz, cx]) > stackTol) return; float wk = UnityEngine.Mathf.Exp(-(dist * dist) / (1.2f * 1.2f)); sumW[cz, cx] += wk; sumH[cz, cx] += wk * ph; });
 for (int z = 0; z < res; z++) for (int x = 0; x < res; x++)
 {
-    float d = bestD[z, x]; if (d >= reach) continue;
-    float w = d <= flatR ? 1f : 1f - SS((d - flatR) / blendR);
+    float d = bestD[z, x]; if (d >= flatR + bestBlend[z, x]) continue;
+    float w = d <= flatR ? 1f : 1f - SS((d - flatR) / bestBlend[z, x]);
     if (sumW[z, x] < 1e-6f) continue;
     float cur = hm[z, x] * size.y + baseY; float nh = L(cur, sumH[z, x] / sumW[z, x], w);
     hm[z, x] = UnityEngine.Mathf.Clamp01((nh - baseY) / size.y);

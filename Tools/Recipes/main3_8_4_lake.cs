@@ -39,11 +39,23 @@ w.GetComponent<UnityEngine.Renderer>().sharedMaterial = waterMat;
 // wadeOver over the ground there, so the water's visible edge is the stop (Valley.md 8); under the dock deck and the boathouse floor they stay low
 var wade = new UnityEngine.GameObject("WadeLimit"); wade.transform.SetParent(Lk, false);
 const int segs = 96; const float wadeRing = 1f, wadeOver = 1.5f;
+// 8.14a gate (Marlow: at the lake's ends the ring stood 1.1 to 1.5 m short of the water on dry ground): each ring point moves in along
+// its ray from the centre to where the ground first falls to the water (searched from wadeOut down to wadeIn of the ellipse)
+const float wadeOut = 1.1f, wadeIn = 0.8f, wadeSearch = 0.005f, wadeWet = 0.05f;
+UnityEngine.Vector3 WaterLine(float t)
+{
+    for (float r = wadeOut; r >= wadeIn; r -= wadeSearch)
+    {
+        float x = cx + a * r * UnityEngine.Mathf.Cos(t), z = cz + b * r * UnityEngine.Mathf.Sin(t);
+        if (H(x, z) <= water + wadeWet) return V(x, 0f, z);
+    }
+    return V(cx + a * wadeRing * UnityEngine.Mathf.Cos(t), 0f, cz + b * wadeRing * UnityEngine.Mathf.Sin(t));
+}
 for (int i = 0; i < segs; i++)
 {
     float t0 = i * 2f * UnityEngine.Mathf.PI / segs, t1 = (i + 1) * 2f * UnityEngine.Mathf.PI / segs;
-    var p0 = V(cx + a * wadeRing * UnityEngine.Mathf.Cos(t0), 0f, cz + b * wadeRing * UnityEngine.Mathf.Sin(t0));
-    var p1 = V(cx + a * wadeRing * UnityEngine.Mathf.Cos(t1), 0f, cz + b * wadeRing * UnityEngine.Mathf.Sin(t1));
+    var p0 = WaterLine(t0);
+    var p1 = WaterLine(t1);
     var mid = (p0 + p1) * 0.5f; var dir = p1 - p0;
     var box = new UnityEngine.GameObject("W" + i); box.transform.SetParent(wade.transform, false);
     // -5.0 under the dock deck, only as wide as the deck, so the notch beside the dock root is closed at the water too

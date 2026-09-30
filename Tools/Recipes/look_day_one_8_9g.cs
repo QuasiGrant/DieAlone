@@ -1,5 +1,5 @@
 // 8.9g (edit mode): makes Play start in the "Day one" look by setting startLook on LookPreview in
-// Assets/Prefabs/GameSystems.prefab. The day-one values themselves (A Tri since 8.14a: sun 24 from bearing 205, crushed blacks 0.28, dark corners 0.4,
+// Assets/Prefabs/GameSystems.prefab. The day-one values themselves (A Tri since 8.14a, sun 20 since 8.15: from bearing 205, crushed blacks 0.28, dark corners 0.4,
 // fill #6E6658 with trilight) live in their owning recipe, main3_8_9d_dress_camp.cs, so a runner rebuild keeps them; the night look
 // keeps its own crush and corners in main3_8_9f_look.cs. This recipe only reads them back. It saves only the prefab,
 // never a blanket SaveAssets, so the URP global settings are not re-saved. Reports any scene instance overriding startLook.
