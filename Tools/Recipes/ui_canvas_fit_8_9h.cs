@@ -1,6 +1,7 @@
 // 8.9h (edit mode): adds CanvasFit to the PauseMenu and HUD canvases in Assets/Prefabs/GameSystems.prefab so both stay
 // readable and on screen at any window size. PauseMenu fits its Panel/Content box; the HUD has no fit box (its prompt
-// and dot follow the screen; the prompt box spans the screen width). Reference height 720 and floor 1 match the dev panel.
+// and dot follow the screen; the prompt box spans the screen width). Reference height 720 and floor 1 here; run
+// ui_reference_1080_8_9h.cs after it (once) to move the player canvases to the 1080 reference.
 // Saves only the prefab.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 const string PrefabPath = "Assets/Prefabs/GameSystems.prefab";

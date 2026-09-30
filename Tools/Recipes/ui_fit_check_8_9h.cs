@@ -4,7 +4,8 @@
 // Run after ui_game_view_size_8_9h.cs has set the size and one frame has passed; then capture_game_view source=screen.
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 string menu = "dev";
-const float MinReadablePx = 11f;
+// readable floor: player menus at least 14.7 px (Style.md 7.2: 22 px at 1080 rows, so 14.7 at 720); the dev panel 11 px
+float MinReadablePx = menu == "dev" ? 11f : 14.7f; string smallestName = "";
 UnityEngine.Application.runInBackground = true;
 var F = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public;
 UnityEngine.Canvas target = null;
@@ -48,8 +49,8 @@ foreach (var t in target.GetComponentsInChildren<UnityEngine.UI.Text>())
     // its minimum), times the canvas scale; read from the layout, since the render generator can lag a size change
     float units = t.fontSize; if (t.resizeTextForBestFit && t.preferredWidth > t.rectTransform.rect.width) units = UnityEngine.Mathf.Max(t.resizeTextMinSize, t.fontSize * t.rectTransform.rect.width / t.preferredWidth);
     float px = units * target.scaleFactor;
-    if (px < smallest) smallest = px;
+    if (px < smallest) { smallest = px; smallestName = t.text; }
     if (px < MinReadablePx) bad.Add("too small (" + px.ToString("F1") + " px): " + t.text);
 }
-return menu + " at " + screen.width + " x " + screen.height + " canvas scale " + target.scaleFactor.ToString("F2") + " | visible texts " + texts + " smallest " + smallest.ToString("F1") + " px | "
+return menu + " at " + screen.width + " x " + screen.height + " canvas scale " + target.scaleFactor.ToString("F2") + " | visible texts " + texts + " smallest " + smallest.ToString("F1") + " px (" + smallestName + ", floor " + MinReadablePx + ") | "
     + (bad.Count == 0 ? "fits: YES" : "fits: NO\n" + string.Join("\n", bad));

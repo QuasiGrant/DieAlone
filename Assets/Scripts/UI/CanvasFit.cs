@@ -9,13 +9,13 @@ using UnityEngine.UI;
 public class CanvasFit : MonoBehaviour
 {
     [Tooltip("Screen height, in pixels, at which one reference unit is one pixel.")]
-    [SerializeField] private float referenceHeight = 720f;
+    [SerializeField] private float referenceHeight = 1080f;   // player canvases: Style.md 7.2 sizes typed as written
     [Tooltip("Smallest scale from the height rule, so small windows keep readable text.")]
-    [SerializeField] private float minScale = 1f;
+    [SerializeField] private float minScale = 0.667f;         // 720 rows
     [Tooltip("Optional: the box that must always fit on screen (a menu's content). Empty means no fit limit.")]
     [SerializeField] private RectTransform fitTarget;
     [Tooltip("Space kept around the fit target, in reference units on each side.")]
-    [SerializeField] private float fitMargin = 16f;
+    [SerializeField] private float fitMargin = 24f;
 
     private CanvasScaler scaler;
     private Vector2Int fitted;
