@@ -15,6 +15,9 @@
 //    top stands less than spikeRise over the highest ground on the ring spikeOut outside it has no spike left and passes as it is.
 // 5. FENCE (13.6): a walk north along the inside of the fence (x fenceWalkX, z 160 to 300), reported with where it stalls; and walks and
 //    sprint-jumps east every 5 m; FAIL if one ends east of the fence (IW1 and the panels hold).
+// 6. TRAPS (8.15, Wren: nobody trapped however they got there): the player is dropped on every trapStep grid point over the climb zone
+//    (x -12 to 92, z 190 to 335; not inside rock), left trapSettle seconds to slide, and from each distinct place it settles (trapStep grid) tries 8 walks
+//    and 8 sprint-jumps of trapTry metres; FAIL if none ends trapOut metres or more from where it settled.
 // Bounded loops only. Restores CairnGate and runInBackground (false) before it returns.
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 UnityEngine.Application.runInBackground = true;
@@ -24,7 +27,8 @@ var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Set
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(new UnityEngine.Vector3(x, 0f, z)) + ter.transform.position.y;
 const float dt = 0.02f, pushWalk = 25f, sideWalk = 20f, hopTime = 2.2f, pocketGain = 3f, pocketStep = 6f, trenchBack = 30f, trenchStep = 5f, trenchOut = 4f, trenchUp = 1.5f;
 const float spikeRise = 2f, spikeTopDrop = 1.5f, spikeTopReach = 3f, spikeOut = 4f, fenceX = 396f, fenceWalkX = 393f, fenceZ0 = 160f, fenceZ1 = 300f, fenceStep = 5f, fencePast = 0.5f;
-const int hopDirs = 12, spikeStarts = 16, stallSteps = 600, walkSteps = 8000;
+const int hopDirs = 12, spikeStarts = 16, stallSteps = 600, walkSteps = 8000, trapWays = 8;
+const float trapStep = 2.5f, trapSettle = 3f, trapTry = 10f, trapOut = 2f; var trapX = new UnityEngine.Vector2(-12f, 92f); var trapZ = new UnityEngine.Vector2(190f, 335f);
 var pocketX = new UnityEngine.Vector2(46f, 80f); var pocketZ = new UnityEngine.Vector2(165f, 200f);
 var spikes = new (UnityEngine.Vector2 c, float r)[] { (new UnityEngine.Vector2(90f, 146f), 12f), (new UnityEngine.Vector2(62f, 48f), 14f), (new UnityEngine.Vector2(118f, 66f), 10f) };   // 8.1 despike zones
 var pumpAt = new UnityEngine.Vector2(190f, 97f);
@@ -169,6 +173,33 @@ try
     }
     if (sf > 0) allPass = false;
     sb.Append("SPIKES: " + string.Join("; ", tops) + "; " + st + " pushes in, " + sf + " on a top: " + (sf == 0 ? "PASS" : "FAIL") + sFirst + "\n");
+
+    // ---- 6. traps
+    {
+        var settled = new System.Collections.Generic.HashSet<long>(); var spots = new System.Collections.Generic.List<UnityEngine.Vector3>();
+        for (float x = trapX.x; x <= trapX.y; x += trapStep) for (float z = trapZ.x; z <= trapZ.y; z += trapStep)
+        {
+            var g0 = Ground(x, z); if (Occupied(g0)) continue;   // a drop inside rock is no place a player can be
+            Put(g0); for (float t = 0f; t < trapSettle; t += dt) pc.Step(UnityEngine.Vector3.zero, false, false, dt);
+            var e = pc.transform.position; long key = ((long)UnityEngine.Mathf.FloorToInt(e.x / trapStep) << 32) ^ (uint)UnityEngine.Mathf.FloorToInt(e.z / trapStep);
+            if (settled.Add(key)) spots.Add(e);
+        }
+        int trapped = 0; var trapList = new System.Collections.Generic.List<string>();
+        foreach (var sp in spots)
+        {
+            bool free = false;
+            for (int k = 0; k < trapWays * 2 && !free; k++)
+            {
+                cc.enabled = false; pc.transform.position = sp; cc.enabled = true; UnityEngine.Physics.SyncTransforms();
+                var d = UnityEngine.Quaternion.Euler(0f, (k % trapWays) * 360f / trapWays, 0f) * UnityEngine.Vector3.forward;
+                if (k < trapWays) Walk(d, trapTry); else Hop(d, hopTime);
+                if (UnityEngine.Vector3.Distance(pc.transform.position, sp) >= trapOut) free = true;
+            }
+            if (!free) { trapped++; if (trapList.Count < 10) trapList.Add(sp.ToString("F1")); }
+        }
+        if (trapped > 0) allPass = false;
+        sb.Append("TRAPS: " + spots.Count + " places the player settles in the climb zone, " + trapped + " with no way out: " + (trapped == 0 ? "PASS" : "FAIL " + string.Join(", ", trapList)) + "\n");
+    }
 
     // ---- 5. the fence line
     Put(Ground(fenceWalkX, fenceZ0)); var stalls = new System.Collections.Generic.List<string>();

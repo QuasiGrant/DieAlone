@@ -748,7 +748,7 @@ float LocalMax(int i, int j) { float m = rh[i, j]; for (int a = UnityEngine.Math
 // uphill: rock walls whose tops break in blocks (wallBlock metres, wallBreak metres of height either way, one value per block), so
 // they read as rock, not masonry; drops: a rim collider rimH over the highest walkable ground next to it, inside a broken line of
 // owned boulders (Campsite CS_Rock, tilted, tops 1.15 to 1.3 m over the walkable ground, under the 1.6 m eye), so the valley side stays low and the views stay open (8.14a)
-const float wallBlock = 3f, wallBreak = 0.8f, boulderStep = 1.2f, boulderLow = 1.35f, boulderHigh = 1.5f, boulderSink = 0.2f, boulderTilt = 14f, rimColThick = 0.8f;
+const float wallBackMax = 6f, wallBlock = 3f, wallBreak = 0.8f, boulderStep = 1.2f, boulderLow = 1.35f, boulderHigh = 1.5f, boulderSink = 0.2f, boulderTilt = 14f, rimColThick = 0.8f;
 float BlockNoise(float x, float z) => (UnityEngine.Mathf.PerlinNoise(UnityEngine.Mathf.Floor(x / wallBlock) * 0.37f + 3.1f, UnityEngine.Mathf.Floor(z / wallBlock) * 0.37f + 7.9f) * 2f - 1f) * wallBreak;
 var ringBoxes = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); var rimBoxes = new System.Collections.Generic.List<UnityEngine.Matrix4x4>();
 var rimSpots = new System.Collections.Generic.List<UnityEngine.Vector3>(); int wallEdges = 0, rimEdges = 0, floodCells = 0;
@@ -765,6 +765,9 @@ for (int i = 0; i < RW; i++) for (int j = 0; j < RH; j++)
         // 8.14a: walls stand wallH over the walkable ground beside them (with the slide rule nobody climbs a face, so the 12 m reach that
         // made towers at the chute mouth is gone)
         float top = rise ? LocalMax(i, j) + wallH + BlockNoise(ex, ez) : LocalMax(i, j) + rimH, thick = rise ? wallThick : rimColThick;
+        // 8.15 (Wren: nobody trapped): a wall runs back into the slope until the ground behind it stands at its top (up to wallBackMax), so
+        // the face above drains onto the wall's top instead of into a pit between the wall's back and the face
+        if (rise) for (float back = wallThick; back <= wallBackMax; back += ringCell) { int bi2 = UnityEngine.Mathf.FloorToInt((ex + di * back - ringX0) / ringCell), bj2 = UnityEngine.Mathf.FloorToInt((ez + dj * back - ringZ0) / ringCell); if (bi2 < 0 || bj2 < 0 || bi2 >= RW || bj2 >= RH || flooded[bi2, bj2]) break; thick = back; if (H(ex + di * back, ez + dj * back) >= top) break; }   // never over walkable climb ground
         float bot = UnityEngine.Mathf.Min(rh[i, j], rh[a, b]) - 1f;
         // the rock stands on the far side of the shared edge: its face on the edge, its body over the neighbour cell
         float cxw = ex + di * thick * 0.5f, czw = ez + dj * thick * 0.5f;
