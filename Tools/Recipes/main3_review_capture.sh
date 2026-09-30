@@ -2,18 +2,18 @@
 # Main3 review capture: contact sheets of Main3 as a player sees it (trails, climb, warps, trail ends, invisible stops,
 # day one and night pairs, top-down map) for Marlow, Pim and Vesper. Rerun before every Grant walk.
 # Usage: bash Tools/Recipes/main3_review_capture.sh [outDir]   (from the project root, Editor open on Main3, NOT in Play mode)
-# Default outDir: Docs/Review/2026-09-30-ValleyReview/sheets. Enters Play mode, runs main3_review_capture.cs step "day" then
+# Default outDir: Docs/Captures/Main3Review (git-ignored; only verdicts are committed). Enters Play mode, runs main3_review_capture.cs step "day" then
 # step "night" as detached Editor jobs, leaves Play mode, sets runInBackground back to false and shows ProjectSettings changes.
 # It never stops a Play session it did not start: if the Editor is already playing it fails.
 set -u
 cd "$(dirname "$0")/../.." || exit 1
 R="$(pwd)/Tools/Recipes"
-OUT="${1:-Docs/Review/2026-09-30-ValleyReview/sheets}"
+OUT="${1:-Docs/Captures/Main3Review}"
 unity status 2>/dev/null | grep -q "ready" || { echo "FAIL no Editor in state ready (unity status)"; exit 1; }
 unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "stopped"' || { echo "FAIL Editor is in Play mode or busy; wait for it to stop"; exit 1; }
 mkdir -p Temp
 for step in day night; do
-  sed -e "s|string step = \"day\";|string step = \"$step\";|" -e "s|\"Docs/Review/2026-09-30-ValleyReview/sheets\"|\"$OUT\"|" "$R/main3_review_capture.cs" > "Temp/main3_review_capture_$step.cs"
+  sed -e "s|string step = \"day\";|string step = \"$step\";|" -e "s|\"Docs/Captures/Main3Review\"|\"$OUT\"|" "$R/main3_review_capture.cs" > "Temp/main3_review_capture_$step.cs"
 done
 job() {   # $1 = file; prints the result text
   local id; id=$(unity command --detach eval_file --file "$1" --json 2>/dev/null | sed -n 's/.*"jobId": "\([0-9a-f]*\)".*/\1/p')

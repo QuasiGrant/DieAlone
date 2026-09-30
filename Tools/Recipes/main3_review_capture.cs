@@ -13,7 +13,7 @@ if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 string step = "day";
-string outDir = System.IO.Path.GetFullPath("Docs/Review/2026-09-30-ValleyReview/sheets");
+string outDir = System.IO.Path.GetFullPath("Docs/Captures/Main3Review");
 string tempDir = System.IO.Path.GetFullPath("Temp/ReviewCapture");
 UnityEngine.Application.runInBackground = true;
 const int shotW = 1920, shotH = 988, jpgQuality = 85;
