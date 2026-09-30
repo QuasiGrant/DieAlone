@@ -27,8 +27,9 @@ const int stopRays = 24, trailDiv = 3, trailCols = 5, warpDiv = 3, listDiv = 3, 
 const int mapTiles = 5, mapPx = 512; const float mapTileM = 100f, mapX0 = -50f, mapZ0 = -75f;
 // 8.14a walk views: compass views dip 15 m over 100 m; P4 pitched 10 degrees down; the slot exit (Valley.md rev 10 8.3) and a frame
 // every 2 m round the fin, facing the far front (x -230, y 40) and, at the path end, down to the valley fires (y -40); the pump
-// trench 30, 15 and 5 m short of the pump; the front views face x 440, past the fence and the highway
-const float compassDip = 15f, p4Dip = 10f, finStep = 2f, fireLookX = -230f, fireLookY = 40f, valleyLookY = -40f, eastLookX = 440f;
+// trench 30, 15 and 5 m short of the pump; the front views face x 440, past the fence and the highway; the valley card count gives
+// every drawn mesh within wardNear m of the Ward warp a temporary collider
+const float wardNear = 60f, compassDip = 15f, p4Dip = 10f, finStep = 2f, fireLookX = -230f, fireLookY = 40f, valleyLookY = -40f, eastLookX = 440f;
 var slotExit = new UnityEngine.Vector2(4f, 257.3f); var pumpBack = new[] { 30f, 15f, 5f };
 var inv = System.Globalization.CultureInfo.InvariantCulture;
 
@@ -388,10 +389,12 @@ try
         var mr = mf.GetComponent<UnityEngine.MeshRenderer>(); if (mr == null || !mr.enabled || mr.sharedMaterial == null || mr.sharedMaterial.shader != flameCardShader || mf.sharedMesh == null) continue;
         var vs = mf.sharedMesh.vertices; for (int i = 0; i + 3 < vs.Length; i += 4) flameTops.Add((mf.transform.TransformPoint((vs[i + 2] + vs[i + 3]) * 0.5f), mf.name));
     }
-    string InSight(UnityEngine.Vector3 from)   // flame tops in sight by group: a line with no collider on it
+    // a line is clear when nothing drawn stands on it: colliders without a renderer (rim colliders inside boulders, IW walls) do not hide
+    bool Clear(UnityEngine.Vector3 a, UnityEngine.Vector3 b) { var d = b - a; foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) if (h.collider is UnityEngine.TerrainCollider || h.collider.GetComponent<UnityEngine.Renderer>() != null) return false; return true; }
+    string InSight(UnityEngine.Vector3 from)   // flame tops in sight by group
     {
         var seen = new System.Collections.Generic.SortedDictionary<string, int>();
-        foreach (var f in flameTops) if (!UnityEngine.Physics.Linecast(from, f.top, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) seen[f.group] = seen.TryGetValue(f.group, out var k) ? k + 1 : 1;
+        foreach (var f in flameTops) if (Clear(from, f.top)) seen[f.group] = seen.TryGetValue(f.group, out var k) ? k + 1 : 1;
         if (seen.Count == 0) return "NO FLAME";
         var parts = new System.Collections.Generic.List<string>(); foreach (var kv in seen) parts.Add(kv.Key + " " + kv.Value); return string.Join(", ", parts);
     }
@@ -413,6 +416,24 @@ try
         var end = At(climb.pts, climbLen) + UnityEngine.Vector3.up * eye;
         frames.Add((end, new UnityEngine.Vector3(fireLookX, valleyLookY, end.z), "PATH END, DOWN TO THE VALLEY FIRES: " + InSight(end)));
         walkNotes.Append("- Round the fin: first flame in sight " + firstFlame + "; from the path end: " + InSight(end) + ".\n");
+        // valley cards from the Ward warp eye (Gate_8_14a_Marlow.md 11.3): every drawn mesh within wardNear m gets a temporary collider
+        // so boulders and rock without colliders hide too; a card counts when its top is in sight
+        var wardW = warpsRoot.transform.Find("Ward"); if (wardW == null) return "no warp Ward";
+        var wardEye = Eye(wardW.position); var temps = new System.Collections.Generic.List<UnityEngine.Collider>();
+        foreach (var mf in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshFilter>(UnityEngine.FindObjectsSortMode.None))
+        {
+            var mr = mf.GetComponent<UnityEngine.MeshRenderer>(); if (mr == null || !mr.enabled || mf.sharedMesh == null || mf.GetComponent<UnityEngine.Collider>() != null) continue;
+            if (mr.sharedMaterial != null && mr.sharedMaterial.shader == flameCardShader) continue;
+            if (mr.bounds.SqrDistance(wardEye) > wardNear * wardNear) continue;
+            temps.Add(mf.gameObject.AddComponent<UnityEngine.MeshCollider>());
+        }
+        UnityEngine.Physics.SyncTransforms();
+        int valleyAll = 0, valleySeen = 0;
+        foreach (var f in flameTops) if (f.group == "ValleyFlames") { valleyAll++; if (Clear(wardEye, f.top)) valleySeen++; }
+        foreach (var t in temps) UnityEngine.Object.DestroyImmediate(t);
+        UnityEngine.Physics.SyncTransforms();
+        walkNotes.Append("- Valley fire cards with the top in sight from the Ward warp eye (" + wardEye.x.ToString("F1", inv) + ", " + wardEye.y.ToString("F1", inv) + ", " + wardEye.z.ToString("F1", inv) + "): " + valleySeen + " of " + valleyAll + ".\n");
+        sb.Append("valley cards seen from the Ward warp eye " + valleySeen + " of " + valleyAll + "\n");
         // the pump trench: the last metres of Camp to pump, facing each side
         var pumpLeg = legs.Find(q => q.name == "Camp to pump"); if (pumpLeg.pts == null) return "no leg Camp to pump";
         float pumpLen = Length(pumpLeg.pts);

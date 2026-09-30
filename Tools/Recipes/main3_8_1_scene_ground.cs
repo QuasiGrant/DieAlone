@@ -354,6 +354,15 @@ float SlotCut(float x, float z)
 }
 const float ledgeX0 = -10f, ledgeX1 = 6f, ledgeZ0 = 215f, ledgeZ1 = 285f, ledgeBlend = 16f;
 float LedgeH(float x, float z) => L(exitH, endH, SS(UnityEngine.Vector2.Distance(P(x, z), slotExit) / ledgeBlend));
+// 8.14a (Wren; Marlow's and Vesper's plans): at the path-end stretch the lip stays rimHeight high on its inner face but is only
+// thinLipThick deep, its top falling thinLipFall to the outside, so rays from the path-end eye clear it far steeper than over the
+// 1.2 m-deep lip (the depth, not the height, hid the valley fires). Past it the ground drops benchDrop to a bench benchW wide, then
+// the west face. Marlow's catch shelf (a 0.5 m curb, a shelf 2 m wide and 1.8 m lower, a 1.1 m rim) was built and push-checked
+// first: a sprint-jump from the ledge flew over curb, shelf and rim (9 of 140 pushes off the ledge), so it is in this recipe's history.
+const float thinZ0 = 237f, thinZ1 = 255f, thinLipThick = 0.4f, thinLipFall = 0.4f, benchDrop = 2f, benchW = 2.5f, benchBlend = 1f;
+const float benchX1 = ledgeX0 - thinLipThick, benchX0 = benchX1 - benchW;   // the bench runs x -12.9 to -10.4, under the eye line
+float BenchH(float z) { float ledge = LedgeH(ledgeX0, z); float end = UnityEngine.Mathf.Min(z - thinZ0, thinZ1 - z); return L(ledge, ledge - benchDrop, UnityEngine.Mathf.Clamp01(end / benchBlend)); }
+bool InBench(float x, float z) => x >= benchX0 && x < ledgeX0 && z >= thinZ0 && z <= thinZ1;
 // the approach, J to the chute mouth, carved on the valley side (flat 2 m each side, blended 1.5 m)
 float ApproachH(UnityEngine.Vector2 p, out float d) { d = SegDist(p, pJ, pMouth, out float t); return L(10f, mouthH, t); }
 
@@ -424,6 +433,7 @@ float Height(float x, float z, float footWG, float footNG, float footSG)
             h = UnityEngine.Mathf.Min(h, westFace);
         }
         if (x >= ledgeX0 && x <= ledgeX1 && z >= ledgeZ0 && z <= ledgeZ1) h = LedgeH(x, z);
+        if (InBench(x, z)) h = UnityEngine.Mathf.Min(h, BenchH(z));
         if (x < 26f && x > 0f && z > 255f && z < 270f) h = UnityEngine.Mathf.Min(h, SlotCut(x, z));
     }
     return RoadCarve(x, z, h);
@@ -547,14 +557,14 @@ UnityEngine.Vector2 LeftN(System.Collections.Generic.List<UnityEngine.Vector2> p
 }
 // one wall: its front face on the polyline (moved 'offset' toward the right, then pushed back into the rock by up to 'push'),
 // its body 'thick' metres to the left, from yb to yt at each point. Faces are wound outward; the mesh is its own collider.
-void RockWall(string name, UnityEngine.Transform parent, System.Collections.Generic.List<UnityEngine.Vector2> pts, float[] yb, float[] yt, float thick, float offset, float push, float lean = 0f)   // lean: how far the face's top sits back into the rock (a leaning face)
+void RockWall(string name, UnityEngine.Transform parent, System.Collections.Generic.List<UnityEngine.Vector2> pts, float[] yb, float[] yt, float thick, float offset, float push, float lean = 0f, float topFall = 0f)   // lean: how far the face's top sits back into the rock (a leaning face); topFall: how far the top falls from the front edge to the back
 {
     int n = pts.Count; if (n < 2) return;
     var fb = new UnityEngine.Vector3[n]; var ft = new UnityEngine.Vector3[n]; var bt = new UnityEngine.Vector3[n]; var bb = new UnityEngine.Vector3[n]; var along = new float[n];
     for (int i = 0; i < n; i++)
     {
         var nl = LeftN(pts, i); var f = pts[i] - nl * offset + nl * RR(0f, push); var b = pts[i] + nl * thick;
-        fb[i] = V(f.x, yb[i], f.y); var fl = f + nl * lean; ft[i] = V(fl.x, yt[i], fl.y); bt[i] = V(b.x, yt[i], b.y); bb[i] = V(b.x, yb[i], b.y);
+        fb[i] = V(f.x, yb[i], f.y); var fl = f + nl * lean; ft[i] = V(fl.x, yt[i], fl.y); bt[i] = V(b.x, yt[i] - topFall, b.y); bb[i] = V(b.x, yb[i], b.y);
         along[i] = i == 0 ? 0f : along[i - 1] + UnityEngine.Vector2.Distance(pts[i - 1], pts[i]);
     }
     var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var uvs = new System.Collections.Generic.List<UnityEngine.Vector2>(); var tris = new System.Collections.Generic.List<int>();
@@ -633,11 +643,15 @@ const float rimHeight = 1.1f;
 const float ringRimHeight = 1.2f;
 var ledgeRock = new UnityEngine.GameObject("Ledge").transform; ledgeRock.SetParent(rockRoot.transform, false);
 const float lipH = rimHeight, lipThick = 1.2f, endWallTop = 66.5f, endWallThick = 2f, backWallH = 3f, backWallThick = 1.5f, finTop = 78f;
+void LipPart(string name, float z0, float z1, float height, float thick, float fall)
 {
-    var lip = Resample(new[] { P(ledgeX0, ledgeZ0), P(ledgeX0, ledgeZ1) }, 1f); var yb = new float[lip.Count]; var yt = new float[lip.Count];
-    for (int i = 0; i < lip.Count; i++) { yb[i] = H(ledgeX0 - lipThick, lip[i].y) - 1f; yt[i] = LedgeH(ledgeX0, lip[i].y) + lipH + RR(0f, 0.1f); }
-    RockWall("Lip", ledgeRock, lip, yb, yt, lipThick, 0f, 0f);
+    var lip = Resample(new[] { P(ledgeX0, z0), P(ledgeX0, z1) }, 1f); var yb = new float[lip.Count]; var yt = new float[lip.Count];
+    for (int i = 0; i < lip.Count; i++) { yb[i] = H(ledgeX0 - thick, lip[i].y) - 1f; yt[i] = LedgeH(ledgeX0, lip[i].y) + height + RR(0f, 0.1f); }
+    RockWall(name, ledgeRock, lip, yb, yt, thick, 0f, 0f, 0f, fall);
 }
+LipPart("Lip", ledgeZ0, thinZ0, lipH, lipThick, 0f);
+LipPart("Lip_End", thinZ0, thinZ1, lipH, thinLipThick, thinLipFall);   // the path-end stretch: full height, thin, its top falling outward
+LipPart("Lip_N", thinZ1, ledgeZ1, lipH, lipThick, 0f);
 FlatWall("EndWall_N", ledgeRock, new[] { P(-12f, ledgeZ1), P(ledgeX1 + 0.5f, ledgeZ1) }, endWallTop, endWallThick, 0.4f);
 FlatWall("EndWall_S", ledgeRock, new[] { P(knobX0 + 0.5f, ledgeZ0), P(-12f, ledgeZ0) }, endWallTop, endWallThick, 0.4f);
 // the back wall runs on north to the slot's south wall, so the terrain's one-cell slope at the slot mouth's south corner shows no sky
@@ -711,6 +725,8 @@ for (int i = 0; i < RW; i++) for (int j = 0; j < RH; j++)
     foreach (var (di, dj) in n4)
     {
         int a = i + di, b = j + dj; if (a < 0 || b < 0 || a >= RW || b >= RH || flooded[a, b] || valleyCell[a, b]) continue;
+        // the thin lip at the path end is the named piece above (8.14a): no ring rock or boulder along it, so the view west stays open
+        if (CX(a) > benchX0 - 0.5f && CX(a) < ledgeX0 + ringCell && CZ(b) > thinZ0 - 0.5f && CZ(b) < thinZ1 + 0.5f) continue;
         bool rise = rh[a, b] > rh[i, j] + riseMin;
         float ex = CX(i) + di * ringCell * 0.5f, ez = CZ(j) + dj * ringCell * 0.5f;
         // 8.14a: walls stand wallH over the walkable ground beside them (with the slide rule nobody climbs a face, so the 12 m reach that

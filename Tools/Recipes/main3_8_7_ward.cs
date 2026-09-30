@@ -244,17 +244,24 @@ foreach (var row in frontRows)
         }
     }
 Cards("RidgeFlames", giants, flameCards, flameMat, sheetTiles);
-// the valley fires on the -40 floor, x -110 to -220, z 0 to 500, flame tops 20
-const float valleyX0 = -220f, valleyX1 = -110f, valleyZ0 = 0f, valleyZ1 = 500f, valleyTop = 20f, valleyStepX = 20f, valleyStepZ = 26f, valleyJitter = 8f;
+// the valley fires on the -40 floor, x -110 to -220, z 0 to 500; 8.14a (Vesper, Wren): flame tops 35 to 45 (were 20: 60 m flames, under
+// the 1.5 to 2 times a giant of Style.md 6.3.2), each card its own top so the tops never make a row
+const float valleyX0 = -220f, valleyX1 = -110f, valleyZ0 = 0f, valleyZ1 = 500f, valleyTopLow = 35f, valleyTop = 45f, valleyStepX = 20f, valleyStepZ = 26f, valleyJitter = 8f;
 var valley = new UnityEngine.GameObject("ValleyFires").transform; valley.SetParent(fire.transform, false);
 var valleyCards = new System.Collections.Generic.List<(UnityEngine.Vector3, float, float, int, float, float)>();
 for (float z = valleyZ0; z <= valleyZ1; z += valleyStepZ)
     for (float x = valleyX1; x >= valleyX0; x -= valleyStepX)
     {
         float fx = UnityEngine.Mathf.Clamp(x + R(-valleyJitter, valleyJitter), valleyX0, valleyX1), fz = UnityEngine.Mathf.Clamp(z + R(-valleyJitter, valleyJitter), valleyZ0, valleyZ1), fb = RidgeY(fx, fz) - 2f;
-        valleyCards.Add((V(fx, fb, fz), R(40f, 56f), CardH(fb, valleyTop) * R(flameLow, 1f), FlameFrame(), 0f, 1f));
+        valleyCards.Add((V(fx, fb, fz), R(40f, 56f), CardH(fb, R(valleyTopLow, valleyTop)), FlameFrame(), 0f, 1f));
     }
 Cards("ValleyFlames", valley, valleyCards, flameMat, sheetTiles);
+// 8.14a (Vesper): the floor under the valley fires lit #6B2A12, so the burning valley reads as a sea with the flame bases hidden in it;
+// a sheet glowLift over the floor on DieAlone/FireStandIn, shown with the smoke columns (night and day two)
+const float glowLift = 0.5f, glowPad = 10f, glowStep = 10f, glowIntensity = 0.35f;
+UnityEngine.ColorUtility.TryParseHtmlString("#6B2A12", out var valleyGlowC);
+var valleyGlow = Grid("ValleyGlow", valleyX0 - glowPad, valleyX1 + glowPad, valleyZ0 - glowPad, valleyZ1 + glowPad, glowStep, (x, z) => RidgeY(x, z) + glowLift);
+valleyGlow.transform.SetParent(valley, true);
 // night smoke columns (Valley.md 5.4, 8.14a stand-ins): from nightfall of night 1, columnCount columns stand over the far front to
 // columnTop, lit from below up to columnLit; stacked cylinders widening upward on DieAlone/Backdrop in the smoke colour, the lit part a
 // warm glow on DieAlone/FireStandIn. Shown at night and on day two (LookVisibility); no colliders, no shadows
@@ -265,6 +272,10 @@ var smokeMat = ColumnMat("Assets/Materials/Blockout/Blockout_SmokeColumn.mat", b
 UnityEngine.ColorUtility.TryParseHtmlString("#5A2412", out var litUnder);   // Style.md 2.3 lit underside
 var glowMat = ColumnMat("Assets/Materials/Blockout/Blockout_SmokeColumnLit.mat", fireStand, m => { m.SetColor("_Color", litUnder); m.SetFloat("_Intensity", columnGlow); });
 var columns = new UnityEngine.GameObject("SmokeColumns"); columns.transform.SetParent(fire.transform, false); var columnParts = new System.Collections.Generic.List<UnityEngine.GameObject>();
+{   // the valley glow (above) on its own FireStandIn material, shown with the columns
+    var valleyGlowMat = ColumnMat("Assets/Materials/Blockout/Blockout_ValleyGlow.mat", fireStand, m => { m.SetColor("_Color", valleyGlowC); m.SetFloat("_Intensity", glowIntensity); });
+    var vgr = valleyGlow.GetComponent<UnityEngine.MeshRenderer>(); vgr.sharedMaterial = valleyGlowMat; columnParts.Add(valleyGlow);
+}
 var colSteps = new[] { (0f, 0.4f, 18f), (0.4f, 0.72f, 28f), (0.72f, 1f, 40f) };   // share of the height from, to, radius
 foreach (var cz in columnZ)
 {
