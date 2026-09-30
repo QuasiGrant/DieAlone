@@ -29,7 +29,10 @@ const int mapTiles = 5, mapPx = 512; const float mapTileM = 100f, mapX0 = -50f, 
 // every 2 m round the fin, facing the far front (x -230, y 40) and, at the path end, down to the valley fires (y -40); the pump
 // trench 30, 15 and 5 m short of the pump; the front views face x 440, past the fence and the highway; the valley card count gives
 // every drawn mesh within wardNear m of the Ward warp a temporary collider
-const float wardNear = 60f, compassDip = 15f, p4Dip = 10f, finStep = 2f, fireLookX = -230f, fireLookY = 40f, valleyLookY = -40f, eastLookX = 440f;
+// compassOut: the deck walkway, the cab's half width 2.2 plus half the 2.2 m walkway; markerBack: marker frames stand this far along
+// the trail from the point nearest the marker
+const float markerBack = 5f, markerLookUp = 1.4f, markerRise = 1.5f;   // markerRise: a stand this much above or below the marker is on a bank
+const float wardNear = 60f, compassOut = 3.3f, compassDip = 15f, p4Dip = 10f, finStep = 2f, fireLookX = -230f, fireLookY = 40f, valleyLookY = -40f, eastLookX = 440f;
 var slotExit = new UnityEngine.Vector2(4f, 257.3f); var pumpBack = new[] { 30f, 15f, 5f };
 var inv = System.Globalization.CultureInfo.InvariantCulture;
 
@@ -377,7 +380,7 @@ try
         var deckEye = new UnityEngine.Vector3(towerT.transform.position.x, cabT.position.y + eye, towerT.transform.position.z);
         var frames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
         foreach (var d in new[] { ("NORTH", 0f), ("EAST", 90f), ("SOUTH", 180f), ("WEST", 270f) })
-            frames.Add((deckEye, Toward(deckEye, d.Item2, 100f) + UnityEngine.Vector3.down * compassDip, "TOWER DECK FACING " + d.Item1));
+            { var e = deckEye + UnityEngine.Quaternion.Euler(0f, d.Item2, 0f) * UnityEngine.Vector3.forward * compassOut; frames.Add((e, Toward(e, d.Item2, 100f) + UnityEngine.Vector3.down * compassDip, "TOWER DECK WALKWAY FACING " + d.Item1)); }   // 8.14a gate: on the walkway, outside the cab (inside it the posts and lamps covered the view)
         Sheet("Compass_Views.jpg", "Compass views from the tower deck: north, east, south, west", frames, pairDiv, 2);
     }
 
@@ -451,6 +454,25 @@ try
         }
         Sheet("Walk_Views.jpg", "Hand-walk views: P4 east, round the fin (flame tops in sight), the pump trench, east from the front", frames, listDiv, listCols);
     }
+    // 3d2. every junction marker from the trail side (Gate_8_14a_Pim.md 2): markerBack m from it toward the trail point nearest it,
+    // facing it; the gate T set from the Lot Highway warp
+    {
+        var frames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
+        var jm = UnityEngine.GameObject.Find("Ground815/JunctionMarkers"); if (jm == null) return "no Ground815/JunctionMarkers";
+        foreach (UnityEngine.Transform m in jm.transform)
+        {
+            var mp = m.position; float best = float.MaxValue; System.Collections.Generic.List<UnityEngine.Vector3> bl = null; float bs = 0f;
+            foreach (var leg in legs) { float len = Length(leg.pts); for (float s = 0f; s <= len; s += 1f) { var q = At(leg.pts, s); float d = new UnityEngine.Vector2(q.x - mp.x, q.z - mp.z).magnitude; if (d < best) { best = d; bl = leg.pts; bs = s; } } }
+            if (bl == null) continue;
+            var toTrail = new UnityEngine.Vector3(At(bl, bs).x - mp.x, 0f, At(bl, bs).z - mp.z); if (toTrail.sqrMagnitude < 0.01f) toTrail = UnityEngine.Vector3.forward;
+            var stand = mp + toTrail.normalized * markerBack; if (UnityEngine.Mathf.Abs(Ground(stand.x, stand.z, mp.y + markerBack) - Ground(mp.x, mp.z, mp.y)) > markerRise) stand = mp - toTrail.normalized * markerBack;   // off a bank: the other side
+            var c = Eye(stand);
+            frames.Add((c, new UnityEngine.Vector3(mp.x, Ground(mp.x, mp.z, mp.y) + markerLookUp, mp.z), m.name.Replace('_', ' ').ToUpperInvariant()));
+        }
+        var gb = warpsRoot.transform.Find("Lot_Highway"); var gt = UnityEngine.GameObject.Find("FrontZone/GateT");
+        if (gb != null && gt != null) { var c = Eye(gb.position); frames.Add((c, new UnityEngine.Vector3(gt.transform.GetChild(0).position.x, c.y - 0.3f, gt.transform.GetChild(0).position.z), "GATE T SET FROM THE LOT")); }
+        Sheet("Markers.jpg", "Junction markers from their trails, " + markerBack.ToString("F0", inv) + " m back", frames, listDiv, listCols);
+    }
 
     // 3e. every collider without a renderer, scene-wide, active or not (Pim, Gate_8_14_Pim.md: only IW1 to IW3 may be invisible walls)
     int invisibleCount = 0; var invGroups = new System.Collections.Generic.SortedDictionary<string, (int n, int active, UnityEngine.Bounds b)>();
@@ -465,7 +487,7 @@ try
             if (col is UnityEngine.TerrainCollider || col.GetComponent<UnityEngine.Renderer>() != null || col.transform.IsChildOf(pc.transform) || col.gameObject.scene != scene) continue;
             bool active = col.enabled && col.gameObject.activeInHierarchy;
             var b = col.bounds;   // bounds of an inactive collider read zero: from its transform instead
-            if (!active) b = new UnityEngine.Bounds(col.transform.position, col.transform.lossyScale);
+            if (!active) { var bc = col as UnityEngine.BoxCollider; b = bc != null ? new UnityEngine.Bounds(col.transform.TransformPoint(bc.center), UnityEngine.Vector3.Scale(bc.size, col.transform.lossyScale)) : new UnityEngine.Bounds(col.transform.position, col.transform.lossyScale); }   // 8.14a gate (Pim): an inactive box reports its own size
             string path = PathOf(col.transform); invisibleCount++;
             list.Append("| " + path + " | " + col.GetType().Name + " | " + (active ? "yes" : "no") + " | " + (col.isTrigger ? "yes" : "no") + " | " + UnityEngine.LayerMask.LayerToName(col.gameObject.layer) + " | " + b.center.x.ToString("F1", inv) + ", " + b.center.y.ToString("F1", inv) + ", " + b.center.z.ToString("F1", inv) + " | " + b.size.x.ToString("F1", inv) + ", " + b.size.y.ToString("F1", inv) + ", " + b.size.z.ToString("F1", inv) + " |\n");
             var parts = path.Split('/'); string group = parts.Length > 2 ? parts[0] + "/" + parts[1] : parts[0];

@@ -67,14 +67,14 @@ void SetLayer(UnityEngine.TerrainLayer l, UnityEngine.Texture2D albedo, UnityEng
     l.diffuseTexture = albedo; l.normalMapTexture = normal; l.tileSize = new UnityEngine.Vector2(tile, tile);
     l.diffuseRemapMin = UnityEngine.Vector4.zero; l.diffuseRemapMax = new UnityEngine.Vector4(remap.r, remap.g, remap.b, 1f); UnityEditor.EditorUtility.SetDirty(l);
 }
-const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f, trailLift = 1.35f;   // trailLift: the dirt brightened so the tread stands 20 grey over the floor 20 m ahead (Gate.md 4; 8.14a measured about 10)
+const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f, trailLift = 1.5f, burnDim = 0.8f;   // trailLift: the dirt brightened so the tread stands 20 grey over the floor 20 m ahead (Gate.md 4; 8.14a measured about 10)
 // rockTile: rock at 10 m so its forms read at a distance through the look filter (8.14a)
 UnityEngine.ColorUtility.TryParseHtmlString("#6E6660", out var granite);   // Style.md granite; Rocks_a's mean luma is 0.55 (AssetCatalogue)
 var white = UnityEngine.Color.white;
 var lGround = LayerNamed("Layer_Ground"); var lRock = LayerNamed("Layer_Rock"); var lBurn = LayerNamed("Layer_Burn"); var lTrail = LayerNamed("Layer_Trail"); var lBed = LayerNamed("Layer_LakeBed");
 if (lGround == null || lRock == null || lBurn == null || lTrail == null || lBed == null) return "8.1's terrain layers missing";
 SetLayer(lGround, Tex(surf + "GrassPine_a.png"), Tex(surf + "GrassPine_n.png"), floorTile, white);
-SetLayer(lBurn, Tex(surf + "GrassMud_a.png"), Tex(surf + "GrassMud_n.png"), floorTile, white);
+SetLayer(lBurn, Tex(surf + "GrassMud_a.png"), Tex(surf + "GrassMud_n.png"), floorTile, new UnityEngine.Color(burnDim, burnDim, burnDim));   // 8.15: the burn floor dimmed so the trails through it stand 20 grey over it
 SetLayer(lTrail, Tex("Assets/Textures/Ground054/Ground054_Color.jpg"), null, trailTile, new UnityEngine.Color(trailLift, trailLift, trailLift));
 SetLayer(lRock, Tex(BK + "Models/Rocks/Textures/Rocks_a.png"), Tex(BK + "Models/Rocks/Textures/Rocks_n.png"), rockTile, new UnityEngine.Color(granite.r / rockLuma, granite.g / rockLuma, granite.b / rockLuma));
 SetLayer(lBed, Tex(surf + "Mud_darker_a.png"), Tex(surf + "Mud_darker_n.png"), floorTile, white);
@@ -121,7 +121,10 @@ SetLayer(lScree, Tex(BK + "Models/Rocks/Textures/Rocks_a.png"), Tex(BK + "Models
 var lAsh = new UnityEngine.TerrainLayer { name = "Layer_Ash" }; UnityEditor.AssetDatabase.CreateAsset(lAsh, ashPath);
 SetLayer(lAsh, Tex(surf + "Mud_darker_a.png"), Tex(surf + "Mud_darker_n.png"), floorTile, new UnityEngine.Color(ashGrey, ashGrey, ashGrey));
 layerList.Add(lScree); layerList.Add(lAsh); data.terrainLayers = layerList.ToArray();
-int iRock = layerList.IndexOf(lRock), iScree = layerList.IndexOf(lScree), iAsh = layerList.IndexOf(lAsh);
+int iRock = layerList.IndexOf(lRock), iScree = layerList.IndexOf(lScree), iAsh = layerList.IndexOf(lAsh), iTrail = layerList.IndexOf(lTrail);
+// 8.15 (Pim W1: the climb read -2 grey against its ground): a worn tread climbTread m either side of the line keeps the trail's dirt,
+// blended over climbTreadBlend into the leg's own ground
+const float climbTread = 0.6f, climbTreadBlend = 0.4f;
 {
     int ares = data.alphamapResolution; var alpha = data.GetAlphamaps(0, 0, ares, ares); float aX = size.x / ares, aZ = size.z / ares; int layersN = alpha.GetLength(2);
     int x0 = 0, x1 = UnityEngine.Mathf.Min(ares - 1, (int)((climbMouthX - tOrg.x) / aX)), z0 = (int)((190f - tOrg.z) / aZ), z1 = UnityEngine.Mathf.Min(ares - 1, (int)((340f - tOrg.z) / aZ));
@@ -132,7 +135,10 @@ int iRock = layerList.IndexOf(lRock), iScree = layerList.IndexOf(lScree), iAsh =
         int bi = -1; float bd = float.MaxValue; for (int i = 0; i < climbPts.Count; i++) { float d = UnityEngine.Vector2.Distance(P(climbPts[i].x, climbPts[i].z), P(x, z)); if (d < bd) { bd = d; bi = i; } }
         if (bd > climbPaint || UnityEngine.Mathf.Abs(H(x, z) - climbPts[bi].y) > 2f) continue;   // the bench the trail is on, not the one below
         float s = climbS[bi]; int k = s < sP1 ? iRock : s < sP2 ? iScree : s < sP3 ? iAsh : s < sSlot ? iSoil : iRock;
-        for (int l = 0; l < layersN; l++) alpha[zi, xi, l] = 0f; alpha[zi, xi, k] = 1f;
+        float line = bd;   // distance to the trail line, not its points (2 m apart), so the tread has no beads
+        for (int j = UnityEngine.Mathf.Max(1, bi); j <= UnityEngine.Mathf.Min(climbPts.Count - 1, bi + 1); j++) { var a = P(climbPts[j - 1].x, climbPts[j - 1].z); var ab = P(climbPts[j].x, climbPts[j].z) - a; float tt = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(P(x, z) - a, ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude)); line = UnityEngine.Mathf.Min(line, UnityEngine.Vector2.Distance(P(x, z), a + ab * tt)); }
+        float tread = 1f - UnityEngine.Mathf.Clamp01((line - climbTread) / climbTreadBlend);
+        for (int l = 0; l < layersN; l++) alpha[zi, xi, l] = 0f; alpha[zi, xi, k] = 1f - tread; alpha[zi, xi, iTrail] += tread;
     }
     data.SetAlphamaps(0, 0, alpha);
 }
@@ -291,7 +297,7 @@ Signpost("Sign_Jg", P(265f, 169f), new[] { ("CAMP", LegToward("Camp to Jg", P(26
 Signpost("Sign_J", P(107f, 203f), new[] { ("CAMP", LegToward("Camp to J", P(104f, 206f), signAlong)), ("NORTH LOOP", LegToward("Camp 1 to J", P(104f, 206f), signAlong)) });
 {
     // the trailhead board with the trail map at T (338, 170), facing the lot
-    var tb = new UnityEngine.GameObject("Trailhead_Board").transform; tb.SetParent(markers, false); var at = P(338f, 172.5f); float gy = H(at.x, at.y);
+    var tb = new UnityEngine.GameObject("Trailhead_Board").transform; tb.SetParent(markers, false); var at = P(338f, 172.5f); float gy = H(at.x, at.y); tb.position = V(at.x, gy, at.y);   // the marker's own position is where it stands (capture frames aim at it)
     foreach (var dz in new[] { -0.9f, 0.9f }) Box("Post", tb, V(at.x, gy + 1.0f, at.y + dz), V(0.14f, 2.0f, 0.14f), UnityEngine.Quaternion.identity, plank, true);
     var board = Box("Board", tb, V(at.x, gy + 1.5f, at.y), V(1.9f, 1.1f, 0.06f), UnityEngine.Quaternion.Euler(0f, 90f, 0f), plank, false);
     Label(board.transform, "VALLEY TRAILS");
