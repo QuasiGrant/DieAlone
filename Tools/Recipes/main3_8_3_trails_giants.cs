@@ -483,11 +483,14 @@ void Seg(UnityEngine.Vector2 a, UnityEngine.Vector2 b, float hw) => Stamp(UnityE
 void Ring(UnityEngine.Vector2 c, float r0, float r1) => Stamp(c.x - r1 - 1f, c.x + r1 + 1f, c.y - r1 - 1f, c.y + r1 + 1f, q => { float d = UnityEngine.Vector2.Distance(q, c); return UnityEngine.Mathf.Min(d - r0, r1 - d); });
 // the Ward climb's corridor is narrower on the Wall's face (1.1 m each side, to the pass): its stacked shelves are 3 m apart,
 // so each shelf gets its own outline and walls between them (8.9e re-walk: jumping up or dropping off a shelf skipped legs)
-const float corridorHW = 2.2f, climbHW = 1.1f;
+const float corridorHW = 2.2f, climbHW = 1.1f, cleftHW = 0.8f;
+// in the cleft (parts A and B and the exit) the walls stand 0.8 m each side, on its flat floor: the terrain steps up to the slot walls
+// over one heightmap cell, and a sprint-jump at 1.1 m reached that step and fell 2.9 m back (8.9k climb push check)
+bool InCleft(UnityEngine.Vector2 q) => q.x < 22f && q.y > 225f && q.y < 240f;
 foreach (var b in built)
 {
     // the whole Ward climb is narrow (1.1 m each side, 8.9j): its benches are 13 m apart but 4 m wide, the cleft 2.5 m
-    for (int i = 0; i < b.path.Count - 1; i++) Seg(b.path[i], b.path[i + 1], b.name == CarvedLeg ? climbHW : corridorHW);
+    for (int i = 0; i < b.path.Count - 1; i++) Seg(b.path[i], b.path[i + 1], b.name != CarvedLeg ? corridorHW : InCleft(b.path[i]) ? cleftHW : climbHW);
 }
 Circle(P(170, 160), 18f); Circle(P(282, 238), 30f); Circle(P(292, 108), 20f); Circle(P(78, 146), 9f);
 Circle(P(104, 206), 4f); Circle(P(128, 70), 5f);   // J 4 m (8.9e re-walk: 5 m met the climb's second leg 6 m away)

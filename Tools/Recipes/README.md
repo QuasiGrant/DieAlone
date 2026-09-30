@@ -160,3 +160,5 @@ One recipe per task, run in task order from a clean Main3 rebuild (see PLAN.md R
 | main3_8_9j_climb_check.cs | Play-mode walk of the Ward climb from J to the ledge path end, timed at walk speed; ledge edge and bench edge stops. |
 | main3_day_one_state_check.cs | Edit mode, WalkChecks 12: the fire on (8.9j), the cairn gate and cave board on, shift walls off, scene not dirty. |
 | main3_edge_shots_8_9k.cs | Play mode: one shot of each map edge (N, S, E, W from the floor, and west from the ledge) to Docs/Look/Edges. |
+| main3_climb_push_check_8_9k.cs | Play mode: side pushes (25 m walks, 12-direction sprint-jumps) from every Ward climb trail point, judged against the trail where they land, plus the ledge lip pushed west. |
+| main3_straight_view_climb_8_9k.cs | Edit mode, WalkChecks 11 for the climb: longest straight view per part (J to leg 1, legs, leg 5, cleft, exit and ramp). |
