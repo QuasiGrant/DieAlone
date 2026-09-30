@@ -1,6 +1,6 @@
 # Map edges
 
-**DRAFT revision 2, 2026-09-29, Vesper. Grant: "Make sure the edges of the map are beautiful." Nothing here is decided until it is a line in DECISIONS.md and Grant has confirmed it. All values P; Rook sets LookTuning and builds. Written for Sable's Valley.md and Valley_map.svg revision 2 (G items not yet approved); section 7 says what changes without the valley.** Palette: Style.md 2. Layer spec: Main3.md 2.11.
+**DRAFT revision 3, 2026-09-29, Vesper (rev 3: section 6 covers the ledge by day; 9.4 and 9.5 ledge exceptions). Grant: "Make sure the edges of the map are beautiful." Nothing here is decided until it is a line in DECISIONS.md and Grant has confirmed it. All values P; Rook sets LookTuning and builds. Written for Sable's Valley.md and Valley_map.svg revision 2 (G items not yet approved); section 7 says what changes without the valley.** Palette: Style.md 2. Layer spec: Main3.md 2.11.
 
 ## 1. Rules for every edge
 1. The skyline is land, never a terrain end. Every terrain or backdrop mesh runs at least 150 m past its crest, so no ray from a walkable eye (floor, tower 57.6 and 58.2, platforms, Ward) ever meets a mesh border, a flat plane or the void. The tower eye (57.6) is above the N and S saddles (50) and the whole E ridge (45 to 60): it looks down their back slopes, so those back slopes must fall to an outer floor that runs out to the far range. Valley_map rev 2 ends the ridge land 20 to 30 m past the N, S and E crests: fails until extended.
@@ -44,7 +44,9 @@
 - Closure: the valley-side face is steep rock; walkable ground ends in scree and boulders at its foot. The crest is reached only by the Ward climb.
 - Reference: https://commons.wikimedia.org/wiki/Category:Smoke_from_wildfires
 
-## 6. West from the Ward ledge (night only, ground 98)
+## 6. West from the Ward ledge (day and night, ground 98)
+- The fire is always on; the land hides it, never a switch (DECISIONS 2026-09-29). The climb is night only on day one (Valley.md 5), so no player sees this view in day-one light; the day-one ledge shot is a build check only.
+- Day (day two on, and any day-lit shot): smoke carries the view, not flame. A brown roof (#4A3A32) over the whole west, rising from the far front and streaming off; its underside lit orange (#8A4A28) only low, near the fire line. Flames read as a broken orange line on the far ridge and patches on the valley floor, no more than a third of the width lit at once, with gaps and uneven heights (plus or minus 40 percent); never an even row of cards. Flame emission about half the night value; yellow-white only at the base. Sky under the smoke #B0703C and dimmer than the sky east of the crest; the sun, where the roof covers it, a flat copper disc, no bloom. Ash haze over the floor, the far range a flat silhouette under it (Backdrop _HazeBlend 0.9 or more). The valley floor must be visible from the path end (section 9.4 note).
 - Night one (agreed with Sable, Valley.md 6.1): the burning valley below (floor -40), the far front across 154 degrees, flame tops about 6 degrees above level. Smoke a low lit sheet streaming west, under 100 near the crest rising to about 10 degrees above level far out; underside lit #6B2A12 or brighter along its whole length, or it reads as grey fog. Style.md 6.3.2, 6.3.3 and 6.3.5 are rewritten for night one only: the frame test counts the whole frame at level gaze (fire below, sheet above), not only the sky. Rewrite waits for Grant.
 - Night two on: the wind turns; columns stand and lean east over the crest toward the map (Style.md 6.3.3 as written); brighter, wider as WARD drops.
 - Closure: the ledge lip and the cliff. The valley floor and far side have no colliders; their meshes run 500 m past the last flame so no edge shows behind the fire.
@@ -64,8 +66,8 @@
 1. Crest profiles exactly as Valley.md 2 with the N and E fixes above: the silhouette is what Grant will judge.
 2. Back slopes on N, S and E to at least 150 m past each crest, falling to an outer floor about 0 to 10; the existing far range backdrop beyond, so the saddles and the whole east show land, not void (rule 1.1).
 3. West: terrain to x -40 plus a flat floor at -40 out to a gray far ridge at 30 near x -300 to -500, if the walk reaches the ledge. Otherwise the ledge looks into the void.
-4. Visible stops: gray rock blocks or scree at every ridge foot where a collider sits; no invisible stop on open ground.
-5. Day-one sun per section 8; no smoke, no fire, no night, no trees on crests.
+4. Visible stops: gray rock blocks or scree at every ridge foot where a collider sits; no invisible stop on open ground. Exception, the Ward ledge: the lip and cliff are the stop, collider at the lip; rocks only at the ledge's N and S ends, outside the middle 60 degrees of the west view, so the valley floor shows.
+5. Day-one sun per section 8; no smoke or fire visible from anywhere except the Ward ledge (section 6), no night, no trees on crests.
 6. E-1 run on the gray terrain, with its failures listed, before the walk.
 
 ## 10. Assets
