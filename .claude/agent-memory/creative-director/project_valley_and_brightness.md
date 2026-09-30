@@ -7,5 +7,6 @@ metadata:
 Grant (2026-09-29): land hides the fire, Ward higher than tower, maybe whole game in a valley; day one "way too dark".
 My read: day one dark from low sun (elevation 14) + grey ambient 0.43 + crushBlacks 0.3 + darkCorners 0.45 under canopy. Proposed day one: sun ~28, ambient ~0.55 warm, crushBlacks 0.15, darkCorners 0.3; sunset only as the day ends. A valley at 14 degrees puts the floor in shade; raise the sun first.
 Fire from valley: day one nothing; day two+ glow and smoke above west ridge only. Reveal: Ward summit looking over the far side. Reference: Bierstadt, Sunset in the Yosemite Valley.
+8.9g review (2026-09-29): sun 28/crush 0.15/corners 0.3/fill #998A73 PASS outdoors; cabin marginal (ceiling flat dark); night foreground grass reads pale/snowy. Baseline for exposure only; retake after 8.9j sun 200/32.
 **Why:** unverified in game; numbers are proposals for the coder.
 **How to apply:** check these against the next day-one captures before repeating them. See [[look-slice]].

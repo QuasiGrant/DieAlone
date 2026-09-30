@@ -16,7 +16,7 @@
 
   <!-- background and title -->
   <rect x="0" y="0" width="1200" height="1440" fill="#f6f3ec"/>
-  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Valley map. DRAFT revision 2, 2026-09-29, Sable. Build source for Rook; G items wait for Grant.</text>
+  <text x="60" y="28" font-size="16" font-weight="bold" fill="#222">Valley map. DRAFT revision 3, 2026-09-29, Sable. Build source for Rook; G items wait for Grant.</text>
   <text x="60" y="47" font-size="11" fill="#444">1.8 px per m. Origin south-west, x east, z north, heights absolute. Rules and numbers: Docs/Design/Valley.md. Everything not drawn here is as Main3.md revision 16.</text>
   <text x="60" y="63" font-size="11" fill="#444">The map sits in a ring of ridges. The west ridge and its two hooks hide the fire from every place but the Ward ledge. The tower sees the Ward knob, never what is on it.</text>
 
@@ -24,27 +24,29 @@
   <rect x="60" y="90" width="144" height="810" fill="url(#fire)"/>
   <text transform="translate(96,500) rotate(-90)" text-anchor="middle" font-size="13" font-weight="bold" fill="#7a1e08">FIRE: far front 300 to 500 m further west (z -250 to 750), flames to 130</text>
   <text transform="translate(116,500) rotate(-90)" text-anchor="middle" font-size="10" fill="#7a1e08">burning valley below the face: floor -40, fires x -50 to -150, z 0 to 500, flames to 60</text>
-  <text transform="translate(134,500) rotate(-90)" text-anchor="middle" font-size="10" fill="#7a1e08">day 1 and night 1: east wind lays the smoke flat, streaming west</text>
+  <text transform="translate(134,500) rotate(-90)" text-anchor="middle" font-size="10" fill="#7a1e08">day 1 and night 1: east wind lays the smoke flat, streaming west, hard top (Valley.md 3.2)</text>
+  <text transform="translate(152,500) rotate(-90)" text-anchor="middle" font-size="9" fill="#7a1e08">gray build: flat floor -40 from x -40 to a gray far ridge, crest 30, x -300 to -500; no colliders</text>
   <polygon points="66,160 84,150 84,170" fill="#7a1e08"/>
   <polygon points="66,840 84,830 84,850" fill="#7a1e08"/>
 
   <!-- ridge ring: land outside the valley floor -->
   <rect x="204" y="90" width="918" height="810" fill="#d6c8a8"/>
   <!-- west face, cliff to the burning valley -->
-  <polygon points="276,864 276,756 276,648 283.2,486 290.4,396 294,342 297.6,320.4 297.6,291.6 297.6,273.6 290.4,216 283.2,108 204,108 204,864" fill="#8f7d66"/>
+  <polygon points="276,864 276,756 276,648 283.2,486 290.4,396 294,342 297.6,320.4 297.6,291.6 297.6,252 290.4,216 283.2,108 204,108 204,864" fill="#8f7d66"/>
   <line x1="204" y1="90" x2="204" y2="900" stroke="#4d3d2d" stroke-width="2" stroke-dasharray="6 3"/>
   <text transform="translate(214,690) rotate(-90)" text-anchor="middle" font-size="9" fill="#f6f3ec">terrain grows 40 m west to x -40 (G); the walkable map does not</text>
   <text transform="translate(248,690) rotate(-90)" text-anchor="middle" font-size="10" font-weight="bold" fill="#f6f3ec">WEST FACE: cliff from the crest to the valley at -40</text>
 
   <!-- valley floor (walkable) -->
-  <polygon points="344.4,756 344.4,603 358.8,576 358.8,432 405.6,405 405.6,216 988.8,216 988.8,756" fill="#e2ebd6" stroke="#8a9a7a" stroke-width="1"/>
+  <polygon points="344.4,756 344.4,603 358.8,576 358.8,432 420,405 420,216 988.8,216 988.8,756" fill="#e2ebd6" stroke="#8a9a7a" stroke-width="1"/>
+  <text transform="translate(426,300) rotate(-90)" text-anchor="middle" font-size="8" fill="#5a4a3a">ridge foot x 80</text>
 
   <!-- mid contours (about halfway up each flank) -->
   <polygon points="312,806.4 582,820.8 852,802.8 1041,802.8 1041,468 1068,450 1041,432 1041,171 816,169.2 726,144 636,165.6 384,169.2 351.6,198 351.6,396 322.8,432 322.8,558 301.2,648 312,720" fill="none" stroke="#a0896a" stroke-width="1" stroke-dasharray="3 3"/>
 
   <!-- shaded crests -->
   <g fill="none" stroke="#5a4a3a" stroke-opacity="0.28" stroke-width="18" stroke-linejoin="round" stroke-linecap="round">
-    <polyline points="276,864 276,756 276,648 283.2,486 290.4,396 294,342 297.6,320.4 297.6,291.6 297.6,273.6 290.4,216 283.2,108"/>
+    <polyline points="276,864 276,756 276,648 283.2,486 290.4,396 294,342 297.6,320.4 297.6,291.6 297.6,252 290.4,216 283.2,108"/>
     <polyline points="283.2,108 384,126 438,129.6 492,122.4 582,129.6 726,104.4 852,126 996,129.6 1077,135"/>
     <polyline points="276,864 384,849.6 474,846 582,867.6 708,837 852,846 996,846 1077,842.4"/>
     <polyline points="1077,842.4 1073.4,648 1080.6,540 1078.8,468"/>
@@ -52,7 +54,7 @@
   </g>
   <!-- crest lines -->
   <g fill="none" stroke="#3a3028" stroke-width="2.5" stroke-linejoin="round">
-    <polyline points="276,864 276,756 276,648 283.2,486 290.4,396 294,342 297.6,320.4 297.6,291.6 297.6,273.6 290.4,216 283.2,108"/>
+    <polyline points="276,864 276,756 276,648 283.2,486 290.4,396 294,342 297.6,320.4 297.6,291.6 297.6,252 290.4,216 283.2,108"/>
     <polyline points="283.2,108 384,126 438,129.6 492,122.4 582,129.6 726,104.4 852,126 996,129.6 1077,135"/>
     <polyline points="276,864 384,849.6 474,846 582,867.6 708,837 852,846 996,846 1077,842.4"/>
     <polyline points="1077,842.4 1073.4,648 1080.6,540 1078.8,468"/>
@@ -60,10 +62,10 @@
   </g>
   <!-- crest heights -->
   <g font-size="9" font-weight="bold" fill="#3a3028" style="paint-order:stroke;stroke:#d6c8a8;stroke-width:3px">
-    <text x="282" y="760">100</text><text x="289" y="490">108</text><text x="296" y="400">104</text><text x="286" y="220">105</text><text x="287" y="104">100</text>
-    <text x="378" y="120">88</text><text x="432" y="124">80</text><text x="572" y="124">72</text><text x="846" y="120">70</text><text x="990" y="124">62</text>
+    <text x="282" y="760">100</text><text x="289" y="490">108</text><text x="296" y="400">106</text><text x="286" y="220">105</text><text x="287" y="104">100</text>
+    <text x="378" y="120">88</text><text x="432" y="124">84</text><text x="572" y="124">72</text><text x="846" y="120">70</text><text x="990" y="124">62</text>
     <text x="378" y="866">90</text><text x="468" y="862">75</text><text x="846" y="862">58</text><text x="990" y="862">52</text><text x="262" y="880">95</text>
-    <text x="1086" y="652">55</text><text x="1088" y="544">50</text>
+    <text x="1086" y="652">57</text><text x="1088" y="544">47</text><text x="1084" y="826">45</text><text x="1090" y="310">60</text>
   </g>
   <!-- side labels (Edges.md 1.3: each side reads different) -->
   <g font-size="11" font-weight="bold" fill="#5a4a3a" text-anchor="middle">
@@ -72,23 +74,30 @@
     <text transform="translate(1110,640) rotate(-90)">E RIDGE: low, cut by the road; crest 49 m past the fence</text>
   </g>
   <g font-size="9" fill="#5a4a3a" text-anchor="middle">
-    <text x="660" y="203">west end (x 0 to 120) is the NW hook: 100 falling to 80, load-bearing terrain</text>
+    <text x="660" y="203">west end (x 0 to 120) is the NW hook: 100 falling to 84, load-bearing terrain</text>
     <text x="660" y="778">west end (x 0 to 110) is the SW hook: 95 falling to 75, load-bearing terrain</text>
+  </g>
+  <!-- back slopes: every ridge runs 150 m past its crest to an outer floor 0 to 10 -->
+  <g font-size="8" fill="#5a4a3a" font-style="italic">
+    <text x="660" y="99" text-anchor="middle">beyond the crest: back slope to an outer floor 0 to 10, out to z 500 (150 m past the crest), then the far range</text>
+    <text x="660" y="896" text-anchor="middle">beyond the crest: back slope to an outer floor 0 to 10, out to z -200, then the far range</text>
+    <text transform="translate(1096,640) rotate(-90)" text-anchor="middle">beyond the crest: back slope to an outer floor 0 to 10, out to x 595</text>
   </g>
 
   <!-- knobs -->
-  <rect x="290.4" y="273.6" width="14.4" height="46.8" rx="6" fill="#4a3e32"/>
+  <rect x="290.4" y="252" width="18" height="68.4" rx="1" fill="#4a3e32"/>
   <circle cx="297.6" cy="291.6" r="3" fill="#f6f3ec"/>
   <circle cx="492" cy="122.4" r="7" fill="#6e5e4c"/>
   <circle cx="708" cy="837" r="7" fill="#6e5e4c"/>
   <circle cx="1082.4" cy="306" r="7" fill="#6e5e4c"/>
   <g font-size="9" fill="#3a3028" style="paint-order:stroke;stroke:#d6c8a8;stroke-width:3px">
-    <text x="500" y="112">N knob 90</text>
+    <text x="500" y="112">N knob 94</text>
     <text x="716" y="832">S knob 70, over the boathouse</text>
     <text x="1070" y="296" text-anchor="end">E knob 60</text>
   </g>
-  <text x="310" y="268" font-size="11" font-weight="bold" fill="#2a2018" style="paint-order:stroke;stroke:#d6c8a8;stroke-width:3px">WARD KNOB, summit 115</text>
-  <text x="310" y="281" font-size="9" fill="#2a2018" style="paint-order:stroke;stroke:#d6c8a8;stroke-width:3px">a rock ridge, not a cone: 113 or more for 26 m</text>
+  <text x="312" y="262" font-size="11" font-weight="bold" fill="#2a2018" style="paint-order:stroke;stroke:#d6c8a8;stroke-width:3px">WARD KNOB, summit 115</text>
+  <text x="312" y="274" font-size="9" fill="#2a2018" style="paint-order:stroke;stroke:#d6c8a8;stroke-width:3px">rock ridge, not a cone: 113 or more</text>
+  <text x="312" y="285" font-size="9" fill="#2a2018" style="paint-order:stroke;stroke:#d6c8a8;stroke-width:3px">x 8 to 18 (10 m), z 242 to 280</text>
 
   <!-- saddles -->
   <g fill="#fff" stroke="#3b6ea5" stroke-width="2">
@@ -195,10 +204,10 @@
     <text x="291" y="296">X</text><text x="270" y="653">X</text><text x="270" y="727">X</text><text x="302" y="131">X</text><text x="277" y="498">X</text><text x="403" y="653">X</text>
   </g>
   <g font-size="9" fill="#c0282d" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">
-    <text transform="translate(489,406) rotate(31.2)" text-anchor="middle">tower to the Ward stones: the knob, 3 m or more</text>
-    <text transform="translate(440,538) rotate(-32.9)" text-anchor="middle">tower to the fire: W saddle, 8.8 m (the least)</text>
-    <text transform="translate(440,588) rotate(-41.9)" text-anchor="middle">tower to the fire's SW end: 11.8 m</text>
-    <text transform="translate(352,180) rotate(51.5)" text-anchor="middle">tower to the fire's NW end: N hook, 12.6 m</text>
+    <text transform="translate(489,406) rotate(31.2)" text-anchor="middle">tower to the Ward stones: the knob, 4.9 m or more</text>
+    <text transform="translate(440,538) rotate(-32.9)" text-anchor="middle">tower to the fire: W saddle, flames 8.8 m, day-1 smoke 3 m</text>
+    <text transform="translate(440,588) rotate(-41.9)" text-anchor="middle">tower to the fire's SW end: 12.2 m</text>
+    <text transform="translate(352,180) rotate(51.5)" text-anchor="middle">tower to the fire's NW end: N hook, 14 m</text>
     <text x="330" y="508">floor to the fire: 70 m or more</text>
     <text transform="translate(496,536) rotate(-49.7)" text-anchor="middle">cave: the rim</text>
   </g>
@@ -209,7 +218,7 @@
   </g>
 
   <!-- the climb, night only: J, the foot, four legs, four platforms, leg 5, the cleft, the ledge -->
-  <polyline points="463.2,385.2 405.6,387 405.6,234 405.6,232.2 382.2,232.2 382.2,234 382.2,387 382.2,388.8 358.8,388.8 358.8,387 358.8,234 358.8,232.2 335.4,232.2 335.4,234 335.4,387 335.4,388.8 312,342 295.8,342 279.6,336.6 272.4,291.6" fill="none" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4" stroke-linejoin="round"/>
+  <polyline points="463.2,385.2 405.6,387 405.6,234 405.6,232.2 382.2,232.2 382.2,234 382.2,387 382.2,388.8 358.8,388.8 358.8,387 358.8,234 358.8,232.2 335.4,232.2 335.4,234 335.4,387 335.4,388.8 312,342 285,342 283.2,327.6 272.4,291.6" fill="none" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4" stroke-linejoin="round"/>
   <g fill="#fff" stroke="#7b2d6b" stroke-width="2">
     <rect x="387" y="227" width="12" height="10"/>
     <rect x="364" y="384" width="12" height="10"/>
@@ -223,9 +232,10 @@
     <text x="330" y="405" text-anchor="end">P4 92</text>
   </g>
   <!-- the cleft and the ledge -->
-  <polyline points="312,342 295.8,342 279.6,336.6" fill="none" stroke="#1a1410" stroke-width="5"/>
-  <rect x="265.2" y="266.4" width="18" height="72" fill="#c9b894" fill-opacity="0.85" stroke="#5a4a3a" stroke-width="1"/>
-  <polyline points="279.6,336.6 272.4,291.6" fill="none" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4"/>
+  <rect x="261.6" y="266.4" width="21.6" height="72" fill="#c9b894" fill-opacity="0.85" stroke="#5a4a3a" stroke-width="1"/>
+  <polyline points="312,342 285,342 283.2,327.6" fill="none" stroke="#1a1410" stroke-width="5" stroke-linejoin="miter"/>
+  <line x1="279.6" y1="345" x2="279.6" y2="329" stroke="#5a4a3a" stroke-width="3.6"/>
+  <polyline points="283.2,327.6 272.4,291.6" fill="none" stroke="#7b2d6b" stroke-width="3" stroke-dasharray="7 4"/>
   <circle cx="272.4" cy="291.6" r="4" fill="#7b2d6b"/>
   <g fill="#3b3a44">
     <rect x="266" y="270" width="6" height="7"/>
@@ -238,14 +248,15 @@
     <text x="262" y="300" text-anchor="end" font-weight="bold">LEDGE 98: path ends,</text>
     <text x="262" y="311" text-anchor="end">facing west. THE REVEAL:</text>
     <text x="262" y="322" text-anchor="end">stepping out of the cleft</text>
-    <text x="316" y="356">THE CLEFT, floor 97: a bent slot</text>
-    <text x="316" y="367">through the crest, no straight view</text>
+    <text x="316" y="356">THE CLEFT, floor 95: west 15 m, then</text>
+    <text x="316" y="367">north 8 m behind a rock fin (grey bar)</text>
+    <text x="316" y="378">no straight view out toward the fire</text>
   </g>
   <g font-size="9" font-weight="bold" fill="#7b2d6b" style="paint-order:stroke;stroke:#f6f3ec;stroke-width:3px">
     <text x="448" y="240">Ward climb, night only</text>
-    <text x="448" y="252">J to the ledge 489 m / 196 s on paper</text>
+    <text x="448" y="252">J to the ledge 487 m / 195 s on paper</text>
     <text x="448" y="264">platforms face east: the look-back</text>
-    <text x="448" y="276">every point 6 m or more under the crest</text>
+    <text x="448" y="276">every point 4.4 m or more under the line to the fire</text>
   </g>
 
   <!-- place labels -->
@@ -288,7 +299,7 @@
     <rect x="620" y="952" width="40" height="12" fill="#d6c8a8"/><text x="666" y="962">ridge land: real terrain on W, N, S (rays hit it)</text>
     <rect x="620" y="970" width="40" height="12" fill="#8f7d66"/><text x="666" y="980">west face, cliff</text>
     <rect x="620" y="988" width="40" height="12" fill="url(#fire)"/><text x="666" y="998">the fire, west</text>
-    <text x="60" y="1020" fill="#444">Paper, plus-3 m rule. Removed: the Wall, the pass, the plateau, the lip, the cliff-edge giant band. Stays: J, the cairn gate, every place and trail. Camp to the Ward 585 m, 234 s.</text>
+    <text x="60" y="1020" fill="#444">Paper, plus-3 m rule. Removed: the Wall, the pass, the plateau, the lip, the cliff-edge giant band. Stays: J, the cairn gate, every place and trail. Camp to the Ward 583 m, 233 s. Day-1 sun: bearing 200, elevation 32.</text>
   </g>
 
   <!-- cross-section: west to east through the knob and the tower. true scale, 1.26 px per m both ways. X = 1059.6 - 1.26 d (d = m west of the tower), Y = 1340 - 1.26 h -->
