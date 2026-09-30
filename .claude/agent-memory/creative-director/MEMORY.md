@@ -13,4 +13,5 @@
 - [Forest calls 8.16](project_forest_calls_816.md) — 2026-09-30 LightingOptions 7: trail material not ambient, sky blend 4.5, lodBias 1.25
 - [Gate 8.15](project_gate_8_15.md) — 2026-09-30 FAIL; sun 20 kept; proposed night path rule (lamp, Ward route only, no moon)
 - [Gate 8.16](project_gate_8_16.md) — 2026-09-30 whole valley FAIL; groves B, forest outside D, fire and night D, halo next
+- [Gate 8.16a](project_gate_8_16a.md) — 2026-09-30 FAIL; climb F to D, forest items unchanged, rock count exclude tread
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions
