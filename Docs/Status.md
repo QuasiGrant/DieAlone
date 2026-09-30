@@ -64,3 +64,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: The "North loop: ruin" warp comes with the ruin in 8.17.
 - 2026-09-30: The rest of 8.14a is fixed alongside 8.15, and one gate covers both; rock textures are the main fix for the bands and climb. Ledge: Marlow's curb-and-catch-shelf plus Vesper's taller valley flames and lit floor.
 - 2026-09-30: Ledge built as Rook's thin 1.1 m lip falling outward (120 of 120 valley fires seen, 0 pushes off), not the curb and shelf a sprint-jump cleared.
+- 2026-09-30: CHASE-LIGHT: the lamp relights when the footsteps stop (Quill), not at the Ward zone (Hollis); Hollis aligns ScareSound on his next pass.

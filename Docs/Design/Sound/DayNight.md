@@ -2,6 +2,8 @@
 
 **DRAFT, 2026-09-29, Hollis. Nothing here is decided.** Lines marked **[Grant yes]** need Grant's confirmation and a dated line in DECISIONS.md. Mixer groups and snapshots: Mixer.md. Import settings and sources: Sourcing.md. Binding inputs: DECISIONS.md 2026-09-28 lines on the daily loop, two states, night at the Ward, the cave, the first day as a normal job; 2026-09-29 lines on the day ending by report or event, the fire not visible on day one, the rave cave, and the slow-burn ramp where every sound that drops out is replaced by a creepy one; 2026-09-29 lines on the gate minigame (option B) and gate cars arriving until the office resident's storyline ends. DailyLoop.md section 6 (day 1 and night 1). Per-location ambience waits for Sable's Main3 map; nothing here fixes a position.
 
+**Update 2026-09-30, Hollis:** section 16 adds the keeper's kerosene lamp (DECISIONS 2026-09-30, Wren's call). Notes in 3, 5, 7, 13 and 14.
+
 Tone target: psychological first. Day one is ordinary and full. From day two the world is never quiet (DECISIONS 2026-09-29): each ordinary sound that leaves is replaced by a wrong one, subtle while WARD is high, stronger as it falls (section 15). A jump is punctuation.
 
 ## 1. Two states, two ways into night
@@ -38,10 +40,11 @@ The one sound moment the whole run is built on. The player walks up in an ordina
 Climb (Night1 snapshot, from the report to the last bend):
 1. Ordinary night. Crickets and night insects, one owl, a soft wind. Tree creak one-shots. The office radio is off. A single far car on the road, once, early in the night.
 2. Nothing hints. No rumble under it, no low end. The climb must sound safe.
+3. The keeper's lamp is lit (section 16). Its hiss is masked by the insects while walking; that is intended.
 
 Ledge (triggered when the view opens, one timeline, numbers in AudioTuning):
 1. The ordinary night bed cuts out, not fades (revealCutSeconds, start 0.1 s). The insects stopping all at once is the first wrong sound in the game.
-2. A beat of Ward room tone and the player's breath (revealHoldSeconds, start 1.5 s). Nothing else.
+2. A beat of Ward room tone and the player's breath (revealHoldSeconds, start 1.5 s). Nothing else except the lamp hiss (16.2), which the cut exposes: the first time the player hears their own light. It is not cut with the insects.
 3. The runes wake: the Ward's own voice, one low swell (spec waits for the Ward design, section 7.6).
 4. The fire arrives: the full roar, 3D on a wide emitter row along the fire line below, opened up to full bandwidth, with the far cracks and a deep sub layer. Rise over revealRiseSeconds (start 4 s) to revealRoarGainDb. It is the loudest sound the player has heard so far.
 5. The roar presses against the barrier: a heavy lowpass and a slight flutter on the fire bus where it meets the Ward line, so it reads as held back, not just far.
@@ -65,6 +68,7 @@ Ledge (triggered when the view opens, one timeline, numbers in AudioTuning):
 4. Resident signature sounds stop at night (the axe, the canvas chimes, the radio), except where an event says otherwise. **[Grant yes]**
 5. Front zone machines keep running (section 6).
 6. Night allows only the Ward (DECISIONS 2026-09-28), so the night bed is heard on the camp, the trail to the Ward and the climb.
+7. The keeper's lamp (section 16) plays on every night route. It is player foley, not bed.
 
 ## 6. Front zone machines and wild sites **[Grant yes]**
 
@@ -103,7 +107,7 @@ AudioTuning fields: gateIdleGainDb, gateApproachGainDb, gateSpurGainDb.
 
 1. From the last bend of the climb (trigger volume) the Ward snapshot takes over: every bed and every distant source goes.
 2. Not digital silence. A room tone stays: a very low, close, dead-air bed, mono, 11025 Hz, with the faintest pressure in it, like standing in a closed room. True zero reads as a bug on headphones.
-3. What is left is the player: footsteps, clothing, breath. Player foley at the Ward is dry and close; the lowpass on World is set so it does not carry.
+3. What is left is the player: footsteps, clothing, breath, and at night the lamp hiss (16.2). Player foley at the Ward is dry and close; the lowpass on World is set so it does not carry.
 4. At the Ward the fire is heard only on the ledge at night, held back behind the barrier (section 3.5). This replaces the earlier rule that the fire is never heard at the Ward: 2026-09-29 puts the first sound of the wildfire there.
 5. By day the Ward is silent apart from room tone, even though it sees the fire's base. At night the ledge carries the held-back roar. The climb stays silent both ways.
 6. The Ward's own voice (its hunger, the feeding, what an offering sounds like) is a separate spec after the Ward design. It will be built on top of this silence, sparingly.
@@ -170,7 +174,7 @@ DECISIONS 2026-09-29: an event can end the day, for example a monster that catch
 
 ## 13. AudioTuning fields (this doc)
 
-dayWindGainDb, fireRumbleGainDb, fireGainRangeDb (start 6), fireLowpassAtFullWard (start 800 Hz), fireLowpassAtLowWard (start 3500 Hz), fireCrackIntervalMin / Max at full WARD (start 60 / 180 s) and at low WARD (start 15 / 45 s), birdChanceAtFullWard, day1BirdDensity, day1InsectGainDb, roadPassIntervalMin / Max (start 90 / 240 s), roadGapScaleWeek2 (start 2.5), radioChatterIntervalMin / Max, radioFragmentChanceAtFullWard, nightCreakIntervalMin / Max, revealCutSeconds (start 0.1), revealHoldSeconds (start 1.5), revealRiseSeconds (start 4), revealRoarGainDb, barrierLowpassHz, wardScreenDuckDb (start -6), eventCutSeconds (start 0), eventBlackSeconds (start 2), eventBreathSeconds (start 6), freezerOnSeconds (40), freezerOffSeconds (20), anomalyStopDistance (start 15 m), anomalyLookAngle (start 20 degrees), anomalyLookSeconds (start 1), caveMusicRadius (start 60 m), caveMusicLowpassFar (start 150 Hz), caveMusicLowpassNear (start 8000 Hz), replacement fields in section 15.5, siteSignatureRadius (35 m, from Main3 draft), campSignatureRadius (40 m), wardRoomToneGainDb, dayEndToneGainDb.
+dayWindGainDb, fireRumbleGainDb, fireGainRangeDb (start 6), fireLowpassAtFullWard (start 800 Hz), fireLowpassAtLowWard (start 3500 Hz), fireCrackIntervalMin / Max at full WARD (start 60 / 180 s) and at low WARD (start 15 / 45 s), birdChanceAtFullWard, day1BirdDensity, day1InsectGainDb, roadPassIntervalMin / Max (start 90 / 240 s), roadGapScaleWeek2 (start 2.5), radioChatterIntervalMin / Max, radioFragmentChanceAtFullWard, nightCreakIntervalMin / Max, revealCutSeconds (start 0.1), revealHoldSeconds (start 1.5), revealRiseSeconds (start 4), revealRoarGainDb, barrierLowpassHz, wardScreenDuckDb (start -6), eventCutSeconds (start 0), eventBlackSeconds (start 2), eventBreathSeconds (start 6), freezerOnSeconds (40), freezerOffSeconds (20), anomalyStopDistance (start 15 m), anomalyLookAngle (start 20 degrees), anomalyLookSeconds (start 1), caveMusicRadius (start 60 m), caveMusicLowpassFar (start 150 Hz), caveMusicLowpassNear (start 8000 Hz), replacement fields in section 15.5, siteSignatureRadius (35 m, from Main3 draft), campSignatureRadius (40 m), wardRoomToneGainDb, dayEndToneGainDb, and the lamp fields in section 16.8.
 
 ## 14. Waiting on others
 
@@ -180,6 +184,7 @@ dayWindGainDb, fireRumbleGainDb, fireGainRangeDb (start 6), fireLowpassAtFullWar
 4. Vesper: tone words for the day one radio chatter, the cave music, the room tone, the reveal, the Voices treatment and each replacement in section 15; tone of the week-two road gaps.
 5. Grant: music replacing the chant in the cave (Quill's suggestion); whether the Ward near-silence (7.7) and the 2 s event zero (11.3) are allowed under the no-quiet rule.
 6. Pim: confirm the barrier idle is the only arrival cue and that reserving it (6a.1) fits the minigame. Quill: whether the completed and died ends of the office storyline should sound different at the gate (6a.5).
+7. Lamp (section 16): Vesper and Pim, whether the picture shows the lamp being lit at the start of night (16.4); Rook, whether the lamp has a swing value to read or the creak runs off footsteps (16.3), and whether the light script exposes a dim value (16.5).
 
 ## 15. Replacements: nothing drops out without something wrong in its place **[Grant yes]**
 
@@ -208,3 +213,53 @@ Rules:
 4. These are the bed, not anomalies. They do not count against the one wrong sound a day (section 10) and do not stop when looked at. Row 4 Last and row 7 Last are rare one-shots and are the exception: once per run each, driven by event data like anomalies.
 5. AudioTuning fields: replaceBirdIntervalSeconds, replaceFlyGainDb, replaceRoadGainDb, replaceGateGainDb, replaceCricketGainDb, replaceCreakIntervalMin / Max per band, radioCarrierGainDb, wardPressureGainDb per band, wardBandThresholds (9, 6, 3, 1).
 6. Night one keeps its reveal cut (3.1): the insects stop and the fire roar replaces them. That is the first replacement and the model for the rest.
+
+## 16. The keeper's lamp **[Grant yes]**
+
+DECISIONS 2026-09-30 (Wren's call): at night the keeper carries a kerosene lamp, warm, 6 to 8 m, no beam, on only at night, no toggle, no fuel. Scares may dim it or put it out; JUMP-LANTERN and CHASE-LIGHT put it out (sound for those two: Docs/Private/ScareSound.md).
+
+### 16.1 Rules
+1. Quiet. The lamp is the quietest thing the player carries. Every lamp sound sits at least lampUnderStepsDb (start 12 dB) under the player's own footstep level for the surface. Walking, the bed and steps mask it; standing still, it is just there. It is never a cue the player has to hear.
+2. It is player foley: World group, one source on the lamp at the hand, 3D, mono, spatial blend 1, Linear rolloff, min 0.3 m, max lampMaxDistance (start 3 m). No new mixer group, no snapshot of its own.
+3. It survives the Night and Ward snapshots (close and dry, like footsteps, 7.3). It is cut by the Cut snapshot with the rest of World.
+4. It follows no WARD band and no replacement row (section 15). It is the one steady thing the keeper owns at night. Only scares change it (16.5 to 16.7).
+5. No day state: off by day, no sound.
+
+### 16.2 Hiss (loop)
+A flat-wick kerosene lamp barely hisses; a pressure lamp roars, which is wrong for this and too loud. So "hiss" here is a soft wick flutter with a faint breathy top: world_lamp_hiss_loop, 30 s or longer, no audible seam, lampHissGainDb (start -34 dB). Starts with the night (16.4), runs until sleep. No pitch or level follows walking speed. Played from the lamp even while the player hides.
+
+### 16.3 Swing creak (one-shots)
+The wire bail turning in the lamp's handle: small, dry, metallic, high. Must not sound like the tree creaks (DN 5.2, 15 row 6), which are wood and low; that row is the wrong creak, this is the ordinary one.
+1. world_lamp_creak_01..04_os, random pick, no repeat of the last, pitch plus or minus lampCreakPitchCents (start 50).
+2. Trigger: if Rook's lamp has a swing value, one creak when the swing reverses past lampCreakSwingDeg (start 8 degrees). If not, off footsteps: chance lampCreakChance (start 0.35) per step, at most one per lampCreakMinSeconds (start 1.2 s). Unverified which exists.
+3. None when the player is still, crouched or hiding. A lamp creak while hiding in CHASE-LIGHT would be a game rule the player cannot control.
+4. lampCreakGainDb (start -28 dB).
+
+### 16.4 Lit at nightfall
+1. Report path: one world_match_strike_os and world_lamp_relight_os under the tail of the day-end tone (section 9), then the hiss fades in over lampHissFadeInSeconds (start 2 s). Only if the picture shows the lamp being lit (Vesper, Pim). If the lamp is simply on at night, the hiss fades in with the Day to Night transition and there is no strike.
+2. Event path (section 11): the lamp is already lit at the wake. The hiss starts with the room tone. No strike.
+3. The strike matters: the ordinary light has a match; the scare relight (16.7) has none. Keep the strike if the picture allows it.
+
+### 16.5 Gutter (dim)
+While a scare dims the lamp: world_lamp_gutter_loop, sputtering and wet pops, blended in by the dim amount (0 lit, 1 nearly out) read from the light script (Rook: unverified that it exposes one). The hiss drops by up to lampDimHissDropDb (start -8 dB) at full dim. Gutter peak lampGutterGainDb (start -24 dB). Back to hiss when the light recovers, no extra sound.
+
+### 16.6 Blow-out (one-shot)
+world_lamp_blowout_os: a short soft rush of air across the chimney, then the flame's last flutter, then nothing. The hiss stops on the same frame the flutter ends, no fade. lampBlowoutGainDb (start -20 dB), the loudest lamp sound and still under footsteps. Used by JUMP-LANTERN only. CHASE-LIGHT puts the lamp out without it (ScareSound 2.5).
+
+### 16.7 Relight (one-shot)
+world_lamp_relight_os: the soft whump of a wick catching, no strike, then the hiss back over 0.5 s. lampRelightGainDb (start -22 dB). After a scare the lamp relights itself (no toggle, no fuel); the missing match is the wrong detail.
+
+### 16.8 Files and tuning fields
+
+| File | Group, import row | Plan |
+|---|---|---|
+| world_lamp_hiss_loop | World, 3D point; mono, 22050 Hz, Vorbis, streaming off | IH: a real hurricane lamp recorded close in a dead room; FS0 "oil lamp flame", "kerosene lantern burning". No room tone baked in |
+| world_lamp_creak_01..04_os | World, 3D point | IH: a wire bail on a lamp or bucket handle turned by hand; FS0 "lantern handle creak", "bucket handle squeak" |
+| world_lamp_gutter_loop | World, 3D point | IH: wick turned low until it sputters; FS0 "oil lamp sputter", "candle flame sputter" |
+| world_lamp_blowout_os | World, 3D point | IH: lamp blown out through the chimney; FS0 "blow out lantern", "oil lamp blow out" |
+| world_lamp_relight_os | World, 3D point | IH: wick lit from an existing flame (the whump, not the match); FS0 "lantern flame ignite" |
+| world_match_strike_os | World, 3D point | IH; FS0 "match strike". Only if 16.4.1 stands |
+
+These replace world_lantern_gutter_os and world_lantern_relight_os in ScareSound 7.4. Every file gets its SOURCES.md row before commit; Vesper hears the set before it plays. FS0 availability unverified.
+
+AudioTuning fields: lampUnderStepsDb (12), lampMaxDistance (3), lampHissGainDb (-34), lampHissFadeInSeconds (2), lampCreakGainDb (-28), lampCreakPitchCents (50), lampCreakSwingDeg (8), lampCreakChance (0.35), lampCreakMinSeconds (1.2), lampDimHissDropDb (-8), lampGutterGainDb (-24), lampBlowoutGainDb (-20), lampRelightGainDb (-22). Starting levels are guesses until heard in the Night snapshot against the climb bed.
