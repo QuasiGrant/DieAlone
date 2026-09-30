@@ -30,7 +30,8 @@ foreach (var rev in new[] { false, true })
 var sb = new System.Text.StringBuilder(); bool ok = true;
 foreach (var kv in best)
 {
-    bool ruled = kv.Key == "legs 1 to 4" || kv.Key == "J to leg 1" || kv.Key == "leg 5";   // Wren 2026-09-29: views up and across the W ridge face count as covered bool pass = ruled || kv.Value.d <= limit; ok &= pass;
+    // Wren 2026-09-29: views up and across the W ridge face count as covered (J to leg 1, leg 5; Sable for the four legs)
+    bool ruled = kv.Key == "legs 1 to 4" || kv.Key == "J to leg 1" || kv.Key == "leg 5"; bool pass = ruled || kv.Value.d <= limit; ok &= pass;
     sb.Append(kv.Key + ": " + kv.Value.d.ToString("F0") + " m, " + kv.Value.a.ToString("F0") + " to " + kv.Value.b.ToString("F0") + (ruled ? " (ruled covered)" : pass ? "" : " OVER 60") + "\n");
 }
 return (ok ? "PASS" : "FAIL") + "\n" + sb;
