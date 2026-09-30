@@ -1,0 +1,1 @@
+- [Runner overwrites standalone recipes](feedback_runner_overwrites_standalone.md) — standalone asset-writing recipes get reverted by main3_rebuild.sh; check at commit review

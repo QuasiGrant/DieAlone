@@ -1,0 +1,1 @@
+- [Grant reads drawings](user_reads_drawings.md) — map and space designs go to Grant as SVG plan plus section; check sightlines on every bearing
