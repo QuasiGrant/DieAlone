@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     private InputAction crouchAction;
     private InputAction jumpAction;
     private float lastGroundedTime = -999f;
+    private float clock;   // seconds of Step time, so Play-mode checks that drive Step keep the coyote window
     private bool isCrouching;
     private float pitch;
     private float verticalVelocity;
@@ -137,26 +138,60 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 input = moveAction.ReadValue<Vector2>();
         Vector3 planar = transform.right * input.x + transform.forward * input.y;
+        Step(planar, jumpAction.WasPressedThisFrame(), sprintAction.IsPressed(), Time.deltaTime);
+    }
+
+    /// One movement step: planar is the wished direction in world space (length 0 to 1). Public so Play-mode checks can drive
+    /// the real movement rules with the component disabled. On ground steeper than the controller's slope limit the player
+    /// is not grounded for jumping and slides down it, so no face over the limit can be climbed by hopping.
+    public void Step(Vector3 planar, bool jumpPressed, bool sprint, float dt)
+    {
+        clock += dt;
         if (planar.sqrMagnitude > 1f) planar.Normalize();
 
-        if (controller.isGrounded)
+        bool steep = false; Vector3 downhill = Vector3.zero;
+        if (controller.isGrounded && SteepGround(out Vector3 normal))
         {
-            lastGroundedTime = Time.time;
+            steep = true;
+            downhill = Vector3.ProjectOnPlane(Vector3.down, normal).normalized;
+            Vector3 uphill = new Vector3(-downhill.x, 0f, -downhill.z).normalized;
+            float into = Vector3.Dot(planar, uphill);
+            if (into > 0f) planar -= uphill * into;   // no walking up it either
+        }
+
+        if (controller.isGrounded && !steep)
+        {
+            lastGroundedTime = clock;
             if (verticalVelocity < 0f) verticalVelocity = -2f;
         }
 
-        bool canJump = Time.time - lastGroundedTime <= tuning.coyoteTime;
-        if (canJump && jumpAction.WasPressedThisFrame())
+        bool canJump = clock - lastGroundedTime <= tuning.coyoteTime;
+        if (canJump && jumpPressed)
         {
             verticalVelocity = Mathf.Sqrt(2f * tuning.gravity * tuning.jumpHeight);
             lastGroundedTime = -999f;
         }
 
-        verticalVelocity -= tuning.gravity * Time.deltaTime;
+        verticalVelocity -= tuning.gravity * dt;
 
-        float speed = isCrouching ? tuning.crouchSpeed : (sprintAction.IsPressed() ? tuning.sprintSpeed : tuning.walkSpeed);
-        Vector3 velocity = planar * speed + Vector3.up * verticalVelocity;
-        controller.Move(velocity * Time.deltaTime);
+        float speed = isCrouching ? tuning.crouchSpeed : (sprint ? tuning.sprintSpeed : tuning.walkSpeed);
+        Vector3 velocity = planar * speed + Vector3.up * verticalVelocity + downhill * tuning.steepSlideSpeed;
+        controller.Move(velocity * dt);
+    }
+
+    // The surface under the capsule's foot, found by a sphere cast from the foot sphere's centre; true when it is steeper than
+    // the controller's slope limit. An edge under the foot gives a tilted normal, so the player also slides off rims and walls.
+    private bool SteepGround(out Vector3 normal)
+    {
+        float r = controller.radius * 0.9f;
+        Vector3 origin = transform.position + Vector3.up * (controller.radius + controller.skinWidth);
+        if (Physics.SphereCast(origin, r, Vector3.down, out RaycastHit hit, tuning.groundProbeDistance + controller.skinWidth, ~0, QueryTriggerInteraction.Ignore))
+        {
+            normal = hit.normal;
+            return Vector3.Angle(normal, Vector3.up) > controller.slopeLimit;
+        }
+        normal = Vector3.up;
+        return false;
     }
 
     // Shove loose physics objects aside instead of being blocked by them.

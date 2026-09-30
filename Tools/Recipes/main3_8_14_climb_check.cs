@@ -2,8 +2,8 @@
 // 1. Timed walks: camp to J along the Camp to J trail and J to the path end along the J to Ward trail (day gate off), at the walk
 //    speed from the grounded horizontal distance the CharacterController covers (4.1: J to the path end 265 m, 106 s; camp to the
 //    path end 345 m, 138 s; ceiling 150 s).
-// 2. Push checks with the real CharacterController (WalkChecks.md mover: dt 0.02, gravity and jump from PlayerTuning, sprint-jumps
-//    hop on every landing), "no way round":
+// 2. Push checks moving with PlayerController.Step (the game's own rules: dt 0.02, walk, sprint, jump, the slide off ground over the
+//    slope limit; sprint-jumps hop on every landing), "no way round":
 //    a. the climb: from every J to Ward trail point past the chute mouth, a 25 m walk to each side and a 2.2 s sprint-jump in 12
 //       directions. Fails if it ends on the trail more than 40 m of walking further on (within 2 m across and 1.5 m in height of a
 //       trail point: a skipped leg), or more than 2.5 m above every trail point within 40 m either way (up a face, above the local
@@ -23,41 +23,37 @@ var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Set
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(new UnityEngine.Vector3(x, 0f, z)) + ter.transform.position.y;
 const float dt = 0.02f, pushWalk = 25f, hopTime = 2.2f, skipWindow = 40f, climbGain = 2.5f, nearMouthX = 86f, onTrailAcross = 2f, onTrailUp = 1.5f;
 const int hopDirs = 12, stallSteps = 600, walkSteps = 8000;
-float g = tuning.gravity, vJump = UnityEngine.Mathf.Sqrt(2f * g * tuning.jumpHeight), walkSpeed = tuning.walkSpeed, sprint = tuning.sprintSpeed;
-void Put(UnityEngine.Vector3 p) { cc.enabled = false; pc.transform.position = p + UnityEngine.Vector3.up * 0.3f; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (int k = 0; k < 20; k++) cc.Move(UnityEngine.Vector3.down * 0.1f); }
+float walkSpeed = tuning.walkSpeed;
+// every move is PlayerController.Step, the game's own movement rules (8.14a: walk, sprint, jump, slide off ground over the slope limit)
+void Put(UnityEngine.Vector3 p) { cc.enabled = false; pc.transform.position = p + UnityEngine.Vector3.up * 0.3f; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (int k = 0; k < 20; k++) pc.Step(UnityEngine.Vector3.zero, false, false, dt); }
 float maxFall = 0f, airTop = 0f; bool wasGrounded = true;
 void Air(bool grounded) { float y = pc.transform.position.y; if (grounded) { if (!wasGrounded) maxFall = UnityEngine.Mathf.Max(maxFall, airTop - y); airTop = y; } else airTop = UnityEngine.Mathf.Max(airTop, y); wasGrounded = grounded; }
 void Walk(UnityEngine.Vector3 dir, float dist)
 {
-    float vy = 0f, moved = 0f, lastBest = 0f; int since = 0;
+    float moved = 0f, lastBest = 0f; int since = 0;
     for (int s = 0; s < 20000 && moved < dist; s++)
     {
-        var before = pc.transform.position; var f = cc.Move(new UnityEngine.Vector3(dir.x * walkSpeed, vy, dir.z * walkSpeed) * dt);
-        vy = (f & UnityEngine.CollisionFlags.Below) != 0 ? -1f : vy - g * dt; Air((f & UnityEngine.CollisionFlags.Below) != 0);
+        var before = pc.transform.position; pc.Step(dir, false, false, dt); Air(cc.isGrounded);
         var after = pc.transform.position; moved += new UnityEngine.Vector2(after.x - before.x, after.z - before.z).magnitude;
         if (moved > lastBest + 0.05f) { lastBest = moved; since = 0; } else if (++since > stallSteps) break;
     }
 }
-void Hop(UnityEngine.Vector3 dir, float speed, float seconds)
+void Hop(UnityEngine.Vector3 dir, float seconds)   // sprint with the jump held: a hop on every landing
 {
-    float vy = vJump;
-    for (float t = 0f; t < seconds; t += dt) { var f = cc.Move(new UnityEngine.Vector3(dir.x * speed, vy, dir.z * speed) * dt); vy -= g * dt; Air((f & UnityEngine.CollisionFlags.Below) != 0); if ((f & UnityEngine.CollisionFlags.Below) != 0) vy = vJump; }
-    for (int k = 0; k < 60; k++) { var f2 = cc.Move(UnityEngine.Vector3.down * 0.1f); Air((f2 & UnityEngine.CollisionFlags.Below) != 0); }   // land
+    for (float t = 0f; t < seconds; t += dt) { pc.Step(dir, true, true, dt); Air(cc.isGrounded); }
+    for (int k = 0; k < 60; k++) { pc.Step(UnityEngine.Vector3.zero, false, false, dt); Air(cc.isGrounded); }   // land
 }
-// the timed walk moves like PlayerController.Move: walk speed toward the next trail point, vertical velocity -2 while grounded,
-// gravity while airborne, every dt; the time is the steps taken (a fixed downward push, as the 8.9j walker, cannot climb the 40
-// degree flights of cut steps: its push slid the capsule back down them)
+// the timed walk steers toward each trail point at walk speed; the time is the steps taken
 float walkedTime = 0f;
 bool Steer(float x, float z)
 {
-    var t = new UnityEngine.Vector2(x, z); float vy = 0f; int since = 0; float best = float.MaxValue;
+    var t = new UnityEngine.Vector2(x, z); int since = 0; float best = float.MaxValue;
     for (int s = 0; s < walkSteps; s++)
     {
         var p = pc.transform.position; var d = t - new UnityEngine.Vector2(p.x, p.z); if (d.magnitude < 0.3f) return true;
         if (d.magnitude < best - 0.02f) { best = d.magnitude; since = 0; } else if (++since > stallSteps) return false;
-        var m = d.normalized * UnityEngine.Mathf.Min(walkSpeed, d.magnitude / dt);
-        var f = cc.Move(new UnityEngine.Vector3(m.x, vy, m.y) * dt); walkedTime += dt;
-        vy = (f & UnityEngine.CollisionFlags.Below) != 0 ? -2f : vy - g * dt;
+        float frac = UnityEngine.Mathf.Min(1f, d.magnitude / (walkSpeed * dt));
+        pc.Step(new UnityEngine.Vector3(d.x, 0f, d.y).normalized * frac, false, false, dt); walkedTime += dt;
     }
     return false;
 }
@@ -92,7 +88,7 @@ try
         foreach (var t in tries)
         {
             Put(a); maxFall = 0f; airTop = pc.transform.position.y; wasGrounded = true;
-            if (t.mode == "walk") Walk(t.dir, pushWalk); else Hop(t.dir, sprint, hopTime);
+            if (t.mode == "walk") Walk(t.dir, pushWalk); else Hop(t.dir, hopTime);
             var e = pc.transform.position; pushes++; worstFall = UnityEngine.Mathf.Max(worstFall, maxFall);
             bool skipped = false; float localTop = float.MinValue;
             for (int k = 0; k < climb.Count; k++)
@@ -124,7 +120,7 @@ try
         {
             var sp = new UnityEngine.Vector3(p.from.x, H(p.from.x, p.from.z), p.from.z); if (Occupied(sp)) { lSkipped++; continue; }   // a start inside a stone is no start
             Put(sp);
-            if (mode == "walk") Walk(p.dir, 12f); else Hop(p.dir, sprint, hopTime);
+            if (mode == "walk") Walk(p.dir, 12f); else Hop(p.dir, hopTime);
             var e = pc.transform.position; lt++;
             if (!OnLedge(e)) { lf++; if (lFirst == "") lFirst = " first: " + mode + " from " + p.from.ToString("F1") + " ended " + e.ToString("F1"); }
         }
@@ -145,7 +141,7 @@ try
         foreach (var t in tries)
         {
             Put(new UnityEngine.Vector3(o.x, H(o.x, o.z), o.z));
-            if (t.mode == "walk") Walk(t.dir, pushWalk); else Hop(t.dir, sprint, hopTime);
+            if (t.mode == "walk") Walk(t.dir, pushWalk); else Hop(t.dir, hopTime);
             var e = pc.transform.position; it++;
             if (PastBand(e)) { ifl++; if (iFirst == "") iFirst = " first: " + t.mode + " from " + o.ToString("F1") + " toward " + t.dir.ToString("F2") + " ended " + e.ToString("F1"); }
         }
@@ -167,7 +163,7 @@ try
             foreach (var mode in new[] { "walk", "jump" })
             {
                 Put(new UnityEngine.Vector3(s.o.x, H(s.o.x, s.o.z), s.o.z));
-                if (mode == "walk") Walk(d.normalized, 60f); else Hop(d.normalized, sprint, hopTime);
+                if (mode == "walk") Walk(d.normalized, 60f); else Hop(d.normalized, hopTime);
                 var e = pc.transform.position; st++;
                 if (InCampground(e)) { sf++; if (sFirst == "") sFirst = " first: " + mode + " from " + s.o.ToString("F1") + " toward " + d.ToString("F2") + " ended " + e.ToString("F1"); }
             }

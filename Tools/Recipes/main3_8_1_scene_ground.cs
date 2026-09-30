@@ -585,10 +585,11 @@ FlatWall("Outcrop_S", bands, new[] { P(403f, -5.5f), P(391.5f, -5.5f) }, H(fence
 // the lip is 1.1 m, not table 4.7's 0.8: in 8.14's Play check a sprint-jump rode the capsule over a 0.8 m rim (the capsule's round foot at the
 // top of a 0.6 m hop meets the rim's edge below its centre and slides up); 1.1 clears the hop plus the 0.35 m radius
 const float rimHeight = 1.1f;
-// the ring's rims stand 1.3 m over the highest ground beside them and are as thick as the lip (8.14 push check: a 0.5 m thick 1.2 m
+// the ring's rims (8.14a, Wren) stand 1.2 m over the highest walkable ground beside them, in a line of boulders (8.14: a 0.5 m thick 1.2 m
 // rim was sprint-jumped); its walls stand 3.5 m over the highest walkable ground within 12 m (2.6 was reached from the heightmap's
 // slope at the foot of the slot wall)
-const float ringRimHeight = 1.3f;
+const float ringRimHeight = 1.2f;
+var boulderRng = new System.Random(8142);
 var ledgeRock = new UnityEngine.GameObject("Ledge").transform; ledgeRock.SetParent(rockRoot.transform, false);
 const float lipH = rimHeight, lipThick = 1.2f, endWallTop = 66.5f, endWallThick = 2f, backWallH = 3f, backWallThick = 1.5f, finTop = 78f;
 {
@@ -606,7 +607,8 @@ FlatWall("BackWall_N", ledgeRock, new[] { P(ledgeX1, ledgeZ1 + 0.5f), P(ledgeX1,
 // turns round the fin's end, just past the exit
 FlatWall("Fin", ledgeRock, new[] { P(3f, slotExit.y + 0.2f), P(3f, 270f) }, finTop, 2f, 0.4f);
 FlatWall("FinCap", ledgeRock, new[] { P(3f, slotEnd.y + slotHalf + 0.05f), P(ledgeX1 + 0.3f, slotEnd.y + slotHalf + 0.05f) }, finTop, 3.3f, 0.4f);
-// the climb's own stops (4.4, 8). Measured in 8.14 (Play mode): the CharacterController jump-climbs terrain faces of any steepness
+// the climb's own stops (4.4, 8). Measured in 8.14 (Play mode): the CharacterController jump-climbed terrain faces of any steepness;
+// 8.14a gave PlayerController a slide off ground over the slope limit, so faces now hold and the ring only has to hold the edges
 // (a 79 degree face 14 m, the 88 degree slot wall 4 m), so no terrain face stops anyone. Instead, the ground a player can walk
 // to from the climb (cells on a 0.5 m grid reached from the J to Ward points with no step over walkStep between neighbours,
 // valley cells left out) is ringed with visible rock at its edge, the rising ground behind the rock: where the ground beyond
@@ -614,7 +616,7 @@ FlatWall("FinCap", ledgeRock, new[] { P(3f, slotEnd.y + slotHalf + 0.05f), P(led
 // drops, a rim rimH high (over the 0.6 m jump and the capsule riding over an edge). Every bench, platform, the chute, the cwm,
 // the cleft and the ledge are closed this way; the lip, fin and end walls above are the named pieces of the same ring.
 var ring = new UnityEngine.GameObject("ClimbRing").transform; ring.SetParent(rockRoot.transform, false);
-const float ringCell = 0.5f, ringX0 = -14f, ringX1 = 92f, ringZ0 = 190f, ringZ1 = 335f, walkStep = 0.45f, riseMin = 0.3f, wallH = 3.5f, wallReach = 12f, rimH = ringRimHeight, wallThick = 0.8f, rimThick = 1.2f;
+const float ringCell = 0.5f, ringX0 = -14f, ringX1 = 92f, ringZ0 = 190f, ringZ1 = 335f, walkStep = 0.45f, riseMin = 0.3f, wallH = 3.5f, wallReach = 12f, rimH = ringRimHeight, wallThick = 0.8f;
 int RW = UnityEngine.Mathf.RoundToInt((ringX1 - ringX0) / ringCell), RH = UnityEngine.Mathf.RoundToInt((ringZ1 - ringZ0) / ringCell);
 var rh = new float[RW, RH]; var valleyCell = new bool[RW, RH]; var flooded = new bool[RW, RH];
 float CX(int i) => ringX0 + (i + 0.5f) * ringCell; float CZ(int j) => ringZ0 + (j + 0.5f) * ringCell;
@@ -661,33 +663,70 @@ for (int i = 0; i < RW; i++) for (int j = 0; j < RH; j++) { float m = float.MinV
 // a rim stands rimH over the highest walkable ground next to it (the fill takes in the first cell down a drop, so its own height
 // can sit half a metre low, and a rim that low was jumped: P4's east edge, 8.14)
 float LocalMax(int i, int j) { float m = rh[i, j]; for (int a = UnityEngine.Mathf.Max(0, i - 2); a <= UnityEngine.Mathf.Min(RW - 1, i + 2); a++) for (int b = UnityEngine.Mathf.Max(0, j - 2); b <= UnityEngine.Mathf.Min(RH - 1, j + 2); b++) if (flooded[a, b]) m = UnityEngine.Mathf.Max(m, rh[a, b]); return m; }
-var ringBoxes = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); int wallEdges = 0, rimEdges = 0, floodCells = 0;
+// uphill: rock walls whose tops break in blocks (wallBlock metres, wallBreak metres of height either way, one value per block), so
+// they read as rock, not masonry; drops: a rim collider rimH over the highest walkable ground next to it, inside a broken line of
+// owned boulders (Campsite CS_Rock, tilted, 1.3 to 1.7 m), so the valley side stays low and the views stay open (8.14a)
+const float wallBlock = 3f, wallBreak = 0.8f, boulderStep = 1.2f, boulderLow = 1.3f, boulderHigh = 1.7f, boulderTilt = 14f, rimColThick = 0.8f;
+float BlockNoise(float x, float z) => (UnityEngine.Mathf.PerlinNoise(UnityEngine.Mathf.Floor(x / wallBlock) * 0.37f + 3.1f, UnityEngine.Mathf.Floor(z / wallBlock) * 0.37f + 7.9f) * 2f - 1f) * wallBreak;
+var ringBoxes = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); var rimBoxes = new System.Collections.Generic.List<UnityEngine.Matrix4x4>();
+var rimSpots = new System.Collections.Generic.List<UnityEngine.Vector3>(); int wallEdges = 0, rimEdges = 0, floodCells = 0;
 for (int i = 0; i < RW; i++) for (int j = 0; j < RH; j++)
 {
     if (!flooded[i, j]) continue; floodCells++;
     foreach (var (di, dj) in n4)
     {
         int a = i + di, b = j + dj; if (a < 0 || b < 0 || a >= RW || b >= RH || flooded[a, b] || valleyCell[a, b]) continue;
-        bool rise = rh[a, b] > rh[i, j] + riseMin; float top = rise ? nearMax[i, j] + wallH : LocalMax(i, j) + rimH, thick = rise ? wallThick : rimThick;
+        bool rise = rh[a, b] > rh[i, j] + riseMin;
+        float ex = CX(i) + di * ringCell * 0.5f, ez = CZ(j) + dj * ringCell * 0.5f;
+        float top = rise ? nearMax[i, j] + wallH + BlockNoise(ex, ez) : LocalMax(i, j) + rimH, thick = rise ? wallThick : rimColThick;
         float bot = UnityEngine.Mathf.Min(rh[i, j], rh[a, b]) - 1f;
         // the rock stands on the far side of the shared edge: its face on the edge, its body over the neighbour cell
-        float ex = CX(i) + di * ringCell * 0.5f, ez = CZ(j) + dj * ringCell * 0.5f, cxw = ex + di * thick * 0.5f, czw = ez + dj * thick * 0.5f;
+        float cxw = ex + di * thick * 0.5f, czw = ez + dj * thick * 0.5f;
         var size = di != 0 ? V(thick, top - bot, ringCell + 0.02f) : V(ringCell + 0.02f, top - bot, thick);
-        ringBoxes.Add(UnityEngine.Matrix4x4.TRS(V(cxw, (top + bot) * 0.5f, czw), UnityEngine.Quaternion.identity, size));
-        if (rise) wallEdges++; else rimEdges++;
+        (rise ? ringBoxes : rimBoxes).Add(UnityEngine.Matrix4x4.TRS(V(cxw, (top + bot) * 0.5f, czw), UnityEngine.Quaternion.identity, size));
+        if (rise) wallEdges++; else { rimEdges++; rimSpots.Add(V(cxw, LocalMax(i, j), czw)); }
     }
 }
+UnityEngine.Mesh CombineBoxes(string name, System.Collections.Generic.List<UnityEngine.Matrix4x4> list)
 {
     var cubeTmp = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube); var cubeMesh = cubeTmp.GetComponent<UnityEngine.MeshFilter>().sharedMesh;
-    var ci = new UnityEngine.CombineInstance[ringBoxes.Count]; for (int k = 0; k < ci.Length; k++) ci[k] = new UnityEngine.CombineInstance { mesh = cubeMesh, transform = ringBoxes[k] };
-    var mesh = new UnityEngine.Mesh { name = "ClimbRing", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 }; mesh.CombineMeshes(ci, true, true);
+    var ci = new UnityEngine.CombineInstance[list.Count]; for (int k = 0; k < ci.Length; k++) ci[k] = new UnityEngine.CombineInstance { mesh = cubeMesh, transform = list[k] };
+    var mesh = new UnityEngine.Mesh { name = name, indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 }; mesh.CombineMeshes(ci, true, true);
     var vsR = mesh.vertices; var uvR = new UnityEngine.Vector2[vsR.Length]; var nrR = mesh.normals;   // world-space rock UVs, as RockWall
     for (int k = 0; k < vsR.Length; k++) { var v = vsR[k]; uvR[k] = nrR[k].y > 0.5f ? new UnityEngine.Vector2(v.x / rockTile, v.z / rockTile) : new UnityEngine.Vector2((v.x + v.z) / rockTile, v.y / rockTile); }
     mesh.uv = uvR; mesh.RecalculateBounds(); UnityEngine.Object.DestroyImmediate(cubeTmp);
-    UnityEditor.AssetDatabase.CreateAsset(mesh, rockDir + "/ClimbRing.asset");
+    UnityEditor.AssetDatabase.CreateAsset(mesh, rockDir + "/" + name + ".asset"); return mesh;
+}
+{
+    var wallMesh = CombineBoxes("ClimbRing", ringBoxes);
     var go = new UnityEngine.GameObject("ClimbRing_Rock"); go.transform.SetParent(ring, false);
-    go.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; go.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = rockMat; go.AddComponent<UnityEngine.MeshCollider>().sharedMesh = mesh;
-    rockMeshes++;
+    go.AddComponent<UnityEngine.MeshFilter>().sharedMesh = wallMesh; go.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = rockMat; go.AddComponent<UnityEngine.MeshCollider>().sharedMesh = wallMesh;
+    var rimMesh = CombineBoxes("ClimbRim", rimBoxes);
+    var rc = new UnityEngine.GameObject("ClimbRim_Collider"); rc.transform.SetParent(ring, false); rc.AddComponent<UnityEngine.MeshCollider>().sharedMesh = rimMesh;
+    rockMeshes += 2;
+}
+// the boulders over the rim collider: one every boulderStep along it (the rim edges sorted by a coarse grid, the next spot too close skipped)
+var boulders = new UnityEngine.GameObject("RimBoulders").transform; boulders.SetParent(ring, false); int boulderN = 0;
+{
+    const string rocksPath = "Assets/Revolving Pizza Games/Campsite/Prefabs/Rocks and Stones/CS_Rock_";
+    var placed = new System.Collections.Generic.Dictionary<long, System.Collections.Generic.List<UnityEngine.Vector3>>();
+    long Key(float x, float z) => ((long)UnityEngine.Mathf.FloorToInt(x / boulderStep) << 32) ^ (uint)UnityEngine.Mathf.FloorToInt(z / boulderStep);
+    foreach (var s in rimSpots)
+    {
+        bool near = false;
+        for (int dx = -1; dx <= 1 && !near; dx++) for (int dz = -1; dz <= 1 && !near; dz++)
+            if (placed.TryGetValue(Key(s.x + dx * boulderStep, s.z + dz * boulderStep), out var lst)) foreach (var q in lst) if ((new UnityEngine.Vector2(q.x - s.x, q.z - s.z)).magnitude < boulderStep) { near = true; break; }
+        if (near) continue;
+        var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(rocksPath + (1 + boulderRng.Next(8)) + ".prefab"); if (pf == null) continue;
+        var g = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(pf, boulders);
+        foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+        g.transform.rotation = UnityEngine.Quaternion.Euler(RR(-boulderTilt, boulderTilt), RR(0f, 360f), RR(-boulderTilt, boulderTilt));
+        float lo = float.MaxValue, hi = float.MinValue; foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) { lo = UnityEngine.Mathf.Min(lo, r.bounds.min.y); hi = UnityEngine.Mathf.Max(hi, r.bounds.max.y); }
+        float sc = RR(boulderLow, boulderHigh) / UnityEngine.Mathf.Max(0.2f, hi - lo); g.transform.localScale = V(sc, sc, sc);
+        g.transform.position = V(s.x, 0f, s.z); lo = float.MaxValue; foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) lo = UnityEngine.Mathf.Min(lo, r.bounds.min.y);
+        g.transform.position = V(s.x, s.y - 0.4f - lo, s.z);   // sunk 0.4 m, so its top stands about rimH over the walkable ground
+        long k = Key(s.x, s.z); if (!placed.TryGetValue(k, out var l2)) placed[k] = l2 = new System.Collections.Generic.List<UnityEngine.Vector3>(); l2.Add(s); boulderN++;
+    }
 }
 
 // ---------- fence along x 396, gray, 2.1 m, from the S band to the N band, gap for the gate lane z 167.5 to 172.5 ----------
@@ -768,7 +807,7 @@ sb.Append(" | W crest lowest over x 5 to 20, z 40 to 345 (cleft left out) " + F(
 sb.Append(" | N arm x120 " + F(ArmN(120f, PL(120f, nCX, nCZ))) + " x170 " + F(H(170, PL(170f, nCX, nCZ))) + " x250 " + F(H(250, 338)) + " x320 " + F(H(320, 334)) + " x380 " + F(H(380, 332)) + " | S arm x110 " + F(H(110, -44)) + " x170 " + F(H(170, -42)) + " x240 " + F(H(240, -38)) + " x320 " + F(H(320, -34)));
 sb.Append(" | climb: J " + F(H(pJ.x, pJ.y)) + " mouth " + F(H(pMouth.x + 0.5f, pMouth.y)) + " P1 " + F(H(pP1.x, pP1.y)) + " P2 " + F(H(pP2.x, pP2.y)) + " cwm bend " + F(H(pL3.x, pL3.y)) + " P3 " + F(H(pP3.x, pP3.y)) + " leg 4 bend " + F(H(pL4.x, pL4.y)) + " P4 " + F(H(pP4.x, pP4.y))
     + " dogleg " + F(H(slotDog1.x, slotDog1.y)) + " slot end " + F(H(slotEnd.x, slotEnd.y)) + " exit " + F(H(slotExit.x, slotExit.y)) + " path end " + F(H(pathEnd.x, pathEnd.y)) + " ledge " + F(H(-5f, 230f)) + " (leg 1 ramps " + (100f * rampRise / rampRun).ToString("F1") + " percent, leg 3 " + (100f * (p3H - p2H) / lenL3).ToString("F1") + ", leg 4 " + (100f * (p4H - p3H) / (lenL4a + lenL4b)).ToString("F1") + ")");
-sb.Append(" | rock: " + rockMeshes + " meshes, walls " + rockLength.ToString("F0") + " m; climb ring: " + floodCells + " walkable cells, " + wallEdges + " wall and " + rimEdges + " rim edges");
+sb.Append(" | rock: " + rockMeshes + " meshes, walls " + rockLength.ToString("F0") + " m; climb ring: " + floodCells + " walkable cells, " + wallEdges + " wall and " + rimEdges + " rim edges, " + boulderN + " rim boulders");
 sb.Append(" | road (428, 170) " + F(H(roadX, 170)) + " ditch " + F(H(roadX + roadHalf + ditchW * 0.5f, 170)) + " east hills (590,150) " + F(H(590, 150)) + " | west: x-40 z150 " + F(H(-39.8f, 150)) + " edges N " + F(H(200, 499.5f)) + " S " + F(H(200, -199.5f)) + " E " + F(H(594.5f, 150)));
 sb.Append(" | build list: "); foreach (var s in UnityEditor.EditorBuildSettings.scenes) sb.Append(System.IO.Path.GetFileNameWithoutExtension(s.path) + " ");
 return sb.ToString();
