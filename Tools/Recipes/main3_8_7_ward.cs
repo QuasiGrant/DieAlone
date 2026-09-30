@@ -96,8 +96,8 @@ UnityEngine.GameObject Grid(string name, float x0, float x1, float z0, float z1,
 Grid("ValleyFloor", floorX0, floorX1, floorZ0, floorZ1, floorStep, FloorY);
 Grid("Ridge", ridgeX0, ridgeX1, ridgeZ0, ridgeZ1, ridgeStep, RidgeY);
 // ---- flames as textured cards (8.9f, Vesper): vertical quads from an 8 x 8 flipbook of the Fire & Smoke pack on DieAlone/FlameCard
-// (additive, no fog), combined per group into mesh assets. The flame in each frame fills about the lower two thirds of its card, so a
-// card for a visible top T rises from its base b to b + (T - b) / flameShare.
+// (additive, no fog), combined per group into mesh assets. Measured in 8.9k (frames 16 to 47 of the flipbook, lit rows): the flame reaches
+// up to 0.93 of its card (frame 47), so a card is only as tall as its flame top: it rises from its base b to the stated top T.
 const string nmDir = "Assets/NatureManufacture Assets/Fire and Smoke Particles/";
 var flameTex = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(nmDir + "Textures/T_fire_flipbook_big_01.png");
 var cardSh = UnityEngine.Shader.Find("DieAlone/FlameCard");
@@ -106,7 +106,7 @@ var flameMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("
 if (flameMat == null) { flameMat = new UnityEngine.Material(cardSh); UnityEditor.AssetDatabase.CreateAsset(flameMat, "Assets/Materials/Blockout/Blockout_FlameCard.mat"); }
 flameMat.shader = cardSh; flameMat.SetTexture("_BaseMap", flameTex); flameMat.SetColor("_Color", UnityEngine.Color.white); flameMat.SetFloat("_Intensity", lookT.fireGlowIntensity); UnityEditor.EditorUtility.SetDirty(flameMat);
 const int sheetTiles = 8;   // the pack flipbooks are 8 x 8
-const float flameShare = 2f / 3f;
+const float flameShare = 1f;   // the card top is the flame top (was 2/3, an unmeasured guess; 8.9k)
 var faceTo = new UnityEngine.Vector2(-2f, 258f);   // cards turn toward the path end on the ledge
 UnityEngine.GameObject Cards(string name, UnityEngine.Transform parent, System.Collections.Generic.List<(UnityEngine.Vector3 b, float w, float h, int frame, float lean, float alpha)> cs, UnityEngine.Material mat, int tiles)
 {

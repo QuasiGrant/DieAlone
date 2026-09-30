@@ -49,7 +49,7 @@ var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2
     // 33 south, each 85 m rising 20 m) joined by the platforms P1 to P3, P4 at the top, leg 5 north-west to the cleft's east mouth,
     // part A west along z 230, part B north to the west mouth, and the ramp up onto the ledge to the path end facing west. 8.1
     // carves all of it into the terrain (benches, platforms, slot, ramp), so this leg is not flattened: its profile is the ground.
-    ("J to Ward", new[] { P(104,206), P(80,205.5f), P(72,205), P(72,291), P(59,291), P(59,204), P(46,204), P(46,291), P(33,291), P(33,204), P(27,206), P(20,230), P(4.25f,230), P(4.25f,238), P(-2,258) }, true, 487f, false, 0.24f, new (string n, UnityEngine.Vector2 p, string kind)[0]),
+    ("J to Ward", new[] { P(104,206), P(80,205.5f), P(72,205), P(72,291), P(59,291), P(59,204), P(46,204), P(46,291), P(33,291), P(33,204), P(27,206), P(20,230), P(4.25f,230), P(4.25f,238.5f), P(0.5f,238.5f), P(-2,258) }, true, 487f, false, 0.24f, new (string n, UnityEngine.Vector2 p, string kind)[0]),
 };
 
 // ---------- centre line sampling ----------
@@ -571,10 +571,17 @@ System.Collections.Generic.List<UnityEngine.Vector2> Simplify(System.Collections
 const float wallReach = 3f;
 var tileWalls = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
 var tileMarks = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
-// visible stops (8.9k): gray rock on the wall line at every face, drop or ridge foot
-const float stopRise = 2f, stopRockLow = 0.6f, stopRockHigh = 1.1f, stopRockSink = 0.5f, stopRockW = 1.0f;
+// visible stops (8.9k): gray rocks along the wall line at every face, drop or ridge foot. Vesper (8.9k edge check): not a
+// battlement: two rocks per wall piece, each set back 0.5 to 1.5 m on the far side of the line, scaled 0.6 to 1.1, turned at
+// random (fixed seed, so rebuilds match); none on the ledge inside the middle 60 degrees of the west view from the path end,
+// where the lip itself is the stop (the wall stays on the lip)
+const float stopRise = 2f, stopRockSize = 1.6f, stopRockH = 1.0f, stopRockSink = 0.5f, stopSetback0 = 0.5f, stopSetback1 = 1.5f, stopScale0 = 0.6f, stopScale1 = 1.1f, stopTilt = 10f;
 var rocks = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); var stopRng = new System.Random(8911);
+float SR(float a, float b) => a + (float)stopRng.NextDouble() * (b - a);
 bool RidgeZone(UnityEngine.Vector2 q) => (q.x < 85f && q.y > 190f) || q.x < 48f || q.y > 296f || q.y < 4f;   // the climb and ledge, the W ridge foot, the N and S map edges
+var ledgeView = P(-2f, 258f); const float ledgeViewHalf = 30f, ledgeViewReach = 40f;
+bool InLedgeView(UnityEngine.Vector2 q) { var d = q - ledgeView; if (d.magnitude > ledgeViewReach || d.x >= 0f) return false; return UnityEngine.Vector2.Angle(d, P(-1f, 0f)) < ledgeViewHalf; }
+bool Walkable(UnityEngine.Vector2 q) { int i = UnityEngine.Mathf.RoundToInt((q.x - gridX0) / cellT), j = UnityEngine.Mathf.RoundToInt(q.y / cellT); return i >= 0 && j >= 0 && i <= GW && j <= GH && fld[i, j] > 0f; }
 int boxes = 0;
 foreach (var raw0 in loops)
 {
@@ -601,8 +608,16 @@ foreach (var raw0 in loops)
             lw.Add(UnityEngine.Matrix4x4.TRS(V(mid.x, (lo + wallTop) * 0.5f, mid.y), rot, V(0.6f, wallTop - lo, l)));
             tileMarks[key].Add(UnityEngine.Matrix4x4.TRS(V(mid.x, (lo + markTop) * 0.5f, mid.y), rot, V(0.5f, markTop - lo, l)));
             // ridge-foot stops (8.9k, Edges.md 9.4): where the wall stands at a face or drop, or in the ring of ridges and on the climb, a
-            // visible gray rock sits on the line as well, so no invisible stop stands on open ground; no collider (the wall holds)
-            if (gTop - gLow >= stopRise || RidgeZone(mid)) { float gE = H(mid.x, mid.y), rh = stopRockLow + (float)stopRng.NextDouble() * (stopRockHigh - stopRockLow); rocks.Add(UnityEngine.Matrix4x4.TRS(V(mid.x, gE + (rh - stopRockSink) * 0.5f, mid.y), rot * UnityEngine.Quaternion.Euler(0f, (float)stopRng.NextDouble() * 20f - 10f, 0f), V(stopRockW, rh + stopRockSink, l))); }
+            // visible gray rock stands just beyond the line as well, so no invisible stop stands on open ground; no collider (the wall holds)
+            if ((gTop - gLow >= stopRise || RidgeZone(mid)) && !InLedgeView(mid))
+                foreach (var u in new[] { 0.25f, 0.75f })
+                {
+                    var on = UnityEngine.Vector2.Lerp(sa, sb2, u); float back = SR(stopSetback0, stopSetback1);
+                    var outDir = Walkable(on + perp * 0.8f) ? -perp : perp;   // the far side of the line, away from the walkable ground
+                    var rp = on + outDir * back; float s = SR(stopScale0, stopScale1), gR = H(rp.x, rp.y), rh = stopRockH * s;
+                    var rrot = UnityEngine.Quaternion.Euler(SR(-stopTilt, stopTilt), SR(0f, 360f), SR(-stopTilt, stopTilt));
+                    rocks.Add(UnityEngine.Matrix4x4.TRS(V(rp.x, gR + (rh - stopRockSink) * 0.5f, rp.y), rrot, V(stopRockSize * s, rh + stopRockSink, stopRockSize * s * SR(0.8f, 1.2f))));
+                }
             boxes++;
         }
     }

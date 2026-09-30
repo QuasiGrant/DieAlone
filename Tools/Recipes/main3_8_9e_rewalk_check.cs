@@ -54,7 +54,9 @@ bool OverCave(UnityEngine.Vector3 e) => !(e.x > 49f && e.x < 55f && e.z > 29.5f 
         for (int a = 0; a < 360; a += 45) { Put(cave.GetChild(i).position); Hop(UnityEngine.Quaternion.Euler(0f, a, 0f) * UnityEngine.Vector3.forward, tuning.sprintSpeed, 3f); tries++; if (InRimPocket(pc.transform.position)) bad++; }
     allOk &= bad == 0; sb.Append("(b) rim pocket: " + bad + " of " + tries + " sprint-jumps end in it\n");
 }
-// (c) cairn gate by day
+// (c) cairn gate by day, aimed 8 m past the GateBlocker up the climb (8.9k: the valley trail runs west from J along z 205.5; the
+// rev 16 aim point (99.5, 209.9) was on the old climb)
+var gateBl = Root("Ward").transform.Find("CairnGate/GateBlocker"); var gateAim = gateBl.position + gateBl.forward * 8f;
 var climb = Root("Trails").transform.Find("J to Ward"); var cl = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform m in climb) cl.Add(m.position);
 int NearClimb(UnityEngine.Vector3 p, out float dist) { int bi = 0; dist = float.MaxValue; for (int i = 0; i < cl.Count; i++) { float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(p.x, p.z), new UnityEngine.Vector2(cl[i].x, cl[i].z)); if (d < dist && UnityEngine.Mathf.Abs(p.y - cl[i].y) < 2.5f) { dist = d; bi = i; } } return bi; }
 {
@@ -62,7 +64,7 @@ int NearClimb(UnityEngine.Vector3 p, out float dist) { int bi = 0; dist = float.
     foreach (var s in new[] { new UnityEngine.Vector2(107.2f, 203.3f), new UnityEngine.Vector2(110f, 208f), new UnityEngine.Vector2(113.5f, 205.6f), new UnityEngine.Vector2(121.5f, 198.8f) })
         foreach (var spd in new[] { 4f, 5.5f })
         {
-            PutXZ(s.x, s.y); Hop(Dir(s.x, s.y, 99.5f, 209.9f), spd, 6f); var e = pc.transform.position;
+            PutXZ(s.x, s.y); Hop(Dir(s.x, s.y, gateAim.x, gateAim.z), spd, 6f); var e = pc.transform.position;
             int ci = NearClimb(e, out float cd); if (cd < 2.5f && ci > 3) { bad++; if (what == "") what = " first from " + s + " at " + spd + " m/s: climb point " + ci + " " + e.ToString("F1"); }
         }
     allOk &= bad == 0; sb.Append("(c) gate by day: " + bad + " of 8 sprint-jumps reach the climb past the gate" + what + "\n");

@@ -229,7 +229,11 @@ var approach = new[] { (P(104f, 206f), 10f), (P(80f, 205.5f), 11.5f), (P(72f, 20
 // leg 5 leaves P4 west first (to (27, 206)), then runs north-west to the east mouth: straight from P4 it ran 27 degrees off leg 4 and
 // stayed within 2 m of it for 5 m while the two parted in height, so the ground between them was a step (8.9j climb check)
 var leg5 = new[] { (P(33f, 204f), 92f), (P(27f, 206f), 92.6f), (P(20f, 230f), 95f) };
-var ramp = new[] { (P(4.25f, 238f), 95f), (P(-2f, 258f), 98f) };
+// Valley.md rev 7 (Sable, the stones fix): part B exits west along z 238.5 through the 2.5 m gap between the fin end (z 237.2) and
+// the cap rock, to (0.5, 238.5), then rises round the cap onto the ledge to the path end
+var ramp = new[] { (P(4.25f, 238.5f), 95f), (P(0.5f, 238.5f), 95.48f), (P(-2f, 258f), 98f) };
+const float rampHalf = 1.2f;   // the exit gap is 2.5 m: fin end z 237.2 to cap z 239.7
+const float capX0 = 1.5f, capX1 = 6.25f, capZ0 = 239.7f, capZ1 = 242.2f, capTop = 104f;   // the cap rock, joined to the east wall
 float PathH((UnityEngine.Vector2, float)[] pts, UnityEngine.Vector2 p, out float dist)
 {
     dist = float.MaxValue; float hBest = 0f;
@@ -295,7 +299,9 @@ float Height(float x, float z)
     // leg 5 is flattened on the upper face; over bench 4 (x from 31) it only cuts down: near P4 it runs beside leg 4, which falls
     // north as leg 5 rises, so raising the bench to leg 5's height made a step across leg 4 (8.9j climb check)
     { float ph = PathH(leg5, p, out float d); if (d < 3.5f) { float c5 = L(ph, h, SS((d - 2f) / 1.5f)); h = x < legX[3] - benchHalf ? c5 : UnityEngine.Mathf.Min(h, c5); } }
-    { float ph = PathH(ramp, p, out float d); if (d < 1.5f) h = UnityEngine.Mathf.Min(h, ph); }   // the ramp is sunk in the ledge (it rises 95 to 98)
+    // the cap rock (rev 7) closes part B's view north onto the ledge and the stones; it runs into the cleft's east wall
+    if (x >= capX0 - cellPad && x <= capX1 + cellPad && z >= capZ0 - cellPad && z <= capZ1 + cellPad) h = UnityEngine.Mathf.Max(h, capTop);   // the exit carve below trims its south face back to z 239.7
+    { float ph = PathH(ramp, p, out float d); if (d < rampHalf) h = UnityEngine.Mathf.Min(h, ph); }   // the exit and ramp are sunk in the ledge (they rise 95 to 98)
     return h;
 }
 
