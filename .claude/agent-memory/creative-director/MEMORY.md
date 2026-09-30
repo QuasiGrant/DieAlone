@@ -9,5 +9,5 @@
 - [Valley rev 8 review](project_valley8_review.md) — 2026-09-30 FIX; belt leaks at trunk band, knob 84, ledge fire scale short
 - [Lighting options 8.12](project_lighting_options.md) — 2026-09-30 LightingOptions.md: V1-V10, candidates A/B/C, six spots, bar, missing fields
 - [Forest plan 8.15/8.16](project_forest_plan.md) — 2026-09-30 ForestPlan.md: grove counts, crest, wall, verge, ground greys, thin order
-- [Gate 8.14](project_gate_8_14.md) — 2026-09-30 FAIL: F floor, W ridge, bands, climb; A Tri yes; climb walls rejected as built
+- [Gate 8.14 and 8.14a](project_gate_8_14.md) — 2026-09-30 both FAIL; 8.14a: bands, climb F; A Tri C kept; lip fix, not fires west
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions
