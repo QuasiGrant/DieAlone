@@ -846,6 +846,48 @@ MonoBehaviour:
   - label: Day two
     tuning: {fileID: 11400000, guid: abd1632e3aeef8a4eb1514e5234a8f73, type: 2}
     daylight: 1
+  - label: V1 Ambient
+    tuning: {fileID: 11400000, guid: d108fe1bcffc48342911db222fcc850b, type: 2}
+    daylight: 1
+  - label: V2 Fog colour
+    tuning: {fileID: 11400000, guid: 54257656cb680754dabe0ca0f0729259, type: 2}
+    daylight: 1
+  - label: V3 Fog range
+    tuning: {fileID: 11400000, guid: c71bb8800a827d649b36e925cf4b3a96, type: 2}
+    daylight: 1
+  - label: V4 Crush
+    tuning: {fileID: 11400000, guid: 14bdae4270a4e0148bb743d2d405fc51, type: 2}
+    daylight: 1
+  - label: V5 Wash
+    tuning: {fileID: 11400000, guid: 12362c97cdf53c946be4fd65e6a7c7a1, type: 2}
+    daylight: 1
+  - label: V6 Sun height
+    tuning: {fileID: 11400000, guid: e164a0c1bfe24b1439822b2f835d3487, type: 2}
+    daylight: 1
+  - label: V7 Sun bearing
+    tuning: {fileID: 11400000, guid: d60351e37c32a924eace9367d4fd8c1e, type: 2}
+    daylight: 1
+  - label: V8 Sun strength
+    tuning: {fileID: 11400000, guid: d35949fa5d511b94f8ef33dc6cad52dd, type: 2}
+    daylight: 1
+  - label: V9 Corners
+    tuning: {fileID: 11400000, guid: 053905f6296409b49ba3116873b248e8, type: 2}
+    daylight: 1
+  - label: V10 Glow
+    tuning: {fileID: 11400000, guid: b0d62d5c7d69ce542a0446f660e08d94, type: 2}
+    daylight: 1
+  - label: A Vesper
+    tuning: {fileID: 11400000, guid: 34dc325405f0aab45958ed19bb4e22f4, type: 2}
+    daylight: 1
+  - label: A Tri
+    tuning: {fileID: 11400000, guid: 42c3ed0ee041ffa4f9c55c77e46cc15e, type: 2}
+    daylight: 1
+  - label: B Late gold
+    tuning: {fileID: 11400000, guid: ebc0622c6c6a40d42bd875dcaf32fe9b, type: 2}
+    daylight: 1
+  - label: C Overcast
+    tuning: {fileID: 11400000, guid: 827f5e130a952144bb4504db3a07915f, type: 2}
+    daylight: 1
   skyMaterial: {fileID: 2100000, guid: 721ffb968b88cd94d96a758bcbbabb0b, type: 2}
   startLook: 1
 --- !u!1 &3815159851938191409

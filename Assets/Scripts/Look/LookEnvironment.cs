@@ -66,7 +66,14 @@ public class LookEnvironment : MonoBehaviour
             RenderSettings.ambientLight = tuning.nightAmbient;
         }
         if (fireFill != null) { fireFill.color = tuning.fireFillColor; fireFill.intensity = tuning.fireFillIntensity; }
-        if (sunset)
+        if (sunset && tuning.sunsetTrilight)
+        {
+            RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor = tuning.sunsetAmbientSky;
+            RenderSettings.ambientEquatorColor = tuning.sunsetAmbient;
+            RenderSettings.ambientGroundColor = tuning.sunsetAmbientGround;
+        }
+        else if (sunset)
         {
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             RenderSettings.ambientLight = tuning.sunsetAmbient;

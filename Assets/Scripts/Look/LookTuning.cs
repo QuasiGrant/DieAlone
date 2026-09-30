@@ -55,9 +55,15 @@ public class LookTuning : ScriptableObject
     [Tooltip("Haze color for scenes set to the Sunset fog set. The far ridge fades into this.")]
     public Color sunsetFogColor = new Color(0.62f, 0.36f, 0.22f);
     [Range(0f, 200f)] public float sunsetFogStart = 25f;
-    [Range(1f, 600f)] public float sunsetFogEnd = 320f;
+    [Range(1f, 1500f)] public float sunsetFogEnd = 320f;
     [Tooltip("Flat ambient light for sunset scenes. Lifts the forest floor under the canopy where the low sun never reaches.")]
     public Color sunsetAmbient = new Color(0.5f, 0.34f, 0.28f);
+    [Tooltip("Off: flat sunsetAmbient. On: Trilight ambient, sky from above, sunsetAmbient at the horizon, ground from below.")]
+    public bool sunsetTrilight = false;
+    [Tooltip("Trilight only: ambient from the sky above (cooler).")]
+    public Color sunsetAmbientSky = new Color(0.416f, 0.439f, 0.502f);
+    [Tooltip("Trilight only: ambient from the ground below (darkest).")]
+    public Color sunsetAmbientGround = new Color(0.227f, 0.196f, 0.157f);
 
     [Header("Night (the Night fog set; LookSlice.md 4)")]
     [Tooltip("Flat ambient at night. LookSlice #07080A.")]
