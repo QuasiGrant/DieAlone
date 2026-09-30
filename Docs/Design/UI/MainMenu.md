@@ -45,6 +45,7 @@ Start a run, go back to the saved run, change settings before playing, quit. Not
 3. Bottom right: a tape OSD mark (`PLAY >`), static, VT323. Vesper may drop it.
 4. `Day n` beside Continue is the day the saved run wakes into. Nothing else about the run is shown here (no stats: DECISIONS 2026-09-28).
 5. Rows, top to bottom: Continue, New run, Settings, Content warnings, Quit. Continue is not shown when there is nothing to continue (section 4).
+6. Fit (DECISIONS 2026-09-29, 8.9h): the canvas uses CanvasFit, reference height 1080 so Style.md 7.2 sizes are typed as written, floor 0.667 (720 rows), fit target the title-and-rows box plus the safe margin. It may shrink to fit; nothing sits off screen. Rook checks at the 8.9h fit sizes.
 
 ## 3. Rows
 

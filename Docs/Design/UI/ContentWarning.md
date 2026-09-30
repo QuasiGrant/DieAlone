@@ -75,6 +75,7 @@ When off, the game should still avoid full-screen strobing; the toggle removes w
 3. Heading line: `This game contains:` (Quill may change). No title card, no logo, no sound but the UI press sound.
 4. From the main menu, the button reads `Back` instead of `Continue`.
 5. A player who cannot read the screen is not covered by this draft; no screen reader in uGUI with TextMeshPro (unverified that one exists for it).
+6. Fit: same rule as MainMenu.md 2.6 (CanvasFit, reference 1080, floor 0.667, fit target the heading-to-button block). If it still does not fit, the list scrolls and Continue stays on screen.
 
 ## 6. Dismissing it
 

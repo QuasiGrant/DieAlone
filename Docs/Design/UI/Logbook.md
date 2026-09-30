@@ -42,6 +42,7 @@ A screen-space uGUI overlay drawn as an open notebook, about 80 percent of scree
 1. Tab glyphs `[LB]` `[RB]` or `[Q]` `[E]` follow the last device used, as in TowerCheck.md 3.5. The hint line under the book shows for the first 3 s of each opening on days 1 to 3, then never.
 2. TextMeshPro only (section 2.1). Tick boxes, stamps and pins are uGUI Images, not glyphs.
 3. No clock, hour or time-left anywhere in the book (DECISIONS 2026-09-29).
+4. Fit: same rule as MainMenu.md 2.6, fit target the open book plus tabs and hint line. The book keeps its page ratio and shrinks to fit narrow screens; the world fills the rest. The pause menu beside it (section 9) uses the 8.9h pause fit.
 
 ### 2.1 Type
 

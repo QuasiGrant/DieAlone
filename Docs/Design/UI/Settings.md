@@ -69,6 +69,7 @@ One settings panel, built once, shown in three hosts:
 4. Values change live: sound as the slider moves, look sensitivity on the next frame.
 5. uGUI: Slider and Toggle exist. The stepper `< value >` is a Selectable that takes left and right (Rook builds it); no Dropdown (legacy or TMP_Dropdown), because a dropdown list is awkward on a pad.
 6. Type: all text TextMeshPro in Overpass, in every host, including the logbook host. The panel is printed, not handwritten, even on the ruled page. `SETTINGS` and section headings SemiBold **P**; rows, values, notes, `Back` and the keep card Regular. No Patrick Hand, no VT323.
+7. Fit: same rule as MainMenu.md 2.6 in the pause and main menu hosts. The list does not shrink to fit; it scrolls with the focused row kept in view (as in 3.2), headings and `Back` never off screen.
 
 ## 4. Input paths
 
