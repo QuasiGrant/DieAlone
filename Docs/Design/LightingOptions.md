@@ -37,3 +37,14 @@ Camp (pair-sheet camp frame); S1 (pair-sheet S1); under the giants (Jg_to_Camp_1
 - Glow strength: no field, only colour and size; V10 dims by colour. Rook confirms the smear is this glow, not bloom.
 - Exposure: no field and no post Volume. Not requested; if no look meets bar 5 without it, ask me first.
 - skyHorizon is already #E3A968 in D1 yet no gold band shows; Rook finds why before bar 5 is judged.
+## 6. Verdict (Vesper, 2026-09-30; sheets from b149309, terrain rev 7)
+No look passes the section 4 bar yet. None passes bar 5, because no gold band shows in any of them. D1 now fails bars 1 to 3: it reads flat and tan, has no dark anchor, and its shade is not cool.
+- **Pick: A Tri.** It meets bars 1, 2, 3 and 6. The ground is darker than the sky, the giants cast shade that shows shape, and the ridges at S1 read cool and layered. The cabin has a lamp pool and dark corners. It matches A in the warm frames; the trilight adds a cool fill in the shade, which is what bar 3 asks for.
+- **Alt 1: A.** Same look with flat ambient. Choose it only if Grant cannot see a difference; it keeps one fewer field.
+- **Alt 2: B.** It has the best sun of the three: long east shadows under the giants and the warmest office sky. On rev 7 it fails, because camp, S1 and J go into ridge shade. Re-judge it on rev 8 only.
+- Rejected: C. It casts no shadows (bar 5), has no warm key (bar 3), and reads as grey weather, not the sunset default.
+- **Fix to A Tri (one change, next retake):** sunElevation 24 to 20, for longer east shadows and a rim on the crests. This stands only if the ray check on rev 8 keeps Camp, J and the Lake pump lit; if not, stay at 24.
+- **Band width: needed.** The skyline sits at 12 to 27 degrees (J median 27), and rev 8 will not bring all of it below 10. Add skyBandHeight (degrees) to LookTuning, P 30, so gold runs from skyHorizon #E3A968 up to 30 degrees, then eases into the sky top.
+- W1 is in shade in every look on rev 7. Recheck it on rev 8 before changing any sun number for it.
+- The cairn at J renders see-through. That breaks Style 10 hard line 4 whatever the lighting; it is a material fix for Rook, not a lighting fix.
+- Re-judge after rev 8 lands, with the same six spots and the band field in place. Record nothing in DECISIONS.md until Grant picks.
