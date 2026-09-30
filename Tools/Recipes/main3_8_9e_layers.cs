@@ -85,7 +85,7 @@ UnityEngine.GameObject Band(string name, UnityEngine.Vector2 origin, UnityEngine
 // z -900, x 1200); their front edge sits at farFrontY, under the outer ground (0 to 10) and the west floor (-40).
 var N = new UnityEngine.Vector2(0f, 1f); var S = new UnityEngine.Vector2(0f, -1f); var E = new UnityEngine.Vector2(1f, 0f); var W = new UnityEngine.Vector2(-1f, 0f);
 var alongX = new UnityEngine.Vector2(1f, 0f); var alongZ = new UnityEngine.Vector2(0f, 1f);
-const float farFrontY = -45f, farBackY = -45f;
+const float farFrontY = -45f, farBackY = -45f, westExtraHaze = 0.1f;
 // north: far range 1.2 to 1.8 km out, crest 150 to 220
 Band("North_Far", new UnityEngine.Vector2(0f, mapZ), alongX, N, -2500f, 2900f, 60f, 1200f, 1800f, 150f, 220f, 700f, farFrontY, 2300f, farBackY, 700f, 2.1f, farRange);
 // south: far range 1.5 to 2 km out, crest 180 to 250
@@ -94,7 +94,10 @@ Band("South_Far", new UnityEngine.Vector2(0f, 0f), alongX, S, -2500f, 2900f, 60f
 Band("East_Far", new UnityEngine.Vector2(mapX, 0f), alongZ, E, -2500f, 2800f, 60f, 1500f, 2500f, 150f, 200f, 800f, farFrontY, 3000f, farBackY, 900f, 6.1f, farRange);
 // west, beyond the fire's far ridge (8.9j, Rook): the same far range as the east, so a look west from the ledge below level ends on
 // land, not void (E-1); hidden from every other place by the W ridge. Proposed, not in Valley.md or Edges.md: Vesper and Sable confirm.
-Band("West_Far", new UnityEngine.Vector2(-40f, 0f), alongZ, W, -2500f, 2800f, 60f, 1500f, 2500f, 150f, 200f, 800f, farFrontY, 3000f, farBackY, 900f, 7.7f, farRange);
+// Vesper 2026-09-29: keep it low and hazed, a flat silhouette whose top stays below the day-two fire glow (flame tops 130 at
+// 300 to 500 m from the ledge stand about 4 degrees up; this crest, 105 to 120 at 1.5 to 2.5 km, stays under 1 degree)
+var westFar = Mat("Backdrop_WestFar", look.backdropRangeColor, UnityEngine.Mathf.Min(1f, look.backdropFarHaze + westExtraHaze));
+Band("West_Far", new UnityEngine.Vector2(-40f, 0f), alongZ, W, -2500f, 2800f, 60f, 1500f, 2500f, 105f, 120f, 800f, farFrontY, 3000f, farBackY, 900f, 7.7f, westFar);
 
 // ---------- the outer ground (Valley.md rev 5, 2.7): one mesh, x -40 to 1200, z -900 to 1000, outside the terrain ----------
 // Floor() and Outer() are copies of 8.1's (change both together): gently rolling 0 to 10; west of x 0 a 45 degree step down to the

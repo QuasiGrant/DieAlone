@@ -1,5 +1,5 @@
 // Main3 8.9c check (Play mode): climbs the tower's spiral stair from the south bay to the deck and back, and walks the Ward
-// climb from J to the rock lip (the day gate switched off for the walk), timing each at the walk speed (2.5 m/s) from the
+// climb from J to the ledge path end (8.9j; the day gate switched off for the walk), timing each at the walk speed (2.5 m/s) from the
 // grounded horizontal distance the CharacterController actually covers. Reset runInBackground after.
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 UnityEngine.Application.runInBackground = true;
@@ -36,12 +36,12 @@ sb.Append("tower up: " + (ok ? "reached" : "STUCK at " + pc.transform.position.T
 float back0 = walked; var hatch = W(cs[2]); bool down = To(hatch.x, hatch.z);
 for (int k = 9; k >= 0 && down; k--) { var w = W(cs[k % 4]); down = To(w.x, w.z); }
 sb.Append("tower down: " + (down ? "reached the ground at " + pc.transform.position.y.ToString("F1") : "STUCK at " + pc.transform.position.ToString("F1")) + ", " + (walked - back0).ToString("F1") + " m\n");
-// Ward climb from J to the lip along the trail's centre points, the day gate off for the walk
+// Ward climb from J to the ledge path end along the trail's centre points (8.9j), the day gate off for the walk
 var gate = Root("Ward").transform.Find("CairnGate"); gate.gameObject.SetActive(false); UnityEngine.Physics.SyncTransforms();
 var leg = Root("Trails").transform.Find("J to Ward"); var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform p in leg) pts.Add(p.position);
 Put(pts[0]); float w0 = walked; bool wardOk = true; for (int i = 1; i < pts.Count && wardOk; i++) wardOk = To(pts[i].x, pts[i].z);
-bool lipStops = wardOk && !To(9f, 252f);   // the lip and the cliff wall stop the player short of the edge
-sb.Append("Ward climb J to the lip: " + (wardOk ? "reached" : "STUCK at " + pc.transform.position.ToString("F1")) + ", " + (walked - w0).ToString("F1") + " m, " + ((walked - w0) / speed).ToString("F1") + " s; lip stops the player at x " + pc.transform.position.x.ToString("F1") + " (" + lipStops + ")\n");
+bool lipStops = wardOk && !To(-15f, 258f);   // 8.9j: the ledge's west edge (x -9) stops the player short of the drop
+sb.Append("Ward climb J to the ledge: " + (wardOk ? "reached" : "STUCK at " + pc.transform.position.ToString("F1")) + ", " + (walked - w0).ToString("F1") + " m, " + ((walked - w0) / speed).ToString("F1") + " s; lip stops the player at x " + pc.transform.position.x.ToString("F1") + " (" + lipStops + ")\n");
 gate.gameObject.SetActive(true); UnityEngine.Physics.SyncTransforms();
 pc.enabled = true;
 return sb.ToString();

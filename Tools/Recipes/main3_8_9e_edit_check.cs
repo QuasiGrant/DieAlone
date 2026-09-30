@@ -1,5 +1,5 @@
 // Main3 8.9e check, edit mode: every trail leg's walked length (along its 2 m centre points) and steepest 10 m of ground,
-// the J to Ward climb's height at the pass and the lip, and the giant groves (clusters of giants within 20 m of each other)
+// the J to Ward climb's heights at the platforms, the cleft and the ledge (8.9j), and the giant groves (clusters of giants within 20 m of each other)
 // with their distance from the tower. Read-only.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 UnityEngine.GameObject Root(string name) { foreach (var r in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects()) if (r.name == name) return r; return null; }
@@ -21,8 +21,9 @@ foreach (UnityEngine.Transform leg in Root("Trails").transform)
     sb.Append(leg.name + ": " + acc[s.Count - 1].ToString("F1") + " m between its first and last points, steepest 10 m " + (worst * 100f).ToString("F1") + "% at " + worstAt.ToString("F0") + " m " + worstP.ToString("F1") + "\n");
     if (leg.name == "J to Ward")
     {
-        float passH = float.MinValue; foreach (var q in s) if (UnityEngine.Vector2.Distance(new UnityEngine.Vector2(q.x, q.z), new UnityEngine.Vector2(112f, 262f)) < 3f) passH = UnityEngine.Mathf.Max(passH, q.y);
-        sb.Append("  J to Ward: pass ground " + passH.ToString("F1") + ", end " + s[s.Count - 1].ToString("F1") + ", walk " + (acc[s.Count - 1] / 2.5f).ToString("F0") + " s at 2.5 m/s\n");
+        // 8.9j: ground at the four platforms, the cleft floor (parts A and B) and the ledge path end, against Valley.md 5
+        float GAt(float x, float z) { float best = float.MaxValue, hy = 0f; foreach (var q in s) { float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(q.x, q.z), new UnityEngine.Vector2(x, z)); if (d < best) { best = d; hy = q.y; } } return best < 2f ? hy : float.NaN; }
+        sb.Append("  J to Ward: P1 " + GAt(65f, 291f).ToString("F1") + " (32), P2 " + GAt(52f, 204f).ToString("F1") + " (52), P3 " + GAt(39f, 291f).ToString("F1") + " (72), P4 " + GAt(33f, 204f).ToString("F1") + " (92), cleft A " + GAt(12f, 230f).ToString("F1") + " B " + GAt(4.25f, 234f).ToString("F1") + " (95), path end " + s[s.Count - 1].ToString("F1") + " (98), walk " + (acc[s.Count - 1] / 2.5f).ToString("F0") + " s at 2.5 m/s (paper 195)\n");
     }
 }
 // groves: giants linked when within 20 m

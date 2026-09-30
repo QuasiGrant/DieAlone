@@ -4,7 +4,7 @@
 // cave points 22 to 29, sprint-jumps in eight directions; fails on ending within 2.5 m of (82.2, 47) above 2 m. (c) Cairn
 // gate by day: from (107.2, 203.3), (110, 208), (113.5, 205.6), (121.5, 198.8) toward climb point (99.5, 209.9), sprint-
 // jumping 6 s; fails if the player ends on the climb past the gate. (d) Switchbacks: from every climb point up to the pass,
-// sprint-jumps and walks 4 m straight out to both sides (points within 3 of a turn left out); fails if one lands on another part of the climb (over 8 m of trail
+// sprint-jumps and walks 4 m straight out to both sides (points within 3 of a turn left out; 8.9j: up to the cleft's east mouth, the benched legs on the W face); fails if one lands on another part of the climb (over 8 m of trail
 // away) or drops more than 2 m. (e) Boathouse: from Pump to boathouse point 38 walking toward the lake centre; fails if
 // it ends in the bank pocket. Leaves runInBackground off and the controller on.
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
@@ -69,7 +69,7 @@ int NearClimb(UnityEngine.Vector3 p, out float dist) { int bi = 0; dist = float.
 }
 // (d) switchbacks: jump or walk off a shelf
 {
-    int passIdx = 0; float bd = float.MaxValue; for (int i = 0; i < cl.Count; i++) { float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(cl[i].x, cl[i].z), new UnityEngine.Vector2(112f, 262f)); if (d < bd) { bd = d; passIdx = i; } }
+    int passIdx = 0; float bd = float.MaxValue; for (int i = 0; i < cl.Count; i++) { float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(cl[i].x, cl[i].z), new UnityEngine.Vector2(20f, 230f)); if (d < bd) { bd = d; passIdx = i; } }   // 8.9j: the index of the cleft east mouth (the old pass)
     var gate = Root("Ward").transform.Find("CairnGate"); gate.gameObject.SetActive(false); UnityEngine.Physics.SyncTransforms();
     int tries = 0, skips = 0, drops = 0; float worstDrop = 0f; string first = "";
     bool NearTurn(int i) { for (int k = UnityEngine.Mathf.Max(1, i - 3); k <= UnityEngine.Mathf.Min(cl.Count - 2, i + 3); k++) { var u0 = Dir(cl[k - 1].x, cl[k - 1].z, cl[k].x, cl[k].z); var u1 = Dir(cl[k].x, cl[k].z, cl[k + 1].x, cl[k + 1].z); if (UnityEngine.Vector3.Dot(u0, u1) < 0.7f) return true; } return false; }

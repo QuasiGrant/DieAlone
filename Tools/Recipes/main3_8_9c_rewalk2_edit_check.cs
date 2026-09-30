@@ -1,7 +1,7 @@
 // Main3 8.9c re-walk 2 check, edit mode. (1) Camp trail ends: trail ground at 12, 18 and 25 m from the camp centre against
 // the 15 m knoll, and the steepest 10 m window of each camp leg. (2) Ward stones: eyes 1.6 m over the ground every 0.5 m
 // along the J to Ward leg; a stone counts as seen when a ray on the default layers reaches it first (12 points per stone).
-// Reports the first seen point and how far it is before the crest at x 25.
+// Reports the first seen point; 8.9j: the stones must first show past the fin's north end (the reveal: x under 5.5, z over 237.2).
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 UnityEngine.GameObject Root(string name) { foreach (var r in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects()) if (r.name == name) return r; return null; }
 var terrain = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => terrain.SampleHeight(new UnityEngine.Vector3(x, 0f, z)) + terrain.transform.position.y;
@@ -54,10 +54,10 @@ for (int i = 1; i < wp.Count; i++)
         {
             var v = t.p - eye; if (UnityEngine.Physics.Raycast(eye, v.normalized, out var hit, v.magnitude + 0.5f, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) && hit.collider == t.c) { seen = true; break; }
         }
-        bool before = q.x > 25f; if (before) samples++; else afterCrest++;
+        bool before = !(q.x < 5.5f && q.z > 237.2f); if (before) samples++; else afterCrest++;   // 8.9j: before the reveal
         if (seen && firstSeenAlong < 0f) { firstSeenAlong = total; firstSeen = q; }
         if (seen && before) { seenBeforeCrest++; if (seenBeforeCrest <= 40) sb.Append(q.x.ToString("F1") + "," + q.z.ToString("F1") + " "); } if (seen && !before) seenAfterCrest++;
     }
 }
-sb.Append("Stones: leg " + total.ToString("F1") + " m; first seen at " + (firstSeenAlong < 0 ? "never" : firstSeenAlong.ToString("F1") + " m, " + firstSeen.ToString("F1")) + "; seen from " + seenBeforeCrest + " of " + samples + " points before the crest (x > 25), " + seenAfterCrest + " of " + afterCrest + " from the crest to the lip");
+sb.Append("Stones: leg " + total.ToString("F1") + " m; first seen at " + (firstSeenAlong < 0 ? "never" : firstSeenAlong.ToString("F1") + " m, " + firstSeen.ToString("F1")) + "; seen from " + seenBeforeCrest + " of " + samples + " points before the reveal (past the fin's north end), " + seenAfterCrest + " of " + afterCrest + " from there to the path end; " + (seenBeforeCrest == 0 ? "PASS" : "FAIL"));
 return sb.ToString();

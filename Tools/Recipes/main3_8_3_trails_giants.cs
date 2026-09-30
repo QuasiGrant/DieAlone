@@ -571,6 +571,10 @@ System.Collections.Generic.List<UnityEngine.Vector2> Simplify(System.Collections
 const float wallReach = 3f;
 var tileWalls = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
 var tileMarks = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
+// visible stops (8.9k): gray rock on the wall line at every face, drop or ridge foot
+const float stopRise = 2f, stopRockLow = 0.6f, stopRockHigh = 1.1f, stopRockSink = 0.5f, stopRockW = 1.0f;
+var rocks = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); var stopRng = new System.Random(8911);
+bool RidgeZone(UnityEngine.Vector2 q) => (q.x < 85f && q.y > 190f) || q.x < 48f || q.y > 296f || q.y < 4f;   // the climb and ledge, the W ridge foot, the N and S map edges
 int boxes = 0;
 foreach (var raw0 in loops)
 {
@@ -596,6 +600,9 @@ foreach (var raw0 in loops)
             if (!tileWalls.TryGetValue(key, out var lw)) { tileWalls[key] = lw = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); tileMarks[key] = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); }
             lw.Add(UnityEngine.Matrix4x4.TRS(V(mid.x, (lo + wallTop) * 0.5f, mid.y), rot, V(0.6f, wallTop - lo, l)));
             tileMarks[key].Add(UnityEngine.Matrix4x4.TRS(V(mid.x, (lo + markTop) * 0.5f, mid.y), rot, V(0.5f, markTop - lo, l)));
+            // ridge-foot stops (8.9k, Edges.md 9.4): where the wall stands at a face or drop, or in the ring of ridges and on the climb, a
+            // visible gray rock sits on the line as well, so no invisible stop stands on open ground; no collider (the wall holds)
+            if (gTop - gLow >= stopRise || RidgeZone(mid)) { float gE = H(mid.x, mid.y), rh = stopRockLow + (float)stopRng.NextDouble() * (stopRockHigh - stopRockLow); rocks.Add(UnityEngine.Matrix4x4.TRS(V(mid.x, gE + (rh - stopRockSink) * 0.5f, mid.y), rot * UnityEngine.Quaternion.Euler(0f, (float)stopRng.NextDouble() * 20f - 10f, 0f), V(stopRockW, rh + stopRockSink, l))); }
             boxes++;
         }
     }
@@ -620,6 +627,20 @@ foreach (var kv in tileWalls)
     wgo.AddComponent<UnityEngine.MeshCollider>().sharedMesh = wallMesh;
     var mgo = new UnityEngine.GameObject("Marker_" + kv.Key); mgo.transform.SetParent(thicket.transform, false);
     mgo.AddComponent<UnityEngine.MeshFilter>().sharedMesh = markMesh; mgo.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = grayMat;
+}
+// ridge-foot stop rocks: one mesh, granite gray (Style.md #6E6660), no collider
+{
+    const string rockMatPath = "Assets/Materials/Blockout/Blockout_RidgeRock.mat";
+    var rockMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(rockMatPath);
+    if (rockMat == null) { rockMat = new UnityEngine.Material(grayMat.shader); UnityEditor.AssetDatabase.CreateAsset(rockMat, rockMatPath); }
+    UnityEngine.ColorUtility.TryParseHtmlString("#6E6660", out var granite); rockMat.SetColor("_BaseColor", granite); UnityEditor.EditorUtility.SetDirty(rockMat);
+    var stopsGo = new UnityEngine.GameObject("RidgeStops");
+    if (rocks.Count > 0)
+    {
+        var rockMesh = Combine("RidgeStops", rocks, true);
+        stopsGo.AddComponent<UnityEngine.MeshFilter>().sharedMesh = rockMesh; stopsGo.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = rockMat;
+    }
+    report.Append("ridge stops: " + rocks.Count + " rocks on the wall line\n");
 }
 UnityEngine.Object.DestroyImmediate(cubeTmp);
 report.Append("thicket: " + loops.Count + " outlines, " + boxes + " wall and marker pairs, " + tileWalls.Count + " tiles, " + verts + " vertices\n");

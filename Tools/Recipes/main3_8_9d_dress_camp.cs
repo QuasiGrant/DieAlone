@@ -280,7 +280,10 @@ foreach (var sx in new[] { -1f, 1f }) On(CI + "Building/CITW_Log_Wall_Triangle",
 float runZ = halfSpan + eaveOver, slopeLen = runZ * UnityEngine.Mathf.Sqrt(1f + pitch * pitch), ang = UnityEngine.Mathf.Atan(pitch) * UnityEngine.Mathf.Rad2Deg, roofLenX = (xW + logT * 0.5f + eaveOver) * 2f;
 foreach (var sz in new[] { -1f, 1f })
     Slab("RoofSlab", shell, V(0f, ridgeY - pitch * runZ * 0.5f + roofT * 0.5f, sz * runZ * 0.5f), V(roofLenX, roofT, slopeLen), null, V(sz * ang, 0f, 0f));
-Slab("RidgeBeam", shell, V(0f, ridgeY + roofT, 0f), V(roofLenX, 0.16f, 0.2f), null, UnityEngine.Vector3.zero);
+// the ridge beam closes the joint where the two slabs meet: at the 8.9j sun (bearing 200, 32 degrees) light came through it onto
+// the ceiling as a bright strip, so the beam runs deep enough under the joint to fill it from inside
+const float ridgeBeamW = 0.6f, ridgeBeamH = 0.5f;
+Slab("RidgeBeam", shell, V(0f, ridgeY + roofT - ridgeBeamH * 0.5f + 0.08f, 0f), V(roofLenX, ridgeBeamH, ridgeBeamW), null, UnityEngine.Vector3.zero);
 // stovepipe through the roof over the north-east corner, rust (the CITW flue is a masonry-sized chimney)
 var pipe = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cylinder); pipe.name = "StovePipe"; pipe.transform.SetParent(shell, false);
 const float pipeX = 2.7f, pipeZ = 1.85f, pipeAboveRoof = 0.9f;   // from the ceiling (the CITW stove's own pipe) to 0.9 m over the roof

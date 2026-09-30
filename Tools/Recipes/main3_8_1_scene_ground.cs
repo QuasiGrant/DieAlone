@@ -289,7 +289,9 @@ float Height(float x, float z)
     if (x >= 3f && x <= 22f && z >= 228.75f && z <= 231.25f) h = cleftFloor;                           // part A along z 230
     if (x >= 3f && x <= 5.5f && z >= 228.75f && z <= 238.5f) h = cleftFloor;                            // part B north to the west mouth
     // carved paths: flat 2 m each side at the path height, blended 1.5 m (a trench where the ground is higher)
-    { float ph = PathH(approach, p, out float d); if (d < 3.5f) h = L(ph, h, SS((d - 2f) / 1.5f)); }
+    // the approach stops at leg 1's east edge (x 74): the bench is already 12 at its south end, and carving round the path's end
+    // flattened the bench's first metres to 12 and left a 28 percent step (8.9k slope check)
+    if (x > legX[0] + benchHalf) { float ph = PathH(approach, p, out float d); if (d < 3.5f) h = L(ph, h, SS((d - 2f) / 1.5f)); }
     // leg 5 is flattened on the upper face; over bench 4 (x from 31) it only cuts down: near P4 it runs beside leg 4, which falls
     // north as leg 5 rises, so raising the bench to leg 5's height made a step across leg 4 (8.9j climb check)
     { float ph = PathH(leg5, p, out float d); if (d < 3.5f) { float c5 = L(ph, h, SS((d - 2f) / 1.5f)); h = x < legX[3] - benchHalf ? c5 : UnityEngine.Mathf.Min(h, c5); } }
