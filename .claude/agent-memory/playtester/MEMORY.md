@@ -1,1 +1,2 @@
 - [Walk method pitfalls](feedback_walk_method.md) — false stuck/hidden results, capture tool writes into Assets, always walk back into places
+- [Paper check method](feedback_paper_checks.md) — C# via PowerShell (no Python), deepest-point margin, along-face and edge-of-sheet views

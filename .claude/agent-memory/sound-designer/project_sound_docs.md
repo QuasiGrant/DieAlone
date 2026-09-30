@@ -12,6 +12,8 @@ Conventions set in Locations.md:
 - Fire is a proxy emitter row at the cliff (x 0), reach stepped by WARD band (140/190/300/420 m); per-zone fire offsets; three west glimpse volumes.
 - Cave: chant outside only; inside, descent progress from floor height drives chant to bass (lowpassed music) to full mix.
 
+Night-one reveal on the built valley (Design/Sound/Valley.md item 7, draft 2026-09-29): insect cut at the turn into cleft part B; untimed hold; roar starts on a camera-tested first-sight trigger for flame tops, builds by ramp progress to the path end; runes after the roar. ScareSound ENV-CUT points there.
+
 Roulette (RouletteSound.md): the rave is his pulse; music cuts on the beat when he is shot and the chant is under it; his foley uses fixed variants per run so each day replays identically; tempo stages need five music files.
 
 **Why:** Locations.md flagged DN 8, DN 3.7 and Mixer Ward snapshot conflicts; Main3 rev 13 also moved the Ward approach (climb 138 m), not yet re-checked against LOC 12 and 14.

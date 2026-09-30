@@ -18,6 +18,7 @@ False results I hit in the 8.10 Main3 walk. Check these before reporting a stuck
 - capture_game_view save_path must be inside the project and lands under Assets/ (it created Assets/Temp with .meta files). Never use it; render Camera.main to a RenderTexture in an eval and write the PNG to the scratchpad. If it happens, delete through AssetDatabase.DeleteAsset.
 - Rook's check recipes walk only the route he changed (8.9c: stair and Ward). Always walk every trail back INTO each place, not just out: the 8.9c knoll left all four camp trails in trenches a walker could not climb out of, and his check never saw it.
 - Test sprint-jumps sideways on stairs and landings; 1 m rails on sloped flights are clearable.
+- Before accepting Rook's "all pass", read the recipe's mover and aim points: in 8.9k main3_walk_trails.cs still used a no-gravity push (walk only), and a gate check still aimed at a rev 16 point. "Every check with a recipe passes" also passes checks that have no recipe.
 
 **Why:** each of these made a first-pass report wrong until retested.
 **How to apply:** any Unity walk or sightline check from eval. Related: [[main3-blockout-state]]
