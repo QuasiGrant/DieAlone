@@ -20,5 +20,8 @@ False results I hit in the 8.10 Main3 walk. Check these before reporting a stuck
 - Test sprint-jumps sideways on stairs and landings; 1 m rails on sloped flights are clearable.
 - Before accepting Rook's "all pass", read the recipe's mover and aim points: in 8.9k main3_walk_trails.cs still used a no-gravity push (walk only), and a gate check still aimed at a rev 16 point. "Every check with a recipe passes" also passes checks that have no recipe.
 
+- A downward "ground probe" raycast hits any collider (cave DayOneBoard, cairn chain): Rook's "worst trail point 0.92 m off ground" (2026-09-30) was the cave board, real worst 0.17 m. Always print the hit collider name.
+- Judge pictures, not recipes: in the 2026-09-30 review 46 of 89 stops faced open ground; count per frame, and treat gray cubes as placeholders, not a visible reason.
+
 **Why:** each of these made a first-pass report wrong until retested.
 **How to apply:** any Unity walk or sightline check from eval. Related: [[main3-blockout-state]]

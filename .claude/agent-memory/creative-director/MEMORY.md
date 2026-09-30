@@ -5,4 +5,5 @@
 - [8.9f slice review](project_slice_review_89f.md) — 2026-09-29 FAIL then recheck PASS (51549e0); open look-pass notes
 - [Valley and brightness](project_valley_and_brightness.md) — 2026-09-29 valley read, fire hidden by west ridge, day one too dark causes
 - [Map edges](project_edges.md) — 2026-09-29 Edges.md rev 2; valley sun 200/32, night-1 calls, rev 2 back-slope fail, gray-walk minimum
+- [Check 3 valley quality](project_check3_quality.md) — 2026-09-30 FAIL; proposed light set 24/205, grove rule change, ranked fixes
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions

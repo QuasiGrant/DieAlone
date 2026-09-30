@@ -1,2 +1,3 @@
 - [Grant on event pacing](grant_event_pacing.md) — pacing is Sable's call via playtest; vary events; Tuesday's timer is event-proof
 - [Grant reads drawings](user_reads_drawings.md) — map and space designs go to Grant as SVG plan plus section; check sightlines on every bearing
+- [Play over sightlines](feedback_play_over_sightlines.md) — 2026-09-30 walk: optimize maps for play and readability first; sightlines are a loose check
