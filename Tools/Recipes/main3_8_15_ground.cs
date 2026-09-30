@@ -66,6 +66,7 @@ void SetLayer(UnityEngine.TerrainLayer l, UnityEngine.Texture2D albedo, UnityEng
 {
     l.diffuseTexture = albedo; l.normalMapTexture = normal; l.tileSize = new UnityEngine.Vector2(tile, tile);
     l.diffuseRemapMin = UnityEngine.Vector4.zero; l.diffuseRemapMax = new UnityEngine.Vector4(remap.r, remap.g, remap.b, 1f); UnityEditor.EditorUtility.SetDirty(l);
+    UnityEditor.AssetDatabase.SaveAssetIfDirty(l);   // saved at once: a later CreateAsset in this recipe can reimport a new layer from disk and drop unsaved textures (8.16 gate: four layers drew as a grey checker)
 }
 const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f, trailLift = 1.75f, burnDim = 0.65f;   // 1.75 (1.65 before 8.16; 1.9 put sunlit trail at 5 m over the 110 cap, Wren 8.16 gate)   // trailLift: the dirt brightened so the tread stands 20 grey over the floor 20 m ahead (Gate.md 4; 8.14a measured about 10)
 // rockTile: rock at 10 m so its forms read at a distance through the look filter (8.14a)
@@ -612,6 +613,7 @@ const float warpFoliage = 2.5f; int warpCleared = 0;
     foreach (var g in doomed) { UnityEngine.Object.DestroyImmediate(g); warpCleared++; }
 }
 
+foreach (var tl in data.terrainLayers) if (tl == null || tl.diffuseTexture == null) missing.Add("texture on terrain layer " + (tl != null ? tl.name : "(none)"));   // 8.16 gate: a layer without its texture draws a grey checker
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " | layers: floor GrassPine, SoilPine added, shore and burn GrassMud, trail Ground054, rock Rocks_a | cover " + detailNames.Length + " detail kinds | trail edges " + edgeN
