@@ -187,3 +187,8 @@
 - 2026-09-29: The wildfire is never switched off to hide it; the land hides it. The Ward sits on a hill even higher than the tower. Grant is considering setting the whole game in a valley; the team drafts it on paper first.
 - 2026-09-29: Build the valley version of Main3 from Sable's new drawing (Docs/Design/Valley.md) far enough for Grant to walk it; the team checks the work first.
 - 2026-09-30: Minigames may load their own levels, separate from Main3. Examples: the escape room takes place inside one of the Artist's paintings; the store loads a new level for its anomaly minigame.
+- 2026-09-30: The valley is a horseshoe open to the east, with the highway in view. The ridges need not be very high: trees on and near them count toward hiding the fire and the Ward. The Ward climb is small and never oppressive.
+- 2026-09-30: "The tower sees every place" is a loose check; trees can be moved out of a line. It does not drive the design.
+- 2026-09-30: Invisible walls only where needed: to stop the player leaving through the front, and going up the Ward path by day. Every other stop is something the player can see, or it is removed.
+- 2026-09-30: Before Grant walks a build, the team passes it at eye height: Rook's review captures, Marlow's checklist and his own walk, Vesper against a fixed bar, Pim's task test.
+- 2026-09-30: Wren makes judgement calls and moves work forward without Grant; Grant reviews after. Checks, revisions and playtest fixes are forward work: finished tasks stay ticked and fixes become new tasks.
