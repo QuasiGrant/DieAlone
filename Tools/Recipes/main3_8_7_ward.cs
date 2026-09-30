@@ -162,7 +162,8 @@ Owned("P2_RockRoof", bkRocks + "BigBoulders_3.prefab", sP2, -3f, 1f, V(0.5f, 0.4
 Owned("P3_RootPlate", climbDeadTree, sP3, 2.6f, -0.4f, DeadScale(6f, 1.4f), V(0f, 60f, 84f));   // a fallen snag, its root end toward the trail
 // 8.15a: the climb's lanterns, at the chute foot and on each platform, beside the tread on the wall side, each in sight of the next
 const float chuteFootIn = 3f, lanternSide = -1.8f; float chuteFootS = SAt(86f, 213f) + chuteFootIn;   // 3 m inside the chute mouth
-foreach (var ln in new[] { ("ChuteFootLantern", chuteFootS), ("P1Lantern", sP1), ("P2Lantern", sP2), ("P3Lantern", sP3), ("P4Lantern", sP4) })
+const float chuteMidBeforeP1 = 6f;   // 8.16a: with the chute walls down the P1 lantern drops out of view on the flights (Gate.md 4 N1 at 30 and 40 m); one more on the last landing
+foreach (var ln in new[] { ("ChuteFootLantern", chuteFootS), ("ChuteMidLantern", sP1 - chuteMidBeforeP1), ("P1Lantern", sP1), ("P2Lantern", sP2), ("P3Lantern", sP3), ("P4Lantern", sP4) })
 {
     var a = AtS(ln.Item2); var sd = V(a.dir.z, 0f, -a.dir.x); var p = a.p + sd * lanternSide; p.y = H(p.x, p.z);
     NightLantern(ln.Item1, climbRoot, p);

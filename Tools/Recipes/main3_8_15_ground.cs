@@ -256,6 +256,26 @@ for (float s = sP2 + 4f; s < sP3 - 2f; s += snagStep)
     Dress(CS + "Wood/CS_Log_Firewood_Burnt", s + 3f, (rng.NextDouble() < 0.5 ? 1f : -1f) * dressOff, 0.4f, 0f);
 }
 for (float s = sP3 + 3f; s < sP4 - firEndBeforeP4; s += firStep) Dress(BK + "Prefabs/Trees/RedFir" + (1 + rng.Next(4)), s, dressOff + R(0.3f, 1.2f), R(3f, 6f), 0f);
+// 8.16a (ClimbFix.md 1 and 3: trees, not rock, fill the rise; no frame more than 30 percent rock): fir knots on the uphill apron of
+// every leg from P1 to P4, knotIn to knotOut m off the tread, knotSize trees a knot every knotStep m, firs and pines (knotLow to
+// knotHigh m). A spot steeper than knotSlope or within knotIn of any climb point is skipped. Trunk capsules as every BK tree (TrunkCollider).
+const float knotStep = 7f, knotIn = 3.2f, knotOut = 6.5f, knotLow = 8f, knotHigh = 15f, knotSlope = 42f, knotUpProbe = 5f; const int knotSize = 3;
+int knotN = 0; var knotRng = new System.Random(81616); float KR(float a, float b) => a + (float)knotRng.NextDouble() * (b - a);   // its own random stream, so the hedges and stops after it keep their places
+for (float s = sP1 + 2f; s < sP4 - 2f; s += knotStep)   // not in the chute: saplings there hid the chute and P1 lanterns at night (Gate.md 4 N1)
+{
+    var c = ClimbAt(s, out var tan); var nrm = P(-tan.y, tan.x);
+    float up = H(c.x + nrm.x * knotUpProbe, c.z + nrm.y * knotUpProbe) - H(c.x - nrm.x * knotUpProbe, c.z - nrm.y * knotUpProbe);
+    foreach (var sideSign in new[] { up >= 0f ? 1f : -1f })
+        for (int k = 0; k < knotSize; k++)
+        {
+            var q = P(c.x, c.z) + nrm * sideSign * KR(knotIn, knotOut) + tan * KR(-2f, 2f);
+            if (data.GetSteepness((q.x - tOrg.x) / size.x, (q.y - tOrg.z) / size.z) > knotSlope) continue;
+            bool near = false; foreach (var cp in climbPts) if ((P(cp.x, cp.z) - q).sqrMagnitude < knotIn * knotIn) { near = true; break; } if (near) continue;
+            var g = Spawn(knotRng.NextDouble() < 0.6 ? BK + "Prefabs/Trees/RedFir" + (5 + knotRng.Next(4)) : BK + "Prefabs/Trees/RedPine" + (1 + knotRng.Next(5)), climbDress); if (g == null) continue;
+            g.transform.rotation = UnityEngine.Quaternion.Euler(0f, KR(0f, 360f), 0f); float tall = KR(knotLow, knotHigh);
+            float sc = tall / UnityEngine.Mathf.Max(0.2f, Top(g) - Bottom(g)); g.transform.localScale = V(sc, sc, sc); SitOn(g, q.x, q.y, 0.2f); knotN++;
+        }
+}
 
 // ---------- 2. ground cover: grass and fern details, the tufts reaching the trail edge ----------
 string[] detailNames = { "Detail_Grass1", "Detail_Grass2", "Detail_Grass3", "Detail_Fern1", "Detail_Fern2" };
@@ -532,7 +552,7 @@ Hedge("Hedge_NE_Floor", Line(P(266f, 307f), P(278f, 299f), P(290f, 291f), P(302f
 // an ellipse over that floor
 { const float mwX = 201f, mwZ = 212f, mwRX = 17f, mwRZ = 10f; var ring = new System.Collections.Generic.List<UnityEngine.Vector2>(); for (int i = 0; i <= 32; i++) { float a = i * UnityEngine.Mathf.PI * 2f / 32f; ring.Add(P(mwX + UnityEngine.Mathf.Cos(a) * mwRX, mwZ + UnityEngine.Mathf.Sin(a) * mwRZ)); } Hedge("Hedge_MidPocket_W", ring, 1f); }
 // (d) 8.6's gray brush bands round the closed campground: owned brush over them, the gray boxes stop drawing (their colliders stay)
-int bandsDressed = 0;
+int bandsDressed = 0; const float bandWarpClear = 4f;
 var fzBrush = Root("FrontZone").transform.Find("BrushBands");
 if (fzBrush != null) foreach (UnityEngine.Transform b in fzBrush)
 {
@@ -540,6 +560,7 @@ if (fzBrush != null) foreach (UnityEngine.Transform b in fzBrush)
     var bb = b.GetComponent<UnityEngine.Collider>().bounds; var band = new UnityEngine.GameObject("Dress_" + b.name).transform; band.SetParent(stops, false);
     for (float x = bb.min.x + 0.7f; x <= bb.max.x - 0.3f; x += hedgeStep) for (float z = bb.min.z + 0.7f; z <= bb.max.z - 0.3f; z += hedgeStep)
     {
+        bool byWarp = false; foreach (UnityEngine.Transform w in Root("DevWarps").transform) if ((P(w.position.x, w.position.z) - P(x, z)).sqrMagnitude < bandWarpClear * bandWarpClear) byWarp = true; if (byWarp) continue;   // 8.16a (the Office warp's west view met a band bush at 1.5 m)
         var g = Spawn(CS + "Vegetation/" + bushes[rng.Next(bushes.Length)], band); if (g == null) continue;
         g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f); float s = R(bushLow, bushHigh) / UnityEngine.Mathf.Max(0.2f, Top(g) - Bottom(g)); g.transform.localScale = V(s, s, s);
         SitOn(g, x + R(-0.3f, 0.3f), z + R(-0.3f, 0.3f), 0.1f); bushN++;
@@ -712,9 +733,34 @@ const float warpFoliage = 2.5f; int warpCleared = 0;
     }
     foreach (var g in doomed) { UnityEngine.Object.DestroyImmediate(g); warpCleared++; }
 }
+// 8.16a (Pim W5 and later captures: hedge brush 1.0 to 1.4 m from a warp's view, its place shifting with every upstream change):
+// brush over a hedge or brush band that comes within warpViewClear of a point 1 m ahead of a warp's eye (N, E, S, W; the capture's
+// test point) shrinks about its base by warpShrink steps, down to warpShrinkMin of its size, then steps away from the point
+const float warpViewClear = 1.8f, warpShrink = 0.85f, warpShrinkMin = 0.5f, warpStepAway = 0.25f; const int warpStepsMax = 8; int warpShrunk = 0;
+{
+    var views = new System.Collections.Generic.List<UnityEngine.Vector3>();
+    foreach (UnityEngine.Transform w in Root("DevWarps").transform) { var e = V(w.position.x, H(w.position.x, w.position.z) + 1.6f, w.position.z); foreach (var yaw in new[] { 0f, 90f, 180f, 270f }) views.Add(e + UnityEngine.Quaternion.Euler(0f, yaw, 0f) * UnityEngine.Vector3.forward); }
+    float Near(UnityEngine.GameObject g) { float best = float.MaxValue; foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) foreach (var v in views) best = UnityEngine.Mathf.Min(best, UnityEngine.Mathf.Sqrt(r.bounds.SqrDistance(v))); return best; }
+    foreach (UnityEngine.Transform grp in stops)
+    {
+        if (!(grp.name.StartsWith("Hedge") || grp.name.StartsWith("Dress_"))) continue;
+        foreach (UnityEngine.Transform bush in grp)
+        {
+            if (!bush.name.StartsWith("CS_Bush") || Near(bush.gameObject) >= warpViewClear) continue;
+            float s0 = bush.localScale.x; var at = bush.position; float b0 = Bottom(bush.gameObject);
+            while (bush.localScale.x > s0 * warpShrinkMin && Near(bush.gameObject) < warpViewClear) { bush.localScale *= warpShrink; bush.position += V(0f, b0 - Bottom(bush.gameObject), 0f); }
+            for (int k = 0; k < warpStepsMax && Near(bush.gameObject) < warpViewClear; k++)
+            {
+                var c = bush.position; UnityEngine.Vector3 nearest = views[0]; foreach (var v in views) if ((v - c).sqrMagnitude < (nearest - c).sqrMagnitude) nearest = v;
+                var away = V(c.x - nearest.x, 0f, c.z - nearest.z).normalized; bush.position += away * warpStepAway; SitOn(bush.gameObject, bush.position.x, bush.position.z, 0.1f);
+            }
+            warpShrunk++;
+        }
+    }
+}
 
 foreach (var tl in data.terrainLayers) if (tl == null || tl.diffuseTexture == null) missing.Add("texture on terrain layer " + (tl != null ? tl.name : "(none)"));   // 8.16 gate: a layer without its texture draws a grey checker
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " | layers: floor GrassPine, SoilPine added, shore and burn GrassMud, trail Ground054, rock Rocks_a | cover " + detailNames.Length + " detail kinds | trail edges " + edgeN
-    + " | markers " + markers.childCount + " | face rocks " + faceN + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes, " + oliveN + " bush renderers olive, rock on " + rockCells + " slope cells, " + warpCleared + " plants cleared at warps, " + coverAdded + " bushes added over bare hedge boxes | rims " + rimSegs + " pieces | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));
+    + " | markers " + markers.childCount + " | climb fir knots " + knotN + " | brush eased off warp views " + warpShrunk + " | face rocks " + faceN + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes, " + oliveN + " bush renderers olive, rock on " + rockCells + " slope cells, " + warpCleared + " plants cleared at warps, " + coverAdded + " bushes added over bare hedge boxes | rims " + rimSegs + " pieces | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));
