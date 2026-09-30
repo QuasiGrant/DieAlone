@@ -55,9 +55,23 @@ public sealed class PlaceKit
 
     public GameObject Spawn(string path, Transform parent)
     {
-        var src = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/" + path + ".prefab");
+        var src = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/" + path + ".prefab") ?? FindInPack(path);
         if (src == null) { if (!Missing.Contains(path)) Missing.Add(path); return null; }
         Props++; return (GameObject)PrefabUtility.InstantiatePrefab(src, parent);
+    }
+
+    /// A prefab named like the path's last part, anywhere under the path's pack folder (its first two folders), when the path's
+    /// subfolders are not exact; one exact file-name match only.
+    GameObject FindInPack(string path)
+    {
+        var parts = path.Split('/'); if (parts.Length < 2) return null;
+        string name = parts[parts.Length - 1], pack = "Assets/" + parts[0] + "/" + parts[1];
+        if (!AssetDatabase.IsValidFolder(pack)) pack = "Assets/" + parts[0];
+        foreach (var g in AssetDatabase.FindAssets(name + " t:Prefab", new[] { pack }))
+        {
+            var p = AssetDatabase.GUIDToAssetPath(g); if (System.IO.Path.GetFileNameWithoutExtension(p) == name) return AssetDatabase.LoadAssetAtPath<GameObject>(p);
+        }
+        return null;
     }
 
     /// World bounds of the mesh renderers (LOD 0 only when the prefab has a LODGroup).
