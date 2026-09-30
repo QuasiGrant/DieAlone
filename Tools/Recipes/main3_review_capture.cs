@@ -168,28 +168,30 @@ System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, strin
     return f;
 }
 // ---- grayscale trail frames and mean grey (Gate.md 4: trail at least 20 above or below the floor beside it, 5 m and 20 m ahead)
-const float greyStep = 20f, greyNear = 5f, greyFar = 20f, greySide = 3f, greyPatch = 0.3f, greyNeed = 20f; const int greyDiv = 4, greyCols = 6;
+const float greyStep = 20f, greyNear = 5f, greyFar = 20f, greySide = 3f, greyPatch = 0.3f, greyNeed = 20f, greyHidden = 8f;   // greyHidden: mean grey change when the grass is hidden, over which the trail patch counts as covered const int greyDiv = 4, greyCols = 6;
+const int greyDiv = 4, greyCols = 6;
 float Grey(UnityEngine.Color32 c) => 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
 // mean grey of the pixels within greyPatch metres of p on the full frame, or -1 when p is off screen, behind or hidden
-float PatchGrey(UnityEngine.Color32[] src, UnityEngine.Vector3 p)
+float PatchGrey(UnityEngine.Color32[] src, UnityEngine.Vector3 p, UnityEngine.Color32[] bare)   // bare: the same frame without terrain grass; when given, a patch the grass changes is hidden
 {
     cam.targetTexture = rt; var vp = cam.WorldToViewportPoint(p); float fov = cam.fieldOfView; cam.targetTexture = null;
     if (vp.z <= 0.5f || vp.x < 0f || vp.x > 1f || vp.y < 0f || vp.y > 1f) return -1f;
     var from = cam.transform.position; var to = p + UnityEngine.Vector3.up * 0.1f;
-    if (UnityEngine.Physics.Linecast(from, to, out var block, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) && block.distance < UnityEngine.Vector3.Distance(from, to) - 0.5f) return -1f;
+    if (UnityEngine.Physics.Linecast(from, to, out var block, ~0, UnityEngine.QueryTriggerInteraction.Ignore) && block.distance < UnityEngine.Vector3.Distance(from, to) - 0.5f) return -1f;
     int cx = (int)(vp.x * shotW), cy = (int)(vp.y * shotH);
     int r = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(greyPatch / (vp.z * UnityEngine.Mathf.Tan(fov * 0.5f * UnityEngine.Mathf.Deg2Rad)) * shotH * 0.5f));
-    float sum = 0f; int n = 0;
+    float sum = 0f, change = 0f; int n = 0;
     for (int y = cy - r; y <= cy + r; y++) for (int x = cx - r; x <= cx + r; x++)
-        if (x >= 0 && x < shotW && y >= 0 && y < shotH && (x - cx) * (x - cx) + (y - cy) * (y - cy) <= r * r) { sum += Grey(src[y * shotW + x]); n++; }
-    return n > 0 ? sum / n : -1f;
+        if (x >= 0 && x < shotW && y >= 0 && y < shotH && (x - cx) * (x - cx) + (y - cy) * (y - cy) <= r * r) { float g = Grey(src[y * shotW + x]); sum += g; if (bare != null) change += UnityEngine.Mathf.Abs(g - Grey(bare[y * shotW + x])); n++; }
+    if (n == 0 || (bare != null && change / n > greyHidden)) return -1f;
+    return sum / n;
 }
 var greyMd = new System.Text.StringBuilder();
 string GreyTrails(string lookName)
 {
     var frames = new System.Collections.Generic.List<(UnityEngine.Color32[] px, string label)>();
     string file = "Grey_Trails_" + lookName.Replace(' ', '_') + ".jpg";
-    greyMd.Append("\n## Trail grey, " + lookName + "\n\nSheet [" + file + "](" + file + "). Mean grey (0 to 255, filter on) of the trail centre and of the floor " + greySide.ToString("F0", inv) + " m to either side, " + greyNear.ToString("F0", inv) + " m and " + greyFar.ToString("F0", inv) + " m ahead, over frames every " + greyStep.ToString("F0", inv) + " m looking along the trail. Hidden or off-screen points are left out. Pass: the difference is " + greyNeed.ToString("F0", inv) + " or more either way.\n\n");
+    greyMd.Append("\n## Trail grey, " + lookName + "\n\nSheet [" + file + "](" + file + "). Mean grey (0 to 255, filter on) of the trail centre and of the floor " + greySide.ToString("F0", inv) + " m to either side, " + greyNear.ToString("F0", inv) + " m and " + greyFar.ToString("F0", inv) + " m ahead, over frames every " + greyStep.ToString("F0", inv) + " m looking along the trail. A point is left out when it is off screen or behind a collider (hedges included), and a trail point also when the terrain grass covers it (its patch changes by more than " + greyHidden.ToString("F0", inv) + " grey with the grass hidden); the frame label shows - for it. Pass: the difference is " + greyNeed.ToString("F0", inv) + " or more either way.\n\n");
     greyMd.Append("| Trail | Frames | Trail 5 m | Floor 5 m | Diff 5 m | Trail 20 m | Floor 20 m | Diff 20 m | Pass |\n|---|---|---|---|---|---|---|---|---|\n");
     int passN = 0;
     foreach (var leg in legs)
@@ -200,17 +202,18 @@ string GreyTrails(string lookName)
             var p = At(leg.pts, s); var c = p + UnityEngine.Vector3.up * eye; var ahead = At(leg.pts, s + 3f); var far = At(leg.pts, s + trailStep);
             var yawDir = new UnityEngine.Vector3(ahead.x - p.x, 0f, ahead.z - p.z).normalized;
             Pose(c, c + yawDir * 10f + UnityEngine.Vector3.up * (far.y - p.y)); var src = Capture(); nFrames++;
+            terrain.drawTreesAndFoliage = false; var bare = Capture(); terrain.drawTreesAndFoliage = true;
             string label = leg.name + " " + s.ToString("F0", inv) + " M";
             var marks = new System.Collections.Generic.List<(float x, float y, bool trail)>();
             for (int k = 0; k < 2; k++)
             {
                 float ds = k == 0 ? greyNear : greyFar; var q = At(leg.pts, s + ds); var q2 = At(leg.pts, s + ds + 1f);
                 var t = new UnityEngine.Vector3(q2.x - q.x, 0f, q2.z - q.z).normalized; var side = new UnityEngine.Vector3(t.z, 0f, -t.x);
-                var tp = new UnityEngine.Vector3(q.x, Ground(q.x, q.z, q.y), q.z); float tg = PatchGrey(src, tp);
+                var tp = new UnityEngine.Vector3(q.x, Ground(q.x, q.z, q.y), q.z); float tg = PatchGrey(src, tp, bare);
                 float fg = 0f; int fn = 0;
                 foreach (var sgn in new[] { -1f, 1f })
                 {
-                    var fx = q + side * greySide * sgn; var fp = new UnityEngine.Vector3(fx.x, Ground(fx.x, fx.z, q.y), fx.z); float g = PatchGrey(src, fp);
+                    var fx = q + side * greySide * sgn; var fp = new UnityEngine.Vector3(fx.x, Ground(fx.x, fx.z, q.y), fx.z); float g = PatchGrey(src, fp, null);
                     if (g >= 0f) { fg += g; fn++; }
                 }
                 if (tg >= 0f) { tSum[k] += tg; tN[k]++; }
