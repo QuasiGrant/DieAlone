@@ -30,6 +30,7 @@ public static class DevWarpLabels
         new Row("LAKE", "Junction_W1", "Lake west fork (Camp 3, cave)"),
         new Row("CAMPS", "Camp_1", "Camp 1"),
         new Row("CAMPS", "Junction_Jg", "Burn fork (to Camp 1 and the lot)"),   // Valley.md 14: Jg follows Camp 1
+        new Row("CAMPS", "North_Loop_Ruin", "North loop: ruin"),   // Valley.md 14, 8.17
         new Row("CAMPS", "Camp_2", "Camp 2"),
         new Row("CAMPS", "Camp_2_Top", "Camp 2, top of the stack"),
         new Row("CAMPS", "Camp_3", "Camp 3"),
