@@ -68,6 +68,7 @@ const float snagSpace = 6f, snagGirth = 1.5f; const int burnSnags = 20, burnFall
 var trailPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform leg in Root("Trails").transform) foreach (UnityEngine.Transform p in leg) trailPts.Add(P(p.position.x, p.position.z));
 var clearings = new (UnityEngine.Vector2 c, float r)[] { (P(170f, 160f), 22f), (P(282f, 238f), 28f), (P(292f, 108f), 18f), (P(78f, 146f), 14f) };   // camp, Camp 1, Camp 2, Camp 3
 var frontZone = new UnityEngine.Rect(334f, 145f, fenceX - 334f, 70f);   // the lot, office, store and booth
+var warpPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform w in Root("DevWarps").transform) warpPts.Add(P(w.position.x, w.position.z)); const float treeWarpGap = 5f;
 var trees = new System.Collections.Generic.List<(UnityEngine.Vector2 p, float r)>();   // trunks placed (and the giants 8.3 placed), with their spacing
 var existingGiants = new System.Collections.Generic.List<UnityEngine.Vector2>();
 foreach (var g in new[] { Root("Giants") }) if (g != null) foreach (UnityEngine.Transform t in g.transform) foreach (var tt in t.name == "Heroes" ? System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(t)) : new[] { t }) { trees.Add((P(tt.position.x, tt.position.z), 4f)); existingGiants.Add(P(tt.position.x, tt.position.z)); }   // the three heroes sit in a Heroes group
@@ -79,6 +80,7 @@ bool Free(UnityEngine.Vector2 p, float spacing, float slopeMax, bool beyondFence
     foreach (var t in trailPts) if ((t - p).sqrMagnitude < treeTrailGap * treeTrailGap) { rejTrail++; return false; }
     foreach (var c in clearings) if (UnityEngine.Vector2.Distance(p, c.c) < c.r) { rejPlace++; return false; }
     if (frontZone.Contains(p)) { rejPlace++; return false; }
+    foreach (var w in warpPts) if ((w - p).sqrMagnitude < treeWarpGap * treeWarpGap) { rejPlace++; return false; }   // no warp lands in a tree (Pim, 8.15 gate)
     float ex = (p.x - lakeX) / (lakeA * lakeKeep), ez = (p.y - lakeZ) / (lakeB * lakeKeep); if (ex * ex + ez * ez < 1f) { rejPlace++; return false; }
     if (!beyondFence && Slope(p.x, p.y) > slopeMax) { rejSlope++; return false; }
     float gy = beyondFence ? 0f : H(p.x, p.y);

@@ -67,7 +67,7 @@ void SetLayer(UnityEngine.TerrainLayer l, UnityEngine.Texture2D albedo, UnityEng
     l.diffuseTexture = albedo; l.normalMapTexture = normal; l.tileSize = new UnityEngine.Vector2(tile, tile);
     l.diffuseRemapMin = UnityEngine.Vector4.zero; l.diffuseRemapMax = new UnityEngine.Vector4(remap.r, remap.g, remap.b, 1f); UnityEditor.EditorUtility.SetDirty(l);
 }
-const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f, trailLift = 1.65f, burnDim = 0.65f;   // trailLift: the dirt brightened so the tread stands 20 grey over the floor 20 m ahead (Gate.md 4; 8.14a measured about 10)
+const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f, trailLift = 1.9f, burnDim = 0.65f;   // 1.9 (was 1.65; 8.16 remeasure: the groves shade the trails)   // trailLift: the dirt brightened so the tread stands 20 grey over the floor 20 m ahead (Gate.md 4; 8.14a measured about 10)
 // rockTile: rock at 10 m so its forms read at a distance through the look filter (8.14a)
 UnityEngine.ColorUtility.TryParseHtmlString("#6E6660", out var granite);   // Style.md granite; Rocks_a's mean luma is 0.55 (AssetCatalogue)
 var white = UnityEngine.Color.white;
@@ -106,7 +106,7 @@ const float soilBlend = 4f, wallX0 = 90f, wallX1 = 300f, wallZ0 = 285f, wallZ1 =
 
 // 8.15 gate (Pim W1: beside Jg to Camp 1 the pale clearing grass read as light as the dirt): a strip of darker duff (SoilPine dimmed to
 // duffDim) from duffIn to duffOut off every trail's centre points (2 m apart), taken duffShare from the floor layers
-const string duffPath = "Assets/Terrain/Main3/Layer_Duff.terrainlayer"; const float duffDim = 0.65f, duffIn = 1.3f, duffOut = 3.5f, duffBlend = 0.8f, duffShare = 0.8f;
+const string duffPath = "Assets/Terrain/Main3/Layer_Duff.terrainlayer"; const float duffDim = 0.45f, duffIn = 1.3f, duffOut = 3.5f, duffBlend = 0.8f, duffShare = 0.8f;
 var lDuff = new UnityEngine.TerrainLayer { name = "Layer_Duff" }; UnityEditor.AssetDatabase.CreateAsset(lDuff, duffPath);
 SetLayer(lDuff, Tex(surf + "SoilPine_a.png"), Tex(surf + "SoilPine_n.png"), floorTile, new UnityEngine.Color(duffDim, duffDim, duffDim));
 layerList.Add(lDuff); data.terrainLayers = layerList.ToArray(); int iDuff = layerList.IndexOf(lDuff);
@@ -155,7 +155,7 @@ var climbS = new float[climbPts.Count]; for (int i = 1; i < climbPts.Count; i++)
 float SAtPt(float x, float z) { int bi = 0; float bd = float.MaxValue; for (int i = 0; i < climbPts.Count; i++) { float d = UnityEngine.Vector2.Distance(P(climbPts[i].x, climbPts[i].z), P(x, z)); if (d < bd) { bd = d; bi = i; } } return climbS[bi]; }
 float sP1 = SAtPt(52f, 216f), sP2 = SAtPt(57f, 276f), sP3 = SAtPt(26f, 304f), sP4 = SAtPt(26f, 262f), sSlot = SAtPt(24.5f, 262f);
 const string screePath = "Assets/Terrain/Main3/Layer_Scree.terrainlayer", ashPath = "Assets/Terrain/Main3/Layer_Ash.terrainlayer";
-const float screeTile = 1.2f, screeLift = 0.9f, ashGrey = 0.5f, climbPaint = 12f, climbMouthX = 86f, climbSteep = 42f;   // scree 0.9 and ash 0.5 (were 1.25, 0.62; 8.15 gate: darker beside the climb's tread)
+const float screeTile = 1.2f, screeLift = 0.75f, ashGrey = 0.4f, climbPaint = 12f, climbMouthX = 86f, climbSteep = 42f;   // scree 0.9 and ash 0.5 (were 1.25, 0.62; 8.15 gate: darker beside the climb's tread)
 var lScree = new UnityEngine.TerrainLayer { name = "Layer_Scree" }; UnityEditor.AssetDatabase.CreateAsset(lScree, screePath);
 SetLayer(lScree, Tex(BK + "Models/Rocks/Textures/Rocks_a.png"), Tex(BK + "Models/Rocks/Textures/Rocks_n.png"), screeTile, new UnityEngine.Color(granite.r / rockLuma * screeLift, granite.g / rockLuma * screeLift, granite.b / rockLuma * screeLift));
 var lAsh = new UnityEngine.TerrainLayer { name = "Layer_Ash" }; UnityEditor.AssetDatabase.CreateAsset(lAsh, ashPath);
@@ -486,6 +486,29 @@ if (fzBrush != null) foreach (UnityEngine.Transform b in fzBrush)
     }
     bandsDressed++;
 }
+// hedge cover (8.15 gate, Pim W2: 41 of 334 hedge boxes under 80 percent under brush): each box's top face is sampled every
+// coverSample m; where no bush or log of its hedge stands over a sample, a bush is added there, until the box is covered
+const float coverSample = 0.5f, coverSlack = 0.5f; int coverAdded = 0;
+foreach (UnityEngine.Transform hedge in stops)
+{
+    if (!hedge.name.StartsWith("Hedge")) continue;
+    var brush = new System.Collections.Generic.List<UnityEngine.Renderer>(); foreach (var r in hedge.GetComponentsInChildren<UnityEngine.Renderer>()) brush.Add(r);
+    foreach (var bc in hedge.GetComponentsInChildren<UnityEngine.BoxCollider>())
+    {
+        var tr = bc.transform;
+        for (float lx = -bc.size.x * 0.5f; lx <= bc.size.x * 0.5f; lx += coverSample) for (float lz = -bc.size.z * 0.5f; lz <= bc.size.z * 0.5f; lz += coverSample)
+        {
+            var w = tr.TransformPoint(bc.center + V(lx, bc.size.y * 0.5f, lz)); bool covered = false;
+            foreach (var r in brush) { var b = r.bounds; if (w.x >= b.min.x && w.x <= b.max.x && w.z >= b.min.z && w.z <= b.max.z && b.max.y >= w.y - coverSlack) { covered = true; break; } }
+            if (covered) continue;
+            var g = Spawn(CS + "Vegetation/" + bushes[rng.Next(bushes.Length)], hedge); if (g == null) continue;
+            g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f); float s = R(bushLow, bushHigh) / UnityEngine.Mathf.Max(0.2f, Top(g) - Bottom(g)); g.transform.localScale = V(s, s, s);
+            SitOn(g, w.x, w.z, 0.1f); float short0 = w.y - Top(g); if (short0 > 0f) g.transform.position += V(0f, short0, 0f);   // on a slope the bush stands on the high side, its top at the box's
+            foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) brush.Add(r); coverAdded++; bushN++;
+        }
+    }
+}
+
 // (e) rock rims: 1.3 m over the ground outside, 1.2 m thick, open where a trail goes in (gap within rimGap of a trail point)
 const float rimH = 1.3f, rimThick = 1.2f, rimGap = 2.6f, rimStep = 0.5f;
 var rockMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_BandRock.mat"); if (rockMat == null) return "no Blockout_BandRock.mat (8.1)";
@@ -591,4 +614,4 @@ const float warpFoliage = 2.5f; int warpCleared = 0;
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " | layers: floor GrassPine, SoilPine added, shore and burn GrassMud, trail Ground054, rock Rocks_a | cover " + detailNames.Length + " detail kinds | trail edges " + edgeN
-    + " | markers " + markers.childCount + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes, " + oliveN + " bush renderers olive, rock on " + rockCells + " slope cells, " + warpCleared + " plants cleared at warps | rims " + rimSegs + " pieces | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));
+    + " | markers " + markers.childCount + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes, " + oliveN + " bush renderers olive, rock on " + rockCells + " slope cells, " + warpCleared + " plants cleared at warps, " + coverAdded + " bushes added over bare hedge boxes | rims " + rimSegs + " pieces | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));
