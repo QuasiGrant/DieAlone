@@ -70,8 +70,15 @@ var board = new UnityEngine.GameObject("DayOneBoard").transform; board.SetParent
 foreach (var y in new[] { -5.2f, -4.4f, -3.6f }) Box("Plank", board, V(52f, y, 37.6f), V(3.2f, 0.25f, 0.06f), y == -4.4f ? 6f : -4f, true);   // solid: boarded on day 1 (8.9a)
 Box("Sign", board, V(52f, -4.0f, 37.66f), V(1.4f, 0.6f, 0.04f), 0f, false);
 int hres = data.holesResolution; float hx = data.size.x / hres, hz = data.size.z / hres;
-int ix0 = UnityEngine.Mathf.FloorToInt(50.3f / hx), ix1 = UnityEngine.Mathf.CeilToInt(53.7f / hx) - 1, iz0 = UnityEngine.Mathf.FloorToInt(33.6f / hz), iz1 = UnityEngine.Mathf.CeilToInt(37.4f / hz) - 1;
+var tO = terrain.transform.position;   // 8.9j: hole cells count from the terrain origin (-40, -200)
+int ix0 = UnityEngine.Mathf.FloorToInt((50.3f - tO.x) / hx), ix1 = UnityEngine.Mathf.CeilToInt((53.7f - tO.x) / hx) - 1, iz0 = UnityEngine.Mathf.FloorToInt((33.6f - tO.z) / hz), iz1 = UnityEngine.Mathf.CeilToInt((37.4f - tO.z) / hz) - 1;
 var holes = new bool[iz1 - iz0 + 1, ix1 - ix0 + 1];   // false = hole
+// 8.9j: the heightmap cells are 0.62 x 0.68 m, so the hole rounds out past the mouth strip by up to a cell; the rock above the
+// passage ceiling is sized to cover the hole cells exactly (plus 0.1 m), so no gap shows round it
+{
+    var rock = mouth.Find("RockAbove"); float hX0 = tO.x + ix0 * hx - 0.1f, hX1 = tO.x + (ix1 + 1) * hx + 0.1f, hZ0 = tO.z + iz0 * hz - 0.1f, hZ1 = tO.z + (iz1 + 1) * hz + 0.1f;
+    rock.position = V((hX0 + hX1) * 0.5f, rock.position.y, (hZ0 + hZ1) * 0.5f); rock.localScale = V(hX1 - hX0, rock.localScale.y, hZ1 - hZ0);
+}
 data.SetHoles(ix0, iz0, holes);
 UnityEditor.EditorUtility.SetDirty(data);
 
@@ -83,7 +90,7 @@ warp.transform.position = V(74f, -17.8f, 12f); warp.transform.rotation = UnityEn
 
 // ---- check: over every piece's floor plan the terrain must stay above the ceiling's rock top, except inside the mouth hole
 var all = data.GetHoles(0, 0, hres, hres);
-bool IsHole(float x, float z) { int i = UnityEngine.Mathf.Clamp((int)(x / hx), 0, hres - 1), k = UnityEngine.Mathf.Clamp((int)(z / hz), 0, hres - 1); return !all[k, i]; }
+bool IsHole(float x, float z) { int i = UnityEngine.Mathf.Clamp((int)((x - tO.x) / hx), 0, hres - 1), k = UnityEngine.Mathf.Clamp((int)((z - tO.z) / hz), 0, hres - 1); return !all[k, i]; }
 var sb = new System.Text.StringBuilder(); bool ok = true;
 foreach (var p in pieces)
 {
@@ -101,8 +108,8 @@ foreach (var p in pieces)
 }
 float L(float a, float b, float t) => a + (b - a) * t;
 int holeCells = 0; float hx0 = 999, hx1 = -999, hz0 = 999, hz1 = -999;
-for (int k = 0; k < hres; k++) for (int i = 0; i < hres; i++) if (!all[k, i]) { holeCells++; hx0 = UnityEngine.Mathf.Min(hx0, i * hx); hx1 = UnityEngine.Mathf.Max(hx1, (i + 1) * hx); hz0 = UnityEngine.Mathf.Min(hz0, k * hz); hz1 = UnityEngine.Mathf.Max(hz1, (k + 1) * hz); }
-bool onlyMouth = hx0 >= 50f && hx1 <= 54.2f && hz0 >= 33.3f && hz1 <= 37.8f;
+for (int k = 0; k < hres; k++) for (int i = 0; i < hres; i++) if (!all[k, i]) { holeCells++; hx0 = UnityEngine.Mathf.Min(hx0, tO.x + i * hx); hx1 = UnityEngine.Mathf.Max(hx1, tO.x + (i + 1) * hx); hz0 = UnityEngine.Mathf.Min(hz0, tO.z + k * hz); hz1 = UnityEngine.Mathf.Max(hz1, tO.z + (k + 1) * hz); }
+bool onlyMouth = hx0 >= 50.3f - hx && hx1 <= 53.7f + hx && hz0 >= 33.6f - hz && hz1 <= 37.4f + hz;   // the mouth strip, within one hole cell (8.9j)
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " | terrain never enters the passage or chamber: " + (ok ? "YES" : "NO") + " | terrain holes: " + holeCells + " cells, x " + hx0.ToString("F2") + " to " + hx1.ToString("F2") + ", z " + hz0.ToString("F2") + " to " + hz1.ToString("F2") + " -> only at the mouth: " + (onlyMouth ? "YES" : "NO") + "\n" + sb;

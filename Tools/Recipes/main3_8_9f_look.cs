@@ -9,7 +9,7 @@
 //    ambient and a faint warm fire fill from the west from LookTuning (LookEnvironment applies them).
 // 4. Ground dressing within 12 m of the S1 and S2 shot cameras (dead leaves, moss, fern, clover, small rocks, fallen wood).
 // 5. Day two: falling ash over the clearing (NM Prefab_Fire_Ashes_01, #8A8078), shown only in the day-two look; the
-//    stand-in fire shows at night and on day two, never on day one by day (LookVisibility).
+//    stand-in fire shows at night and on day two, never on day one by day (LookVisibility); 8.9j: always on.
 // 6. (second review) front zone and Camp 2 textured, the office lit at night (five windows and a porch bulb), every terrain
 //    layer textured and palette-tinted, thicket markers hidden, young regrowth, dead snags and branches in the old burn,
 //    low cover and small firs over the open ground east of the tower, a tree edge east of the fence, the Snag and Gate Tree
@@ -148,10 +148,7 @@ void Visibility(UnityEngine.GameObject host, LookVisibility.Show show, System.Co
 }
 Visibility(root.gameObject, LookVisibility.Show.DayTwo, ashObjs);
 var fire = Root("Ward").transform.Find("StandInFire"); if (fire == null) return "no StandInFire";
-Visibility(Root("Ward"), LookVisibility.Show.NightAndDayTwo, new System.Collections.Generic.List<UnityEngine.GameObject> { fire.gameObject });
-// day two by day is far glow and smoke only (Main3.md 5.9): the flames on the ridge and the burning valley show at night
-var nightOnly = new System.Collections.Generic.List<UnityEngine.GameObject>(); foreach (var n in new[] { "BurningGiants", "ValleyFires" }) { var c = fire.Find(n); if (c != null) nightOnly.Add(c.gameObject); }
-var fireNight = new UnityEngine.GameObject("FireNightOnly"); fireNight.transform.SetParent(root, false); Visibility(fireNight, LookVisibility.Show.Night, nightOnly);
+// 8.9j: the fire is always on (DECISIONS 2026-09-29, the land hides it; Valley.md 3), so it has no LookVisibility any more
 // the cab's day look keeps its lit windows off; its LookVisibility (8.9d) needs the day-two asset only for day two, so none here
 
 
@@ -313,16 +310,17 @@ for (float x = 186f; x < 340f; x += branchStep) for (float z = 143f; z < 213f; z
 }
 // east of the fence (S4's far ground): real trees 20 to 35 m from the map edge back into the rolling east forest mesh, so its
 // front reads as forest, not a flat wall over bare ground; the road's gap at z 170 stays open; no colliders (off-map)
-const float eastX0 = 404f, eastX1 = 446f, eastStep = 11f, eastJitter = 4f, eastTreeLow = 20f, eastTreeHigh = 35f, eastRoadZ = 170f, eastRoadGap = 12f;
-var eastGround = Root("Backdrop") != null ? Root("Backdrop").transform.Find("Ground_East") : null; if (eastGround == null) return "Backdrop Ground_East missing";
-float eastY = eastGround.GetComponent<UnityEngine.Renderer>().bounds.center.y;
+// 8.9j: they stand on the E ridge's front slope (terrain now), below its crest at x 445 (Edges.md 9.5: no trees on crests)
+const float eastX0 = 404f, eastX1 = 430f, eastStep = 11f, eastJitter = 4f, eastTreeLow = 20f, eastTreeHigh = 35f, eastRoadZ = 170f, eastRoadGap = 12f;
+
+
 var eastEdge = new UnityEngine.GameObject("EastEdgeForest").transform; eastEdge.SetParent(root, false); int eastN = 0;
 for (float x = eastX0; x <= eastX1; x += eastStep) for (float z = -20f; z <= 320f; z += eastStep)
 {
     float px = x + R(-eastJitter, eastJitter), pz = z + R(-eastJitter, eastJitter); if (UnityEngine.Mathf.Abs(pz - eastRoadZ) < eastRoadGap) continue;
     var g = Spawn(BK + "Trees/" + (rng.NextDouble() < 0.6 ? "RedFir" + (1 + rng.Next(8)) : "RedPine" + (1 + rng.Next(5))), eastEdge); if (g == null) continue;
     foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
-    g.transform.position = V(px, eastY, pz); g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
+    float eastY = H(px, pz); g.transform.position = V(px, eastY, pz); g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
     float hgt = 0f; foreach (var rr in g.GetComponentsInChildren<UnityEngine.Renderer>()) hgt = UnityEngine.Mathf.Max(hgt, rr.bounds.max.y - eastY);
     float s = R(eastTreeLow, eastTreeHigh) / UnityEngine.Mathf.Max(0.5f, hgt); g.transform.localScale = V(s, s, s); eastN++;
 }

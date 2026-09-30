@@ -1,5 +1,5 @@
 // 8.9g (edit mode): makes Play start in the "Day one" look by setting startLook on LookPreview in
-// Assets/Prefabs/GameSystems.prefab. The day-one values themselves (sun 28, crushed blacks 0.15, dark corners 0.3,
+// Assets/Prefabs/GameSystems.prefab. The day-one values themselves (sun 32 from bearing 200 since 8.9j, crushed blacks 0.15, dark corners 0.3,
 // fill #998A73) live in their owning recipe, main3_8_9d_dress_camp.cs, so a runner rebuild keeps them; the night look
 // keeps its own crush and corners in main3_8_9f_look.cs. This recipe only reads them back. It saves only the prefab,
 // never a blanket SaveAssets, so the URP global settings are not re-saved. Reports any scene instance overriding startLook.
@@ -26,6 +26,6 @@ foreach (var lp in UnityEngine.Object.FindObjectsByType<LookPreview>(UnityEngine
     var p = new UnityEditor.SerializedObject(lp).FindProperty("startLook");
     if (p.prefabOverride) overrides.Add(lp.gameObject.scene.name + "/" + lp.name + "=" + p.intValue);
 }
-return "day one sun " + dayOne.sunElevation + " crush " + dayOne.crushBlacks + " corners " + dayOne.darkCorners + " fill #" + UnityEngine.ColorUtility.ToHtmlStringRGB(dayOne.sunsetAmbient)
+return "day one sun " + dayOne.sunElevation + " bearing " + dayOne.sunBearing + " crush " + dayOne.crushBlacks + " corners " + dayOne.darkCorners + " fill #" + UnityEngine.ColorUtility.ToHtmlStringRGB(dayOne.sunsetAmbient)
     + " | night crush " + night.crushBlacks + " corners " + night.darkCorners
     + " | GameSystems startLook " + index + " (" + StartLabel + ") | open-scene overrides: " + (overrides.Count == 0 ? "none" : string.Join(", ", overrides));

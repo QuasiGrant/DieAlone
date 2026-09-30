@@ -7,21 +7,25 @@
 // ridge and floor under Ward/StandInFire; flame and smoke cards excluded), which get temporary MeshColliders here.
 // Trees, buildings and props in the map are ignored: E-1 is about what stands behind them. Backdrop trees count by their LOD 0
 // meshes. Places under the terrain surface (the cave chamber) have no view of an edge and are skipped.
-// A ray passes when it ends on terrain, on a landscape mesh that is not a flat plane, or in the sky at or above level.
+// A ray passes when it ends on terrain, on a landscape mesh that is not a flat plane, in the sky at or above level, or in the cave
+// (down through the cave mouth's terrain hole, counted with terrain).
 // It fails as "void" when it points below level and meets nothing (the land ends before the far clip), or as
-// "flat plane" when it ends on a landscape surface within FlatDegrees of horizontal (a floor slab, not land).
+// "flat plane" when it ends on a planar landscape mesh (its whole surface within PlaneTolerance of one height: a floor slab, not land).
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
-const float BearingStep = 2f, MaxElevation = 5f, ElevationStep = 1f, EyeHeight = 1.6f, TrailStep = 10f, FlatDegrees = 2f;
+const float BearingStep = 2f, MaxElevation = 5f, ElevationStep = 1f, EyeHeight = 1.6f, TrailStep = 10f;
 const int ProbeLayer = 31;   // unused layer: the probes are the only colliders on it
 UnityEngine.GameObject Root(string name) { foreach (var r in scene.GetRootGameObjects()) if (r.name == name) return r; return null; }
 var V = new System.Func<float, float, float, UnityEngine.Vector3>((x, y, z) => new UnityEngine.Vector3(x, y, z));
 if (UnityEngine.LayerMask.LayerToName(ProbeLayer) != "") return "layer " + ProbeLayer + " is in use";
-var tower = Root("Camp").transform.Find("Tower");
+var tower = Root("Camp").transform.Find("Tower"); var caveRoot = Root("Cave") != null ? Root("Cave").transform : null;
 var cam = UnityEngine.Object.FindFirstObjectByType<PlayerController>(UnityEngine.FindObjectsInactive.Include)?.GetComponentInChildren<UnityEngine.Camera>(true);
 float reach = cam != null ? cam.farClipPlane : 3500f;
-float flatNormalY = UnityEngine.Mathf.Cos(FlatDegrees * UnityEngine.Mathf.Deg2Rad);
+// a flat plane is a landscape mesh whose whole surface lies within PlaneTolerance of one height (like rev 16's Ground_* planes);
+// rolling ground (the outer ground, 0 to 10) and every ridge are land
+const float PlaneTolerance = 1f;
+var planar = new System.Collections.Generic.HashSet<UnityEngine.Collider>();
 
 // ---- landscape meshes to probe colliders in a temporary scene
 var land = new System.Collections.Generic.List<UnityEngine.MeshFilter>();
@@ -53,7 +57,7 @@ try
         go.layer = ProbeLayer; go.transform.SetPositionAndRotation(mf.transform.position, mf.transform.rotation); go.transform.localScale = mf.transform.lossyScale;
         var mc = go.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh;
         string path = mf.name; for (var p = mf.transform.parent; p != null; p = p.parent) path = p.name + "/" + path;
-        probeName[mc] = path;
+        probeName[mc] = path; if (mf.GetComponent<UnityEngine.MeshRenderer>().bounds.size.y < PlaneTolerance) planar.Add(mc);
     }
     UnityEngine.Physics.SyncTransforms();
     var terrainCols = new System.Collections.Generic.List<UnityEngine.TerrainCollider>();
@@ -94,9 +98,10 @@ try
             foreach (var tc in terrainCols) if (tc.Raycast(ray, out var th, reach)) tDist = UnityEngine.Mathf.Min(tDist, th.distance);
             bool landHit = UnityEngine.Physics.Raycast(ray, out var lh, reach, mask, UnityEngine.QueryTriggerInteraction.Ignore) && lh.distance < tDist;
             string fail = null;
-            if (landHit) { if (lh.normal.y >= flatNormalY) { fail = "flat plane"; c[5]++; string n = probeName.TryGetValue(lh.collider, out var pn) ? pn : lh.collider.name; flatBy[n] = (flatBy.TryGetValue(n, out var k) ? k : 0) + 1; } else c[2]++; }
+            if (landHit) { if (planar.Contains(lh.collider)) { fail = "flat plane"; c[5]++; string n = probeName.TryGetValue(lh.collider, out var pn) ? pn : lh.collider.name; flatBy[n] = (flatBy.TryGetValue(n, out var k) ? k : 0) + 1; } else c[2]++; }
             else if (tDist < float.MaxValue) c[1]++;
             else if (r.elev >= 0f) c[3]++;
+            else if (caveRoot != null && UnityEngine.Physics.Raycast(ray, out var ch, reach, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) && ch.collider.transform.IsChildOf(caveRoot)) c[1]++;   // down through the cave mouth's terrain hole: the cave, not an edge
             else { fail = "void"; c[4]++; }
             if (fail != null)
             {
@@ -117,7 +122,7 @@ try
     }
     var md = new System.Text.StringBuilder();
     md.AppendLine("# Main3 E-1 edge check\n");
-    md.AppendLine("Generated by Tools/Recipes/main3_e1_edges.cs (Edges.md 1.8). Rays every " + BearingStep + " degrees of bearing at " + (-MaxElevation) + " to " + MaxElevation + " degrees elevation in " + ElevationStep + " degree steps, out to " + reach + " m. Land: terrain collider, and " + land.Count + " landscape meshes (Backdrop, stand-in fire ridge and floor). A ray fails as void (below level, meets nothing) or flat plane (ends on a landscape surface within " + FlatDegrees + " degrees of level). Places stand in for the Valley.md platforms until they exist. Trees count by their LOD 0 meshes. Skipped as underground: " + (underground.Count == 0 ? "none" : string.Join(", ", underground)) + ".\n");
+    md.AppendLine("Generated by Tools/Recipes/main3_e1_edges.cs (Edges.md 1.8). Rays every " + BearingStep + " degrees of bearing at " + (-MaxElevation) + " to " + MaxElevation + " degrees elevation in " + ElevationStep + " degree steps, out to " + reach + " m. Land: terrain collider, and " + land.Count + " landscape meshes (Backdrop, stand-in fire ridge and floor). A ray fails as void (below level, meets nothing) or flat plane (ends on a planar landscape mesh, within " + PlaneTolerance + " m of one height). Places stand in for the Valley.md platforms until they exist. Trees count by their LOD 0 meshes. Skipped as underground: " + (underground.Count == 0 ? "none" : string.Join(", ", underground)) + ".\n");
     md.AppendLine("| Origins | Count | Rays | Terrain | Landscape mesh | Sky (level or up) | Void | Flat plane |");
     md.AppendLine("|---|---|---|---|---|---|---|---|");
     bool pass = true; string line = "";
@@ -137,7 +142,33 @@ try
         for (int i = 0; i < ord.Count && i < 15; i++) md.AppendLine("- " + ord[i].Key + ": " + ord[i].Value);
         if (flatBy.Count > 0) { md.AppendLine("\n## Flat planes hit\n"); foreach (var kv in flatBy) md.AppendLine("- " + kv.Key + ": " + kv.Value + " rays"); }
     }
+    // Marlow's grazing rays (ValleyNumbers R4.3): from the tower deck centre and P4, aimed at his paper landing points; where each lands
+    var deckEye = V(tower.position.x, deckTop + EyeHeight, tower.position.z);
+    UnityEngine.Vector3 WarpEye(string n) { var w = warps != null ? warps.transform.Find(n) : null; return w != null ? w.position + V(0f, EyeHeight, 0f) : V(float.NaN, 0f, 0f); }
+    var p4 = WarpEye("Ward_P4");
+    var probes = new (string n, UnityEngine.Vector3 from, UnityEngine.Vector3 aim)[] {
+        ("tower over the E crest at z -40, aim (1225, 10, -612)", deckEye, V(1225f, 10f, -612f)), ("tower over the E crest at z -40, aim (1448, 0, -775)", deckEye, V(1448f, 0f, -775f)),
+        ("P4 over the S crest end, aim (742, 10, -216)", p4, V(742f, 10f, -216f)), ("P4 over the S crest end, aim (826, 0, -266)", p4, V(826f, 0f, -266f)),
+        ("tower over the N saddle, aim (703, 10, 1319)", deckEye, V(703f, 10f, 1319f)), ("tower over the N saddle, aim (787, 2.5, 1500)", deckEye, V(787f, 2.5f, 1500f)) };
+    md.AppendLine("\n## Marlow's grazing rays (R4.3)\n");
+    string probeLine = ""; bool probesOk = true;
+    foreach (var pr in probes)
+    {
+        if (float.IsNaN(pr.from.x)) { md.AppendLine("- " + pr.n + ": origin missing"); probesOk = false; continue; }
+        var ray = new UnityEngine.Ray(pr.from, (pr.aim - pr.from).normalized);
+        float tDist = float.MaxValue; UnityEngine.Vector3 tPt = default;
+        foreach (var tc in terrainCols) if (tc.Raycast(ray, out var th, reach) && th.distance < tDist) { tDist = th.distance; tPt = th.point; }
+        string what;
+        if (UnityEngine.Physics.Raycast(ray, out var lh, reach, mask, UnityEngine.QueryTriggerInteraction.Ignore) && lh.distance < tDist)
+            what = (probeName.TryGetValue(lh.collider, out var pn) ? pn : lh.collider.name) + (planar.Contains(lh.collider) ? " (FLAT PLANE)" : "") + " at " + lh.point.ToString("F0");
+        else if (tDist < float.MaxValue) what = "terrain at " + tPt.ToString("F0");
+        else { what = "VOID"; probesOk = false; }
+        if (what.Contains("FLAT")) probesOk = false;
+        md.AppendLine("- " + pr.n + ": " + what); probeLine += what.Split(' ')[0] + "; ";
+    }
     md.AppendLine("\n## Result\n\n- E-1 " + (pass ? "passes" : "FAILS") + ": " + line);
+    md.AppendLine("- Marlow's grazing rays land on land: " + (probesOk ? "yes" : "NO"));
+    line += "| grazing rays ok " + probesOk + " (" + probeLine + ") ";
     string outPath = System.IO.Path.GetFullPath("Docs/Layout/Main3/Main3_E1.md");
     System.IO.File.WriteAllText(outPath, md.ToString());
     return "E-1 pass: " + pass + " | origins " + origins.Count + ", rays per origin " + dirs.Count + ", landscape meshes " + land.Count + " | " + line + "| report " + outPath;

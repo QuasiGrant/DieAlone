@@ -1,4 +1,6 @@
 // Main3 task 8.9e: distance layers (Main3.md revision 15, 2.11; Vesper's layer spec). Run after 8.8 in Main3, edit mode.
+// 8.9j (Valley.md rev 5): only the far ranges and the outer ground are left here; the near bands, planes, skirts, east forest and
+// edge forest strips described below were removed when the ridges became terrain (8.1). West_Far is new.
 // Off-map, no colliders, root "Backdrop": near and far hill bands north, south and east (rolling bands, never cones) on
 // DieAlone/Backdrop, each blended a fixed share toward the fog colour (near 55 percent, far 80, from LookTuning); the rolling
 // forest east of the fence with a gap for the road; off-map ground and a skirt under the map edge; edge forest strips
@@ -76,79 +78,57 @@ UnityEngine.GameObject Band(string name, UnityEngine.Vector2 origin, UnityEngine
     return MeshObject(name, verts, cols, rows, mat);
 }
 
-// ---------- the bands (Main3.md 2.11 table) ----------
-var N = new UnityEngine.Vector2(0f, 1f); var S = new UnityEngine.Vector2(0f, -1f); var E = new UnityEngine.Vector2(1f, 0f);
+// ---------- the far ranges (Main3.md 2.11 table), as built in rev 16; 8.9j tucks their lower edges under the outer ground ----------
+// 8.9j (Valley.md rev 5, 2.7): the near bands, the rev 16 Ground_North, Ground_South and Ground_East planes, the skirts, the east
+// forest and the edge forest strips are gone: the N, S and E ridges and their back slopes are terrain now (8.1), and one outer
+// ground mesh covers everything outside the terrain out to the far ranges. The far ranges keep their places (fronts at z 1000,
+// z -900, x 1200); their front edge sits at farFrontY, under the outer ground (0 to 10) and the west floor (-40).
+var N = new UnityEngine.Vector2(0f, 1f); var S = new UnityEngine.Vector2(0f, -1f); var E = new UnityEngine.Vector2(1f, 0f); var W = new UnityEngine.Vector2(-1f, 0f);
 var alongX = new UnityEngine.Vector2(1f, 0f); var alongZ = new UnityEngine.Vector2(0f, 1f);
-float northEdge = float.MaxValue, southEdge = float.MaxValue, eastEdge = float.MaxValue;
-for (float x = 140f; x <= mapX; x += 5f) northEdge = UnityEngine.Mathf.Min(northEdge, H(x, mapZ - 0.5f));   // east of the plateau
-for (float x = 12f; x <= mapX; x += 5f) southEdge = UnityEngine.Mathf.Min(southEdge, H(x, 0.5f));
-for (float z = 0f; z <= mapZ; z += 5f) eastEdge = UnityEngine.Mathf.Min(eastEdge, H(mapX - 0.5f, z));
-const float groundSink = 0.5f;   // off-map ground sits just under the lowest edge ground, so no seam floats
-float gN = northEdge - groundSink, gS = southEdge - groundSink, gE = eastEdge - groundSink;
-// north: near ridge 120 to 250 m out, crest 45 to 60, forested; far range 1.2 to 1.8 km out, crest 150 to 220
-Band("North_Near", new UnityEngine.Vector2(0f, mapZ), alongX, N, -500f, 900f, 20f, 120f, 250f, 45f, 60f, 100f, gN, 420f, gN - 20f, 180f, 1.3f, nearForest);
-Band("North_Far", new UnityEngine.Vector2(0f, mapZ), alongX, N, -2500f, 2900f, 60f, 1200f, 1800f, 150f, 220f, 700f, gN, 2300f, gN - 40f, 700f, 2.1f, farRange);
-// south, beyond the lake: low ridge 150 to 300 m out, crest 35 to 50; far range 1.5 to 2 km out, crest 180 to 250
-Band("South_Near", new UnityEngine.Vector2(0f, 0f), alongX, S, -500f, 900f, 20f, 150f, 300f, 35f, 50f, 100f, gS, 480f, gS - 20f, 200f, 3.7f, nearForest);
-Band("South_Far", new UnityEngine.Vector2(0f, 0f), alongX, S, -2500f, 2900f, 60f, 1500f, 2000f, 180f, 250f, 900f, gS, 2500f, gS - 40f, 800f, 4.9f, farRange);
+const float farFrontY = -45f, farBackY = -45f;
+// north: far range 1.2 to 1.8 km out, crest 150 to 220
+Band("North_Far", new UnityEngine.Vector2(0f, mapZ), alongX, N, -2500f, 2900f, 60f, 1200f, 1800f, 150f, 220f, 700f, farFrontY, 2300f, farBackY, 700f, 2.1f, farRange);
+// south: far range 1.5 to 2 km out, crest 180 to 250
+Band("South_Far", new UnityEngine.Vector2(0f, 0f), alongX, S, -2500f, 2900f, 60f, 1500f, 2000f, 180f, 250f, 900f, farFrontY, 2500f, farBackY, 800f, 4.9f, farRange);
 // east, beyond the fence: far range 1.5 to 2.5 km out, crest 150 to 200
-Band("East_Far", new UnityEngine.Vector2(mapX, 0f), alongZ, E, -2500f, 2800f, 60f, 1500f, 2500f, 150f, 200f, 800f, gE, 3000f, gE - 40f, 900f, 6.1f, farRange);
-// east: rolling forest 20 to 35 m for 100 to 400 m beyond the fence, a gap where the road comes in (z 170)
-const float forestX0 = 410f, forestX1 = 800f, forestZ0 = -400f, forestZ1 = 700f, canopyLow = 20f, canopyHigh = 35f, canopyStep = 10f, roadZ = 170f, roadGap = 9f;
-{
-    int cols = UnityEngine.Mathf.CeilToInt((forestX1 - forestX0) / canopyStep) + 1, rows = UnityEngine.Mathf.CeilToInt((forestZ1 - forestZ0) / canopyStep) + 1;
-    var verts = new UnityEngine.Vector3[cols * rows];
-    for (int r = 0; r < rows; r++) for (int c = 0; c < cols; c++)
-    {
-        float x = forestX0 + c * canopyStep, z = forestZ0 + r * canopyStep;
-        float top = gE + UnityEngine.Mathf.Lerp(canopyLow, canopyHigh, Noise(x / 60f + 3.3f, z / 60f + 1.1f) * 0.7f + Noise(x / 17f, z / 17f + 9f) * 0.3f);
-        float edge = UnityEngine.Mathf.Clamp01((x - forestX0) / canopyStep);          // the front of the forest rises from the ground
-        float gap = UnityEngine.Mathf.Clamp01((UnityEngine.Mathf.Abs(z - roadZ) - roadGap) / canopyStep);   // the road's cut through the trees
-        verts[r * cols + c] = V(x, UnityEngine.Mathf.Lerp(gE, top, edge * gap), z);
-    }
-    MeshObject("East_Forest", verts, cols, rows, nearForest);
-}
-// off-map ground: north, south and east of the map, and a skirt under each edge down to it
-UnityEngine.GameObject Plane(string name, float x0, float x1, float z0, float z1, float y)
-{
-    var verts = new[] { V(x0, y, z0), V(x1, y, z0), V(x0, y, z1), V(x1, y, z1) };
-    return MeshObject(name, verts, 2, 2, groundMat);
-}
-Plane("Ground_North", -500f, 900f, mapZ, 700f, gN); Plane("Ground_South", -500f, 900f, -700f, 0f, gS); Plane("Ground_East", mapX, 1000f, 0f, mapZ, gE);
-UnityEngine.GameObject Skirt(string name, System.Func<float, UnityEngine.Vector2> at, float len, float step, float bottom)
-{
-    int cols = UnityEngine.Mathf.CeilToInt(len / step) + 1; var verts = new UnityEngine.Vector3[cols * 2];
-    for (int c = 0; c < cols; c++) { var p = at(UnityEngine.Mathf.Min(c * step, len)); verts[c] = V(p.x, bottom, p.y); verts[cols + c] = V(p.x, H(p.x, p.y), p.y); }
-    return MeshObject(name, verts, cols, 2, groundMat);
-}
-const float skirtStep = 2f;
-Skirt("Skirt_North", s => new UnityEngine.Vector2(10f + s, mapZ - 0.01f), mapX - 10f, skirtStep, gN - 2f);
-Skirt("Skirt_South", s => new UnityEngine.Vector2(10f + s, 0.01f), mapX - 10f, skirtStep, gS - 2f);
-Skirt("Skirt_East", s => new UnityEngine.Vector2(mapX - 0.01f, s), mapZ, skirtStep, gE - 2f);
+Band("East_Far", new UnityEngine.Vector2(mapX, 0f), alongZ, E, -2500f, 2800f, 60f, 1500f, 2500f, 150f, 200f, 800f, farFrontY, 3000f, farBackY, 900f, 6.1f, farRange);
+// west, beyond the fire's far ridge (8.9j, Rook): the same far range as the east, so a look west from the ledge below level ends on
+// land, not void (E-1); hidden from every other place by the W ridge. Proposed, not in Valley.md or Edges.md: Vesper and Sable confirm.
+Band("West_Far", new UnityEngine.Vector2(-40f, 0f), alongZ, W, -2500f, 2800f, 60f, 1500f, 2500f, 150f, 200f, 800f, farFrontY, 3000f, farBackY, 900f, 7.7f, farRange);
 
-// ---------- edge forest strips (60 to 100 m deep outside the north and south edges) ----------
-const string BK = "Assets/BK/PureNature_Redwood/Prefabs/Trees/";
-const float stripDepth0 = 60f, stripDepth1 = 100f, stripSpacing = 11f, stripJitter = 4f, stripTreeH0 = 20f, stripTreeH1 = 35f;
-var rng = new System.Random(8905); float R(float a, float b) => a + (float)rng.NextDouble() * (b - a);
-var strips = new UnityEngine.GameObject("EdgeForest").transform; strips.SetParent(root, false); int treeN = 0; var missing = "";
-foreach (var (edgeZ, dir, gy) in new[] { (mapZ, 1f, gN), (0f, -1f, gS) })
+// ---------- the outer ground (Valley.md rev 5, 2.7): one mesh, x -40 to 1200, z -900 to 1000, outside the terrain ----------
+// Floor() and Outer() are copies of 8.1's (change both together): gently rolling 0 to 10; west of x 0 a 45 degree step down to the
+// -40 floor at x -40, the same slope as the terrain's, so no ray can pass under it. Vertices inside the terrain sit 2 m under the
+// ground there, so the mesh runs under the terrain's edge with no crack; cells well inside the terrain are left out.
+float Floor(float x, float z) => UnityEngine.Mathf.Clamp(5f + 4.5f * (UnityEngine.Mathf.PerlinNoise(x / 280f + 11.3f, z / 280f + 4.7f) * 2f - 1f), 0f, 10f);
+float Outer(float x, float z) => x >= 0f ? Floor(x, z) : UnityEngine.Mathf.Lerp(-40f, Floor(0f, z), (x + 40f) / 40f);
+const float outerX0 = -40f, outerX1 = 1200f, outerZ0 = -900f, outerZ1 = 1000f, outerStep = 20f, underTerrain = 2f, keepUnder = 40f;
+var tp = terrain.transform.position; var ts = terrain.terrainData.size;
+float tX0 = tp.x, tX1 = tp.x + ts.x, tZ0 = tp.z, tZ1 = tp.z + ts.z;
+var xsL = new System.Collections.Generic.SortedSet<float>(); var zsL = new System.Collections.Generic.SortedSet<float>();
+for (float x = outerX0; x <= outerX1 + 0.01f; x += outerStep) xsL.Add(x); for (float z = outerZ0; z <= outerZ1 + 0.01f; z += outerStep) zsL.Add(z);
+xsL.Add(tX1); zsL.Add(tZ0); zsL.Add(tZ1);   // grid lines on the terrain's edges
+var xs = new System.Collections.Generic.List<float>(xsL); var zs = new System.Collections.Generic.List<float>(zsL);
+bool InTerrain(float x, float z) => x > tX0 + 0.01f && x < tX1 - 0.01f && z > tZ0 + 0.01f && z < tZ1 - 0.01f;
 {
-    for (float x = -20f; x <= mapX + 20f; x += stripSpacing)
+    int cols = xs.Count, rows = zs.Count; var verts = new UnityEngine.Vector3[cols * rows]; var tris = new System.Collections.Generic.List<int>();
+    for (int r = 0; r < rows; r++) for (int c = 0; c < cols; c++) { float x = xs[c], z = zs[r]; verts[r * cols + c] = V(x, Outer(x, z) - (InTerrain(x, z) ? underTerrain : 0f), z); }
+    for (int r = 0; r < rows - 1; r++) for (int c = 0; c < cols - 1; c++)
     {
-        float depth = UnityEngine.Mathf.Lerp(stripDepth0, stripDepth1, Noise(x / 50f, edgeZ + 2.2f));
-        for (float o = 4f; o <= depth; o += stripSpacing)
-        {
-            string path = BK + (rng.NextDouble() < 0.6 ? "RedFir" + (1 + rng.Next(8)) : "RedPine" + (1 + rng.Next(5))) + ".prefab";
-            var src = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path); if (src == null) { missing += path + " "; continue; }
-            var g = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(src, strips);
-            foreach (var col in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(col);
-            float px = x + R(-stripJitter, stripJitter), pz = edgeZ + dir * (o + R(-stripJitter, stripJitter));
-            g.transform.position = V(px, gy, pz); g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
-            var b = g.GetComponentInChildren<UnityEngine.Renderer>().bounds; float hgt = 0f; foreach (var r2 in g.GetComponentsInChildren<UnityEngine.Renderer>()) hgt = UnityEngine.Mathf.Max(hgt, r2.bounds.max.y - gy);
-            float s = R(stripTreeH0, stripTreeH1) / UnityEngine.Mathf.Max(0.5f, hgt); g.transform.localScale = V(s, s, s); treeN++;
-        }
+        float cx = (xs[c] + xs[c + 1]) * 0.5f, cz = (zs[r] + zs[r + 1]) * 0.5f;
+        if (cx > tX0 + keepUnder && cx < tX1 - keepUnder && cz > tZ0 + keepUnder && cz < tZ1 - keepUnder) continue;   // well inside the terrain
+        int a = r * cols + c, b = a + 1, d = a + cols, e = d + 1; tris.AddRange(new[] { a, d, b, b, d, e });
     }
+    var mesh = new UnityEngine.Mesh { name = "OuterGround", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+    mesh.vertices = verts; mesh.triangles = tris.ToArray(); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+    UnityEditor.AssetDatabase.CreateAsset(mesh, meshDir + "/OuterGround.asset"); meshN++;
+    var g = new UnityEngine.GameObject("OuterGround"); g.transform.SetParent(root, false);
+    g.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; var mr = g.AddComponent<UnityEngine.MeshRenderer>(); mr.sharedMaterial = groundMat;
+    mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false;
 }
+string outerBox = "x " + outerX0 + " to " + outerX1 + ", z " + outerZ0 + " to " + outerZ1 + " (hole inside the terrain " + tX0 + " to " + tX1 + ", " + tZ0 + " to " + tZ1 + ")";
+string gone = ""; foreach (var n in new[] { "Ground_North", "Ground_South", "Ground_East", "North_Near", "South_Near", "East_Forest", "EdgeForest" }) if (root.Find(n) != null) gone += n + " ";
+int treeN = 0; var missing = "";
 
 // ---------- camera reach and the night look's fog ----------
 const float farClip = 3500f;   // the east far range reaches 2.5 km past the fence
@@ -158,4 +138,4 @@ look.fogColor = Hex("#05080D"); look.fogStart = 8f; look.fogEnd = 60f; UnityEdit
 
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " | backdrop meshes " + meshN + " | edge forest trees " + treeN + " | off-map ground N " + gN.ToString("F1") + " S " + gS.ToString("F1") + " E " + gE.ToString("F1") + " | far clip " + farClip + " | night fog 8 to 60 | missing: " + (missing == "" ? "none" : missing);
+return "saved=" + saved + " | backdrop meshes " + meshN + " | outer ground " + outerBox + " | rev 16 planes and near bands left: " + (gone == "" ? "none" : gone) + " | far range fronts at " + farFrontY + " | far clip " + farClip + " | night fog 8 to 60 | missing: " + (missing == "" ? "none" : missing);

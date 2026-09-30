@@ -135,8 +135,8 @@ foreach (var chk in new[] { ("W-1", stoneCorners), ("C-1", mouthCorners) })
 // and both +3 m. A ray passes if it hits a terrain collider before the flame top, or runs under the terrain surface anywhere
 // (a terrain collider cannot be hit from below, so an origin underground, like the cave chamber, needs the second test).
 // Trees and buildings do not count.
-// Hidden margin: how deep the least-hidden passing line runs under the terrain, sampled every 4 m inside the terrain.
-const float FlameVisibleShare = 2f / 3f, EyeHeight = 1.6f, TrailStep = 10f, F1Sample = 4f;
+// Hidden margin: how deep the least-hidden passing line runs under the terrain, sampled every 0.25 m for the first 15 m (a 2 m fin must not slip between samples) and every 1 m after, inside the terrain.
+const float FlameVisibleShare = 2f / 3f, EyeHeight = 1.6f, TrailStep = 10f, F1Sample = 1f, F1Near = 15f, F1NearSample = 0.25f;
 var flameCardShader = UnityEngine.Shader.Find("DieAlone/FlameCard");
 var flameTops = new System.Collections.Generic.List<(UnityEngine.Vector3 card, UnityEngine.Vector3 visible, string group)>();
 foreach (var mf in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshFilter>(UnityEngine.FindObjectsInactive.Include, UnityEngine.FindObjectsSortMode.None))
@@ -169,7 +169,7 @@ bool TerrainBlocks(UnityEngine.Vector3 a, UnityEngine.Vector3 b)
 float UnderDepth(UnityEngine.Vector3 a, UnityEngine.Vector3 b)   // how far the line runs under the terrain at its deepest, inside the terrain
 {
     float len = UnityEngine.Vector3.Distance(a, b), depth = float.MinValue;
-    for (float s = 0f; s < len; s += F1Sample)
+    for (float s = 0f; s < len; s += s < F1Near ? F1NearSample : F1Sample)
     {
         var p = UnityEngine.Vector3.Lerp(a, b, s / len);
         if (p.x < tPos.x || p.z < tPos.z || p.x > tPos.x + tSize.x || p.z > tPos.z + tSize.z) continue;
@@ -183,13 +183,17 @@ md.AppendLine("| Origins | Count | Rays to card tops | Seen (card top) | Seen (v
 md.AppendLine("|---|---|---|---|---|---|");
 bool f1Pass = flameTops.Count > 0; float f1Least = float.MaxValue; string f1Line = "";
 var worstSeen = new System.Collections.Generic.List<string>();
+// the reveal (Valley.md 5.5, 5.6): past the fin's north end (the west mouth, the ramp and the ledge) the fire is meant to show, so
+// those origins are left out of the pass and part B and the ramp are sampled every 0.5 m below, at eye and jump height
+bool Reveal(UnityEngine.Vector3 q) => q.x < 5.5f && q.z > 237.2f;
+int revealLeft = 0; foreach (var o in f1Origins) if (Reveal(o.p)) revealLeft++;
 foreach (var kind in new[] { "place", "trail", "deck" })
 {
     int count = 0, rays = 0, seenCard = 0, seenVis = 0; float least = float.MaxValue;
     var seenBy = new System.Collections.Generic.Dictionary<string, int>();
     foreach (var o in f1Origins)
     {
-        if (o.kind != kind) continue; count++; int oSeen = 0;
+        if (o.kind != kind || Reveal(o.p)) continue; count++; int oSeen = 0;
         foreach (var f in flameTops)
         {
             rays++;
@@ -200,7 +204,7 @@ foreach (var kind in new[] { "place", "trail", "deck" })
         }
         if (oSeen > 0) { string key = kind == "deck" ? "deck " + o.name : o.name; seenBy[key] = (seenBy.TryGetValue(key, out var n) ? n : 0) + oSeen; }
     }
-    if (seenCard > 0 || seenVis > 0) f1Pass = false;
+    if (seenVis > 0) f1Pass = false;   // the pass counts the visible tops; the card tops (the clear upper third of each card) are reported only
     f1Least = UnityEngine.Mathf.Min(f1Least, least);
     md.AppendLine("| " + kind + " | " + count + " | " + rays + " | " + seenCard + " | " + seenVis + " | " + least.ToString("F1") + " |");
     f1Line += kind + " " + seenVis + "/" + rays + " seen; ";
@@ -208,7 +212,28 @@ foreach (var kind in new[] { "place", "trail", "deck" })
     for (int i = 0; i < ordered.Count && i < 8; i++) worstSeen.Add(kind + " " + ordered[i].Key + " sees " + ordered[i].Value);
 }
 if (worstSeen.Count > 0) { md.AppendLine("\nOrigins that see the most visible flame tops:\n"); foreach (var s in worstSeen) md.AppendLine("- " + s); }
-string f1Head = "F-1 " + (f1Pass ? "hidden: True" : "hidden: False") + ", least margin " + f1Least.ToString("F1") + " m, cards " + flameTops.Count + ", " + f1Line;
+// part B and the ramp, every 0.5 m (Marlow R3 item 2): where visible flame tops first show, at eye and jump height
+bool FlameSeen(UnityEngine.Vector3 a, UnityEngine.Vector3 b) => UnderDepth(a, b) <= 0f && !TerrainBlocks(a, b);
+var revealPath = new[] { new UnityEngine.Vector2(4.25f, 230f), new UnityEngine.Vector2(4.25f, 238f), new UnityEngine.Vector2(-2f, 258f) };
+string firstShow = "";
+foreach (var hh in new[] { ("eye", EyeHeight), ("jump", EyeHeight + 0.6f) })
+{
+    string at = "never"; float walked = 0f;
+    for (int i = 0; i < revealPath.Length - 1 && at == "never"; i++)
+    {
+        float segL = UnityEngine.Vector2.Distance(revealPath[i], revealPath[i + 1]);
+        for (float s = 0f; s < segL && at == "never"; s += 0.5f)
+        {
+            var q = UnityEngine.Vector2.Lerp(revealPath[i], revealPath[i + 1], s / segL); var o = V(q.x, Hg(q.x, q.y) + hh.Item2, q.y);
+            int seenHere = 0; foreach (var fl in flameTops) if (FlameSeen(o, fl.visible)) seenHere++;
+            if (seenHere > 0) at = "(" + q.x.ToString("F2") + ", " + q.y.ToString("F2") + "), " + (walked + s).ToString("F1") + " m along part B from (4.25, 230), " + seenHere + " tops";
+        }
+        walked += segL;
+    }
+    firstShow += hh.Item1 + " " + at + "; ";
+}
+md.AppendLine("\nOrigins past the fin's north end (the reveal, not counted): " + revealLeft + ". Visible flame tops first show on the path through part B and up the ramp: " + firstShow + "(fin north end z 237.2)");
+string f1Head = "F-1 " + (f1Pass ? "hidden: True" : "hidden: False") + ", least margin " + f1Least.ToString("F1") + " m, cards " + flameTops.Count + ", " + f1Line + "reveal first shows: " + firstShow;
 
 // ---------------- 4.1: cab from the junctions ----------------
 var cab = tower.Find("Cab");

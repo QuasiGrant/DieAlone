@@ -42,8 +42,8 @@ MonoBehaviour:
   sunGlowColor: {r: 1, g: 0.7882353, b: 0.5411765, a: 1}
   sunGlowSize: 24
   sunColor: {r: 1, g: 0.7882353, b: 0.5411765, a: 1}
-  sunElevation: 28
-  sunBearing: 270
+  sunElevation: 32
+  sunBearing: 200
   sunIntensity: 1.1
   fireGlowColor: {r: 1, g: 0.42, b: 0.1, a: 1}
   fireGlowIntensity: 0

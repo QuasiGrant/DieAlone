@@ -405,7 +405,7 @@ int painted = 0;
 for (int zi = 0; zi < ar; zi++) for (int xi = 0; xi < ar; xi++)
 {
     for (int k = 0; k < nl - 1; k++) newA[zi, xi, k] = oldA[zi, xi, k];
-    float x = (xi + 0.5f) * data.size.x / ar, z = (zi + 0.5f) * data.size.z / ar; float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(x, z), campC);
+    float x = terrain.transform.position.x + (xi + 0.5f) * data.size.x / ar, z = terrain.transform.position.z + (zi + 0.5f) * data.size.z / ar; float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(x, z), campC);   // world, from the terrain origin (8.9j: x -40)
     if (d > flankR || oldA[zi, xi, trailLayer] > 0.3f || oldA[zi, xi, 1] > 0.5f) continue;
     float w = 1f - UnityEngine.Mathf.Clamp01((d - (flankR - 4f)) / 4f); if (w <= 0f) continue;
     for (int k = 0; k < nl - 1; k++) newA[zi, xi, k] *= 1f - w; newA[zi, xi, nl - 1] = w; painted++;
@@ -450,14 +450,15 @@ for (int cl = 0; cl < 40 && treeN < 18; cl++)
 }
 
 // ================= LOOKS: day one and day two presets (LookSlice 4 and 5) =================
-void SetLook(string path, string sun, float elev, float inten, string amb, string skyT, string skyH, string fogC, float fogS, float fogE)
+void SetLook(string path, string sun, float elev, float bearing, float inten, string amb, string skyT, string skyH, string fogC, float fogS, float fogE)
 {
     var t = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>(path); if (t == null) { missing.Add(path); return; }
-    t.sunColor = Hex(sun); t.sunElevation = elev; t.sunBearing = 270f; t.sunIntensity = inten; t.sunsetAmbient = Hex(amb);
+    t.sunColor = Hex(sun); t.sunElevation = elev; t.sunBearing = bearing; t.sunIntensity = inten; t.sunsetAmbient = Hex(amb);
     t.skyTop = Hex(skyT); t.skyHorizon = Hex(skyH); t.sunsetFogColor = Hex(fogC); t.sunsetFogStart = fogS; t.sunsetFogEnd = fogE; UnityEditor.EditorUtility.SetDirty(t);
 }
 // day one brightened in 8.9g (Vesper): sun 14 to 28, fill #6E6658 to #998A73, crushed blacks 0.3 to 0.15, dark corners 0.45 to 0.3
-SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 28f, 1.1f, "#998A73", "#5E6878", "#E3A968", "#A8A08E", 40f, 600f);
+// 8.9j valley (Edges.md 8): the day-one sun from bearing 200 (SSW) at 32, so the W ridge shadow ends near x 57
+SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 32f, 200f, 1.1f, "#998A73", "#5E6878", "#E3A968", "#A8A08E", 40f, 600f);
 {
     var dayOneLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayOne.asset");
     if (dayOneLook != null) { dayOneLook.crushBlacks = 0.15f; dayOneLook.darkCorners = 0.3f; UnityEditor.EditorUtility.SetDirty(dayOneLook); }
@@ -468,7 +469,7 @@ foreach (var dayPath in new[] { "Assets/Settings/LookTuning_DayOne.asset", "Asse
     var dl = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>(dayPath); if (dl == null) { missing.Add(dayPath); continue; }
     dl.interiorFillIntensity = 3f; dl.interiorFillColor = Hex("#998A73"); UnityEditor.EditorUtility.SetDirty(dl);
 }
-SetLook("Assets/Settings/LookTuning_DayTwo.asset", "#FF8C40", 6f, 1.2f, "#734D42", "#381C1A", "#D9662E", "#9E5C38", 25f, 420f);
+SetLook("Assets/Settings/LookTuning_DayTwo.asset", "#FF8C40", 6f, 270f, 1.2f, "#734D42", "#381C1A", "#D9662E", "#9E5C38", 25f, 420f);
 
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
