@@ -122,9 +122,29 @@ float sP1 = SAt(52f, 216f), sP2 = SAt(57f, 276f), sP3 = SAt(26f, 304f), sP4 = SA
 float sSnag = L2(sP2, sP3, landmarkShare), sFir = L2(sP3, sP4, landmarkShare);
 Mark("Seep_Rock", sSeep, -2.1f, Cube, V(0.4f, 2.5f, 2f), 1.25f); Mark("Seep_Cup", sSeep, -1.8f, Cyl, V(0.1f, 0.06f, 0.1f), 1.3f);
 Mark("RunePost", sRune, 2.6f, Cube, V(0.3f, 2f, 0.3f), 1f);
-Mark("SplitSnag_L", sSnag, -1.2f, Cyl, V(1.2f, 7f, 1.2f), 7f); Mark("SplitSnag_R", sSnag, 1.2f, Cyl, V(1.2f, 6f, 1.2f), 6f);
 Mark("BentFir", sFir, 2.2f, Cyl, V(0.35f, 2f, 0.35f), 0.5f, 90f);
-Mark("P1_Overhang", sP1, -2.2f, Cube, V(1.5f, 0.5f, 3f), 2.4f); Mark("P2_RockRoof", sP2, -2f, Cube, V(2f, 0.5f, 2.5f), 2.5f); Mark("P3_RootPlate", sP3, 2.3f, Cyl, V(4f, 0.3f, 4f), 2f, 90f);
+// 8.14a (Vesper: pale untextured pillars, a flat untextured overhang slab, a white disc): the split snag, the platform hides and the root
+// plate from owned art, colliders removed (the climb's pieces never catch the player); the chute steps take 8.1's rock
+var bandRock = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_BandRock.mat"); if (bandRock == null) return "no Blockout_BandRock (8.1)";
+foreach (var r in steps.GetComponentsInChildren<UnityEngine.MeshRenderer>()) r.sharedMaterial = bandRock;
+const string climbDeadTree = "Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Decoration_Out/Tree_Dead.prefab", bkRocks = "Assets/BK/PureNature_Redwood/Prefabs/Rocks/";
+const float deadTreeUnitGirth = 0.6f;
+UnityEngine.GameObject Owned(string name, string path, float s, float side, float sink, UnityEngine.Vector3 scale, UnityEngine.Vector3 euler)
+{
+    var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path); if (pf == null) return null;
+    var g = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(pf, climbRoot); g.name = name;
+    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+    var a = AtS(s); var sd = V(a.dir.z, 0f, -a.dir.x); var p = a.p + sd * side; p.y = H(p.x, p.z) - sink;
+    g.transform.localScale = scale; g.transform.SetPositionAndRotation(p, UnityEngine.Quaternion.Euler(0f, UnityEngine.Mathf.Atan2(a.dir.x, a.dir.z) * UnityEngine.Mathf.Rad2Deg, 0f) * UnityEngine.Quaternion.Euler(euler));
+    return g;
+}
+float deadUnitTall = 0f; { var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(climbDeadTree); if (pf == null) return "missing Tree_Dead"; foreach (var r in pf.GetComponentsInChildren<UnityEngine.Renderer>()) deadUnitTall = UnityEngine.Mathf.Max(deadUnitTall, r.bounds.max.y); }
+UnityEngine.Vector3 DeadScale(float tall, float girth) => V(girth / deadTreeUnitGirth, tall / UnityEngine.Mathf.Max(0.5f, deadUnitTall), girth / deadTreeUnitGirth);
+Owned("SplitSnag_L", climbDeadTree, sSnag, -1.2f, 0.3f, DeadScale(7f, 1.2f), V(0f, 20f, -4f));   // the two halves of one split trunk, leaning apart
+Owned("SplitSnag_R", climbDeadTree, sSnag, 1.2f, 0.3f, DeadScale(6f, 1.1f), V(0f, 200f, 5f));
+Owned("P1_Overhang", bkRocks + "Boulder_2.prefab", sP1, -2.6f, 0.6f, V(0.55f, 0.55f, 0.55f), V(8f, 30f, 0f));
+Owned("P2_RockRoof", bkRocks + "BigBoulders_3.prefab", sP2, -3f, 1f, V(0.5f, 0.45f, 0.5f), V(-10f, 70f, 6f));
+Owned("P3_RootPlate", climbDeadTree, sP3, 2.6f, -0.4f, DeadScale(6f, 1.4f), V(0f, 60f, 84f));   // a fallen snag, its root end toward the trail
 
 // Ward stones (Valley.md rev 10, 4): on the ledge south of the path end and off to one side of the approach, 3.6 x 4 m, tops 70
 const float stoneTop = 70f;

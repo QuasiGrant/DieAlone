@@ -183,11 +183,11 @@ foreach (var r in Root("FrontZone").GetComponentsInChildren<UnityEngine.MeshRend
 {
     if (r.sharedMaterial != null && r.sharedMaterial.shader.name.StartsWith("DieAlone/")) continue;
     string n = r.name; UnityEngine.Material m;
-    if (n == "CentreLine") continue;   // 8.14: the highway centre line keeps its paint
+    if (n == "CentreLine" || n == "EdgeLine" || n == "ReflectorPost" || n == "Reflector") continue;   // 8.14, 8.14a: the highway paint and reflector posts keep their paint
     if (r.transform.parent != null && r.transform.parent.parent != null && (r.transform.parent.name == "VergeTree" || r.transform.parent.parent.name == "VergeTree")) continue;   // 8.14a: the verge tree is pack art, it keeps its own material
     if (n == "ParkingLot" || n == "Drive" || n == "TurningCircle" || n == "Road" || n == "Drive_To_T") m = matAsphalt;
     else if (n == "Brush") m = matBrush;
-    else if (n == "PowerPole" || n == "Crossarm" || n == "ReflectorPost" || n == "StopSignPost" || n == "EntranceSignPost" || n == "MailboxPost" || n == "EntranceSign") m = matSiding;
+    else if (n == "PowerPole" || n == "Crossarm" || n == "StopSignPost" || n == "EntranceSignPost" || n == "MailboxPost" || n == "EntranceSign") m = matSiding;
     else if (n.StartsWith("Spur") || n.StartsWith("Loop") || n == "Pitch") m = matGravel;
     else if (n == "Roof") m = matRoof;
     else if (n.StartsWith("Wall") || n == "Floor") m = matSiding;
@@ -256,6 +256,7 @@ for (float x = 186f; x < 340f; x += regrowthStep) for (float z = 143f; z < 213f;
 {
     var p = new UnityEngine.Vector2(x + R(-regrowthJitter, regrowthJitter), z + R(-regrowthJitter, regrowthJitter));
     if (!InBurn(p) || InS2Lane(p)) continue; bool clear = true; foreach (var t in trailPts) if (UnityEngine.Vector2.Distance(p, t) < regrowthTrailGap) { clear = false; break; } if (!clear) continue;
+    foreach (UnityEngine.Transform w in Root("DevWarps").transform) if (UnityEngine.Vector2.Distance(p, new UnityEngine.Vector2(w.position.x, w.position.z)) < regrowthTrailGap) { clear = false; break; } if (!clear) continue;   // 8.14a: no warp lands in a tree
     var tree = Spawn(BK + "Trees/" + (rng.NextDouble() < 0.6 ? "RedFir" + (1 + rng.Next(8)) : "RedPine" + (1 + rng.Next(5))), regrowth); if (tree == null) continue;
     tree.transform.position = V(p.x, 0f, p.y); tree.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
     float top = float.MinValue; foreach (var rr in tree.GetComponentsInChildren<UnityEngine.Renderer>()) top = UnityEngine.Mathf.Max(top, rr.bounds.max.y);

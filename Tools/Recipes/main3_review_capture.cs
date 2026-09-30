@@ -155,7 +155,7 @@ var pairs = new (string n, float x, float z, float lx, float ly, float lz)[] {
     ("Lake pump (Lake Pump warp)", 190f, 99f, 190f, float.NaN, 60f),
     ("Camp 1 (Camp 1 warp)", 268f, 226f, 282f, float.NaN, 238f),
     ("Camp 3 (Camp 3 warp)", 74f, 142f, 90f, float.NaN, 158f),
-    ("Lot facing the highway (Lot Highway warp)", 360f, 172f, 440f, float.NaN, 172f),
+    ("Lot facing the highway (Lot Highway warp)", 382f, 168f, 440f, float.NaN, 170f),
     ("Camp (Keepers Camp warp)", 172f, 150f, 172f + 40f * UnityEngine.Mathf.Sin(333f * UnityEngine.Mathf.Deg2Rad), float.NaN, 150f + 40f * UnityEngine.Mathf.Cos(333f * UnityEngine.Mathf.Deg2Rad)),
     ("S1 camp from the edge (LookSlice 6)", 156f, 148f, 178f, float.NaN, 168f),
     ("Office (Office warp)", 340f, 196f, 340f + 40f * UnityEngine.Mathf.Sin(68f * UnityEngine.Mathf.Deg2Rad), float.NaN, 196f + 40f * UnityEngine.Mathf.Cos(68f * UnityEngine.Mathf.Deg2Rad)),

@@ -129,10 +129,10 @@ var brush = Group("BrushBands", fz);
 foreach (var bb in new[] { (345f, 386f, 206f, 215f), (340f, 348f, 206f, 310f) })
     Prim(Cube, "Brush", brush, V((bb.Item1 + bb.Item2) * 0.5f, H((bb.Item1 + bb.Item2) * 0.5f, (bb.Item3 + bb.Item4) * 0.5f) + brushH * 0.5f - 0.2f, (bb.Item3 + bb.Item4) * 0.5f), V(bb.Item2 - bb.Item1, brushH + 0.4f, bb.Item4 - bb.Item3));
 // the highway and the gate junction (Valley.md 3): the drive runs on 32 m from the gate to a T on the highway (x 428), two lanes
-// 7.5 m on 8.1's road bed, a painted centre line, reflector posts every 25 m, power poles on the far side, a stop sign, the
+// 7.5 m on 8.1's road bed, a painted centre line, reflector posts every 12.5 m (25 before 8.14a), power poles on the far side, a stop sign, the
 // park's entrance sign facing the road and a mailbox post at the T; the dead broken-top verge giant at (418, 136). Gray, no colliders
 // (the player never reaches them).
-const float roadX = 428f, roadW = 7.5f, roadN = 430f, roadS = -130f, roadR = 120f, lineW = 0.15f, driveW = 5f, postStep = 25f, poleStep = 50f, poleH = 9f, poleOff = 9f, postOff = 4.6f;
+const float roadX = 428f, roadW = 7.5f, roadN = 430f, roadS = -130f, roadR = 120f, lineW = 0.15f, driveW = 5f, postStep = 12.5f, poleStep = 50f, poleH = 9f, poleOff = 9f, postOff = 4.6f;
 var road = Group("Highway", fz);
 UnityEngine.GameObject Flat(string name, UnityEngine.Transform parent, UnityEngine.Vector2 a, UnityEngine.Vector2 b, float w, float y)
 {
@@ -153,7 +153,6 @@ for (int i = 0; i < roadLine.Count - 1; i++)
     Flat("CentreLine", road, a, b, lineW, y + slab).GetComponent<UnityEngine.Renderer>().sharedMaterial = lineMat;
 }
 Flat("Drive_To_T", road, new UnityEngine.Vector2(396.5f, 170f), new UnityEngine.Vector2(roadX - roadW * 0.5f, 170f), driveW, G + slab * 0.5f);
-for (float z = roadS; z <= roadN; z += postStep) foreach (var sx in new[] { -1f, 1f }) Prim(Cube, "ReflectorPost", road, V(roadX + sx * postOff, G + 0.5f, z), V(0.1f, 1f, 0.1f), 0f, false);
 for (float z = roadS; z <= roadN; z += poleStep) { Prim(Cyl, "PowerPole", road, V(roadX + poleOff, G + poleH * 0.5f, z), V(0.3f, poleH * 0.5f, 0.3f), 0f, false); Prim(Cube, "Crossarm", road, V(roadX + poleOff, G + poleH - 0.4f, z), V(0.12f, 0.12f, 2f), 0f, false); }
 var tJ = Group("GateT", fz);
 Prim(Cube, "StopSignPost", tJ, V(roadX - roadW * 0.5f - 1.2f, G + 1.1f, 173f), V(0.08f, 2.2f, 0.08f), 0f, false);
@@ -162,6 +161,32 @@ foreach (var ez in new[] { 164f, 166.5f }) Prim(Cube, "EntranceSignPost", tJ, V(
 Prim(Cube, "EntranceSign", tJ, V(roadX - roadW * 0.5f - 3f, G + 1.7f, 165.25f), V(0.1f, 1.2f, 3.2f), 0f, false);   // faces the road (east)
 Prim(Cube, "MailboxPost", tJ, V(roadX - roadW * 0.5f - 1.2f, G + 0.6f, 176f), V(0.1f, 1.2f, 0.1f), 0f, false);
 Prim(Cube, "Mailbox", tJ, V(roadX - roadW * 0.5f - 1.2f, G + 1.3f, 176f), V(0.5f, 0.3f, 0.25f), 0f, false);
+// 8.14a (Marlow, Vesper: from the lot and the office the road was 1 to 5 px): white edge lines, white reflector posts every
+// postStep with an amber reflector head, and a street light at the T (8 m, its sodium head on the lot lights' marker material) so
+// the road and the T read from the lot by day and at night; the paint keeps its colour through 8.9f
+const float edgeIn = 0.25f, reflPostH = 1.2f, reflPostW = 0.14f, reflHead = 0.18f, tLightH = 8f, tLightArm = 3f, tLightBack = 2.5f, tLightZ = 177f;
+var paintMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_RoadPaint.mat");
+if (paintMat == null) { paintMat = new UnityEngine.Material(UnityEngine.Shader.Find("Universal Render Pipeline/Unlit")); UnityEditor.AssetDatabase.CreateAsset(paintMat, "Assets/Materials/Blockout/Blockout_RoadPaint.mat"); }
+{ UnityEngine.ColorUtility.TryParseHtmlString("#CFCBBE", out var pc); paintMat.SetColor("_BaseColor", pc); UnityEditor.EditorUtility.SetDirty(paintMat); }
+var reflMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_Reflector.mat");
+if (reflMat == null) { reflMat = new UnityEngine.Material(UnityEngine.Shader.Find("Universal Render Pipeline/Unlit")); UnityEditor.AssetDatabase.CreateAsset(reflMat, "Assets/Materials/Blockout/Blockout_Reflector.mat"); }
+{ UnityEngine.ColorUtility.TryParseHtmlString("#C87A2A", out var rc); reflMat.SetColor("_BaseColor", rc); UnityEditor.EditorUtility.SetDirty(reflMat); }
+for (int i = 0; i < roadLine.Count - 1; i++)
+{
+    var a = roadLine[i]; var b = roadLine[i + 1]; var d = (b - a).normalized; var side = new UnityEngine.Vector2(d.y, -d.x) * (roadW * 0.5f - edgeIn);
+    foreach (var sg in new[] { -1f, 1f }) Flat("EdgeLine", road, a + side * sg, b + side * sg, lineW, G + slab * 1.5f).GetComponent<UnityEngine.Renderer>().sharedMaterial = paintMat;
+}
+for (float z = roadS; z <= roadN; z += postStep) foreach (var sx in new[] { -1f, 1f })
+{
+    Prim(Cube, "ReflectorPost", road, V(roadX + sx * postOff, G + reflPostH * 0.5f, z), V(reflPostW, reflPostH, reflPostW), 0f, false).GetComponent<UnityEngine.Renderer>().sharedMaterial = paintMat;
+    Prim(Cube, "Reflector", road, V(roadX + sx * postOff, G + reflPostH - reflHead, z), V(reflPostW + 0.02f, reflHead, reflPostW + 0.02f), 0f, false).GetComponent<UnityEngine.Renderer>().sharedMaterial = reflMat;
+}
+{
+    float px = roadX - roadW * 0.5f - tLightBack;
+    Prim(Cyl, "TLightPole", tJ, V(px, G + tLightH * 0.5f, tLightZ), V(0.22f, tLightH * 0.5f, 0.22f), 0f, false);
+    Prim(Cube, "TLightArm", tJ, V(px + tLightArm * 0.5f, G + tLightH - 0.1f, tLightZ), V(tLightArm, 0.12f, 0.12f), 0f, false);
+    Prim(Cube, "TLightHead", tJ, V(px + tLightArm, G + tLightH - 0.3f, tLightZ), V(lotHeadW, 0.3f, lotHeadD), 0f, false).GetComponent<UnityEngine.Renderer>().sharedMaterial = lotLightMat;
+}
 // the verge tree: a dead giant with a broken top, 6 m off the road edge, read from the deck at 250 m (3.4). 8.14a: the owned dead tree
 // (Celestia Tree_Dead) stretched to a giant, with its snapped top lying on the verge beside it, no colliders (the player
 // never reaches it); the gray cylinders are in git history

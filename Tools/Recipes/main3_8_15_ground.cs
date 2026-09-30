@@ -352,6 +352,8 @@ void Stamp(UnityEngine.Vector2 c, float r)
 foreach (var p in allPts) Stamp(p, corridorHW);
 Stamp(campC, campR); Stamp(P(262f, 172f), 4f); Stamp(P(340f, 170f), 4f);
 foreach (var q in pois) Stamp(q, poiPad + 1.5f);
+// 8.14a (Marlow: the Lake pump, Office and Jg warps landed inside brush): every warp keeps warpClear m open round it
+const float warpClear = 5.5f; foreach (UnityEngine.Transform w in Root("DevWarps").transform) Stamp(P(w.position.x, w.position.z), warpClear);
 // marching squares: segments between edge crossings, chained into loops
 var ptOf = new System.Collections.Generic.Dictionary<long, UnityEngine.Vector2>(); var adj = new System.Collections.Generic.Dictionary<long, System.Collections.Generic.List<long>>();
 long EKey(int i, int j, int dir) => ((long)j * (GW + 1) + i) * 2 + dir;

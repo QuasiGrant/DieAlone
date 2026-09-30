@@ -399,12 +399,20 @@ float Plateau(float x, float z, float footWG, float footNG, float footSG)
 // only above the highest bench (climbKeep), so the legs, platforms and slot keep their shape
 const float rugBig = 30f, rugSmall = 9f, rugBigH = 7f, rugSmallH = 3f, rugFrom = 20f, rugRamp = 15f, climbKeep = 66f, climbKeepRamp = 10f;
 bool InClimbZone(float x, float z) => x > -12f && x < 92f && z > 190f && z < 335f;
+// 8.14a gate (Vesper, Marlow: vertical flutes like a curtain, gable peaks over the bands): the ridged noise made sharp ridge lines down
+// every face and roof peaks on the crest; now smooth lumps, and strata: every strataH metres of height (the layers tilted by
+// strataWarp of slow noise) the ground is raised toward the layer above, most in the middle of each layer, so steep faces break
+// into ledges and risers instead of flutes. Still raise-only.
+const float strataH = 5f, strataWarp = 6f, strataScale = 45f; const int strataPow = 3;
 float Rugged(float x, float z, float h)
 {
-    float n1 = 1f - UnityEngine.Mathf.Abs(2f * UnityEngine.Mathf.PerlinNoise(x / rugBig + 1.7f, z / rugBig + 4.3f) - 1f);
-    float n2 = 1f - UnityEngine.Mathf.Abs(2f * UnityEngine.Mathf.PerlinNoise(x / rugSmall + 8.2f, z / rugSmall + 2.6f) - 1f);
+    float n1 = UnityEngine.Mathf.PerlinNoise(x / rugBig + 1.7f, z / rugBig + 4.3f);
+    float n2 = UnityEngine.Mathf.PerlinNoise(x / rugSmall + 8.2f, z / rugSmall + 2.6f);
     float mask = InClimbZone(x, z) ? SS((h - climbKeep) / climbKeepRamp) : SS((h - rugFrom) / rugRamp);
-    return h + (rugBigH * n1 * n1 + rugSmallH * n2) * mask;
+    float hs = h + strataWarp * UnityEngine.Mathf.PerlinNoise(x / strataScale + 5.1f, z / strataScale + 0.9f);
+    float f = hs / strataH - UnityEngine.Mathf.Floor(hs / strataH);
+    float ledge = strataH * (1f - UnityEngine.Mathf.Pow(1f - f, strataPow) - f);
+    return h + (rugBigH * n1 + rugSmallH * n2 + ledge) * mask;
 }
 const float roadEastX = 440f, roadEastRamp = 120f;
 float Height(float x, float z, float footWG, float footNG, float footSG)
@@ -605,6 +613,8 @@ void FlatWall(string name, UnityEngine.Transform parent, UnityEngine.Vector2[] p
 // 8.14a: the band face leans back bandLean over its height (about 75 degrees on a 4 m band), its top swells in bandWave-sample waves,
 // the jag per metre is small, and owned rubble lies at its foot (Vesper: strata, not masonry)
 const float bandThick = 3f, bandOffset = 0.7f, bandJag = 0.2f, bandFront = 1.5f, bandPush = 0.3f, bandLean = 1.1f, bandSwell = 1.5f, bandWave = 7f, screeOut = 1.2f;
+const float bandBoulderStep = 7f, bandBoulderLow = 0.7f, bandBoulderHigh = 1.0f, bandBoulderOut = 0.4f, bigBoulderHalf = 3f;   // BigBoulders are about 6 m across, pivot in the middle
+int bandBoulders = 0;
 const int screeStep = 10; int screeN = 0; var scree = new UnityEngine.GameObject("BandScree").transform; scree.SetParent(rockRoot.transform, false);
 var bands = new UnityEngine.GameObject("Bands").transform; bands.SetParent(rockRoot.transform, false);
 void Band(string name, UnityEngine.Vector2[] poly, System.Func<UnityEngine.Vector2, float> bandH)
@@ -623,6 +633,17 @@ void Band(string name, UnityEngine.Vector2[] poly, System.Func<UnityEngine.Vecto
         var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/BK/PureNature_Redwood/Prefabs/Rocks/RubbleSparse_" + (1 + boulderRng.Next(3)) + ".prefab"); if (pf == null) continue;
         var gs = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(pf, scree); foreach (var c in gs.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
         gs.transform.rotation = UnityEngine.Quaternion.Euler(0f, RR(0f, 360f), 0f); gs.transform.position = V(q.x, H(q.x, q.y) - 0.1f, q.y); screeN++;
+    }
+    // 8.14a (Vesper: stacked slabs with gabled tops): owned BK boulders set into the band every bandBoulderStep or so, each standing out
+    // bandBoulderOut from the face and over its top, so the band reads as broken rock, not masonry; no colliders (the band holds)
+    for (float s = RR(0f, bandBoulderStep); s < pts.Count - 1; s += bandBoulderStep * RR(0.6f, 1.4f))
+    {
+        int i = (int)s; var nl = LeftN(pts, i); float sc = RR(bandBoulderLow, bandBoulderHigh), rad = bigBoulderHalf * sc;
+        var face = pts[i] - nl * bandOffset; var c = face + nl * (rad - bandBoulderOut); float g = H(face.x - nl.x * bandFront, face.y - nl.y * bandFront);
+        var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/BK/PureNature_Redwood/Prefabs/Rocks/BigBoulders_" + boulderRng.Next(6) + ".prefab"); if (pf == null) continue;
+        var gb = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(pf, scree); foreach (var col in gb.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(col);
+        gb.transform.localScale = V(sc, sc * RR(0.8f, 1.2f), sc); gb.transform.rotation = UnityEngine.Quaternion.Euler(RR(-12f, 12f), RR(0f, 360f), RR(-12f, 12f));
+        gb.transform.position = V(c.x, g + bandH(pts[i]) * RR(0.3f, 0.7f), c.y); bandBoulders++;
     }
 }
 float BandHAt(UnityEngine.Vector2 q) => q.y < FootS(q.x) + 1f || q.y > FootN(q.x) - 1f ? bandNS : bandW;   // N and S 3 m, W and the arms 4 m
@@ -652,6 +673,18 @@ void LipPart(string name, float z0, float z1, float height, float thick, float f
 LipPart("Lip", ledgeZ0, thinZ0, lipH, lipThick, 0f);
 LipPart("Lip_End", thinZ0, thinZ1, lipH, thinLipThick, thinLipFall);   // the path-end stretch: full height, thin, its top falling outward
 LipPart("Lip_N", thinZ1, ledgeZ1, lipH, lipThick, 0f);
+// the knob as broken rock (8.14a, Vesper: a smooth cone): owned BK BigBoulders, scaled up, set into its top and upper faces (ground
+// knobRockFrom or higher, so the climb below keeps its shape), no colliders (the terrain under them holds)
+const int knobRocks = 14; const float knobRockFrom = 72f, knobRockLow = 1.6f, knobRockHigh = 2.8f, knobRockSink = 0.35f, knobRockPad = 6f;
+var knobRock = new UnityEngine.GameObject("KnobRock").transform; knobRock.SetParent(rockRoot.transform, false); int knobRockN = 0;
+for (int k = 0, tries = 0; k < knobRocks && tries < knobRocks * 20; tries++)
+{
+    float x = RR(knobX0 - knobRockPad, knobX1 + knobRockPad), z = RR(knobZ0, knobZ1), gy = H(x, z); if (gy < knobRockFrom) continue;
+    var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/BK/PureNature_Redwood/Prefabs/Rocks/BigBoulders_" + boulderRng.Next(6) + ".prefab"); if (pf == null) break;
+    var gb = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(pf, knobRock); foreach (var col in gb.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(col);
+    float sc = RR(knobRockLow, knobRockHigh); gb.transform.localScale = V(sc, sc * RR(0.7f, 1.3f), sc); gb.transform.rotation = UnityEngine.Quaternion.Euler(RR(-20f, 20f), RR(0f, 360f), RR(-20f, 20f));
+    gb.transform.position = V(x, gy + bigBoulderHalf * sc * (1f - 2f * knobRockSink), z); k++; knobRockN++;
+}
 FlatWall("EndWall_N", ledgeRock, new[] { P(-12f, ledgeZ1), P(ledgeX1 + 0.5f, ledgeZ1) }, endWallTop, endWallThick, 0.4f);
 FlatWall("EndWall_S", ledgeRock, new[] { P(knobX0 + 0.5f, ledgeZ0), P(-12f, ledgeZ0) }, endWallTop, endWallThick, 0.4f);
 // the back wall runs on north to the slot's south wall, so the terrain's one-cell slope at the slot mouth's south corner shows no sky
@@ -836,7 +869,7 @@ Warp("Store", 366f, 193f, 366f, 200f);
 Warp("Gate_Booth", 388f, 176f, 396f, 170f);
 Warp("Closed_Campground", 385f, 232f, 372f, 262f);
 Warp("Trailhead_T", 337f, 170f, 358f, 170f);
-Warp("Lot_Highway", 360f, 172f, roadX, 172f);                // the lot, facing the gate and the highway (Valley.md 14)
+Warp("Lot_Highway", 382f, 168f, roadX, 170f);                // the lot's east end, facing the gate and the highway (Valley.md 14; 8.14a: 22 m nearer, the road read 1 to 5 px from x 360)
 Warp("Junction_Jg", 262f, 168f, 340f, 170f);
 Warp("Junction_J", 106f, 203f, pMouth.x, pMouth.y);           // facing the chute mouth
 Warp("Junction_W1", 130f, 72f, 190f, 60f);
@@ -864,7 +897,7 @@ sb.Append(" | W crest lowest over x 5 to 20, z 40 to 345 (cleft left out) " + F(
 sb.Append(" | N arm x120 " + F(ArmN(120f, PL(120f, nCX, nCZ))) + " x170 " + F(H(170, PL(170f, nCX, nCZ))) + " x250 " + F(H(250, 338)) + " x320 " + F(H(320, 334)) + " x380 " + F(H(380, 332)) + " | S arm x110 " + F(H(110, -44)) + " x170 " + F(H(170, -42)) + " x240 " + F(H(240, -38)) + " x320 " + F(H(320, -34)));
 sb.Append(" | climb: J " + F(H(pJ.x, pJ.y)) + " mouth " + F(H(pMouth.x + 0.5f, pMouth.y)) + " P1 " + F(H(pP1.x, pP1.y)) + " P2 " + F(H(pP2.x, pP2.y)) + " cwm bend " + F(H(pL3.x, pL3.y)) + " P3 " + F(H(pP3.x, pP3.y)) + " leg 4 bend " + F(H(pL4.x, pL4.y)) + " P4 " + F(H(pP4.x, pP4.y))
     + " dogleg " + F(H(slotDog1.x, slotDog1.y)) + " slot end " + F(H(slotEnd.x, slotEnd.y)) + " exit " + F(H(slotExit.x, slotExit.y)) + " path end " + F(H(pathEnd.x, pathEnd.y)) + " ledge " + F(H(-5f, 230f)) + " (leg 1 ramps " + (100f * rampRise / rampRun).ToString("F1") + " percent, leg 3 " + (100f * (p3H - p2H) / lenL3).ToString("F1") + ", leg 4 " + (100f * (p4H - p3H) / (lenL4a + lenL4b)).ToString("F1") + ")");
-sb.Append(" | rock: " + rockMeshes + " meshes, walls " + rockLength.ToString("F0") + " m; climb ring: " + floodCells + " walkable cells, " + wallEdges + " wall and " + rimEdges + " rim edges, " + boulderN + " rim boulders, " + screeN + " rubble at the band feet");
+sb.Append(" | rock: " + rockMeshes + " meshes, walls " + rockLength.ToString("F0") + " m, band boulders " + bandBoulders + ", knob rocks " + knobRockN + "; climb ring: " + floodCells + " walkable cells, " + wallEdges + " wall and " + rimEdges + " rim edges, " + boulderN + " rim boulders, " + screeN + " rubble at the band feet");
 sb.Append(" | road (428, 170) " + F(H(roadX, 170)) + " ditch " + F(H(roadX + roadHalf + ditchW * 0.5f, 170)) + " east hills (590,150) " + F(H(590, 150)) + " | west: x-40 z150 " + F(H(-39.8f, 150)) + " edges N " + F(H(200, 499.5f)) + " S " + F(H(200, -199.5f)) + " E " + F(H(594.5f, 150)));
 sb.Append(" | build list: "); foreach (var s in UnityEditor.EditorBuildSettings.scenes) sb.Append(System.IO.Path.GetFileNameWithoutExtension(s.path) + " ");
 return sb.ToString();
