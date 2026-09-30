@@ -6,14 +6,13 @@ Last updated 2026-09-29.
 
 ## Next step
 
-As of 2026-09-29, night:
-1. Done: Milestones 5 to 7; Main3 blockout and dressed slice 8.1 to 8.9e. 8.9f captures passed Vesper, wait for Grant.
-2. Grant's walk found: too dark, dev panel off screen, the fire visible from the cabin. Running: Rook on 8.9g (day-one brightness and start look), 8.9h (responsive menus), 8.9i (dev panel day and night switch).
-3. Valley draft (Sable, paper only): ridges wrap the map, the Ward on a knob at 115 m above the tower's 56 m, the fire hidden by the land from every place but the Ward ledge. Marlow is checking its numbers; Vesper is writing Docs/Design/Edges.md (beautiful map edges, Grant 2026-09-29). Grant approves a drawing before any rebuild.
-4. Then 8.10: Grant's walk and "right for now".
-5. Plan shape: 10 one playable week, 11 dressing and look, 12 characters, 13 content format and dialogue, 14 events, 15 resident minigames, 16 homage references, 17 release; sound (9) after 11.
-6. Open for Grant: Docs/Private/OpenForGrant.md.
-
+As of 2026-09-29, late night:
+1. Done: Milestones 5 to 7; Main3 8.1 to 8.9e; 8.9h responsive menus; 8.9i dev panel day and night (F1, LOOK, Night / Day one / Day two).
+2. The valley is built (8.9j, commit 4e1415d, unticked until Marlow's re-walk): Docs/Design/Valley.md rev 6. Ridges wrap the map, the Ward sits on a knob at 115 above the tower's 56, and the fire burns behind the west ridge, always on, hidden by the land. F-1 (fire hidden), W-1, C-1 and E-1 (no map edge shows) all pass. The rev 16 scene is kept at tag main3-rev16.
+3. Running: Rook on 8.9k (walk checks retargeted, visible stops at ridge feet, edge screenshots) and the cabin roof light leak (8.9g). Then Marlow re-walks, and Vesper checks the edges and the cabin.
+4. Then 8.10: Grant walks the valley.
+5. Open for Grant: Docs/Private/OpenForGrant.md, Docs/Private/ValleyTextFixes.md (story line changes for the valley).
+6. Plan shape: 10 one playable week, 11 dressing and look, 12 characters, 13 content format and dialogue, 14 events, 15 resident minigames, 16 homage references, 17 release; sound (9) after 11.
 ## How we work now
 
 - Nine named agents in .claude/agents. Wren runs the team, settles disagreements, reports to Grant. Nothing is decided until it is a dated line in DECISIONS.md and Grant has said yes.
