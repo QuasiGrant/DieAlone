@@ -71,3 +71,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: Vesper's forest look calls adopted: trail material fixed for distance (no ambient change), sky blend rate 4.5, lodBias 2 to 1.25 on PC (never below 1.0).
 - 2026-09-30: No dock pack for now; Rook builds the dock from owned logs and planks in 8.17. Buy only if Vesper grades it below C or a doc needs a visible boat (Tully).
 - 2026-09-30: No shell for Vesper, Pim or Hollis; Wren makes one path-limited commit per review round instead (Tully).
+- 2026-09-30: W1 at 20 m may pass by eye if the leg passes at 5 m, the trail shows to the next bend in every frame, and brush, walls or markers hold the line (Pim). The night rule applies only where the line can be lost.
