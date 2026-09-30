@@ -1,297 +1,359 @@
 # Valley: Main3 in a horseshoe
 
-**DRAFT revision 8, 2026-09-30, Sable. PLAN 8.13.** Redrawn from what the player does on each leg, after Grant's valley walk and the review (Docs/Review/2026-09-30-ValleyReview). Binding: DECISIONS 2026-09-30 (horseshoe open east with the highway in view; lower ridges, trees count as cover; small climb, never oppressive; the tower rule is a loose check; invisible walls only at the front and the Ward path by day; the eye-height gate). Grant's answers of 2026-09-30 folded in: the north loop with the densest grove, a third forage patch and one ruin. Nothing here is decided until it is a dated line in DECISIONS.md and Grant confirms. Reviewers: Quill, Hollis, Vesper, Pim, Marlow.
+**DRAFT revision 9, 2026-09-30, Sable. PLAN 8.13.** Revision 9 folds in the five reviews of rev 8 (Docs/Review/2026-09-30-ValleyReview/Review_Valley8_Marlow, _Vesper, _Pim, _Hollis; Quill's in Docs/Private), Rook's Docs/Process/TreeCover.md, and Wren's three calls (Status.md): **land hides the fire, not trees**, so the W crest rises to 80 where any daytime line to the fire crosses it and the knob to 84; **boundaries come from the land**, with only IW1, IW2 and the decided shift wall left invisible; **four different legs** on the climb, leg 4 blind to the fire, and the cleft dogleg moved into the slot with a fin at the mouth. Binding: DECISIONS 2026-09-30. Nothing here is decided until it is a dated line in DECISIONS.md and Grant confirms. Marlow rechecks next.
 
-Drawing: Valley_map.svg revision 8 (wins for shapes; this file wins for heights). Coordinates as Main3.md: metres, origin south-west, x east, z north, heights absolute. Walk speed 2.5 m/s. Walk times are information, not a budget. Rev 7's margin tables are withdrawn; places and legs not named here stay as Main3.md rev 16 section 3 and 4 describe them, except where rev 16 describes the Wall, pass and plateau (gone).
+Drawing: Valley_map.svg revision 9 (wins for shapes; this file wins for heights). Coordinates as Main3.md: metres, origin south-west, x east, z north, heights absolute. Walk speed 2.5 m/s. Controller: slopeLimit 45, stepOffset 0.1, jump 0.6 m (Marlow, from Player.prefab and PlayerTuning.cs). Places and legs not named here stay as Main3.md rev 16 sections 3 and 4, except the Wall, pass and plateau (gone).
 
-What this revision optimizes, in order: every trip has a reason; paths and stops read at eye height; a forest of giants; no two legs alike and a nightly walk short enough to repeat; then the hard checks, run once each (fire and Ward hidden from the valley, cave hidden).
+What this map optimizes, in order: every trip has a reason; paths and stops read at eye height; a forest of giants; no two legs alike and a nightly walk short enough to repeat; then the hard checks, run once each.
 
 ## 1. The walk, leg by leg
 
-Each leg: what you do, what you see, what it should feel like. "Every stop" on every leg is a boulder, deadfall, brush, trunk, fence, water or rock face (section 8).
+Each leg: what you do, see and feel. Every stop is something you can see (section 8).
 
 ### 1.1 Wake and the tower (every day, about 40 s)
 
 | Leg | Do | See | Feel |
 |---|---|---|---|
-| Bunk to door | get up; 4 m | desk under the west window, the tower's legs through it; stove; the report box | small, warm, the one safe room |
-| Door to tower foot | 14 m across the clearing | tower filling the view; woodpile and chopping block by the cabin; fire pit | an ordinary job |
-| Tower stair | ten flights, 22 s, each on a new bearing | west: the bare rock knob, higher than you will ever get on this stair. North: a black wall of giants. East: the valley opens to a highway with a car on it. South: the lake and the granite over it | closed behind, open in front; the world goes on out there |
-| Deck | binoculars on five places, 2 s each | the Camp 1 spar, the Camp 2 stack, the Snag and its line, the cat's step at the boathouse, the office's west door; the verge tree on the highway | Papers, Please at a window: you look, the game stamps |
+| Bunk to door | get up; 4 m | desk under the west window, the tower's legs through it; stove; report box | small, warm, the one safe room |
+| Door to tower foot | 14 m across the clearing | tower filling the view; woodpile and chopping block; fire pit | an ordinary job |
+| Tower stair | ten flights, 22 s, a new bearing each flight, rails all the way | west: the ridge a dark wall with ragged firs on top and one bare rock peak, the knob, higher than the tower. North: a black wall of giants. East: the valley opens to a highway with a car on it, power poles along it. South: the lake and the granite over it | closed behind, open in front; the world goes on out there |
+| Deck | binoculars on five places, 2 s each | the Camp 1 spar, the Camp 2 stack, the Snag and its line, the cat's step at the boathouse, the office's west door; the dead verge tree on the highway | Papers, Please at a window: you look, the game stamps |
 
 ### 1.2 East ring: camp, lake, Camp 2, the front, back through the burn (about 620 m, 250 s)
 
 | Leg | Do | See | Feel |
 |---|---|---|---|
-| Camp to pump, 110 m | two switchbacks down the knoll under knoll firs; plank steps with a rail down the bank to the pump | water glinting through trunk gaps; a water tank on a stand halfway; the pump, a bucket beside it; a signpost | going down to water |
-| Pump to boathouse, 84 m | shore path on the north bank | the widest sky on the map; bare granite over the water; an overturned rowboat at 43; the boathouse on stilts, reeds at its west side, a chair and a bowl on the step facing the tower | the postcard; the one place you can breathe out |
-| Boathouse to Camp 2, 95 m | into the south-east grove, then a boulder field | darker under giants; a phone pole with a handset box at 41; the stack rising through the trunks | someone up there is watching for something |
-| Camp 2 | walk the boulder field; climb the ramps | at the stack foot a payphone on its post with a hood light and a cooler-lid card table; from the top, the highway over the treetops | a camp set for two with one person in it |
-| Camp 2 to T, 94 m | north-east through firs | a ring of rusted food lockers at 45; the red mast lamp through the trees; road noise growing; the fence; cars on the highway beyond | the ordinary world getting close |
-| Front zone | lot, office, store, booth, gate | trailhead board at T; the car in its bay facing the road; the office with a porch and a west door; the store, wider, flat roof, canopy, lit sign, ice chest, propane cage, window onto the lot; the booth by the lane; past the gate, 30 m of drive to a T on the highway, a stop sign, one big lone tree on the verge | you can see out and never go; the gate is the one place the game says so out loud |
-| T to Jg, 105 m | into the old burn | 4 to 6 m regrowth, snags, the Gate Tree stub at 71 (from this end); the tower ahead over the burn; a signpost at Jg | a scar; hot, open light |
-| Jg to camp, 125 m | along the burn's south edge | forage patch A at about 29 from Jg; the Hollow Giant at about 86, its opening facing the trail; the tower growing | home |
+| Camp to pump, 110 m | two switchbacks down the knoll; plank steps with a rail down the bank to the pump | water through trunk gaps; a water tank halfway; deadfall and brush between the switchbacks; the pump, a bucket, a signpost | going down to water |
+| Pump to boathouse, 84 m | shore path on the north bank | the widest sky; bare granite over the water; the rowboat at 43; the boathouse on stilts, reeds at its west side, a chair and a bowl on the step facing the tower | the postcard; the one place you breathe out |
+| Boathouse to Camp 2, 95 m | into the south-east grove, then a boulder field | darker under giants; the phone pole at 41; the stack rising through the trunks | someone up there is watching for something |
+| Camp 2 | the boulder field; the ramps up | at the stack foot a payphone with a hood light and a cooler-lid card table; from the top, the highway and the gate T over the treetops | a camp set for two with one person in it |
+| Camp 2 to T, 94 m | north-east through firs | food lockers at 45; the red mast lamp through the trees; road noise growing; the fence; cars beyond | the ordinary world getting close |
+| Front zone | lot, office, store, booth, gate | trailhead board; the car facing the road; the office porch and west door; the store with a flat roof, canopy, lit sign, ice chest, propane cage; the booth by the lane; past the gate 30 m of drive to a T with a stop sign; the highway with a ditch, reflector posts and power poles; one dead broken-top giant on the verge | you can see out and never go |
+| T to Jg, 105 m | into the old burn | regrowth thick with brush, snags, the Gate Tree stub at 71; the tower over the burn; a signpost at Jg | a scar; hot, open light |
+| Jg to camp, 125 m | along the burn's south edge | forage A at about 29 from Jg; the Hollow Giant at about 86, its opening on the trail; the tower growing | home |
 
-### 1.3 North loop: Jg, Camp 1, the ruin, J (about 320 m from Jg to J, 128 s)
+### 1.3 North loop: Jg, Camp 1, the ruin, J (about 320 m, 128 s)
 
 | Leg | Do | See | Feel |
 |---|---|---|---|
-| Jg to Camp 1, 83 m | north out of the burn into Camp 1's grove ring | latrine shed and wash stand at 42; bulbs on the spar through the trunks | a big camp at the edge of a big forest |
-| Camp 1 | wander the clearing | the kid-sized table at the centre, grown-up workbenches pushed to the edge, a tent; a blaze on a stump where the loop leaves west | a camp you could wander away from |
-| Camp 1 to forage C, 60 m | west along the N ridge foot | forage patch C (days it bears); the grove wall on the right, three trunks deep; N ridge rock band through gaps above | off the map's usual rounds |
-| Forage C to the ruin, 65 m | into the densest grove on the map | giants 40 m and more, firs under them, hollow logs; the ruin: a low cabin, roof fallen in, no tower anywhere near it | the forest of giants the valley is for; someone did this job before |
-| Ruin to the spring, 85 m | out of the grove, south-west | a fallen giant the trail runs beside for 20 m; the knob over the trees to the south-west; the creek spring | the Ward's hill is closer than you thought |
-| Spring to J, 25 m | down to the creek | J's pale cairn and chain across the Ward trail; a signpost for Camp and the north loop | the gate you pass every day and use every night |
+| Jg to Camp 1, 83 m | north out of the burn into Camp 1's grove ring | latrine at 42; bulbs on the spar through the trunks | a big camp at the edge of a big forest |
+| Camp 1 | wander the clearing | the kid-sized table in the middle, grown-up workbenches at the edge, a tent; a blaze on a stump where the loop leaves west | a camp you could wander away from |
+| Camp 1 to forage C, 60 m | west, the fir wall on the right | forage C (days it bears); a ragged fir wall, giants breaking its top, deadfall and brush at its foot, rock above | off the usual rounds |
+| Forage C to the ruin, 65 m | into the densest grove on the map | giants and firs under them; 30 m ahead through the trunks, a pale fallen roof slab and a leaning stovepipe under a gap of light; the trail passes 8 m south of it; a short side path to its doorway | the forest of giants the valley is for; a place nobody mentions |
+| Ruin to the spring, 85 m | out of the grove, south-west | a fallen giant the trail runs beside for 20 m; the knob over the trees to the south-west; the spring | the Ward's hill is closer than you thought |
+| Spring to J, 25 m | down to the creek | J's pale cairn on the Ward branch; a signpost for Camp and the north loop | the gate you pass every day and use every night |
 | J to camp, 80 m | east | plank bridge over the creek, burn-map board, the tower ahead | the short way home |
 
 ### 1.4 West loop: camp, Camp 3, W1, pump (about 430 m, 172 s)
 
 | Leg | Do | See | Feel |
 |---|---|---|---|
-| Camp to Camp 3, 126 m | descending west | forage patch B at 40; the Snag growing; its line running from the Snag to a stake on the north rim, pieces facing the tower; log steps down the rim at 107 | going down into something private |
-| Camp 3 | the hollow | tent, fire and seat log, canvases faced to the rock, an easel, the green lantern on the Snag | a man who hides his work, even from himself |
-| Camp 3 to W1, 114 m | along the creek, which now has water | stones and brush in the creek bed; a wrecked camper trailer at 71; the lake opening ahead; a blaze on a post where this branch meets W1 | following water to water |
-| W1 to pump, 80 m | shore path | stepping stones over the creek mouth at 6; a washed-out truck at 41; the pump's signpost | back to the sure thing |
+| Camp to Camp 3, 126 m | descending west | forage B at 40; the Snag growing; its line from the Snag to a stake on the north rim, pieces facing the tower; log steps down the rim at 107 | going down into something private |
+| Camp 3 | the hollow | tent, fire and seat log, canvases faced to the rock, one canvas you can stand back from | a man who hides his work, even from himself |
+| Camp 3 to W1, 114 m | along the creek, now with water | stones and brush in the bed; the camper trailer at 71; the lake ahead; a blaze on a post at W1 | following water to water |
+| W1 to pump, 80 m | shore path | stepping stones at 6; the washed-out truck at 41; the pump's signpost | back to the sure thing |
 
 ### 1.5 Cave spur: W1 to the cave (109 m, 44 s), unsigned
 
 | Leg | Do | See | Feel |
 |---|---|---|---|
 | W1 to the rim, 35 m | the one trail with no marker | a rope handrail; from night 1, the chant | you should not be here |
-| Rim to the ravine floor, 74 m | winding down | a string of coloured bulbs on a dead branch at 68 (not day 1); the grey mouth, boarded on day 1 | grey rock, nothing to see |
-| Mouth to chamber, 73 m inside | three ramps down | chant thinning into bass, colour leaking up the rock; the rave chamber; a side room off it with one table under one light | the one warm colour burst on a grey map |
+| Rim to the ravine floor, 74 m | winding down between rock bands | coloured bulbs on a dead branch at 68 (not day 1); the grey mouth, boarded on day 1 | grey rock, nothing to see |
+| Mouth to chamber, 73 m inside | three ramps down | chant thinning into bass, colour leaking up the rock; the rave chamber; a side room off it, one table under one light | the one warm colour burst on a grey map |
 
-### 1.6 The Ward climb (every night; camp to the path end 372 m, 149 s)
+### 1.6 The Ward climb (every night; camp to the path end 345 m, 138 s)
 
-The Ward path by day is closed at J by the chain. At night the chain is down and the cairn lamp lit. Four legs, each different in ground, grade, bearing, view and sound, each with one landmark. Every platform has a hiding place (N1).
+By day the chain hangs across the chute mouth 20 m past J and the chute is the only break in the rock band. At night the chain is down and the cairn lamp at J is lit. Four legs, four bearings (west, north, north-west, south), four grounds, one landmark each; every platform has a hiding place (N1). The face between legs is rock you cannot climb.
 
 | Piece | Do | See | Feel |
 |---|---|---|---|
 | Camp to J, 80 m | the short trail west | burn-map board, plank bridge, the cairn lamp lit | the only thing left to do tonight |
-| Approach, 20 m | past the chain to the ridge foot | the face over you, not high: 50 m of rock and trees | small climb, you can see the top |
-| Leg 1, the boulder chute, 34 m | three short flights of cut rock steps between ramps, up a gully | boulders shoulder-high both sides; at the head, **the seep**: water down the rock, a tin cup on a nail | close, wet, your footsteps loud |
+| Approach, 20 m | from the cairn to the chute mouth, chain down | the rock band at the ridge foot, one gap in it | the gate is open for you |
+| Leg 1, the boulder chute, 34 m, west | three flights of cut rock steps between ramps, up a gully | boulders shoulder-high both sides; at the head, **the seep**: water down the rock, a tin cup on a nail | close, wet, your footsteps loud |
 | P1 | a level stop | a boulder overhang to hide under | a breath |
-| Leg 2, the exposed shelf, 60 m | north along a scree shelf, the drop on your right | the whole valley on your right, the tower's cab still above you; **the rune post** halfway, an old carved post on the outer edge | wind picks up; you are on show |
-| P2 | a level stop | a rock roof under the shelf to hide under | |
-| Leg 3, the burned snags, 50 m | back south-west up through an old lightning burn | grey dead snags, ash underfoot; **the split snag**: the trail passes through a dead giant split to the ground | wind drops; creaks; the first wrong-looking place, still ordinary |
-| P3 | a level stop | the root plate of a fallen giant to hide behind | |
-| Leg 4, the easy traverse, 64 m | north on needles under crest firs, the bare knob on your left | **the bent fir**, grown flat at knee height, 30 m in | quiet; almost pleasant |
-| P4, the look-back, 6 m | the path turns you to face east | the tower cab level with you at last, the cabin window, the lake, the lot lights, the highway; on night 1 one car's headlights pass and never turn in (N3 and the headlight beat retarget here) | you are higher than the tower; the ordinary world, once more |
-| The cleft, 20 m | a rock slot with one dogleg through the knob's north shoulder | walls close, a strip of sky | silence starts inside |
-| The ledge, 26 m | out of the slot's west mouth onto the ledge, south to the path end | the fire all at once: the burning valley 100 m below, the far front across the frame, smoke streaming west; the stones ahead and to the left; a rock lip at the edge | the job was never the fire lookout |
+| Leg 2, the exposed shelf, 60 m, north | along a scree shelf on a rock rib, the drop on your right | the whole valley on your right, the tower still above you; **the rune post** halfway, on the outer edge | wind picks up; you are on show |
+| P2 | a level stop at the rib's end | a rock roof to hide under | |
+| Leg 3, the burned cwm, 45 m, north-west | up into a bowl where the north arm meets the west ridge | grey dead snags in ash, rock rims all round; **the split snag**: the trail passes through a dead giant split to the ground | wind drops; creaks; the first wrong-looking place, still ordinary |
+| P3 | a level stop at the cwm's head | the root plate of a fallen giant to hide behind | |
+| Leg 4, under the wall, 43 m, south | on needles along the foot of the crest wall, the rock on your right, a screen of firs on your left | nothing of the valley yet; **the bent fir**, grown flat at knee height; ahead, the bare knob | quiet; the wall leans over you |
+| P4, the look-back, 6 m | the firs end; the path turns you east | the tower cab level with you, the cabin window, the lake, the lot lights, the highway; on night 1 one car passes and never turns in (N3 and the headlight beat) | the ordinary world, once more |
+| The cleft, 24.5 m | a rock slot west through the crest; a dogleg 6 m in; a fin at the mouth turns you south | walls close, a strip of sky; insects cut just past the dogleg | silence |
+| The ledge, 21 m | round the fin onto the ledge, south to the path end 1.5 m from the lip | the fire all at once: the burning valley below, the far front across the frame, smoke columns rising; the stones ahead and to the left | the job was never the fire lookout |
 
-The climb changes as WARD falls, one thing at a time (Exit 8's spot the difference): the cup gone, the seep dry, the rune post missing or doubled, an ember glowing inside the split snag, the bent fir standing upright, the cabin window lit when you left it dark. Which and when: my call, settled by playtest.
+The climb changes as WARD falls, one thing at a time (Exit 8's spot the difference): the cup gone, the seep dry, the rune post missing or doubled, an ember inside the split snag, the bent fir standing upright, the cabin window lit when you left it dark. Which and when is mine, set by playtest.
 
-## 2. Heights (Grant: the ridges come down; trees carry the rest)
+## 2. Heights (Wren's call: land hides the fire)
 
-| Thing | Rev 7 | Rev 8 |
-|---|---|---|
-| W crest, ground | 95 to 108 | **64 to 70**, one saddle 64 at z 60 |
-| Ward knob | 115, x 8 to 18 | **74**, bare rock, x 8 to 20, z 232 to 278 |
-| Ward ledge | 98 | **62**, x -10 to 6, z 238 to 300 |
-| Stones, tops | 110 | **70** (8 m stones) |
-| N and S hooks (x -40 to 80) | 95 to 103 | **66 to 70** |
-| N arm, east of the hook | 94 knob, falling to 50 to 70 | knob 58 at x 120, 45 at x 170, saddle 28 at x 250, 34 at x 320, foothill 20 at x 380 |
-| S arm, east of the hook | 90 falling to 50 to 58 | 50 at x 110, saddle 32 at x 170, knob 45 (granite over the boathouse) at x 240, 30 at x 320, foothill 16 at x 380 |
-| E ridge | 45 to 60 with a road cut | **removed** |
-| Climb, J to ledge | 88 m rise, 489 m, 196 s | **52 m rise, 292 m, 117 s** |
-| Camp to the Ward | 585 m, 234 s | **372 m, 149 s** |
+| Thing | Rev 7 | Rev 8 | Rev 9 |
+|---|---|---|---|
+| W crest, ground | 95 to 108 | 64 to 70 | **80 from z 40 to 345** (where daytime lines cross); SW corner 76 at z -40; saddle 74 at z -10 |
+| Ward knob | 115 | 74 | **84**, bare rock, x 8 to 20, z 200 to 245, 84 across all of it |
+| Shoulder north of the knob | | | x 6 to 20, z 245 to 300, 80 to 82, cut only by the cleft |
+| Ward ledge | 98 | 62 | 62, x -10 to 6, z 215 to 285 |
+| Stones, tops | 110 | 70 | 70 (8 m stones) |
+| N hook | 95 to 103 | 66 to 70 | 80 at the NW corner (x 15, z 340), 76 at x 40 to 60, 70 at x 80 |
+| N arm east | 94 falling to 50 | knob 58 x 120, saddle 28 x 250 | same: 58 x 120, 45 x 170, saddle 28 x 250, 34 x 320, foothill 20 x 380 |
+| S hook | 90 to 95 | 66 to 70 | 76 at the SW corner, 72 at x 40 to 60, 66 at x 80 |
+| S arm east | 50 to 58 | 50 x 110, saddle 32 x 170, knob 45 x 240 | same; 30 x 320, 16 x 380 |
+| E ridge | 45 to 60 | removed | removed |
+| Climb, J to path end | 88 m rise, 489 m, 196 s | 52 m, 292 m, 117 s | **52 m, 265 m, 106 s** |
+| Camp to the path end | 585 m, 234 s | 372 m, 149 s | **345 m, 138 s** |
 
-1. The Ward still sits higher than the tower (DECISIONS 2026-09-29): ledge 62 and stone tops 70 against the deck at 56; the knob 74. Cab roof height is about 60, unverified.
-2. **Crest belt:** a continuous band of trees along the W crest and both hooks (x 5 to 30, and 25 m either side of the hook crests from x -40 to 80), firs 18 to 24 m and giants 30 to 38 m, tops 86 or more. No belt on the knob: it stays the bare rock the tower sees every day.
-3. From the valley floor the land alone hides the fire. From the tower deck the land is a few metres short and the belt carries it (section 7). That is Grant's rule (trees count), and trees are easy to add.
-4. Crest lines: W along x 10 to 15 from z -60 to 360; N along z 335 to 345; S along z -45 to -30. West face falls from the crest to the valley floor at -40 by x -40 (a cliff); the "jump off the cliff" drop from the ledge stays about 100 m.
-5. Ridge feet (valley side, ground about 12): W x 80 from z 195 to 300, x 46 from z 100 to 180, x 38 from z -60 to 85; N about z 295 to 305; S about z 0 to -8. Terrain runs 150 m past every crest (Edges.md 1.1).
+1. **Land hides every flame and the day-1 smoke from every daytime eye, with eyes and targets raised 3 m** (section 7). Trees are for the look.
+2. **Crest belt, for the look only** (Vesper): firs 18 to 24 m and giants 30 to 38 m in 3 or 4 knots on the W crest and hooks; tops ragged, 96 to 106; gaps only above 82; the knob the one bare break. Not a hedge (Style 8.5); not cover; exempt from the 50 m cap.
+3. The Ward sits higher than the tower (DECISIONS 2026-09-29): the knob 84 is the peak you see from the deck; ledge 62 and stone tops 70 stand above the deck (56). P4 (60) is level with the cab roof (about 60, unverified).
+4. Crest lines: W along x 10 to 15 from z -60 to 360; N along z 335 to 345; S along z -45 to -30. The west face falls from the crest to the valley floor at -40 by x -40.
+5. Ridge feet (valley side, ground about 12): W x 80 from z 195 to 300, x 46 from z 100 to 180, x 38 from z -60 to 85; N z 300 to 305; S z -8 to 0.
+6. **Back slopes and outer ground** (Marlow 12; as rev 7 2.7): N and S fall from their crests within 150 m to one outer ground at 0 to 10 running to the far ranges; west of x -40 the fire valley and far ridge (section 5). The deck sees down the arms' back slopes: E-1 reruns on rev 9.
+7. From J the crest stands 68 m over you, about 37 degrees up. Grant said the climb must not be oppressive (open 3).
 
 ## 3. The open east and the highway
 
-1. No east ridge. Past the fence (x 396) the ground is flat verge at 2 to 3 m out to the highway.
-2. **Highway:** two lanes, 7.5 m, centre line x 428, running north-south in plain view; it curves away behind the ends of the N and S arms at about z 430 and z -130, so its ends never show.
-3. **Gate junction:** the drive runs 32 m from the gate (396, 170) to a T on the highway at (428, 170). At the T: a stop sign, the park's entrance sign facing the road (its back seen from the lot), a mailbox post.
-4. **The verge tree:** one big lone tree at (418, 136), between the fence and the road, seen from the tower, the lot, the office porch and the car. An event uses it (Quill, private).
-5. Beyond the road: rolling forest 20 to 35 m, 100 to 400 m out, then the far range (Main3.md 2.11 layer spec, east row).
-6. Removed: the E ridge, the road cut, and the east edge forest strip (x 400 to 430).
-7. Seen from: lot, office porch, car, booth, gate, Camp 2 stack top, tower deck (a stretch), P4 (loose check, section 7).
-8. The fence rule stands (DECISIONS 2026-09-29): the Wardkeeper never goes past it. Seeing the road is not leaving. Firewatch's town is scenery; ours is a ledger line: the road's losses are read from the tower at dawn.
+1. No east ridge. Past the fence (x 396) flat verge at 2 to 3 m out to the highway.
+2. **Highway:** two lanes, 7.5 m, centre line x 428, north-south in plain view; it curves away behind the ends of the N and S arms at about z 430 and z -130. Dressing (Vesper): a ditch each side, reflector posts every 25 m, a line of power poles on the far side, verge grass. Rook frames the road ends and the world's edge from the deck (eye 57.6 sees over the 16 to 20 m foothills).
+3. **Gate junction:** the drive runs 32 m from the gate (396, 170) to a T on the highway at (428, 170). A stop sign, the park's entrance sign facing the road, a mailbox post.
+4. **The verge tree:** a dead broken-top giant at (418, 136), 6 m off the road edge, readable from the deck at 250 m (Vesper). Seen from the deck, the lot, the office porch and the car. An event uses it (Quill, private). Its deck frame is a hard check (section 7).
+5. Beyond the road: rolling forest 20 to 35 m, 100 to 400 m out, then the far range.
+6. **By night:** night 1, one car passes, timed for P4, and never turns in. **Nights 2 on, the highway is empty and dark** (Quill; Hollis and Edges.md follow). The missing light is the wrong detail.
+7. Removed: the E ridge, the road cut, the east edge forest strip (x 400 to 430).
+8. The fence rule stands (DECISIONS 2026-09-29). Seeing the road is not leaving.
 
 ## 4. The Ward climb, numbers
 
-| Piece | From, ground | To, ground | Length | Rise | Grade | Ground layer | Landmark | Sound (Hollis) |
-|---|---|---|---|---|---|---|---|---|
-| Camp to J | clearing edge | J (104, 206), 10 | 80 | -5 | | dirt | burn-map board at 40; plank bridge at 78 | insects, creek |
-| Approach | J | chute foot (84, 205), 12 | 20 | 2 | 10 % | dirt | cairn and chain at 4 | |
-| Leg 1, boulder chute | (84, 205), 12 | P1 (52, 212), 28 | 34 | 16 | three flights of cut rock steps (STAIRS RULE) of about 4 m rise, ramps between at 20 % or less | stone steps | the seep and tin cup at the head | trickle, close footsteps |
-| P1 | | | 4 | 0 | level, 4 x 4 m | | boulder overhang (hide) | |
-| Leg 2, exposed shelf | P1 | P2 (50, 272), 38 | 60 | 10 | 17 % | scree | rune post at 30 | wind rises |
-| P2 | | | 4 | 0 | level | | rock roof (hide) | |
-| Leg 3, burned snags | P2 | P3 (30, 232), 50 | 50 | 12 | 24 % | ash, char | the split snag at 25, walked through | wind drops, creak |
-| P3 | | | 4 | 0 | level | | root plate (hide) | |
-| Leg 4, easy traverse | P3 | P4 (24, 292), 60 | 64 | 10 | 16 % | needles | the bent fir at 30 | needles, quiet |
-| P4 look-back | | | 6 | 0 | level, faces east | | tower cab, cabin window, highway | wind |
-| Cleft | P4 west to (14, 292), dogleg north-west to (10, 298), west to the mouth (4, 298) | 61 | 20 | 1 | level | bare stone | walls to 74 or more | silence, short close echo |
-| Ledge | mouth (4, 298) | path end (0, 272), 62, facing west | 26 | 1 | | bare stone | rock lip 0.8 m at the edge; stones at (-4, 254), (1, 251), (-7, 249), 3.6 x 4 m, 8 m tall | the fire |
+| Piece | From | To, ground | Walked m | Rise | Grade | Bearing | Ground layer | Landmark (chainage from J) | Sound (Hollis) |
+|---|---|---|---|---|---|---|---|---|---|
+| Camp to J | clearing edge | J (104, 206), 10 | 80 | -5 | | | dirt | burn-map board, plank bridge | insects, creek |
+| Approach | J | chute mouth (86, 213), 12 | 20 | 2 | 10 % | 290 | dirt | cairn at J (2); chain and IW2 at the chute mouth (20) | |
+| Leg 1, boulder chute | (86, 213) | P1 (52, 216), 30 | 34 | 18 | three flights of 18 cut steps, 0.25 rise, 0.3 run (4.5 m rise, 5.4 m run each; STAIRS RULE), ramps between at 25 % or less | 275 | stone steps | the seep and cup at the head (54) | loud dry footsteps, trickle |
+| P1 | | | 4 | 0 | level, 4 x 4 m | | | boulder overhang (hide) | |
+| Leg 2, exposed shelf | P1 | P2 (57, 276), 41 | 60 | 11 | 18 % | 5 | scree | rune post (88) | wind rises |
+| P2 | | | 4 | 0 | level | | | rock roof (hide) | |
+| Leg 3, burned cwm | P2, via (44, 278) | P3 (26, 304), 52 | 45 | 11 | 24 % | 312 | ash, char | the split snag (144) | wind drops, creak |
+| P3 | | | 4 | 0 | level | | | root plate (hide) | |
+| Leg 4, under the wall | P3, via (30, 284) | P4 (26, 262), 60 | 43 | 8 | 19 % | 170 | needles | the bent fir (191) | quiet |
+| P4 look-back | | | 6 | 0 | level, faces east | | | tower cab, cabin window, highway (214 to 220) | wind |
+| Cleft | slot entry (24, 262); dogleg (18, 262) to (14.5, 265.5); west to (4, 265.5); fin turns south to the exit (4, 262.5), 61 | | 24.5 | 1 | level | 270, 315, 270, 180 | bare stone | slot entry (220), dogleg and insect cut (226) | close echo from the entry |
+| Ledge | exit (4, 262.5) | path end (-8.5, 246), 62, facing west | 21 | 1 | | 225 | bare stone | the fire (245); stones at (-4, 226), (1, 223), (-7, 221), 3.6 x 4 m, 8 m tall | the fire |
 
-1. J to the path end: **292 m, 117 s.** Camp to the path end: **372 m, 149 s**, under 150 s. The build may run 3 percent over, no more; Marlow times it on screen.
-2. One point of interest at least every 75 m (30 s, DECISIONS 2026-09-28): cairn 4, seep 54, rune post 88, split snag 147, bent fir 189, P4 222, cleft 228, the fire 248, stones 270.
-3. Legs on four bearings and four grounds; no two platforms alike; no hairpin faces a wall of cubes. The face between legs is rock bands and boulders, visibly unclimbable; no invisible wall on the climb.
-4. The cleft's dogleg leaves no straight line through the slot from anywhere east of it.
-5. Stones stand to the left of the path end, off to one side of the view (DECISIONS 2026-09-29). The ledge lip is a visible rock lip with its collider in the rock.
-6. Vs rev 7: 197 m and 79 s shorter each night; over a 10 to 16 night run, 13 to 21 minutes of climbing given back to the day.
+1. J to the path end: **265 m, 106 s.** Camp to the path end: **345 m, 138 s.** Marlow expects the stairs to slow the capsule a little (unverified); the 150 s ceiling leaves 12 s.
+2. Points of interest (chainage corrected; Hollis 5, Marlow 16): cairn 2, chain 20, seep 54, rune post 88, P2 118, split snag 144, P3 167, bent fir 191, P4 214, dogleg 226, the fire 245, path end 265. Largest gap 58 m (23 s), under 30 s.
+3. **Four bearings:** west (the chute), north (the shelf), north-west (the cwm), south (under the wall). No hairpin under 90 degrees; P2 to P3 turns 50 degrees, P3 to P4 turns 140 degrees in a bowl, not on a face.
+4. **No leg can be skipped:** every bench has a rock step 2 m or taller on its uphill side, and the face between benches is rock at 50 degrees or steeper (Marlow 9). Legs 2 and 4 are 30 m apart in plan.
+5. **Leg 4 sees nothing of the fire:** the crest wall (80) stands 4 to 14 m west of it, 19 m or more over the eye. Firs on its east side screen the valley until P4, so the look-back is a beat, not a slow fade.
+6. **The cleft:** the dogleg sits 6 m in and the last straight is 10.5 m (Hollis 6). A rock fin at the mouth, top 78, turns the exit south, so no flame top shows from inside the slot. First sight is on stepping round the fin. Marlow tests it with the camera, not the collider.
+7. **The ledge:** the lip is a rock rim 0.8 m high along x -10, taller than the 0.6 m jump, its collider inside the rock. The path end is 1.5 m from the lip, so rays to about 28 degrees down clear it and the valley fires show (Quill 12). N end: the shoulder's rock wall; S end: the knob's west face. Stones to the left of the path end, off to one side of the approach (DECISIONS 2026-09-25).
+8. Stones 20 to 25 m south of the path end. W-1: section 7.
 
 ## 5. The fire
 
-1. Far front on the far ridge (crest 30), x -300 to -500, z -250 to 750, burning giants, flame tops **105** (was 130). Valley fires on the floor at -40, x -50 to -150, z 0 to 500, flame tops 20.
-2. Day 1 and night 1: east wind, one smoke sheet streaming west, top 70 at x -50, 90 at x -150, 150 at x -500. Night 2 on: columns lean east over the crest, glow above it, never flame. Day 2 on: far glow and smoke over the crest by day (DailyLoop.md 6.7).
-3. From the ledge (eye 63.6): the burning valley 13 to 35 degrees below level fills the bottom third; far flame tops about 7 degrees above level; with the valley fires the fire spans about 155 degrees (Style 6.3.1).
-4. The fire is never switched off; land and the crest belt hide it (DECISIONS 2026-09-29 and 2026-09-30).
+1. **Far front** on the far ridge (crest 30), x -240 to -400, z -150 to 650, burning giants, flame tops 105. **Valley fires** on the floor at -40, x -110 to -220, z 0 to 500, flame tops 20. The far ridge rises from the floor at x -200 to its crest at x -240.
+2. From the path end (eye 63.6, x -8.5): far flame tops 6 to 10 degrees above level; valley fire tops 12 to 24 degrees below, their bases 25 to 45 degrees below; the fire spans about 135 to 150 degrees. Vesper's figures (29 to 59 degrees) were for fires at x -50 to -150; they moved out. Vesper checks against Style 6.3; if the frame still reads small, the Ward screen's camera looks about 10 degrees down (Pim).
+3. **Day 1:** one low smoke sheet streams west (east wind), top 60 at x -110 rising to 110 at x -500, z -150 to 650, fading out west of x -900. Every daytime line passes over the W crest at least 10 m above it (section 7). No glow, no ash east of the crest (Edges 1.7).
+4. **From nightfall of night 1** (Vesper 16): the wind drops; 3 to 5 columns stand over the far front to 250 m. They are lit from below only up to 130; above that they stay unlit against a black sky, so nothing lit shows over the crest from the valley on night 1. From the ledge they carry the scale.
+5. **Day 2 on:** columns lean east over the crest by day, glow above it, never flame (DailyLoop.md 6.7).
+6. The fire is never switched off; the land hides it (DECISIONS 2026-09-29). The day-1 sheet giving way to night-1 columns is weather, not a switch (Grant confirms, open 2).
 
 ## 6. Places and sites
 
-Places keep their Main3.md rev 16 positions. Changes and every minigame and event site from Check1_Mechanics.md and Check1_Story.md. Resident IDs as Check1 (R1 Camp 1, R2 Camp 2, R3 Camp 3, R4 lake, R5 office and booth, R6 the car, R7 cave).
+Places keep their Main3.md rev 16 positions. Resident IDs as Check1 (R1 Camp 1, R2 Camp 2, R3 Camp 3, R4 lake, R5 office and booth, R6 the car, R7 cave).
 
 | # | Site | Where | For | What the map must hold |
 |---|---|---|---|---|
-| M1 | Store | (366, 200), 12 x 9 m outside, door on the lot side | R6's store game, Food | flat roof, front canopy, lit sign, ice chest, propane cage, window onto the lot, porch light; the door loads the store's own level (DECISIONS 2026-09-30) |
-| M2 | Gate booth | (392, 176) | R5's gate game | booth window on the lane, counter; cars now come off and go back onto the highway |
-| M3 | Office | (350, 200), 12 x 8 m | R5 talk (Social) | front room with counter and radio (R5's spot), back room with cot and desk, one door between; **main door in the west wall** facing T, seen from the deck |
-| M4 | The car | (370, 179.4) | R6 talk | faces the gate and the road, not the store |
-| M5 | Payphone and card table | stack foot, post (300, 99), table (297, 98), clear of the ramp foot (298.9, 107.8) | R2's card game; the payphone homage | own hood light; the tent lamp on top stays the tower marker |
-| M6 | Studio | Camp 3 hollow | R3's escape room, played inside a painting (own level, DECISIONS 2026-09-30) | easel, paint box, portfolio, fire, Snag foot as fixed views |
-| M7 | Fishing | reed bed at the boathouse's west side (232, 55); deep water off the stilts' end (242, 46) | R4, Food | two spots that look different, both within 10 m of the step |
+| M1 | Store | (366, 200), 12 x 9 m outside, door on the lot side | R6's store game, Food | flat roof, canopy, lit sign, ice chest, propane cage, window onto the lot, porch light; the door loads the store's own level (DECISIONS 2026-09-30) |
+| M2 | Gate booth | (392, 176) | R5's gate game | window on the lane, counter; cars come off and go back onto the highway |
+| M3 | Office | (350, 200), 12 x 8 m | R5 talk (Social) | **west door opens into the front room** (counter, radio, R5's spot); **back room at the east end** (cot, desk); one door between; the west door seen from the deck |
+| M4 | The car | (370, 179.4) | R6 talk | faces the gate and the road |
+| M5 | Payphone and card table | stack foot, post (300, 99), table (297, 98), clear of the ramp foot (298.9, 107.8) | R2's card game; payphone homage | own hood light; the tent lamp on top stays the tower marker |
+| M6 | Studio | Camp 3 hollow | R3's escape room, played inside one of his paintings (own level, DECISIONS 2026-09-30) | **the one canvas the player enters, where it can be reached and looked at from a step back, with room for a seat in front of it.** Which canvas and how it is entered: open (Grant). The fixed views move to the minigame level's spec |
+| M7 | Fishing | reed bed at the boathouse's west side (232, 55); deep water off the stilts' end (242, 46) | R4, Food | two spots that look different, within 10 m of the step |
 | M8 | Step, bowl, chair | boathouse north side, over the water (240, 57), facing the tower | R4 | seen from the deck |
-| M9 | Camp 1 table | Camp 1 centre (282, 238) | R1's dream games | table in the middle, workbenches at the edge, grove ring round the clearing |
-| M10 | Cave side room | off the chamber's east wall, x 90 to 97, z 8 to 15, floor -18, one doorway at (89, 12) | R7's roulette | one table, one light, one way in; room for one further passage east (Quill); ground over it stays 0 |
-| E1 | Woodpile and chopping block | (184, 163), east of the cabin | Warmth; events K4, T6 | |
+| M9 | Camp 1 table | Camp 1 centre (282, 238) | R1's dream games | table in the middle, workbenches at the edge, grove ring |
+| M10 | Cave side room | off the chamber's east wall, x 90 to 97, z 8 to 15, floor -18, one doorway at (89, 12) | R7's roulette | one table, one light, one way in; room for one further passage east; ground over it stays 0 |
+| E1 | Woodpile and chopping block | (184, 163) | Warmth; events K4, T6 | |
 | E2 | R1's day-1 spot | tower foot (164, 160) | day 1 | |
 | E3 | Hollow Giant opening | (202, 140), facing Camp to Jg | events | |
 | E4 | Jg signpost | (262, 172) | T7 | |
 | E5 | Fee booth phone | at the chain (390, 238) | D2 | |
 | E6 | Water bucket | at the pump (192, 96) | G1, C3 | |
 | E7 | Platform hides | P1 to P4 | N1 | |
-| E8 | Look-back | P4 | N3; night-1 headlight on the highway | |
-| E9 | Snag line | Snag (96, 146.5) to a stake on the north rim (80, 163), pieces facing the tower | R3 warning and loss | seen from the deck |
-| E10 | Verge tree | (418, 136) | event (Quill, private) | seen from the deck and the lot |
-| E11 | The ruin | (168, 278), at the west edge of grove N1 | events; story (Quill, private) | a low cabin, roof in, a cache; **no tower** on or near it |
-| E12 | Search spots | SS1 (240, 264), SS2 (150, 270), SS3 (115, 232) on the north loop | an R1 event (Quill's list) | places "he had no reason to be" |
+| E8 | Look-back | P4 | N3; night-1 car | |
+| E9 | Snag line | Snag (96, 146.5) to a stake on the north rim (80, 163), pieces facing the tower | R3 | seen from the deck |
+| E10 | Verge tree | (418, 136) | event (Quill, private) | seen from the deck (hard) and the lot |
+| E11 | The ruin | (168, 278), **inside grove N1, 8 m west of its centre**; the north loop passes 8 m south | events (Quill, private) | a low cabin, roof in; a 20 m silhouette (fallen ridge beam, pale roof slab, leaning stovepipe) under one gap of light; **doorway faces the knob (south-west); not seen from the deck; a cache spot inside**; no tower anywhere in view |
+| E12 | Search spots | SS1 (255, 284) at the foot of the fir wall, 20 to 25 m off the loop and seen from it; SS2 (150, 270) between N1 and N2; SS3 (135, 255) behind the fallen giant, hidden from the trail until you step round it | C2 (Quill's list) | places nobody would have a reason to be. **C2 can also roll at Camp 2 and Camp 3** (EventList): three spots each on their legs, or C2 stays Camp 1 only. My pick: Camp 1 only for now, its spots are built; the others wait for playtest (open 5) |
 | E13 | Forage C | (225, 266), north loop | Food | |
-| E14 | Closed campground | loop (372, 262) | R5 event cars | walkable outside shifts |
+| E14 | Closed campground | loop (372, 262) | R5 event cars | walkable outside shifts; reached only by the spur (section 8) |
 | E15 | Lamppost homage | (58, 150), behind Camp 3 | homage | about 12 m to the ridge foot; kept free |
-| E16 | South-west forest light | grove SW (92, 75) | event (Quill, private) | forest to put a light in |
+| E16 | South-west forest light | grove SW (92, 75) | event (Quill, private) | |
 | E17 | Chant spots | cave spur at 35; W1 | R7, from night 1 | |
 | E18 | Trail props kept | water tank, rowboat, phone pole, food lockers, Gate Tree, latrine, washed-out truck, stepping stones, camper trailer, rope handrail, bulbs on a branch, burn-map board, plank bridge | Main3.md 4 | |
 
 1. **Forage:** each dawn two of A, B and C bear, drawn at random, each about 60 percent (Dredge's rotating spots). Food by forage stays as likely as rev 16; the route changes day to day. Playtest.
-2. **Water fixes:** the creek runs with visible water and stones from the spring to the lake. The pump notch becomes plank steps with a rail down to the pump. The Camp 2 view cut is filled; if Camp 2 must see the boathouse, a gap in the trees does it. The footbridge on W1 to Camp 3 moves onto a side runnel with water in it, or goes.
-3. Both Camp 2 trails end beside the stack, not nose to it. Camp 1 stops being a dead end: the north loop leaves it west.
+2. **Water fixes:** the creek runs with visible water and stones from the spring to the lake. The pump notch becomes plank steps with a rail. The Camp 2 view cut is filled. The W1 to Camp 3 footbridge moves onto a side runnel with water in it, or goes.
+3. Both Camp 2 trails end beside the stack. Camp 1 is no longer a dead end.
 
-## 7. Hard checks, once per build (loose where marked)
+## 7. Hard checks, once per build
 
-| Check | Rule | Paper, rev 8 |
-|---|---|---|
-| F-1, fire hidden (hard) | from every place, every trail point at 10 m and the deck grid, rays to every flame top and the smoke sheet top hit land or the crest belt | tower to far flame top (-300, 105) crosses the W crest at 72.8: land 66 is 7 short, belt 86 clears by 13. Tower to smoke top (-500, 150): 78.3 at the crest, belt clears by 8. Camp eye to the same flame: 45.8 at the crest, land clears by 20. P4 and leg 4: land clears by 3 or more; belt more |
-| W-1, Ward hidden from the tower (hard) | rays from the deck grid to every stone corner hit the knob | line to the stone tops passes the knob at 68.3 to 69.1; knob 74: rock alone, 5 m or more |
-| C-1, cave hidden (hard) | as rev 16 | unchanged |
-| Belt continuity (hard, for F-1) | from the deck, no gap in the W crest belt below 86 wider than 2 m | Vesper places, Marlow checks one frame per 10 degrees of bearing |
-| Tower lines (loose) | one frame from the deck per object a tower line names: spar, stack, Snag and its line, the step, office west door, lot, verge tree, a stretch of highway | trees move out of a line if one is blocked (DECISIONS 2026-09-30) |
-| Eye-height gate (hard) | DECISIONS 2026-09-30: Rook's captures, Marlow's checklist and walk, Vesper's bar, Pim's task test | before Grant walks |
+**F-1 is a ray test on land.** Rays from the eye (and jump height) to each target, then again with eye and target raised 3 m: every ray must hit terrain or rock. Trees do not count.
 
-1. F-1 counts trees through a crown proxy on a check-only layer that the player never collides with. How Rook builds it is Rook's; unverified.
-2. No margin table is tuned. If a check fails, move a tree or add one; land changes only if trees cannot fix it.
+| Daytime eye | Position, eye | Worst target | Crosses | Line at crossing | Land | Margin with +3 |
+|---|---|---|---|---|---|---|
+| Tower deck | (164, 166), 57.6 (58.2 jump) | far front near edge (-240, 105) | W crest, x 15, z 49 to 340 | 75.1 (75.5 jump) | 80 | 1.9 (1.5 jump) |
+| Tower deck | far front north end (-240, 650) | NW corner (19, 340) | | 74.6 | 80 | 2.4 |
+| Tower deck | day-1 sheet top (-500, 110) | W crest | | 69.4 | 80 | 7.6 |
+| Tower deck | anything through the saddle (z -10) | | | lines through z -10 reach z -311 or further south: no fire there | 74 | |
+| Camp 2 stack top | (292, 108), 25.6 | (-240, -150) | SW corner, z -26 | 66.9 | 76 | 6.1 |
+| Camp 2 stack top | (-240, 650) | N hook, x 64 | | 59.6 | 75 | 12.4 |
+| Lot and office porch | (358, 170), 4.6 | (-240, -150) | saddle, z -14 | 62.2 | 74 | 8.8 |
+| Camp 1 | (282, 238), 6.6 | (-240, -150) | W crest, z 40 | 56.9 | 80 | 20 |
+| Camp and knoll | (185, 160), 16.6 | (-240, 105) | W crest | 52.0 | 80 | 25 |
+| Ruin, north loop | (168, 278), 13.6 | (-240, 650) | N arm, x 100 | 27.2 | 62 | 32 |
+
+1. The deck is the tightest eye (1.5 m at jump with +3). Rook runs F-1 on the built crest; any point under 80 in z 40 to 345 is a failure, not a tuning.
+2. No other daytime eye is high: the Ward face, the cwm and the ledge are closed by day (section 8).
+3. **W-1, Ward hidden from the tower:** the line from the deck eye to the stone tops passes the knob's east edge at 68.2 (71.2 with +3); knob 84 across x 8 to 20, z 200 to 245: 12.8 m.
+4. **C-1, cave hidden:** unchanged.
+5. **E-1:** rerun on rev 9 (outer ground N and S, section 2.6).
+6. **Tower frames**, one frame each from the deck. Hard: the verge tree (Burn edge grove moved 10 m south to (285, 130) to clear its line; Quill 10), the office west door, the step, the Snag line. Loose (trees move if blocked): spar, stack, lot, a stretch of highway.
+7. **Other frames:** Camp 2 stack top to the gate T (Camp 2 east grove kept south of that line; Quill 11); J with two ridge layers, the far range over the N arm east of the hook (45 to 58) and over the S saddle (32) (Vesper 14); the path end showing the valley fires (4.7).
+8. **Eye-height gate** (DECISIONS 2026-09-30) before Grant walks.
 
 ## 8. Stops and the invisible walls
 
-**The rule (DECISIONS 2026-09-30):** a collider stops the player only inside or directly behind something the player can see: fence, boulder or rock band, deadfall, brush 1 m or taller, a tree trunk, a rock face with scree at its foot, water, a rail. Anything else is removed.
+**The rule (DECISIONS 2026-09-30):** a collider stops the player only inside or directly behind something the player can see. Boundaries come from the land: rock faces steeper than the 45-degree slope limit, rock bands taller than the 0.6 m jump, the fence, water.
 
-**The invisible walls that stay:**
+**Invisible walls:**
 
 | # | Where | Does | Speaks |
 |---|---|---|---|
-| IW1 | the gate opening (396, 167 to 173) | stops leaving through the front; cars pass | "You can't abandon your post." during a shift; silent otherwise |
-| IW2 | the Ward trail at J, under the chain (100, 206) | stops the climb by day; off at night | no |
-| IW3, reading | the spur mouth (385, 176), shift only | stops following an admitted car to the closed campground | "You can't abandon your post." |
+| IW1 | the gate opening (396, 167 to 173) | stops leaving through the front; cars pass | "You can't abandon your post." during a shift |
+| IW2 | across the chute mouth (86, 213), 3 m between shoulder-high boulders, the only gap in the W foot rock band | stops the climb by day; off at night | no |
+| IW3 | the spur mouth (385, 176), shift only (DECISIONS 2026-09-29, kept as decided) | stops following an admitted car to the closed campground | "You can't abandon your post." |
 
-1. **"Other than the other camp":** my reading is the closed campground, the other campground on the map, where admitted cars go. DECISIONS 2026-09-29 already has an invisible wall for following a car during a shift, and the closed loop is the only place a car leads you to. So Grant keeps that one. The 24 turning-circle pieces go: a refused car leaves through the gate, and IW1 already stops you there. No other camp needs one: Camp 2's stack has rails, Camp 3's hollow wall is rock you can see, the lake stops at water, the cave is rock. Grant confirms which camp he meant (open 1).
-2. Removed (Facts_Rook 3): the 1386 thicket wall pieces, the Bounds edge walls at z 0 and z 300, the climb, cleft and ledge walls, the boathouse PocketFill (rails or planks instead), and the gray RidgeStops cubes (owned boulders instead).
-3. Kept because they sit behind something seen: the fence, the tower RailStops behind the rails, the lake wade limit at the water's edge, the ledge lip's collider inside the lip rock. Marlow checks each from 2 m back at eye height.
-4. **Map edges, all visible:** W ridge foot and face: rock bands and boulders, steeper than the controller's slope limit (value unverified; Rook states it). N: the grove wall N1 and a rock band along the ridge foot, z 295 to 305. S: the lake's south belt, then granite. E: the fence, tied into rock outcrops on the arms' foothills at both ends.
-5. **Off the trail:** open forest floor between groves is walkable; the trail is the easy, readable way, not the only one. Closed visibly where a shortcut would break something: the old burn regrowth (dense firs with trunk colliders), the Ward face, the knoll flanks between switchbacks. This changes DailyLoop.md 1.2's wording (open 2).
+IW2 cannot be walked round: the W foot rock band runs unbroken from the S hook to the N hook except at the chute, and the chain now hangs at the chute mouth where the wall is. IW3 cannot be walked round: the closed campground is reached only by the spur (brush bands below). The 24 turning-circle pieces go; IW1 stops a player following a refused car.
 
-## 9. Forest (Style.md 5.8 and 10; Vesper sets final counts; heights are what cover needs)
+**What closes each stop:**
 
-Style 5.8: giants in groves of 4 to 8, 8 to 15 m apart, 40 to 60 m between groves; 10 to 15 firs or pines at 8 to 20 m in each grove; brush, fern, fallen logs and leaves at the foot; small trees in clumps, never sprinkled.
+| Place | Closed by |
+|---|---|
+| W ridge foot, S hook to N hook | a continuous rock band 4 m or taller, owned rock meshes with colliders; the face above at 50 degrees or steeper; broken only at the chute (IW2) |
+| Between climb benches | a rock step 2 m or taller on each bench's uphill side; face 50 degrees or steeper |
+| Cwm rims | rock faces 50 degrees or steeper, rims 76 to 80 |
+| N arm foot, x 80 to 396 | a rock band 3 m or taller behind the north fir wall; deadfall and brush at the wall's foot |
+| S arm foot, x 38 to 396 | a granite band 3 m or taller; between x 140 and 250 the lake's south belt runs brush down to the water, so the south shore is not walked |
+| Arm east ends | the fence at x 396, tied into both rock bands by a rock outcrop at each end |
+| Ledge N end | the shoulder's rock wall (80) |
+| Ledge S end | the knob's west face (84) |
+| Ledge W edge | the lip, 0.8 m rock |
+| Knoll flanks between the switchbacks | deadfall lines and brush 1 m or taller, collider inside the brush |
+| Old burn regrowth | dense firs with brush 1 m or taller filling the gaps, collider inside the brush |
+| Ravine rim above the cave spur | a rock band on the lip, boulders |
+| Camp 3 hollow | the rock wall; the log steps are the way in |
+| Lake | the water's edge (wade limit at the visible edge) |
+| Closed campground | brush bands 1 m or taller: x 345 to 386 at z 206 to 215 (behind office and store), x 340 to 348 from z 215 to 300; the NE grove |
+| South-east corner, x 345 to 396, z 0 to 100 | a thicket of firs, brush and deadfall |
+| W foot pocket, x 46 to 80, z 165 to 200 | deadfall and brush |
+| Mid pocket around (215, 222) | grove Mid with a thicket core |
+| Tower stair | rails on every flight and **round every landing's outer edge**; the stops sit inside the rails (fixes Main3.md 3.4.4 against DECISIONS 2026-09-30) |
+| Camp 2 stack top | rails |
 
-1. **Floor giants:** 38 to 48 m tall, tops 52 absolute or lower, so the deck (eye 57.6) sees over them.
-2. **Knoll giants: 35 m tall, tops 50 absolute** (Wren's question, settled). Style 5.8's "42 m tall on the knoll" is the old cap worked on the rev 12 knoll at ground 8 (50 minus 8); the knoll is 15 since rev 13. A 42 m tree there tops 57, level with the deck eye 20 to 30 m away, and blinds the deck's own lines down to the lake and Camp 3. The knoll trees cover nothing the game needs hidden (the W crest and the knob do that), so there is no cover reason to go higher. Style 5.8's last line changes to "35 m tall on the knoll" (Vesper).
-3. Trees as cover (Grant): only the crest belt is load-bearing cover. Every other grove is for the forest, the stops and the framing, and moves if it blocks a tower line (loose).
+Removed (Facts_Rook 3): the 1386 thicket wall pieces, the Bounds walls at z 0 and z 300, the climb, cleft and ledge walls, the boathouse PocketFill (rails or planks instead), the RidgeStops cubes (owned boulders instead).
 
-| Grove | Centre, extent | Giants, tall | Firs, tall | Cover role |
+## 9. Off the trail (Pim 9 and 10)
+
+1. Open forest floor between groves is walkable; the trail is the easy, readable way.
+2. **No walkable point is more than 50 m from a trail.** Where rev 8 broke this (the mid pocket, the SE corner, the W foot pocket, the lake's south shore), the ground is now closed by visible thicket (section 8).
+3. **Every trail crossed at a right angle reads as a trail** (section 12).
+4. **Handrails:** follow the N foot's fir wall, the lake's north shore, the W foot's rock band or the fence, and you meet a trail within 60 m.
+5. **Pim's drop test:** five drop points, pad only and keyboard only; each finds a trail within 30 s. D1 (215, 200), D2 (120, 175), D3 (240, 115), D4 (320, 70), D5 (150, 240).
+6. At night the only walk is camp to the Ward; pale edge stones keep the trail readable in the 8 to 60 m fog (Vesper). Whether the cab lamp shows over floor giants (tops 50) from under the canopy: unverified.
+
+## 10. Forest (Style.md 5.8 and 10)
+
+Groves of 4 to 8 giants 8 to 15 m apart, 40 to 60 m between groves; 10 to 15 firs or pines at 8 to 20 m in each; brush, fern, fallen logs and leaves at the foot; small trees in clumps. **Floor giants: tops 50 absolute or lower** (Style 5.8), so each grove's height is 50 minus its ground. **Knoll giants: 35 m, tops 50.** Only the land is cover.
+
+| Grove | Centre, extent | Ground | Giants, tall | Firs |
 |---|---|---|---|---|
-| N1, the densest | (175, 282), r 20 | 8, 42 to 46 | 15, 12 to 20 | the ruin's grove; densest on the map |
-| N2 | (120, 280), r 16 | 6, 40 to 44 | 12, 10 to 18 | north loop west half; 55 m from N1 |
-| North fir wall | ridge foot, x 90 to 300, z 290 to 305 | | 150, 12 to 20 | north edge stop, visible |
-| C1 ring | round Camp 1, r 35 | 7, 40 to 46 | 15, 8 to 18 | Camp 1's clearing wall; spar top clears it for the tower (loose) |
-| NE | (335, 285), r 16 | 5, 40 to 46 | 12 | backs the closed campground |
-| J | (132, 212), r 14 | 6, 40 to 44 | 12 | frames Camp to J |
-| NW foot | (92, 250), r 14 | 6, 38 to 42 | 12 | frames the chute from J |
-| Rim | (115, 128), r 14 | 6, 38 to 44 | 12 | Camp 3's east screen |
-| SW | (92, 75), r 14 | 6, 38 to 44 | 12 | the south-west forest; light spot E16 |
-| Ravine | (65, 20), r 14 | 5, 38 to 42 | 10 | adds to the rim over the cave (C-1 is land) |
-| Lake south 1 | (165, 18), r 14 | 7, 40 to 48 | 13 | the shore's dark line under the granite |
-| Lake south 2 | (220, 18), r 14 | 6, 40 to 48 | 13 | 55 m from Lake south 1 |
-| Boathouse east | (270, 40), r 14 | 5, 40 to 46 | 12 | darkens Boathouse to Camp 2 |
-| Camp 2 east | (325, 100), r 14 | 5, 40 to 46 | 12 | the stack reads against it |
-| South-east | (340, 40), r 16 | 6, 40 to 46 | 13 | |
-| Knoll | round the clearing edge | 4, **35** | 18 camp edge firs, 8 to 20 | tops 50 or lower |
-| Hollow Giant stand | (208, 130), r 10 | 4, 40 to 46 | 10 | |
-| Burn edge | (285, 140), r 12 | 5, 40 to 46 | 10 | |
-| **Crest belt W and hooks** | x 5 to 30 along the W crest; the hooks x -40 to 80 | 12, 30 to 38 | 250, 18 to 24 | **the one load-bearing cover: hides the fire from the deck; tops 86 or more, continuous** |
-| N crest line | z 320 to 350 | | 150, 15 to 22, broken | skyline |
-| S crest | z -30 to -50 | | 40, sparse | bare granite reads |
-| Open east clumps | 10 clumps, x 230 to 390 | | 200, 6 to 14 | fill open ground; keep the highway lines clear |
-| Old burn | as built | | regrowth 4 to 6, plus 20 snags, 10 fallen trunks | the burn's own look |
+| N1, the densest | (175, 282), r 20, one gap of light over the ruin | 10 | 8, 34 to 40 | 15 |
+| N2 | (120, 280), r 16 | 12 | 6, 32 to 38 | 12 |
+| North fir wall | x 90 to 300, z 285 to 310 (25 m deep), rock band behind | 10 to 14 | 5, 34 to 38, breaking the top line | 150, 8 to 24, ragged |
+| C1 ring | round Camp 1, r 35 | 5 | 7, 40 to 45 | 15 |
+| NE | (335, 285), r 16 | 8 | 5, 38 to 42 | 12 |
+| Mid | (215, 222), r 14, thicket core | 8 | 5, 36 to 42 | 15 |
+| J | (132, 212), r 14 | 10 | 6, 36 to 40 | 12 |
+| NW foot | (92, 250), r 14 | 12 | 6, 34 to 38 | 12 |
+| Rim | (115, 128), r 14 | 4 | 6, 40 to 46 | 12 |
+| SW | (92, 75), r 14 | 0 | 6, 42 to 48 | 12 |
+| Ravine | (65, 20), r 14 | 14 | 5, 32 to 36 | 10 |
+| Lake south 1 | (165, 18), r 14 | 0 | 7, 42 to 48 | 13 |
+| Lake south 2 | (220, 18), r 14 | 0 | 6, 42 to 48 | 13 |
+| Boathouse east | (270, 40), r 14 | 1 | 5, 41 to 47 | 12 |
+| Camp 2 east | (325, 100), r 14, south of the stack-to-T line | 4 | 5, 40 to 46 | 12 |
+| South-east | (340, 40), r 16, in the SE thicket | 3 | 6, 40 to 46 | 13 |
+| Knoll | round the clearing edge | 15 | 4, 35 | 18 camp edge firs |
+| Hollow Giant stand | (208, 130), r 10 | 6 | 4, 38 to 44 | 10 |
+| Burn edge | **(285, 130)**, r 12 (moved 10 m south) | 4 | 5, 40 to 46 | 10 |
+| Open east knots | (315, 225) and (305, 50), r 8 | 4 | 3 each, 40 to 45 | |
+| Open east clumps | 10 clumps, x 230 to 390, clear of the highway lines | | | 200, 8 to 20 |
+| Crest belt W and hooks | x 5 to 30 and the hooks | 76 to 82 | 12 in 3 or 4 knots, 30 to 38 | 250, 18 to 24; tops ragged 96 to 106 |
+| N crest line | z 320 to 350 | | | 150, 15 to 22, broken |
+| S crest | z -30 to -50 | | | 40, sparse |
+| Old burn | as built | | | regrowth 4 to 6 with brush; 20 snags, 10 fallen trunks |
 
-About 110 giants and 1500 trees, with the open-ground firs in clumps. Frame rate measured before and after in 8.16. Style 10's forest bar (8.16) applies: trees within 30 m of both sides in 4 of 5 trail frames; no open ground over 30 m except named clearings, lake and lot.
+About 115 giants and 1500 trees. Frame rate measured before and after in 8.16.
 
-## 10. Junction markers (Pim W4)
+## 11. Junction markers (Pim W4)
 
 | Junction | Marker |
 |---|---|
-| Camp | four-arm signpost at the clearing's west edge (165, 158): Lake, Camp 3, Spring and north loop, Burn and lot |
+| Camp | four-arm signpost at (165, 158): Lake, Camp 3, Spring and north loop, Burn and lot. Marlow checks all four trail mouths show from it |
 | Pump | signpost (193, 99): Camp, Boathouse, West shore |
-| Jg | signpost: Camp, Lot, Camp 1 (T7 uses it) |
-| T | trailhead board with a map, lot side (338, 170) |
+| Jg | signpost: Camp, Lot, Camp 1 (T7) |
+| T | trailhead board with a map (338, 170) |
 | W1 | a blaze on a post on the Camp 3 branch only; the cave spur stays unsigned |
 | J | pale cairn on the Ward branch (no sign); a signpost for Camp and the north loop |
-| Camp 1 | a blaze on a stump where the north loop leaves (272, 246) |
+| Camp 1 | a blaze on a stump where the loop leaves (272, 246) |
+| Ruin | none on the loop; the stovepipe is the marker |
 | Gate T | stop sign, entrance sign, mailbox post |
 | Climb | none; the landmarks are the markers |
 
-## 11. Sound (for Hollis)
+## 12. Trails and ground (for 8.15)
 
-1. Road emitter row on the highway centre line, x 428, z -130 to 430. Heard from the front zone, fading west; nothing blocks it now.
-2. Echo walls: the W face and the N and S hooks. The east is open air.
-3. Climb spots: the seep (leg 1 head), wind on the shelf and at P4, the close echo in the cleft, ground layers dirt, stone, scree, ash, needles, bare stone.
+1. **Trail look (Pim W1, Style 10):** a lighter bare dirt band about 25 percent lighter and warmer than the floor, 1.4 m wide, 0.4 m blend; ground cover (grass, needles, litter) up to 0.4 m from its edge; a stone, root or log every 3 to 5 m on one edge; pale edge stones for night.
+2. **Check:** a greyscale eye-height frame per trail in day one, day two and night, the edge visible 20 m ahead; a frame crossing each trail at a right angle.
+3. **Footstep layers (Hollis 9):** dirt, stone steps, scree, ash, needles, bare stone, told apart by footsteps (separate terrain layers or tagged colliders; Rook chooses, unverified).
+4. Rock on every slope over 35 degrees (Style 10, 8.14).
 
-## 12. What changes for the builds
+## 13. Sound (for Hollis)
 
-- 8.14: terrain to section 2, E ridge and road cut out, verge and highway (section 3), the new climb and ledge (section 4), the fire (section 5), archive what it replaces.
-- 8.15: trail and ground layers; every stop a visible thing; walls removed except section 8.
-- 8.16: section 9.
-- 8.17: places and sites in section 6.
+1. Road row on the highway centre line, x 428, z -130 to 430. Nights 2 on: no road at night.
+2. **Echo walls:** the W face, the N and S hooks, and the S arm's bare granite over the lake (knob 45 at x 240). The east is open air. Hatched on the map.
+3. Climb: loud dry steps in the chute (no reverb), the seep, wind on the shelf and at P4, creaks in the cwm, quiet under the wall, the close echo from the cleft entry, the insect cut just past the dogleg.
 
-What none of the comparables do: the way out is in view on every trip to the office and at the top of every night's climb, and the only things that ever tell you no out loud are the post you took and the hill you feed.
+## 14. Dev warps (Pim 11, for DevWarpLabels.cs)
 
-## 13. Open questions
+Ward_P3 becomes "Ward climb, burned cwm"; Ward_P4 becomes "Ward climb, look-back". Add "North loop: ruin" and "Lot, facing the highway". No night warp: WARD CLIMB moves to just under the Time row, so J at night is F1, Left, Down, Down, Enter (5). Junction_Jg moves out of FRONT to follow Camp 1.
 
-1. **Grant:** "other than the other camp": the closed campground's shift wall (my reading, section 8.1), or another camp?
-2. **Grant:** off-trail walking in open forest (8.5). DailyLoop.md 1.2 changes if yes.
-3. **Grant:** ledge 62, stone tops 70 and the knob 74 against the deck at 56: high enough for "the Ward sits higher than the tower"?
-4. **Quill:** the ruin at (168, 278) under N1, no tower: position, whether it should see the tower's cab through the trunks, its cache. The search spots SS1 to SS3. The verge tree at (418, 136). The step on the boathouse's north side.
-5. **Hollis:** road row at x 428; the climb spots.
-6. **Vesper:** grove counts and heights; Style 5.8's knoll line to 35 m (9.2); the crest belt as one continuous band with tops 86 or more; night crest cutouts against a lower W crest; shadows with the lower ridges.
-7. **Pim:** junction markers; new warp names (Ruin, Highway view from the lot, Ward climb foot at night).
-8. **Marlow:** time the climb on screen; the belt-gap frames; one point of interest every 30 s on every leg.
-9. **Rook:** controller slope limit; F-1 crown proxy; tree instances or objects for 1500 trees; whether the store door can load a level from Main3 (unverified).
+## 15. What changes for the builds
+
+- 8.14: terrain to section 2 (crest 80, knob 84, shoulder, cwm, rock bands), E ridge and road cut out, verge and highway (section 3), the climb and ledge (section 4), the fire (section 5); F-1, W-1, C-1, E-1; archive what it replaces.
+- 8.15: sections 8, 9 and 12.
+- 8.16: section 10.
+- 8.17: section 6.
+
+What none of the comparables do: the way out is in view on every trip to the office and from the top of every night's climb, and the only things that ever tell you no out loud are the post you took and the hill you feed.
+
+## 16. Open questions
+
+1. **Grant:** IW3 stays as decided (2026-09-29); confirm that "other than the other camp" meant the closed campground.
+2. **Grant:** day 1 low sheet, then night-1 columns at nightfall: weather, not switching the fire off (5.6)?
+3. **Grant:** the crest at 80 stands 68 m over J. Is that still "not oppressive"? The climb itself is 106 s with a 52 m rise.
+4. **Grant:** off-trail walking in open forest (section 9). DailyLoop.md 1.2 changes if yes.
+5. **Quill, then Grant:** C2 at Camp 2 and Camp 3 too, or Camp 1 only (E12).
+6. **Grant:** M6, which canvas and how the player enters it.
+7. **Vesper:** crest belt knots and ragged tops; fire scale from the path end (5.2); Style 5.8 knoll line (done); shade lines on the new heights.
+8. **Marlow:** F-1 at 1.5 m on the deck at jump height; the cleft's first-sight point; the stairs' effect on the climb time; the 50 m rule over the whole map.
+9. **Rook:** can the store door load a level from Main3 (unverified); footstep layers.
 10. **Forage rotation** (6.1): playtest.
 
 Sable

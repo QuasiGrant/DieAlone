@@ -53,3 +53,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: Map boundaries come from visible land (cliffs over the 45 degree slope limit, rock bands, fence, water), not invisible walls; only the front and the Ward path by day keep one.
 - 2026-09-30: Gate step 4 adds Pim's path rule: trail at least 20 grey from the floor at 5 m and 20 m, day and night; every stop across the full trail width.
 - 2026-09-30: Asset gaps use owned fallbacks first (BK rocks and rubble for scree, young firs plus large bushes for tall brush, owned sign boards and cairns for markers). Buying the dock pack waits for Grant.
+- 2026-09-30: Day one shows only a low smoke sheet streaming west; tall smoke columns appear from nightfall on night one.
