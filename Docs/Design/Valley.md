@@ -1,6 +1,6 @@
 # Valley: Main3 in a horseshoe
 
-**DRAFT revision 9, 2026-09-30, Sable. PLAN 8.13.** Revision 9 folds in the five reviews of rev 8 (Docs/Review/2026-09-30-ValleyReview/Review_Valley8_Marlow, _Vesper, _Pim, _Hollis; Quill's in Docs/Private), Rook's Docs/Process/TreeCover.md, and Wren's three calls (Status.md): **land hides the fire, not trees**, so the W crest rises to 80 where any daytime line to the fire crosses it and the knob to 84; **boundaries come from the land**, with only IW1, IW2 and the decided shift wall left invisible; **four different legs** on the climb, leg 4 blind to the fire, and the cleft dogleg moved into the slot with a fin at the mouth. Binding: DECISIONS 2026-09-30. Nothing here is decided until it is a dated line in DECISIONS.md and Grant confirms. Marlow rechecks next.
+**DRAFT revision 10, 2026-09-30, Sable. PLAN 8.13.** Revision 10 fixes only Marlow's four rev 9 blocks (Review_Valley8_Marlow.md, "Revision 9"): the far front and day-1 sheet trimmed to z -60 to 400 and the N arm's east half raised, with both open-east corners added to section 7 (5.1, 5.3, 2, 7); IW2 in the band gap with rock both sides (8); rock across both ledge ends (8); IW3 moved to the spur gap and the brush lane closed (8). Everything else is rev 9. Revision 9 folds in the five reviews of rev 8 (Docs/Review/2026-09-30-ValleyReview/Review_Valley8_Marlow, _Vesper, _Pim, _Hollis; Quill's in Docs/Private), Rook's Docs/Process/TreeCover.md, and Wren's three calls (Status.md): **land hides the fire, not trees**, so the W crest rises to 80 where any daytime line to the fire crosses it and the knob to 84; **boundaries come from the land**, with only IW1, IW2 and the decided shift wall left invisible; **four different legs** on the climb, leg 4 blind to the fire, and the cleft dogleg moved into the slot with a fin at the mouth. Binding: DECISIONS 2026-09-30. Nothing here is decided until it is a dated line in DECISIONS.md and Grant confirms. Marlow rechecks next.
 
 Drawing: Valley_map.svg revision 9 (wins for shapes; this file wins for heights). Coordinates as Main3.md: metres, origin south-west, x east, z north, heights absolute. Walk speed 2.5 m/s. Controller: slopeLimit 45, stepOffset 0.1, jump 0.6 m (Marlow, from Player.prefab and PlayerTuning.cs). Places and legs not named here stay as Main3.md rev 16 sections 3 and 4, except the Wall, pass and plateau (gone).
 
@@ -92,7 +92,7 @@ The climb changes as WARD falls, one thing at a time (Exit 8's spot the differen
 | Ward ledge | 98 | 62 | 62, x -10 to 6, z 215 to 285 |
 | Stones, tops | 110 | 70 | 70 (8 m stones) |
 | N hook | 95 to 103 | 66 to 70 | 80 at the NW corner (x 15, z 340), 76 at x 40 to 60, 70 at x 80 |
-| N arm east | 94 falling to 50 | knob 58 x 120, saddle 28 x 250 | same: 58 x 120, 45 x 170, saddle 28 x 250, 34 x 320, foothill 20 x 380 |
+| N arm east | 94 falling to 50 | knob 58 x 120, saddle 28 x 250 | **rev 10:** 58 x 120, 50 x 170, saddle 40 x 250, 38 x 320, foothill 20 x 380 |
 | S hook | 90 to 95 | 66 to 70 | 76 at the SW corner, 72 at x 40 to 60, 66 at x 80 |
 | S arm east | 50 to 58 | 50 x 110, saddle 32 x 170, knob 45 x 240 | same; 30 x 320, 16 x 380 |
 | E ridge | 45 to 60 | removed | removed |
@@ -146,9 +146,9 @@ The climb changes as WARD falls, one thing at a time (Exit 8's spot the differen
 
 ## 5. The fire
 
-1. **Far front** on the far ridge (crest 30), x -240 to -400, z -150 to 650, burning giants, flame tops 105. **Valley fires** on the floor at -40, x -110 to -220, z 0 to 500, flame tops 20. The far ridge rises from the floor at x -200 to its crest at x -240.
-2. From the path end (eye 63.6, x -8.5): far flame tops 6 to 10 degrees above level; valley fire tops 12 to 24 degrees below, their bases 25 to 45 degrees below; the fire spans about 135 to 150 degrees. Vesper's figures (29 to 59 degrees) were for fires at x -50 to -150; they moved out. Vesper checks against Style 6.3; if the frame still reads small, the Ward screen's camera looks about 10 degrees down (Pim).
-3. **Day 1:** one low smoke sheet streams west (east wind), top 60 at x -110 rising to 110 at x -500, z -150 to 650, fading out west of x -900. Every daytime line passes over the W crest at least 10 m above it (section 7). No glow, no ash east of the crest (Edges 1.7).
+1. **Far front** on the far ridge (crest 30), x -240 to -400, **z -60 to 400** (rev 10: trimmed so no line from the open-east corners passes over the arms to its ends), burning giants, flame tops 105. **Valley fires** on the floor at -40, x -110 to -220, z 0 to 500, flame tops 20. The far ridge rises from the floor at x -200 to its crest at x -240.
+2. From the path end (eye 63.6, x -8.5): far flame tops 6 to 10 degrees above level; valley fire tops 12 to 24 degrees below, their bases 25 to 45 degrees below; the far front spans about 87 degrees and, with the valley fires, the fire spans about 135 degrees. Vesper's figures (29 to 59 degrees) were for fires at x -50 to -150; they moved out. Vesper checks against Style 6.3; if the frame still reads small, the Ward screen's camera looks about 10 degrees down (Pim).
+3. **Day 1:** one low smoke sheet streams west (east wind), top 60 at x -110 rising to 110 at x -500, z -60 to 400 (rev 10), fading out west of x -900. Every daytime line passes over the W crest at least 10 m above it (section 7). No glow, no ash east of the crest (Edges 1.7).
 4. **From nightfall of night 1** (Vesper 16): the wind drops; 3 to 5 columns stand over the far front to 250 m. They are lit from below only up to 130; above that they stay unlit against a black sky, so nothing lit shows over the crest from the valley on night 1. From the ledge they carry the scale.
 5. **Day 2 on:** columns lean east over the crest by day, glow above it, never flame (DailyLoop.md 6.7).
 6. The fire is never switched off; the land hides it (DECISIONS 2026-09-29). The day-1 sheet giving way to night-1 columns is weather, not a switch (Grant confirms, open 2).
@@ -198,16 +198,26 @@ Places keep their Main3.md rev 16 positions. Resident IDs as Check1 (R1 Camp 1, 
 
 | Daytime eye | Position, eye | Worst target | Crosses | Line at crossing | Land | Margin with +3 |
 |---|---|---|---|---|---|---|
-| Tower deck | (164, 166), 57.6 (58.2 jump) | far front near edge (-240, 105) | W crest, x 15, z 49 to 340 | 75.1 (75.5 jump) | 80 | 1.9 (1.5 jump) |
-| Tower deck | far front north end (-240, 650) | NW corner (19, 340) | | 74.6 | 80 | 2.4 |
+| Tower deck | (164, 166), 57.6 (58.2 jump) | far front near edge (-240, 105), z -60 to 400 | W crest, x 15, z 83 to 252 | 75.1 (75.5 jump) | 80 | 1.9 (1.5 jump) |
+| Tower deck | far front north end (-240, 400) | shoulder, z 252 | | 75.1 | 80 | 1.9 |
 | Tower deck | day-1 sheet top (-500, 110) | W crest | | 69.4 | 80 | 7.6 |
 | Tower deck | anything through the saddle (z -10) | | | lines through z -10 reach z -311 or further south: no fire there | 74 | |
-| Camp 2 stack top | (292, 108), 25.6 | (-240, -150) | SW corner, z -26 | 66.9 | 76 | 6.1 |
-| Camp 2 stack top | (-240, 650) | N hook, x 64 | | 59.6 | 75 | 12.4 |
-| Lot and office porch | (358, 170), 4.6 | (-240, -150) | saddle, z -14 | 62.2 | 74 | 8.8 |
-| Camp 1 | (282, 238), 6.6 | (-240, -150) | W crest, z 40 | 56.9 | 80 | 20 |
+| Camp 2 stack top | (292, 108), 25.6 | (-240, -60) | W crest, z 21 | 66.9 | 77.7 | 7.8 |
+| Camp 2 stack top | (-240, 400) | shoulder, z 260 | | 66.9 | 80 | 10.1 |
+| Lot and office porch | (358, 170), 4.6 | (-240, -60) | W crest, z 38 | 62.2 | 80 | 14.8 |
+| Camp 1 | (282, 238), 6.6 | (-240, -60) | W crest, z 86 | 56.9 | 80 | 20 |
 | Camp and knoll | (185, 160), 16.6 | (-240, 105) | W crest | 52.0 | 80 | 25 |
-| Ruin, north loop | (168, 278), 13.6 | (-240, 650) | N arm, x 100 | 27.2 | 62 | 32 |
+| Ruin, north loop | (168, 278), 13.6 | (-240, 400) | W crest, z 324 | 47.9 | 80 | 29 |
+| **NE corner:** closed campground | (390, 250), ground 8, 10.2 at jump | (-240, 400) | NW corner, x 12 | 67.1 | 80 | 9.9 |
+| **NE corner:** loop's north side | (385, 295), 10.2 at jump | (-240, 400) | N arm, x 117 | 50.8 | 59 | 5.2 |
+| **NE corner:** fence at the N band | (393, 300), 10.2 at jump | (-240, 400) | N arm, x 140 | 48.1 | 54.8 | 3.7 |
+| **NE corner:** loop's south side | (360, 230), 9.2 at jump | (-240, 400) | W crest, z 328 | 64.3 | 80 | 12.7 |
+| **SE corner:** west of the thicket | (330, 5), ground 3, 5.2 at jump | (-240, -60) | W crest, z -31 | 60.4 | 75.4 | 12.0 |
+| **SE corner** | (340, 15), 5.2 at jump | (-240, -60) | W crest, z -27 | 61.1 | 75.2 | 11.1 |
+| **NE and SE:** day-1 sheet | (385, 295) to (-500, 110) at z 400 | NW corner, x 6 | | 52.6 | 80 | 24 |
+| **NE and SE:** valley fire tops | (393, 300) to (-110, 500), tops 20 | N arm, x 292 | | 11.7 | 36.4 | 21.7 |
+
+Rev 10 figures are for jump height with eye and target raised 3 m; the NE and SE rows are the open-east corners Marlow found (rev 9 block 1). The trimmed front's ends no longer lie behind the arms from any daytime eye, so no line from the east crosses the arms' low saddles to a flame; the N arm's east half is raised (section 2) for the one line that still crosses it, from the fence corner. The stack's line through the W crest south of z 40 keeps the saddle at 74 or higher (Marlow R8-5).
 
 1. The deck is the tightest eye (1.5 m at jump with +3). Rook runs F-1 on the built crest; any point under 80 in z 40 to 345 is a failure, not a tuning.
 2. No other daytime eye is high: the Ward face, the cwm and the ledge are closed by day (section 8).
@@ -227,30 +237,31 @@ Places keep their Main3.md rev 16 positions. Resident IDs as Check1 (R1 Camp 1, 
 | # | Where | Does | Speaks |
 |---|---|---|---|
 | IW1 | the gate opening (396, 167 to 173) | stops leaving through the front; cars pass | "You can't abandon your post." during a shift |
-| IW2 | across the chute mouth (86, 213), 3 m between shoulder-high boulders, the only gap in the W foot rock band | stops the climb by day; off at night | no |
-| IW3 | the spur mouth (385, 176), shift only (DECISIONS 2026-09-29, kept as decided) | stops following an admitted car to the closed campground | "You can't abandon your post." |
+| IW2 | **exactly in the one gap of the W foot rock band, at the chute mouth: x 86, z 211.5 to 214.5 (3 m), rock band on both sides** | stops the climb by day; off at night | no |
+| IW3 | **across the spur gap in the brush band, z 210, x 386 to 396, from the band's east end to the fence**; shift only (DECISIONS 2026-09-29, kept as decided) | stops following an admitted car to the closed campground | "You can't abandon your post." |
 
-IW2 cannot be walked round: the W foot rock band runs unbroken from the S hook to the N hook except at the chute, and the chain now hangs at the chute mouth where the wall is. IW3 cannot be walked round: the closed campground is reached only by the spur (brush bands below). The 24 turning-circle pieces go; IW1 stops a player following a refused car.
+**IW2 (rev 10):** at the chute the W foot rock band steps out from x 80 to x 86 in two rock arms, 4 m or taller: the south arm from (80, 200) to (86, 200) and on to (86, 211.5); the north arm from (80, 226) to (86, 226) and down to (86, 214.5). The only opening in the band is the 3 m between the arms' ends at x 86, and IW2 fills it exactly. The chain hangs across the same 3 m. There is no lane between the band and the chute (Marlow rev 9 block 2).
+**IW3 (rev 10):** the wall moves from the spur mouth (385, 176) up the spur to its gap in the brush band, so everything south of the band (booth, lot, drive, booth side along x 393) is on the player's side; the only way north is the 10 m gap the spur uses, and IW3 fills it from the brush to the fence during a shift. The x 340 to 348 brush band now runs from z 206 to **z 310**, overlapping the N foot rock band (edge about z 302), so the lane at (344, 301) is closed (Marlow rev 9 block 4). The closed campground is reached only by the spur. The 24 turning-circle pieces go; IW1 stops a player following a refused car.
 
 **What closes each stop:**
 
 | Place | Closed by |
 |---|---|
-| W ridge foot, S hook to N hook | a continuous rock band 4 m or taller, owned rock meshes with colliders; the face above at 50 degrees or steeper; broken only at the chute (IW2) |
+| W ridge foot, S hook to N hook | a continuous rock band 4 m or taller, owned rock meshes with colliders; the face above at 50 degrees or steeper; broken only by the 3 m chute gap at x 86, where the band steps out in two rock arms (IW2) |
 | Between climb benches | a rock step 2 m or taller on each bench's uphill side; face 50 degrees or steeper |
 | Cwm rims | rock faces 50 degrees or steeper, rims 76 to 80 |
 | N arm foot, x 80 to 396 | a rock band 3 m or taller behind the north fir wall; deadfall and brush at the wall's foot |
 | S arm foot, x 38 to 396 | a granite band 3 m or taller; between x 140 and 250 the lake's south belt runs brush down to the water, so the south shore is not walked |
 | Arm east ends | the fence at x 396, tied into both rock bands by a rock outcrop at each end |
-| Ledge N end | the shoulder's rock wall (80) |
-| Ledge S end | the knob's west face (84) |
+| Ledge N end | **rev 10: a rock wall across the end at z 285, from x -12 (past the lip, into the west face) to x 6, joined to the shoulder; top 66 or higher (4 m over the ledge)** |
+| Ledge S end | **rev 10: a rock wall across the end at z 215, from x -12 to x 8, joined to the knob's west face; top 66 or higher** |
 | Ledge W edge | the lip, 0.8 m rock |
 | Knoll flanks between the switchbacks | deadfall lines and brush 1 m or taller, collider inside the brush |
 | Old burn regrowth | dense firs with brush 1 m or taller filling the gaps, collider inside the brush |
 | Ravine rim above the cave spur | a rock band on the lip, boulders |
 | Camp 3 hollow | the rock wall; the log steps are the way in |
 | Lake | the water's edge (wade limit at the visible edge) |
-| Closed campground | brush bands 1 m or taller: x 345 to 386 at z 206 to 215 (behind office and store), x 340 to 348 from z 215 to 300; the NE grove |
+| Closed campground | brush bands 1 m or taller: x 345 to 386 at z 206 to 215 (behind office and store), x 340 to 348 from z 206 to 310 (rev 10, into the N foot rock band); the NE grove; the spur's 10 m gap closed by IW3 in a shift, the fence east of it |
 | South-east corner, x 345 to 396, z 0 to 100 | a thicket of firs, brush and deadfall |
 | W foot pocket, x 46 to 80, z 165 to 200 | deadfall and brush |
 | Mid pocket around (215, 222) | grove Mid with a thicket core |
