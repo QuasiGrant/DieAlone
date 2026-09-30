@@ -65,3 +65,6 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: The rest of 8.14a is fixed alongside 8.15, and one gate covers both; rock textures are the main fix for the bands and climb. Ledge: Marlow's curb-and-catch-shelf plus Vesper's taller valley flames and lit floor.
 - 2026-09-30: Ledge built as Rook's thin 1.1 m lip falling outward (120 of 120 valley fires seen, 0 pushes off), not the curb and shelf a sprint-jump cleared.
 - 2026-09-30: CHASE-LIGHT: the lamp relights when the footsteps stop (Quill), not at the Ward zone (Hollis); Hollis aligns ScareSound on his next pass.
+- 2026-09-30: Lanterns with small glows at the chute foot and on P1 to P4 stay (Rook's addition for the night rule).
+- 2026-09-30: The cleft is a slot, so all-wall frames inside it are allowed; the chute must still open up.
+- 2026-09-30: Rook moves on to the forest (8.16) now; the remaining day-path contrast, hedge cover and next-place frames are remeasured after it, since groves change the floor light. One gate covers 8.14a, 8.15, 8.15a and 8.16.
