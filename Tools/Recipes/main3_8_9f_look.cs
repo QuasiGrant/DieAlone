@@ -267,7 +267,7 @@ for (float x = 186f; x < 340f; x += regrowthStep) for (float z = 143f; z < 213f;
 // the open ground the tower sees east (S4): no bare flat plane. Off the trails and the burn, low growth across the view:
 // grass, ferns and dead leaves everywhere, and small firs 2 to 4 m outside the front zone (behind the thicket walls, so
 // never in reach). In the front zone only ground cover, kept off its paving and buildings.
-const float openX0 = 230f, openX1 = 398f, openZ0 = 100f, openZ1 = 298f, openStep = 4f, openJitter = 1.8f, openTrailGap = 2.5f, fzX = 338f, fzClear = 1f, firShare = 0.3f;
+const float openX0 = 230f, openX1 = 398f, openZ0 = 100f, openZ1 = 298f, openStep = 4f, openJitter = 1.8f, openTrailGap = 2.5f, fzX = 338f, fzClear = 1f, firShare = 0f;   // firShare 0 (was 0.3): 8.16 plants the open east as clumps (ForestPlan 2; the evenly sprinkled 2 to 4 m firs read as a nursery)
 var fzFoot = new System.Collections.Generic.List<UnityEngine.Rect>();
 foreach (var r in Root("FrontZone").GetComponentsInChildren<UnityEngine.Renderer>(true)) { var b = r.bounds; fzFoot.Add(new UnityEngine.Rect(b.min.x - fzClear, b.min.z - fzClear, b.size.x + fzClear * 2f, b.size.z + fzClear * 2f)); }
 string[] cover = { BK + "Plants/Grass1", BK + "Plants/Grass2", BK + "Plants/Grass3", BK + "Plants/GrassMoss", BK + "Plants/DeadLeaves1", BK + "Plants/DeadLeaves2", BK + "Plants/ThinFern3", BK + "Plants/ThinFern4", SC + "Grass3" };
