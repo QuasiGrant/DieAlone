@@ -49,3 +49,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: Grant's "other camp" read as the closed campground: one shift-only wall at its spur mouth stays (DECISIONS 2026-09-29).
 - 2026-09-30: Off-trail walking in open forest: yes. Each dawn, two of the three forage patches bear: yes, to be playtested.
 - 2026-09-30: Camp knoll trees are 35 m (tops 50), not 42, so they don't block the deck's view.
+- 2026-09-30: The fire is hidden by land, not trees (Rook measured a planted belt at about 27 percent gaps). The W crest rises to about 78 to 80 where the tower's lines cross it, and the knob to 84; still 15 to 25 m under rev 7. Trees stay on top for the look.
