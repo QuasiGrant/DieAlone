@@ -37,3 +37,10 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 ## Setup
 
 - Once per clone: `git config core.hooksPath Tools/Hooks` turns on the plan check hook (Docs/Process/PreCommitHook.md).
+
+## Wren's calls (for Grant to review after)
+
+- 2026-09-30: The north gets Sable's loop trail, densest grove, a third forage patch and one ruin (Quill's draft: the previous keeper's cabin).
+- 2026-09-30: Gate capture sheets go to git-ignored Docs/Captures/; only verdicts are committed (Tully: about 22 MB a run).
+- 2026-09-30: Process lessons live where Tully's Docs/Process/Improvements.md says; agent habits applied to .claude/agents.
+- 2026-09-30: Grant's "other than the other camp" for invisible walls is unclear; Sable states a reading in Valley.md rev 8 and the team goes with it.
