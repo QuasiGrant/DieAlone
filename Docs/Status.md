@@ -51,3 +51,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: Camp knoll trees are 35 m (tops 50), not 42, so they don't block the deck's view.
 - 2026-09-30: The fire is hidden by land, not trees (Rook measured a planted belt at about 27 percent gaps). The W crest rises to about 78 to 80 where the tower's lines cross it, and the knob to 84; still 15 to 25 m under rev 7. Trees stay on top for the look.
 - 2026-09-30: Map boundaries come from visible land (cliffs over the 45 degree slope limit, rock bands, fence, water), not invisible walls; only the front and the Ward path by day keep one.
+- 2026-09-30: Gate step 4 adds Pim's path rule: trail at least 20 grey from the floor at 5 m and 20 m, day and night; every stop across the full trail width.

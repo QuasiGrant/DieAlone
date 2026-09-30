@@ -16,7 +16,7 @@ Every reviewer judges against the fixed bar below, never against the last captur
    9. F1 in Play: every section reachable by keyboard and by pad.
    10. His hand walk of every new or changed trail.
 3. **Vesper:** grades eye-height frames every 25 m against the bar in Docs/Design/Style.md (section 5 and the eye-height bar). Letter grade per zone; D or lower fails. One lighting change per retake, before and after side by side.
-4. **Pim:** task test on every menu touched, at Grant's Game view size, pad only and keyboard only, from open. Each task in 5 presses or fewer: switch day/night, warp to the Ward, plus any task Grant named for that menu.
+4. **Pim:** task test on every menu touched, at Grant's Game view size, pad only and keyboard only, from open. Each task in 5 presses or fewer: switch day/night, warp to the Ward, plus any task Grant named for that menu. Also, from the grayscale sheets: trail mean grey at least 20 above or below the floor beside it (0 to 255, filter on), measured 5 m and 20 m ahead, day and night frames; and every stop sits across the line of travel, covering the full trail width (Wren's call 2026-09-30).
 5. **Wren:** all of 2 to 4 PASS, then Grant walks. Any FAIL becomes a new task; nothing is unticked.
 
 Order: 1 first; 2, 3 and 4 run in parallel on the same sheets; Marlow's walk (2.10) needs the Editor, so Wren books it.
