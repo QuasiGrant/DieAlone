@@ -44,3 +44,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: Gate capture sheets go to git-ignored Docs/Captures/; only verdicts are committed (Tully: about 22 MB a run).
 - 2026-09-30: Process lessons live where Tully's Docs/Process/Improvements.md says; agent habits applied to .claude/agents.
 - 2026-09-30: Grant's "other than the other camp" for invisible walls is unclear; Sable states a reading in Valley.md rev 8 and the team goes with it.
+- 2026-09-30: Vesper's eye-height bar (Style.md 10) and groves rule (5.8) adopted as the gate standard.
