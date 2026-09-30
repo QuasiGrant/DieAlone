@@ -271,7 +271,7 @@ for (int z = 0; z < res; z++) for (int x = 0; x < res; x++)
 data.SetHeights(0, 0, hm);
 
 // ---------- paint: Trail layer (index 3), 1.4 m wide with a 0.4 m blend (Valley.md 12.1, 8.15) ----------
-const float trailHalf = 0.7f, trailBlend = 0.4f;
+const float trailHalf = 0.9f, trailBlend = 0.4f;   // 0.9 (was 0.7; 8.16 gate: at 20 m the grass edge leaning over a 1.4 m band hid it)
 int ares = data.alphamapResolution; var alpha = data.GetAlphamaps(0, 0, ares, ares); int layersN = alpha.GetLength(2);
 float aX = size.x / ares, aZ = size.z / ares;
 var aD = new float[ares, ares]; for (int z = 0; z < ares; z++) for (int x = 0; x < ares; x++) aD[z, x] = float.MaxValue;

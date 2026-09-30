@@ -67,7 +67,7 @@ void SetLayer(UnityEngine.TerrainLayer l, UnityEngine.Texture2D albedo, UnityEng
     l.diffuseTexture = albedo; l.normalMapTexture = normal; l.tileSize = new UnityEngine.Vector2(tile, tile);
     l.diffuseRemapMin = UnityEngine.Vector4.zero; l.diffuseRemapMax = new UnityEngine.Vector4(remap.r, remap.g, remap.b, 1f); UnityEditor.EditorUtility.SetDirty(l);
 }
-const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f, trailLift = 1.9f, burnDim = 0.65f;   // 1.9 (was 1.65; 8.16 remeasure: the groves shade the trails)   // trailLift: the dirt brightened so the tread stands 20 grey over the floor 20 m ahead (Gate.md 4; 8.14a measured about 10)
+const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f, trailLift = 1.75f, burnDim = 0.65f;   // 1.75 (1.65 before 8.16; 1.9 put sunlit trail at 5 m over the 110 cap, Wren 8.16 gate)   // trailLift: the dirt brightened so the tread stands 20 grey over the floor 20 m ahead (Gate.md 4; 8.14a measured about 10)
 // rockTile: rock at 10 m so its forms read at a distance through the look filter (8.14a)
 UnityEngine.ColorUtility.TryParseHtmlString("#6E6660", out var granite);   // Style.md granite; Rocks_a's mean luma is 0.55 (AssetCatalogue)
 var white = UnityEngine.Color.white;
@@ -104,9 +104,10 @@ const float soilBlend = 4f, wallX0 = 90f, wallX1 = 300f, wallZ0 = 285f, wallZ1 =
     data.SetAlphamaps(0, 0, alpha);
 }
 
-// 8.15 gate (Pim W1: beside Jg to Camp 1 the pale clearing grass read as light as the dirt): a strip of darker duff (SoilPine dimmed to
+// 8.15 gate (Pim W1: beside Jg to Camp 1 the pale clearing grass read as light as the dirt; 8.16: edge 1.3 and duff from 1.5 with the
+// 1.8 m band): a strip of darker duff (SoilPine dimmed to
 // duffDim) from duffIn to duffOut off every trail's centre points (2 m apart), taken duffShare from the floor layers
-const string duffPath = "Assets/Terrain/Main3/Layer_Duff.terrainlayer"; const float duffDim = 0.45f, duffIn = 1.3f, duffOut = 3.5f, duffBlend = 0.8f, duffShare = 0.8f;
+const string duffPath = "Assets/Terrain/Main3/Layer_Duff.terrainlayer"; const float duffDim = 0.45f, duffIn = 1.5f, duffOut = 3.5f, duffBlend = 0.8f, duffShare = 0.8f;
 var lDuff = new UnityEngine.TerrainLayer { name = "Layer_Duff" }; UnityEditor.AssetDatabase.CreateAsset(lDuff, duffPath);
 SetLayer(lDuff, Tex(surf + "SoilPine_a.png"), Tex(surf + "SoilPine_n.png"), floorTile, new UnityEngine.Color(duffDim, duffDim, duffDim));
 layerList.Add(lDuff); data.terrainLayers = layerList.ToArray(); int iDuff = layerList.IndexOf(lDuff);
@@ -220,7 +221,7 @@ for (int i = 0; i < detailNames.Length; i++)
 }
 // 8.14a grey check: a tuft is drawn centred on its cell up to maxWidth wide, so cells start half the widest tuft past the trail's
 // painted half-width; at 1.1 m the tufts leaned over the tread and hid it from 20 m
-const float trailPaintHalf = 0.7f, tuftClear = 0.1f;   // trailPaintHalf is 8.3's trailHalf
+const float trailPaintHalf = 0.9f, tuftClear = 0.1f;   // trailPaintHalf is 8.3's trailHalf
 float widest = 0f; foreach (var pr in protos) widest = UnityEngine.Mathf.Max(widest, pr.maxWidth);
 float coverEdge = trailPaintHalf + widest * 0.5f + tuftClear;
 const int detailRes = 1024, detailPatch = 32; const float coverBand = 8f, coverFar = 0.35f, coverDistance = 60f, coverFrontX = 338f, clearingPad = 2f;
@@ -258,7 +259,7 @@ UnityEditor.EditorUtility.SetDirty(data);
 var edges = new UnityEngine.GameObject("TrailEdges").transform; edges.SetParent(root, false);
 var paleStone = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Concrete034_1.0x1.0.mat"); if (paleStone == null) return "no Concrete034_1.0x1.0.mat";   // the painted blazes (below)
 var edgeRock = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_BandRock.mat"); if (edgeRock == null) return "no Blockout_BandRock.mat (8.1)";
-const float edgeLow = 3f, edgeHigh = 5f, edgeOff = 1.05f, stoneLow = 0.2f, stoneHigh = 0.55f, stoneTilt = 20f, logShare = 0.2f, rootShare = 0.2f;
+const float edgeLow = 3f, edgeHigh = 5f, edgeOff = 1.3f, stoneLow = 0.2f, stoneHigh = 0.55f, stoneTilt = 20f, logShare = 0.2f, rootShare = 0.2f;
 string[] edgeLogs = { CS + "Wood/CS_Log_Firewood_Short", CS + "Wood/CS_Firewood_Short_Thick_1", CS + "Wood/CS_Firewood_Short_Thick_2" };
 const string edgeRoot = BK + "Prefabs/Plants/Branchs";
 int edgeN = 0;
