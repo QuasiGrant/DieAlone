@@ -65,3 +65,16 @@ Reruns, in order, after the cap rock (rev 7), the slope fix and Vesper's edge fi
 Still needed, no recipe: check 4 on the climb (every bench, P1 to P4), check 8's ledge edge sweep and part B sprint-jumps, check 14. Without these I walk them by hand before I pass 8.9k.
 
 Marlow
+
+## Final (after 5a04ce4, 8f34383)
+
+Paper only; Rook's reported numbers, reports and diffs read. Items 2, 3, 5 closed (F-1 5.9 on whole cards at 0.93 lit; 3444 climb pushes, 0 fail; lip holds at x -8.3). Item 6 closed (0 of 8).
+
+- **8.9j: PASS.** Confirm the J to ledge time is in Rook's printed output; his summary gives the tower (22.5 s) but not the climb.
+- **8.9k: FAIL**, blocking only:
+  1. Check 11 has a recipe now and it prints FAIL: main3_straight_view_climb_8_9k.cs exempts only legs 1 to 4, and J to leg 1 (91 m) and leg 5 (78 m) are over 60. WalkChecks 11 says neither is a switchback leg. Wren's and Sable's rulings are not written anywhere. Record them, then I change WalkChecks 11 and the recipe must print PASS.
+  2. Vesper has not checked the edge shots retaken in 8f34383 (Edges.md rev 3 is older).
+  3. Ledge north edge (toward z 282, x -9 to 4, WalkChecks 8) is not pushed; no climb jump reaches past about z 270. I cannot walk it by hand this round.
+- Grant, watch for: the cleft's invisible walls sit 0.8 m off the path, inside a 2.5 m slot, so you stop before touching rock; the ledge north end and both ledge corners; jumps, drops and crouch on every trail (the trail walker has no gravity, jump or crouch); stepping into a gray stop rock or the camera inside one.
+
+Marlow
