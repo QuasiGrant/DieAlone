@@ -196,13 +196,14 @@ public sealed class PlaceKit
         return l;
     }
 
-    /// World-space text on the front face of a board (the project's sign pattern, build_signs.cs); front = the board's -z side.
-    public void Label(Transform board, string text, Color colour, int maxSize = 24)
+    /// World-space text on the front face of a board (the project's sign pattern, build_signs.cs); front = the board's -z side, or +z onBack.
+    public void Label(Transform board, string text, Color colour, int maxSize = 24, bool onBack = false)
     {
         var cg = new GameObject("Label", typeof(RectTransform)); cg.transform.SetParent(board.parent, false);
         var canvas = cg.AddComponent<Canvas>(); canvas.renderMode = RenderMode.WorldSpace;
         cg.GetComponent<RectTransform>().sizeDelta = new Vector2(board.localScale.x / LabelScale, board.localScale.y / LabelScale);
-        cg.transform.SetPositionAndRotation(board.position - board.forward * (board.lossyScale.z * 0.5f + LabelFace * 0.2f), board.rotation);
+        float side = onBack ? -1f : 1f;
+        cg.transform.SetPositionAndRotation(board.position - side * board.forward * (board.lossyScale.z * 0.5f + LabelFace * 0.2f), board.rotation * Quaternion.Euler(0f, onBack ? 180f : 0f, 0f));
         cg.transform.localScale = Vector3.one * LabelScale;
         var tg = new GameObject("Text", typeof(RectTransform)); tg.transform.SetParent(cg.transform, false);
         var trt = tg.GetComponent<RectTransform>(); trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one; trt.offsetMin = trt.offsetMax = Vector2.zero;
