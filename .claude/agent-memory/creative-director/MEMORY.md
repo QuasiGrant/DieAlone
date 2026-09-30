@@ -14,4 +14,5 @@
 - [Gate 8.15](project_gate_8_15.md) — 2026-09-30 FAIL; sun 20 kept; proposed night path rule (lamp, Ward route only, no moon)
 - [Gate 8.16](project_gate_8_16.md) — 2026-09-30 whole valley FAIL; groves B, forest outside D, fire and night D, halo next
 - [Gate 8.16a](project_gate_8_16a.md) — 2026-09-30 FAIL; climb F to D, forest items unchanged, rock count exclude tread
+- [Gate 8.17](project_gate_8_17.md) — 2026-09-30 FAIL; Camp 1, Camp 3, cave D; rest C; retakes and 20 m frames asked
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions
