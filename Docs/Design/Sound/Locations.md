@@ -2,6 +2,8 @@
 
 **DRAFT, 2026-09-29, Hollis. Nothing here is decided.** Lines marked **[Grant yes]** need Grant's confirmation and a dated line in DECISIONS.md. Map and positions: Main3.md revision 10 and Main3_map.svg (approved for blockout, DECISIONS 2026-09-29). Time of day, ramp and replacements: DayNight.md (sections cited as DN). Mixer groups and snapshots: Mixer.md. Import and sources: Sourcing.md. Tuning fields: AudioTuning.md. Binding inputs: DECISIONS 2026-09-29 lines on day one sounds (fire at the Ward on night one, ordinary road on day one, chant from night one), the fire never on day one, the slow-burn ramp with creepy replacements, the rave cave, the chant turning into bass on the descent, the gate (option B) and cars arriving until the office resident's storyline ends, and chases never entering the cave. Unity features named here are unverified for 6000.3.24f1 until Rook checks them. Nothing plays in a build that Vesper has not heard.
 
+**Update 2026-09-30, Hollis:** sections 2 (Ward and Ward climb rows), 9.1, 10, 12, 13, 14 and 15 follow Valley.md revision 10 (draft, being built): highway at x 428, fire row on the W crest, the four-leg climb, the cleft fin. Detail in Sound/Valley.md revision 2. Everything else still reads Main3.
+
 Coordinates are Main3's: metres, origin south-west, x east, z north, y absolute height. Positions read off the map sheet (2.5 px per m) are marked "map"; they are within about 2 m and snap to the blockout as built. Sound has no milestone task yet (Milestone 9 is sound groundwork); this is spec only.
 
 ## 1. Rules for every place
@@ -19,9 +21,9 @@ Coordinates are Main3's: metres, origin south-west, x east, z north, y absolute 
 
 | Zone | Shape and edge (map) | Bed day | Bed night | Fire offset | Priority |
 |---|---|---|---|---|---|
-| Ward | Ward snapshot from the last bend trigger (46, 254) map, over the ledge (32, 258) | room tone (DN 7) | room tone | own roar row (10.4) | 1 |
+| Ward | Ward snapshot from the cleft dogleg trigger (14.5, 265.5), through the last straight, round the fin and the whole ledge (x -10 to 6, z 215 to 285) | room tone (DN 7) | room tone | own roar fan (10.4) | 1 |
 | Cave interior | from the mouth (52, 34) inward, same volume as the CaveStone footstep zone | cave room | cave room | -80 dB | 2 |
-| Ward climb | corridor 20 m wide along the switchbacks from J (104, 206) map to the last bend | none (closed by day) | climb night | -80 dB | 3 |
+| Ward climb | from the chute mouth (86, 213) along the four legs, P4 and the cleft to the dogleg, corridor 20 m wide; the approach J to the chute mouth is the fire row's fade (12) | none (closed by day) | climb night, per leg (12) | -80 dB | 3 |
 | Ravine | the ravine below the rim: (20, 20), (80, 25), (95, 50), (74, 60), (30, 55) map, extended east along the spur to the rope rail, chant spot 1 (107, 58) map. Edge: the rope rail | ravine | ravine day bed, Night snapshot | -8 dB | 4 |
 | Hollow | circle r 16 m on Camp 3 (78, 146). Edge: the rim, top of the log steps (96, 145) map. Crossfade hollowCrossfadeSeconds (start 5 s), the length of the steps | hollow | hollow day bed, Night snapshot | -6 dB | 5 |
 | Knoll | circle r 25 m on the camp (170, 160): the 36 m clearing plus 7 m | knoll day | knoll night | 0 dB | 6 |
@@ -111,7 +113,8 @@ Coordinates are Main3's: metres, origin south-west, x east, z north, y absolute 
 
 ### 9.1 Bed and road
 - **Bed (Front):** open, flat, man-made. Air over gravel, a wire fence ticking in wind, a far wash of open country beyond the fence. No traffic in the bed: traffic is one-shots.
-- **Through-traffic:** a row of seven road emitters at x 420, z 0 to 300 every 50 m (placeholder; the road's line off-map is Sable's and Vesper's). One-shot passes, roadPassIntervalMin / Max on day one, stretched by roadGapScaleWeek2 in week two, last car at WARD 3 to 5 (DN 6.6.1). roadPassMaxDistance 260 m: clear in the front zone, faint at Jg (262, 172), just audible at camp on a still moment (DN 2.4). Lowpass falls with distance.
+- **Through-traffic (Valley rev 10, 3.2):** a row of twelve road emitters on the highway centre line x 428, z -130 to 420 every 50 m, y 3.5 (verge 2 to 3); the end emitters sit where the road curves away behind the arm ends (z -130 and about z 430), so passes come round the curve and go out of hearing behind the arms. One-shot passes, roadPassIntervalMin / Max on day one, stretched by roadGapScaleWeek2 in week two, last car at WARD 3 to 5 (DN 6.6.1). roadPassMaxDistance 270 m (was 260; the road is 264 m from camp): clear in the front zone, faint at Jg (262, 172), just audible at camp on a still moment (DN 2.4). Lowpass falls with distance. Open east, flat verge, nothing between: heard from its true bearing.
+- **Night:** night one, one car timed for P4 on its own moving emitter (Sound/Valley 1). Nights 2 on, the road is empty and dark all night: no passes.
 - **Heard before seen:** the road. It is the only front-zone sound that reaches the trails. The mains hum does not: from the first sight of the lot (328, 164) the transformer is 42 m away. The lot is seen first; the bed edge at x 320 makes the change audible 8 m before the lot shows.
 
 ### 9.2 Office (350, 200), ground 3 m
@@ -141,28 +144,28 @@ Coordinates are Main3's: metres, origin south-west, x east, z north, y absolute 
 ## 10. The fire
 
 ### 10.1 Fire row
-- Nine emitters on a line at x 0, z -50 to 350 every 50 m, y 0 (10 m out from the cliff at x 10, over the valley). The ridge is 300 to 500 m further west; a proxy row at the cliff keeps the distance falloff across the map usable while the direction is still west. Ambience group, 3D, mono, Linear rolloff, fireMinDistance (start 60 m), max distance by band (10.2). Rumble loop plus far crack one-shots (DN 4.2, 4.3).
+- Nine emitters on the W crest line (Valley rev 10, 2.4), x 12, z -50 to 350 every 50 m, y 82 (2 m over the crest at 80), so the sound comes over the ridge, not through it. The fire is 120 to 400 m further west; a proxy row on the crest keeps the falloff across the map usable and the direction west. Ambience group, 3D, mono, Linear rolloff, fireMinDistance (start 60 m), max distance by band (10.2). Rumble loop plus far crack one-shots (DN 4.2, 4.3).
 - Day one: row off, whole scene (Main3.md 5.9 build note). Night one: off until the reveal; after it, on at the current band.
 
 ### 10.2 How far it reaches, by WARD band
-Distances from the row: Camp 3 78 m, J 104, W1 128, camp 170, pump 190, Camp 1 282, Camp 2 292, T 340, office 350, gate 396.
+Slant distances from the nearest row emitter (y 82), map estimates: Camp 3 floor 108 m, J 117, W1 142, camp 172, pump 197, Camp 1 281, Camp 2 291, T 337, office 347, gate 392.
 
 | Band (DN 12.4) | fireMaxDistance | Reaches |
 |---|---|---|
-| High, WARD 9 to 12 | 140 m | Camp 3, J, W1 (faint). Not camp. |
-| Mid, 6 to 8 | 190 m | the camp by day (DN 12.4), the pump |
+| High, WARD 9 to 12 | 150 m (was 140) | Camp 3, J, W1 (faint). Not camp. |
+| Mid, 6 to 8 | 200 m (was 190) | the camp by day (DN 12.4), the pump |
 | Low, 3 to 5 | 300 m | Camp 1, Camp 2 |
 | Last, 1 to 2 | 420 m | the whole map, the front zone under its machines |
 
 WARD changes only at the Ward and at sleep, so the band steps at waking; no mid-day jumps. Gain and lowpass also follow WARD (DN 12.3).
 
 ### 10.3 West glimpses (DN, Main3.md 4.3)
-Three volumes where the fire is loudest: W1 (128, 70) r 12 m; the Camp 3 rim at the log steps (96, 145) r 10 m; the Camp to J bend, placed near the burn-map board (136, 190) r 10 m until Marlow confirms the bend's position (unverified). Inside: fireGlimpseGainDb (start +6) and the row lowpass opened by fireGlimpseLowpassHz (start +1500 Hz). Glimpses sit on top of the zone offsets; the Camp 3 rim is inside the Hollow edge, so the glimpse wins there.
+Three volumes where the fire is loudest: W1 (128, 70) r 12 m; the Camp 3 rim at the log steps (96, 145) r 10 m; the Camp to J bend, placed near the burn-map board (136, 190) r 10 m until Marlow confirms the bend's position (unverified). Inside: fireGlimpseGainDb (start +6) and the row lowpass opened by fireGlimpseLowpassHz (start +1500 Hz). Glimpses sit on top of the zone offsets; the Camp 3 rim is inside the Hollow edge, so the glimpse wins there. Valley rev 10: the land hides every flame from the floor, so these are no longer sight glimpses. Held as the three spots where the crest columns show best from day two, until Vesper checks what each shows on the build; any that shows nothing goes.
 
 ### 10.4 The roar at the Ward ledge
-- Four emitters below the ledge at x -20, z 230 to 290 every 20 m, y -20. World group, not Ambience, so it survives the Ward snapshot (Ambience at -80 dB, Mixer.md 3). Max distance 80 m. Night only. Barrier lowpass barrierLowpassHz. Reveal timeline as DN 3.
+- A fan of ten emitters on the fire itself, seven on the valley fires and three on the far front, gated to the Ward zone (Sound/Valley 6; positions in 13, E49). World group, not Ambience, so it survives the Ward snapshot (Ambience at -80 dB, Mixer.md 3). roarMinDistance 160, roarMaxDistance 450. Night only. Barrier lowpass barrierLowpassHz. Reveal and nightly build as Sound/Valley 7.
 - Conflict to settle: DN 3.4 opens the roar to full bandwidth at the reveal, but the Ward snapshot puts a 3000 Hz lowpass on World. I would drop full bandwidth: at the Ward the roar is always held back, which is the image. If Grant wants the open moment, the roar needs its own group or a snapshot change. **[Grant yes]**
-- Second conflict: DN 3.7 keeps the roar down the climb on night one; DN 7.5 keeps the climb silent both ways. This doc follows 7.5: the climb zone mutes the fire row, and it returns at J. Walking down from the roar into near-silence and then meeting the fire again at J is stronger than a slow fade. DN 3.7 changes when this is approved.
+- Second conflict: DN 3.7 keeps the roar down the climb on night one; DN 7.5 keeps the climb silent both ways. This doc follows 7.5: the climb zone mutes the fire row, and it returns at J. Walking down from the roar into near-silence and then meeting the fire again at J is stronger than a slow fade. DN 3.7 changes when this is approved. Rechecked on Valley rev 10 from night 2: PASS, every climb eye is 18 m or more under the crest (Sound/Valley 4).
 
 ## 11. Cultist cave: spur, ravine, mouth (52, 34), chamber (80, 12)
 
@@ -200,16 +203,17 @@ Descent progress p comes from the listener's floor height, not path maths: p = c
 6. No generator. A full sound system and rave lights 10 m under the forest with no hum and no engine. The rule (1.5) makes that wrong on its own; nobody needs to comment on it.
 7. Day one: mouth boarded, music emitter disabled. Day two on: music runs day and night whether or not the player is inside. It never changes with WARD (DN 8.7, proposed).
 
-## 12. Ward climb and ledge (32, 258), 36 m
+## 12. Ward climb and ledge (Valley rev 10, 1.6 and 4)
 
-- **Climb bed (night only):** sparse high wind on the spur, stone, no birds, no insects after night one. From J (104, 206) up the switchbacks: rune post at 50 m (92, 244) map, Tor base at 90 m about (76, 248) map, last bend at 110 m (46, 254) map.
-- **J:** the spring that feeds the creek, a small gurgle at (104, 206), max 15 m. The cairn chain is silent (1.3).
-- **Thinning to silence:** the climb bed gain falls over the last wardClimbFadeMeters (start 40 m) before the last bend, measured along the path, so the Ward snapshot's cut at the bend lands on an already thin bed. The fire row is muted in the climb zone (10.4).
-- **Heard before seen:** the silence. It starts at the last bend, 20 m before the stones.
-- **Night one:** the ordinary night on the climb (insects, one owl, soft wind, DN 3). The insects are the global night-one layer; the reveal cut stops them.
-- **Ledge:** room tone (DN 7.2), the held-back roar at night (10.4), the Ward's own voice later (separate spec).
-- **Rune post:** silent in this spec. It is the natural first place for the Ward's voice; that waits for the Ward design.
-- **Ramp:** DN 15 row 9 at the ledge.
+- **Climb bed (night only):** sparse wind, stone, no birds, no insects after night one. J (104, 206) to the path end (-8.5, 246), 265 m: approach, four legs (chute west, shelf north, cwm north-west, under the wall south), P4, the cleft, the fin, the ledge. One sound change per leg; gains, landmarks and positions in Sound/Valley 8.
+- **J:** the spring that feeds the creek, a small gurgle at (104, 206), max 15 m. The cairn chain and lamp are silent (1.3).
+- **Fire row:** fades out over the approach, J to the chute mouth (fireClimbFadeMeters, 20 m); muted in the climb zone; returns the same way down (10.4, Sound/Valley 4).
+- **Thinning to silence:** the climb bed fades over wardClimbFadeMeters (now 6 m), cleft entry (220) to the dogleg (226), where the slot walls explain it, so the Ward snapshot at the dogleg lands on an already thin bed. P4's wind stays full for the look-back.
+- **Heard before seen:** the silence. It starts at the dogleg, about 19 m before the fire and the stones show round the fin.
+- **Night one:** the ordinary night on the climb (insects, one owl, soft wind, DN 3), the car at P4, the insect cut at the dogleg, the roar from first sight round the fin (Sound/Valley 7).
+- **Ledge:** room tone (DN 7.2), the roar fan built by ledge position every night (10.4), the Ward's own voice later (separate spec).
+- **Rune post (88):** silent in this spec. It is the natural first place for the Ward's voice; that waits for the Ward design.
+- **Ramp:** DN 15 row 9 at the ledge. The climb's WARD changes (cup, seep, ember) follow the visual flags (Sound/Valley 8).
 
 ## 13. Emitter positions
 
@@ -239,9 +243,11 @@ All World, 3D, mono unless stated. y where it matters; otherwise ground plus 1 m
 | E30 | gate chain | gate post (396, 170) | 25 | all |
 | E31 | barrier | (396, 170) | 35 | on use |
 | E32 | gate car (moves) | road, barrier, spur, circle | 60 | shifts |
-| E33 to E39 | road row | x 420, z 0 to 300 every 50 | 260 | by ramp |
-| E40 to E48 | fire row (Ambience) | x 0, z -50 to 350 every 50, y 0 | by band | day two on |
-| E49 to E52 | ledge roar | x -20, z 230 to 290 every 20, y -20 | 80 | night, from the reveal |
+| E33.01 to E33.12 | road row | x 428, z -130 to 420 every 50, y 3.5; ends on the curves | 270 | by day, by ramp; never at night |
+| E33.13 | night-one car (moves) | on the car, highway x 428 | 450 | night one, timed for P4 |
+| E40 to E48 | fire row (Ambience) | x 12, z -50 to 350 every 50, y 82 | by band | day two on |
+| E49.01 to E49.10 | ledge roar fan, L1 to L10 | L1 to L7: x -130, z 36, 144, 202, 246, 290, 348, 456, y -30; L8 to L10: x -300, z 20, 170, 320, y 60 | 450, min 160, gated to the Ward zone | night, from the reveal |
+| E49.11 | roar sub, 2D World | on the listener | gated | night, from revealSubAtT |
 | E53 | chant | mouth (52, 34, -4) | 90, gated | night one on |
 | E54 | rave music (stereo, partly 3D) | chamber stack near (80, 12, -16) | chamber, gated | day two on |
 | E55 | cave drip | (52, 28, -4) | 10 | all |
@@ -249,6 +255,11 @@ All World, 3D, mono unless stated. y where it matters; otherwise ground plus 1 m
 | E57 | tank drip (optional) | (182, 128) | 12 | all |
 | E58 | phone wire (optional) | (273, 72) | 15 | all |
 | E59 | tree creaks | six giants on the night route, chosen in blockout | 30 | night |
+| E60 | seep trickle | head of the chute (54, 216, 31) map | 12 | night; gone when the seep is dry |
+| E61 | seep drip, cup or stone | same | 6 | night; cup drips until the cup is gone, then stone |
+| E62 | cwm snag creaks | three dead snags round the cwm, chosen in the build | 20 | night |
+| E63 | split snag creak | (39, 285, 48) map | 8 | night, once per pass |
+| E64 | split snag ember | inside the split snag | 3 | night, when the ember flag is set |
 
 Birds (day) and replacement crickets (night) spawn around the listener by code.
 
@@ -264,13 +275,13 @@ Birds (day) and replacement crickets (night) spawn around the listener by code.
 | Camp 3 | W1 to Camp 3 | about 70 (creek, trailer) | about 95 | 10 s |
 | Front zone | Jg to T | 0 (road, far) and 75 (bed edge) | 85 (first sight) | 4 s from the edge |
 | Cave | W1 to cave | 0 (chant at W1) | 109 (mouth) | 44 s |
-| Ward | J to Ward | 110 (silence) | 130 (stones) | 8 s |
+| Ward | J to Ward | 226 (silence, dogleg) | about 245 (fire and stones, round the fin) | 7 s |
 
 "Landmark reads at" is the leg length minus 20 m until Marlow's walk measures it. Pass rule proposed: every place is heard at least 4 s before it reads. Front zone is the tightest; if Grant hears it as late, the edge moves to x 310.
 
 ## 15. Tuning fields added by this doc (AudioTuning.md to add on approval)
 
-zoneExitMarginMeters (4), hollowCrossfadeSeconds (5), zoneFireOffsetDb per zone (section 2), vaneMaxDistance (60), vaneIntervalMin / Max (8 / 25 s), vaneIntervalNightMin / Max (30 / 90 s), dockChainIntervalMin / Max (10 / 30 s), dockChainNightScale (2), potsIntervalMin / Max (4 / 15 s), stackWindMaxDistance (41), stackCreakIntervalMin / Max (20 / 60 s), roadPassMaxDistance (260), carTickSeconds (90), fireMinDistance (60), fireMaxDistanceHigh / Mid / Low / Last (140 / 190 / 300 / 420), fireGlimpseGainDb (6), fireGlimpseLowpassHz (1500), chantW1GainDb (-30), chantSpot1GainDb (-20), chantMouthGainDb (-10), chantZoneFadeSeconds (2), caveBassLeg1GainDb (-12), caveMusicLowpassLeg3 (400 Hz), chamberSpatialBlend (0.5), chamberTalkDuckDb (-6), wardClimbFadeMeters (40). caveMusicLowpassFar (150) and caveMusicLowpassNear (8000) already exist in DN 13; caveChantRadius (60) in AudioTuning 2.12 is replaced by the three chant keys.
+zoneExitMarginMeters (4), hollowCrossfadeSeconds (5), zoneFireOffsetDb per zone (section 2), vaneMaxDistance (60), vaneIntervalMin / Max (8 / 25 s), vaneIntervalNightMin / Max (30 / 90 s), dockChainIntervalMin / Max (10 / 30 s), dockChainNightScale (2), potsIntervalMin / Max (4 / 15 s), stackWindMaxDistance (41), stackCreakIntervalMin / Max (20 / 60 s), roadPassMaxDistance (270), carTickSeconds (90), fireMinDistance (60), fireMaxDistanceHigh / Mid / Low / Last (150 / 200 / 300 / 420), plus the Sound/Valley 7.6 and 8 fields, fireGlimpseGainDb (6), fireGlimpseLowpassHz (1500), chantW1GainDb (-30), chantSpot1GainDb (-20), chantMouthGainDb (-10), chantZoneFadeSeconds (2), caveBassLeg1GainDb (-12), caveMusicLowpassLeg3 (400 Hz), chamberSpatialBlend (0.5), chamberTalkDuckDb (-6), wardClimbFadeMeters (6, was 40). caveMusicLowpassFar (150) and caveMusicLowpassNear (8000) already exist in DN 13; caveChantRadius (60) in AudioTuning 2.12 is replaced by the three chant keys.
 
 ## 16. Files
 
@@ -360,7 +371,7 @@ Footsteps (AudioTuning.md 3), interaction foley (pump, stove, ladder, lectern, d
 7. Night reachability of the lake, burn, hollow, front zone and ravine (rule 1.7). Pim.
 8. Stereo clip on a partly 3D source in 6000.3 (11.3.2). Rook. Also AudioSource custom rolloff curves set from code for the chant (11.1), believed to be AudioSource.SetCustomCurve with AudioSourceCurveType.CustomRolloff; unverified.
 9. DN 6.4's power line hum under road poles is dropped: the poles are outside the fence and the player never stands under them. The transformer at the office replaces it.
-10. The road's line off-map (9.1) is placeholder at x 420. Sable and Vesper.
+10. Road line: settled on paper by Valley rev 10 at x 428 (9.1); follows the build.
 11. Tone words from Vesper for every bed in 16.1 before any source is chosen.
 
 Hollis
