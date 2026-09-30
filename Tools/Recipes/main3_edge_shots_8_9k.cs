@@ -13,7 +13,8 @@ var shots = new (string n, float x, float z, float lx, float ly, float lz)[] {
     ("South_from_the_dock", 190f, 92f, 190f, 25f, -50f),
     ("East_road_cut_from_T", 337f, 170f, 445f, 12f, 170f),
     ("West_from_the_camp", 170f, 160f, 0f, 95f, 160f),
-    ("Ledge_west_from_the_path_end", -2f, 258f, -300f, 70f, 258f) };
+    ("Ledge_west_from_the_path_end", -2f, 258f, -300f, 70f, 258f),
+    ("StopRocks_W_ridge_foot", 90f, 205.5f, 72f, 13f, 205.5f) };   // on the J approach at the W ridge foot, the stop rocks either side (Vesper)
 var pc = UnityEngine.Object.FindFirstObjectByType<PlayerController>(); var cc = pc.GetComponent<UnityEngine.CharacterController>(); pc.enabled = false;
 var cam = UnityEngine.Camera.main; var camLocal = cam.transform.localPosition;
 string outDir = System.IO.Path.GetFullPath("Docs/Look/Edges"); System.IO.Directory.CreateDirectory(outDir);
