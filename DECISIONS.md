@@ -192,3 +192,4 @@
 - 2026-09-30: Invisible walls only where needed: to stop the player leaving through the front, and going up the Ward path by day. Every other stop is something the player can see, or it is removed.
 - 2026-09-30: Before Grant walks a build, the team passes it at eye height: Rook's review captures, Marlow's checklist and his own walk, Vesper against a fixed bar, Pim's task test.
 - 2026-09-30: Wren makes judgement calls and moves work forward without Grant; Grant reviews after. Checks, revisions and playtest fixes are forward work: finished tasks stay ticked and fixes become new tasks.
+- 2026-09-30: (Wren's call) At night the keeper carries a kerosene lamp: warm #FFA860, 6 to 8 m, no beam, on only at night, no toggle, no fuel. Scares may dim or put it out (JUMP-LANTERN, CHASE-LIGHT).
