@@ -66,3 +66,21 @@ Not oppressive from most of the valley: from camp the crest is 23 degrees up, fr
 FAIL: blocks 1 to 4.
 
 Marlow
+
+## Revision 10 (recheck of rev 9 blocks 1 to 4, 2026-09-30)
+
+Paper only; nothing walked. Same method as rev 9, N arm heights per rev 10 (58 x 120, 50 x 170, 40 x 250, 38 x 320, 20 x 380), far front and day-1 sheet z -60 to 400, valley fires z 0 to 500. Camera: Player.prefab field of view 60 (vertical); 91.5 degrees across at 16:9 (aspect unverified).
+
+### Rechecks
+1. **Open-east corners: PASS.** With +3 at jump height: (390, 250) 9.9, (385, 295) 9.0, (393, 300) 5.1, (360, 230) 11.8, (372, 262) 11.0, (330, 5) 9.8, (340, 15) 9.1. Floor grid every 8 m, x 40 to 396, z -8 to 305, eye 10.2 and 14.2 absolute: no failure, worst 1.4 at (392, 305) inside the N foot band, not standable. Deck 1.2 at jump (x 12 crest, as rev 9 hurt 8). Sable's table runs about 1 m more generous than mine on the stack (7.8 against my 6.7), lot (14.8, 13.7) and deck (1.5, 1.2), and 1.4 tighter at the fence corner (3.7, 5.1); all pass either way.
+2. **IW2: PASS.** SVG band now steps out: (80, 226) to (86, 226) to (86, 214.5), gap, (86, 211.5) to (86, 200) to (80, 200). IW2 drawn x 86, z 211.5 to 214.5, the whole gap. No lane.
+3. **Ledge ends: PASS.** SVG walls at z 285, x -12 to 6 (meets the shoulder's west edge) and z 215, x -12 to 8 (meets the knob's west edge), both past the lip at x -10. Tops 66, 4 m over the ledge. Neither wall is in the path-end frame facing west; from the fin exit the S wall sits at bearings 175 to 199, left of the leftmost valley fire (203).
+4. **IW3: PASS.** Brush x 340 to 348 drawn z 206 to 310, over the N band edge (about 302). IW3 drawn z 210, x 386 to 396, from the brush end to the fence. Ring closed: brush W and S, IW3, fence, N foot band.
+
+### New
+5. **Hurts: the trim puts both ends of the far front in the reveal frame.** Path end (-8.5, 246), eye 63.6, facing 270, frame 224 to 316. Front ends: north 292 (far row) to 304 (near row), south 217 to 232. Rev 9 ends were 316 to 330 and 210 to 225, at or past the edges. Now the right 12 to 24 degrees of frame show a dark far ridge over valley fires that run on to 338: the fire visibly stops. 1.6 "the far front across the frame" no longer holds; DECISIONS 2026-09-29 "huge in the distance". The north trim is not needed: on rev 10 terrain with the front at z -60 to 650, every eye still passes +3 (worst: fence corner 3.4 at jump; the line crosses the N arm at x 170, 50). I would restore the north end to z 650 and keep the south trim (S arm unchanged, rev 9 SE failures stand for z under -60). The N arm must then hold 50 at x 170 as built, not a linear dip between 58 and 40.
+6. **Cosmetic, goes to Rook:** 4.7 still says "N end: the shoulder's rock wall; S end: the knob's west face". Section 8 rev 10 (walls at z 285 and 215) wins. Drawing header in the doc still says Valley_map.svg revision 9; the SVG says 10.
+
+PASS on blocks 1 to 4. Item 5 is a hurt, not a block.
+
+Marlow
