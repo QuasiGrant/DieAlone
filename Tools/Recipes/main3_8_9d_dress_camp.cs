@@ -116,6 +116,34 @@ void Fit(UnityEngine.GameObject g)   // a fitted box where the player can touch 
     if (g.GetComponentInChildren<UnityEngine.Collider>() != null) return;
     var b = LocalBounds(g); var bc = g.AddComponent<UnityEngine.BoxCollider>(); bc.center = b.center; bc.size = b.size;
 }
+// 8.16a (Marlow: players walked through trunks): a BK tree gets one capsule on its trunk, measured from its first LOD's bark: the
+// median reach of the bark vertices between trunkBandLow and trunkBandHigh of the bark's height, about their centre, up trunkShare of
+// that height (the pack's own colliders are removed: on the giants they are 0.7 m thick inside a 1.7 m trunk). Hollow logs keep the
+// pack's log mesh collider. Foliage never collides.
+const float trunkBandLow = 0.01f, trunkBandHigh = 0.06f, trunkBandMax = 0.4f, trunkShare = 0.3f; const int trunkMinVerts = 8;
+var trunkCache = new System.Collections.Generic.Dictionary<UnityEngine.Mesh, (UnityEngine.Vector3 c, float r, float h)>();
+void TrunkCollider(UnityEngine.GameObject g)
+{
+    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+    var lod = g.GetComponent<UnityEngine.LODGroup>(); var r0 = lod != null ? lod.GetLODs()[0].renderers[0] : g.GetComponentInChildren<UnityEngine.MeshRenderer>(); if (r0 == null) return;
+    var mf = r0.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) return; var m = mf.sharedMesh;
+    if (!trunkCache.TryGetValue(m, out var tc))
+    {
+        var mats = r0.sharedMaterials; var vs = m.vertices; var bark = new System.Collections.Generic.HashSet<int>();
+        for (int s = 0; s < m.subMeshCount && s < mats.Length; s++) { var n = mats[s] != null ? mats[s].name : ""; if (n.Contains("Leaves") || n.Contains("Branches")) continue; foreach (var ix in m.GetTriangles(s)) bark.Add(ix); }
+        float y0 = float.MaxValue, y1 = float.MinValue; foreach (var ix in bark) { y0 = UnityEngine.Mathf.Min(y0, vs[ix].y); y1 = UnityEngine.Mathf.Max(y1, vs[ix].y); }
+        float h = y1 - y0, lo = y0 + h * trunkBandLow, hi = y0 + h * trunkBandHigh, cx = 0f, cz = 0f; int n0 = 0;
+        // a low-poly trunk has rings far apart: widen the band upward until it holds trunkMinVerts bark vertices (at most trunkBandMax)
+        for (float band = trunkBandHigh; band <= trunkBandMax; band *= 2f) { int k = 0; hi = y0 + h * band; foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) k++; if (k >= trunkMinVerts) break; }
+        foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) { cx += vs[ix].x; cz += vs[ix].z; n0++; }
+        if (n0 == 0) return; cx /= n0; cz /= n0;
+        var d = new System.Collections.Generic.List<float>(); foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) d.Add(UnityEngine.Mathf.Sqrt((vs[ix].x - cx) * (vs[ix].x - cx) + (vs[ix].z - cz) * (vs[ix].z - cz))); d.Sort();
+        tc = (new UnityEngine.Vector3(cx, y0, cz), d[d.Count / 2], h); trunkCache[m] = tc;
+    }
+    // the round bottom end sits below the base, so the trunk is its full radius at the ground (a rounded end at the base let feet under it)
+    var cap = mf.gameObject.AddComponent<UnityEngine.CapsuleCollider>(); cap.direction = 1; cap.radius = tc.r; cap.height = tc.h * trunkShare + tc.r * 2f;
+    cap.center = new UnityEngine.Vector3(tc.c.x, tc.c.y - tc.r + cap.height * 0.5f, tc.c.z);
+}
 UnityEngine.GameObject Spawn(string path, UnityEngine.Transform parent)
 {
     var src = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path + ".prefab");
@@ -445,7 +473,7 @@ for (int cl = 0; cl < 40 && treeN < 18; cl++)
     {
         var p = cc + new UnityEngine.Vector2(R(-4f, 4f), R(-4f, 4f)); if (!Clear(p, 5f)) continue;
         string path = rng.NextDouble() < 0.6 ? BK + "Trees/RedFir" + (1 + rng.Next(8)) : BK + "Trees/RedPine" + (1 + rng.Next(5));
-        var g = Spawn(path, trees); if (g == null) continue;
+        var g = Spawn(path, trees); if (g == null) continue; TrunkCollider(g);   // 8.16a: a trunk capsule for the pack's thin one
         g.transform.position = V(p.x, 0f, p.y); g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
         var b = LocalBounds(g); float want = R(treeMinH, treeMaxH), s = want / UnityEngine.Mathf.Max(0.5f, b.size.y);
         g.transform.localScale = V(s, s, s); g.transform.position = V(p.x, H(p.x, p.y) - 0.2f, p.y); tallest = UnityEngine.Mathf.Max(tallest, want); treeN++;

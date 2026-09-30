@@ -19,6 +19,9 @@ if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 UnityEngine.GameObject Root(string name) { foreach (var r in scene.GetRootGameObjects()) if (r.name == name) return r; return null; }
 if (Root("Ground815") == null) return "run 8.15 first";
 if (Root("Forest") != null) return "Forest already exists; rebuild Main3 from 8.1";
+// 8.16a: in a runner job the physics scene does not hold the colliders of the scene as loaded until it is synced; without this every
+// collider test below (Free's clearance, NearLowStop) saw only what this recipe had made itself
+UnityEngine.Physics.SyncTransforms();
 var V = new System.Func<float, float, float, UnityEngine.Vector3>((x, y, z) => new UnityEngine.Vector3(x, y, z));
 UnityEngine.Vector2 P(float x, float z) => new UnityEngine.Vector2(x, z);
 var terrain = Root("Terrain").GetComponent<UnityEngine.Terrain>(); var data = terrain.terrainData; var tOrg = terrain.transform.position; var size = data.size;
@@ -38,11 +41,43 @@ float R(float a, float b) => a + (float)rng.NextDouble() * (b - a);
 UnityEngine.Vector2 InDisk(UnityEngine.Vector2 c, float r) { float a = R(0f, 2f * UnityEngine.Mathf.PI), d = r * UnityEngine.Mathf.Sqrt((float)rng.NextDouble()); return c + P(UnityEngine.Mathf.Cos(a), UnityEngine.Mathf.Sin(a)) * d; }
 var missing = new System.Collections.Generic.List<string>();
 const string BK = "Assets/BK/PureNature_Redwood/Prefabs/", SUF = "Assets/suffercord/PSX Autumn Forest Asset Pack/Models/";
+// 8.16a (Marlow: players walked through trunks): a BK tree gets one capsule on its trunk, measured from its first LOD's bark: the
+// median reach of the bark vertices between trunkBandLow and trunkBandHigh of the bark's height, about their centre, up trunkShare of
+// that height (the pack's own colliders are removed: on the giants they are 0.7 m thick inside a 1.7 m trunk). Hollow logs keep the
+// pack's log mesh collider. Foliage never collides.
+const float trunkBandLow = 0.01f, trunkBandHigh = 0.06f, trunkBandMax = 0.4f, trunkShare = 0.3f; const int trunkMinVerts = 8;
+var trunkCache = new System.Collections.Generic.Dictionary<UnityEngine.Mesh, (UnityEngine.Vector3 c, float r, float h)>();
+bool IsPackTree(string path) => path.Contains("PureNature_Redwood/Prefabs/Trees/");
+bool IsPackLog(string path) => path.Contains("PureNature_Redwood/Prefabs/HollowLogs/");
+void TrunkCollider(UnityEngine.GameObject g)
+{
+    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+    var lod = g.GetComponent<UnityEngine.LODGroup>(); var r0 = lod != null ? lod.GetLODs()[0].renderers[0] : g.GetComponentInChildren<UnityEngine.MeshRenderer>(); if (r0 == null) return;
+    var mf = r0.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) return; var m = mf.sharedMesh;
+    if (!trunkCache.TryGetValue(m, out var tc))
+    {
+        var mats = r0.sharedMaterials; var vs = m.vertices; var bark = new System.Collections.Generic.HashSet<int>();
+        for (int s = 0; s < m.subMeshCount && s < mats.Length; s++) { var n = mats[s] != null ? mats[s].name : ""; if (n.Contains("Leaves") || n.Contains("Branches")) continue; foreach (var ix in m.GetTriangles(s)) bark.Add(ix); }
+        float y0 = float.MaxValue, y1 = float.MinValue; foreach (var ix in bark) { y0 = UnityEngine.Mathf.Min(y0, vs[ix].y); y1 = UnityEngine.Mathf.Max(y1, vs[ix].y); }
+        float h = y1 - y0, lo = y0 + h * trunkBandLow, hi = y0 + h * trunkBandHigh, cx = 0f, cz = 0f; int n0 = 0;
+        // a low-poly trunk has rings far apart: widen the band upward until it holds trunkMinVerts bark vertices (at most trunkBandMax)
+        for (float band = trunkBandHigh; band <= trunkBandMax; band *= 2f) { int k = 0; hi = y0 + h * band; foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) k++; if (k >= trunkMinVerts) break; }
+        foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) { cx += vs[ix].x; cz += vs[ix].z; n0++; }
+        if (n0 == 0) return; cx /= n0; cz /= n0;
+        var d = new System.Collections.Generic.List<float>(); foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) d.Add(UnityEngine.Mathf.Sqrt((vs[ix].x - cx) * (vs[ix].x - cx) + (vs[ix].z - cz) * (vs[ix].z - cz))); d.Sort();
+        tc = (new UnityEngine.Vector3(cx, y0, cz), d[d.Count / 2], h); trunkCache[m] = tc;
+    }
+    // the round bottom end sits below the base, so the trunk is its full radius at the ground (a rounded end at the base let feet under it)
+    var cap = mf.gameObject.AddComponent<UnityEngine.CapsuleCollider>(); cap.direction = 1; cap.radius = tc.r; cap.height = tc.h * trunkShare + tc.r * 2f;
+    cap.center = new UnityEngine.Vector3(tc.c.x, tc.c.y - tc.r + cap.height * 0.5f, tc.c.z);
+}
 UnityEngine.GameObject Spawn(string path, UnityEngine.Transform parent)
 {
     var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path + ".prefab"); if (pf == null) { if (!missing.Contains(path)) missing.Add(path); return null; }
     var g = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(pf, parent);
-    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);   // looks only
+    // looks only, except (8.16a, Marlow: players walked through trunks) BK trees and hollow logs: collision from
+    // the trunk capsule of TrunkCollider above and the pack log mesh, never on foliage
+    if (IsPackTree(path)) TrunkCollider(g); else if (!IsPackLog(path)) foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
     return g;
 }
 float Bottom(UnityEngine.GameObject g) { float low = float.MaxValue; foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) low = UnityEngine.Mathf.Min(low, r.bounds.min.y); return low; }
@@ -68,7 +103,9 @@ const float snagSpace = 6f, snagGirth = 1.5f; const int burnSnags = 20, burnFall
 var trailPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform leg in Root("Trails").transform) foreach (UnityEngine.Transform p in leg) trailPts.Add(P(p.position.x, p.position.z));
 var clearings = new (UnityEngine.Vector2 c, float r)[] { (P(170f, 160f), 22f), (P(282f, 238f), 28f), (P(292f, 108f), 18f), (P(78f, 146f), 14f) };   // camp, Camp 1, Camp 2, Camp 3
 var frontZone = new UnityEngine.Rect(334f, 145f, fenceX - 334f, 70f);   // the lot, office, store and booth
-var warpPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform w in Root("DevWarps").transform) warpPts.Add(P(w.position.x, w.position.z)); const float treeWarpGap = 5f;
+// 8.16a (the runner's sightlines, now that trunks have colliders): no tree on the next-destination lines 8.9 checks (Pump to the Snag)
+var sightKeepLines = new (UnityEngine.Vector2 a, UnityEngine.Vector2 b)[] { (P(190f, 97f), P(98.7f, 145.2f)) }; const float sightKeep = 3f;
+var warpPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform w in Root("DevWarps").transform) warpPts.Add(P(w.position.x, w.position.z)); const float treeWarpGap = 8f;   // 8 (was 5; 8.16a: a pine's crown reached 0.6 m from the Closed_Campground warp's view)
 var trees = new System.Collections.Generic.List<(UnityEngine.Vector2 p, float r)>();   // trunks placed (and the giants 8.3 placed), with their spacing
 var existingGiants = new System.Collections.Generic.List<UnityEngine.Vector2>();
 foreach (var g in new[] { Root("Giants") }) if (g != null) foreach (UnityEngine.Transform t in g.transform) foreach (var tt in t.name == "Heroes" ? System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(t)) : new[] { t }) { trees.Add((P(tt.position.x, tt.position.z), 4f)); existingGiants.Add(P(tt.position.x, tt.position.z)); }   // the three heroes sit in a Heroes group
@@ -80,6 +117,7 @@ bool Free(UnityEngine.Vector2 p, float spacing, float slopeMax, bool beyondFence
     foreach (var t in trailPts) if ((t - p).sqrMagnitude < treeTrailGap * treeTrailGap) { rejTrail++; return false; }
     foreach (var c in clearings) if (UnityEngine.Vector2.Distance(p, c.c) < c.r) { rejPlace++; return false; }
     if (frontZone.Contains(p)) { rejPlace++; return false; }
+    foreach (var sl in sightKeepLines) if (SegD(p, sl.a, sl.b) < sightKeep) { rejPlace++; return false; }   // 8.16a
     foreach (var w in warpPts) if ((w - p).sqrMagnitude < treeWarpGap * treeWarpGap) { rejPlace++; return false; }   // no warp lands in a tree (Pim, 8.15 gate)
     float ex = (p.x - lakeX) / (lakeA * lakeKeep), ez = (p.y - lakeZ) / (lakeB * lakeKeep); if (ex * ex + ez * ez < 1f) { rejPlace++; return false; }
     if (!beyondFence && Slope(p.x, p.y) > slopeMax) { rejSlope++; return false; }
@@ -122,11 +160,21 @@ UnityEngine.Material SufOlive(UnityEngine.Material src)
     if (m == null) { m = new UnityEngine.Material(src); UnityEditor.AssetDatabase.CreateAsset(m, path); } else m.CopyPropertiesFromMaterial(src);
     m.shader = src.shader; if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", sufOlive); if (m.HasProperty("_Color")) m.SetColor("_Color", sufOlive); UnityEditor.EditorUtility.SetDirty(m); sufCache[src] = m; return m;
 }
+// a stop lower than lowStopTop m over the ground (brush bands, hedges, rims) within logStopGap m of p; trees and logs of the Forest do not count
+const float logStopGap = 4f, lowStopTop = 3f; int logSkips = 0;
+bool NearLowStop(UnityEngine.Vector2 p)
+{
+    float gy = H(p.x, p.y); var fr = forest;
+    foreach (var c in UnityEngine.Physics.OverlapSphere(V(p.x, gy + 1f, p.y), logStopGap, UnityEngine.Physics.AllLayers, UnityEngine.QueryTriggerInteraction.Ignore))
+        if (!(c is UnityEngine.TerrainCollider) && !c.transform.IsChildOf(fr) && c.bounds.max.y - gy < lowStopTop) return true;
+    return false;
+}
 void Foot(UnityEngine.Transform parent, string path, UnityEngine.Vector2 c, float r, float scaleLow, float scaleHigh, bool olive, bool lying = false)
 {
     for (int k = 0; k < footTries; k++)
     {
         var p = InDisk(c, r); if (!OnTerrain(p.x, p.y) || Slope(p.x, p.y) > floorSlope) continue;
+        if (IsPackLog(path) && NearLowStop(p)) { logSkips++; continue; }   // 8.16a: a solid log beside a low stop is a step over it (the IW3 check jumped log, brush band, campground)
         bool nearTrail = false; foreach (var t in trailPts) if ((t - p).sqrMagnitude < footTrailGap * footTrailGap) { nearTrail = true; break; } if (nearTrail) continue;
         var g = Spawn(path, parent); if (g == null) return;
         float s = R(scaleLow, scaleHigh); g.transform.localScale = V(s, s, s); g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
@@ -236,6 +284,18 @@ int beyondN = 0;
     }
 }
 
+// 8.16a (Wren: standing snags stopped nobody): a capsule on a dead tree's trunk only, measured from its mesh: the median reach of the
+// vertices in the lowest snagTrunkBand of its height about their centre, up snagTrunkShare of its height (limbs start above that)
+const float snagTrunkBand = 0.15f, snagTrunkShare = 0.4f;
+void SnagTrunk(UnityEngine.GameObject g)
+{
+    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);   // the pack's convex hull takes in the limbs
+    var mf = g.GetComponentInChildren<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) return;
+    var m = mf.sharedMesh; float y0 = m.bounds.min.y, h = m.bounds.size.y, cx = 0f, cz = 0f; int n = 0; var vs = m.vertices;
+    foreach (var v in vs) if (v.y < y0 + h * snagTrunkBand) { cx += v.x; cz += v.z; n++; } if (n == 0) return; cx /= n; cz /= n;
+    var d = new System.Collections.Generic.List<float>(); foreach (var v in vs) if (v.y < y0 + h * snagTrunkBand) d.Add(UnityEngine.Mathf.Sqrt((v.x - cx) * (v.x - cx) + (v.z - cz) * (v.z - cz))); d.Sort();
+    var cap = mf.gameObject.AddComponent<UnityEngine.CapsuleCollider>(); cap.direction = 1; cap.radius = d[d.Count / 2]; cap.height = h * snagTrunkShare; cap.center = new UnityEngine.Vector3(cx, y0 + h * snagTrunkShare * 0.5f, cz);
+}
 // 6. the old burn: 20 snags and 10 fallen trunks (Celestia's dead tree on the charred wood material)
 {
     var burn = new UnityEngine.GameObject("BurnDeadwood").transform; burn.SetParent(forest, false);
@@ -251,11 +311,11 @@ int beyondN = 0;
         float h0 = lying ? 4.3f : Top(g) - Bottom(g); float s = R(lying ? 6f : 8f, lying ? 12f : 16f) / UnityEngine.Mathf.Max(0.5f, h0); g.transform.localScale = V(s * snagGirth, s, s * snagGirth);
         float b = Bottom(g); g.transform.position = V(p.x, H(p.x, p.y) - b - (lying ? 0.3f : 0.2f), p.y);
         if (charred != null) foreach (var rr in g.GetComponentsInChildren<UnityEngine.Renderer>()) rr.sharedMaterial = charred;
-        if (lying) fallen++; else snags++; snagsN++;
+        if (lying) fallen++; else { SnagTrunk(g); snags++; } snagsN++;
     }
 }
 
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " | giants " + giantsN + ", firs and pines " + firsN + " (crests " + crestN + ", open-east clumps " + eastClumpsN + "), beyond the road " + beyondN + ", burn deadwood " + snagsN + ", foot pieces " + footN
+return "saved=" + saved + " | giants " + giantsN + ", firs and pines " + firsN + " (crests " + crestN + ", open-east clumps " + eastClumpsN + "), beyond the road " + beyondN + ", burn deadwood " + snagsN + ", foot pieces " + footN + " (logs kept off low stops " + logSkips + ")"
     + " | rejected: trail " + rejTrail + ", place " + rejPlace + ", slope " + rejSlope + ", collider " + rejCollider + ", spacing " + rejSpace + " | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));

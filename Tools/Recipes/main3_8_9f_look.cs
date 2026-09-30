@@ -176,6 +176,9 @@ var matSiding = Tinted("Slice_Siding", planksM, woodC, new UnityEngine.Vector2(4
 var matRoof = Tinted("Slice_RoofChar", concrete, charC, new UnityEngine.Vector2(4f, 4f));
 var matSteel = Tinted("Slice_Steel", concrete, granite, new UnityEngine.Vector2(1f, 4f));
 var matBrush = Tinted("Slice_Brush", groundM, Hex("#4F4A2C"), new UnityEngine.Vector2(2f, 2f));   // 8.14 brush bands: dull olive (Style.md)
+// 8.16a (Pim W4: the stop sign drew as a blank grey square): the sign face in the mast lamp's warning red (Style.md: one warning object
+// per site) weathered halfway to the rust metal, so it reads as a stop sign without glowing
+const float signWeather = 0.5f; var matSignRed = Tinted("Slice_SignRed", concrete, UnityEngine.Color.Lerp(Hex("#B0201C"), Hex("#8B4A2B"), signWeather), new UnityEngine.Vector2(1f, 1f));
 // front zone: surfaces to asphalt and gravel, buildings to siding and roofs, everything else gray to steel (the fire-marker
 // lamps on DieAlone/FireStandIn keep theirs)
 int fzN = 0;
@@ -187,6 +190,7 @@ foreach (var r in Root("FrontZone").GetComponentsInChildren<UnityEngine.MeshRend
     if (r.transform.parent != null && r.transform.parent.parent != null && (r.transform.parent.name == "VergeTree" || r.transform.parent.parent.name == "VergeTree")) continue;   // 8.14a: the verge tree is pack art, it keeps its own material
     if (n == "ParkingLot" || n == "Drive" || n == "TurningCircle" || n == "Road" || n == "Drive_To_T") m = matAsphalt;
     else if (n == "Brush") m = matBrush;
+    else if (n == "StopSign") m = matSignRed;
     else if (n == "PowerPole" || n == "Crossarm") m = matSteel;   // 8.15 gate (Marlow: from the office only the lamp and posts show): weathered grey poles read against the hills
     else if (n == "StopSignPost" || n == "EntranceSignPost" || n == "MailboxPost" || n == "EntranceSign") m = matSiding;
     else if (n.StartsWith("Spur") || n.StartsWith("Loop") || n == "Pitch") m = matGravel;
@@ -248,6 +252,34 @@ int markerN = 0;   // 8.14: the thicket and its markers are gone (Valley.md rev 
 // the old burn: dense young regrowth 4 to 6 m (4 m in the last 40 m before the front zone), off the trails (Main3.md 2.10)
 var burnPoly = new[] { new UnityEngine.Vector2(185f, 181f), new UnityEngine.Vector2(340f, 213f), new UnityEngine.Vector2(340f, 143f), new UnityEngine.Vector2(185f, 151f) };
 bool InBurn(UnityEngine.Vector2 p) { bool c = false; for (int i = 0, j = burnPoly.Length - 1; i < burnPoly.Length; j = i++) if (((burnPoly[i].y > p.y) != (burnPoly[j].y > p.y)) && (p.x < (burnPoly[j].x - burnPoly[i].x) * (p.y - burnPoly[i].y) / (burnPoly[j].y - burnPoly[i].y) + burnPoly[i].x)) c = !c; return c; }
+// 8.16a (Marlow: players walked through trunks): a BK tree gets one capsule on its trunk, measured from its first LOD's bark: the
+// median reach of the bark vertices between trunkBandLow and trunkBandHigh of the bark's height, about their centre, up trunkShare of
+// that height (the pack's own colliders are removed: on the giants they are 0.7 m thick inside a 1.7 m trunk). Hollow logs keep the
+// pack's log mesh collider. Foliage never collides.
+const float trunkBandLow = 0.01f, trunkBandHigh = 0.06f, trunkBandMax = 0.4f, trunkShare = 0.3f; const int trunkMinVerts = 8;
+var trunkCache = new System.Collections.Generic.Dictionary<UnityEngine.Mesh, (UnityEngine.Vector3 c, float r, float h)>();
+void TrunkCollider(UnityEngine.GameObject g)
+{
+    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+    var lod = g.GetComponent<UnityEngine.LODGroup>(); var r0 = lod != null ? lod.GetLODs()[0].renderers[0] : g.GetComponentInChildren<UnityEngine.MeshRenderer>(); if (r0 == null) return;
+    var mf = r0.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) return; var m = mf.sharedMesh;
+    if (!trunkCache.TryGetValue(m, out var tc))
+    {
+        var mats = r0.sharedMaterials; var vs = m.vertices; var bark = new System.Collections.Generic.HashSet<int>();
+        for (int s = 0; s < m.subMeshCount && s < mats.Length; s++) { var n = mats[s] != null ? mats[s].name : ""; if (n.Contains("Leaves") || n.Contains("Branches")) continue; foreach (var ix in m.GetTriangles(s)) bark.Add(ix); }
+        float y0 = float.MaxValue, y1 = float.MinValue; foreach (var ix in bark) { y0 = UnityEngine.Mathf.Min(y0, vs[ix].y); y1 = UnityEngine.Mathf.Max(y1, vs[ix].y); }
+        float h = y1 - y0, lo = y0 + h * trunkBandLow, hi = y0 + h * trunkBandHigh, cx = 0f, cz = 0f; int n0 = 0;
+        // a low-poly trunk has rings far apart: widen the band upward until it holds trunkMinVerts bark vertices (at most trunkBandMax)
+        for (float band = trunkBandHigh; band <= trunkBandMax; band *= 2f) { int k = 0; hi = y0 + h * band; foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) k++; if (k >= trunkMinVerts) break; }
+        foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) { cx += vs[ix].x; cz += vs[ix].z; n0++; }
+        if (n0 == 0) return; cx /= n0; cz /= n0;
+        var d = new System.Collections.Generic.List<float>(); foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) d.Add(UnityEngine.Mathf.Sqrt((vs[ix].x - cx) * (vs[ix].x - cx) + (vs[ix].z - cz) * (vs[ix].z - cz))); d.Sort();
+        tc = (new UnityEngine.Vector3(cx, y0, cz), d[d.Count / 2], h); trunkCache[m] = tc;
+    }
+    // the round bottom end sits below the base, so the trunk is its full radius at the ground (a rounded end at the base let feet under it)
+    var cap = mf.gameObject.AddComponent<UnityEngine.CapsuleCollider>(); cap.direction = 1; cap.radius = tc.r; cap.height = tc.h * trunkShare + tc.r * 2f;
+    cap.center = new UnityEngine.Vector3(tc.c.x, tc.c.y - tc.r + cap.height * 0.5f, tc.c.z);
+}
 const float regrowthStep = 5f, regrowthJitter = 2.5f, regrowthTrailGap = 4.5f, regrowthLowX = 300f;   // gap 4.5 (was 3.5; 8.15 gate: the burn trails take sun)
 // a view lane from the S2 camera on Camp to Jg to the tower foot stays open, so the tower reads base to cab (LookSlice 6)
 const float s2LaneHalf = 6f; var s2Cam = new UnityEngine.Vector2(235f, 168f); var s2Tower = new UnityEngine.Vector2(164f, 166f);
@@ -262,7 +294,7 @@ for (float x = 186f; x < 340f; x += regrowthStep) for (float z = 143f; z < 213f;
     tree.transform.position = V(p.x, 0f, p.y); tree.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
     float top = float.MinValue; foreach (var rr in tree.GetComponentsInChildren<UnityEngine.Renderer>()) top = UnityEngine.Mathf.Max(top, rr.bounds.max.y);
     float want = p.x > regrowthLowX ? 4f : R(4f, 6f), sc = want / UnityEngine.Mathf.Max(0.5f, top);
-    tree.transform.localScale = V(sc, sc, sc); tree.transform.position = V(p.x, H(p.x, p.y) - 0.1f, p.y); regrowthN++;
+    tree.transform.localScale = V(sc, sc, sc); tree.transform.position = V(p.x, H(p.x, p.y) - 0.1f, p.y); TrunkCollider(tree); regrowthN++;
 }
 // the open ground the tower sees east (S4): no bare flat plane. Off the trails and the burn, low growth across the view:
 // grass, ferns and dead leaves everywhere, and small firs 2 to 4 m outside the front zone (behind the thicket walls, so
@@ -285,6 +317,18 @@ for (float x = openX0; x < openX1; x += openStep) for (float z = openZ0; z < ope
     float low = float.MaxValue; foreach (var rr in g.GetComponentsInChildren<UnityEngine.Renderer>()) low = UnityEngine.Mathf.Min(low, rr.bounds.min.y);
     g.transform.position = V(p.x, H(p.x, p.y) - low - 0.03f, p.y);
 }
+// 8.16a (Wren: standing snags stopped nobody): a capsule on a dead tree's trunk only, measured from its mesh: the median reach of the
+// vertices in the lowest snagTrunkBand of its height about their centre, up snagTrunkShare of its height (limbs start above that)
+const float snagTrunkBand = 0.15f, snagTrunkShare = 0.4f;
+void SnagTrunk(UnityEngine.GameObject g)
+{
+    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);   // the pack's convex hull takes in the limbs
+    var mf = g.GetComponentInChildren<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) return;
+    var m = mf.sharedMesh; float y0 = m.bounds.min.y, h = m.bounds.size.y, cx = 0f, cz = 0f; int n = 0; var vs = m.vertices;
+    foreach (var v in vs) if (v.y < y0 + h * snagTrunkBand) { cx += v.x; cz += v.z; n++; } if (n == 0) return; cx /= n; cz /= n;
+    var d = new System.Collections.Generic.List<float>(); foreach (var v in vs) if (v.y < y0 + h * snagTrunkBand) d.Add(UnityEngine.Mathf.Sqrt((v.x - cx) * (v.x - cx) + (v.z - cz) * (v.z - cz))); d.Sort();
+    var cap = mf.gameObject.AddComponent<UnityEngine.CapsuleCollider>(); cap.direction = 1; cap.radius = d[d.Count / 2]; cap.height = h * snagTrunkShare; cap.center = new UnityEngine.Vector3(cx, y0 + h * snagTrunkShare * 0.5f, cz);
+}
 // standing dead snags 8 to 16 m and fallen branches through the burn, so it reads as burnt forest from the tower, not a plane
 const float snagStep = 14f, snagJitter = 5f, snagLow = 8f, snagHigh = 16f, snagSpread = 6f, branchStep = 6f;   // snagSpread: their limbs reach about this far, kept out of the S2 lane
 var deadPrefab = "Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Decoration_Out/Tree_Dead"; int snagN = 0, branchN = 0;
@@ -295,7 +339,7 @@ for (float x = 186f; x < 340f; x += snagStep) for (float z = 143f; z < 213f; z +
     var d = Spawn(deadPrefab, regrowth); if (d == null) continue;
     d.transform.position = V(p.x, 0f, p.y); d.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
     float top = 0f; foreach (var rr in d.GetComponentsInChildren<UnityEngine.Renderer>()) top = UnityEngine.Mathf.Max(top, rr.bounds.max.y);
-    float sc = R(snagLow, snagHigh) / UnityEngine.Mathf.Max(0.5f, top); d.transform.localScale = V(sc, sc, sc); d.transform.position = V(p.x, H(p.x, p.y) - 0.2f, p.y); snagN++;
+    float sc = R(snagLow, snagHigh) / UnityEngine.Mathf.Max(0.5f, top); d.transform.localScale = V(sc, sc, sc); d.transform.position = V(p.x, H(p.x, p.y) - 0.2f, p.y); SnagTrunk(d); snagN++;
 }
 for (float x = 186f; x < 340f; x += branchStep) for (float z = 143f; z < 213f; z += branchStep)
 {

@@ -167,6 +167,21 @@ foreach (var ln in new[] { ("ChuteFootLantern", chuteFootS), ("P1Lantern", sP1),
     var a = AtS(ln.Item2); var sd = V(a.dir.z, 0f, -a.dir.x); var p = a.p + sd * lanternSide; p.y = H(p.x, p.z);
     NightLantern(ln.Item1, climbRoot, p);
 }
+// 8.16a (Pim, Gate_816_Pim.md 3: Camp to J N1 0 and 30, no light ahead leaving camp): lanterns beside the tread of Camp to J, the first
+// in view as the night walk leaves the camp centre, the second where the first has passed and the cairn lamp is still out of sight;
+// the climb's lanterns lead on from J
+var campLanternAlong = new[] { 9f, 38f };
+{
+    var campLeg = Root("Trails").transform.Find("Camp to J"); if (campLeg == null || campLeg.childCount < 2) return "no Camp to J trail (8.3)";
+    for (int li = 0; li < campLanternAlong.Length; li++)
+    {
+        float lAlong = campLanternAlong[li];
+        UnityEngine.Vector3 cPrev = campLeg.GetChild(0).position, cHere = cPrev, cNext = cPrev; float cAcc = 0f;
+        for (int ci = 1; ci < campLeg.childCount; ci++) { cNext = campLeg.GetChild(ci).position; float cD = UnityEngine.Vector3.Distance(V(cPrev.x, 0f, cPrev.z), V(cNext.x, 0f, cNext.z)); if (cAcc + cD >= lAlong) { cHere = UnityEngine.Vector3.Lerp(cPrev, cNext, (lAlong - cAcc) / UnityEngine.Mathf.Max(cD, 1e-4f)); break; } cAcc += cD; cPrev = cNext; }
+        var cDir = V(cNext.x - cPrev.x, 0f, cNext.z - cPrev.z).normalized; var cAt = cHere + V(cDir.z, 0f, -cDir.x) * lanternSide; cAt.y = H(cAt.x, cAt.z);
+        NightLantern("CampToJLantern_" + (li + 1), cairnGate.parent, cAt);
+    }
+}
 {   // the lantern glows show at night only (the practical lights switch themselves)
     var glowVis = new UnityEngine.GameObject("LanternGlows"); glowVis.transform.SetParent(ward, false);
     var vis = glowVis.AddComponent<LookVisibility>(); var so = new UnityEditor.SerializedObject(vis); so.FindProperty("show").enumValueIndex = (int)LookVisibility.Show.Night;

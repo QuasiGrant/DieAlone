@@ -4,7 +4,7 @@
 // from Camera.main into a RenderTexture (the look filter draws; screen-space UI does not), eye 1.6 m over the ground,
 // then shrunk into labelled contact sheets (JPG) in outDir with an index.md. Nothing in the scene or any asset is saved.
 // step "day" (day one look): one sheet per trail (both directions, a frame every 10 m, looking along the trail), the climb
-// (J to Ward, up, every 10 m), warps (N, E, S, W), trail ends (facing out), stops (every invisible collider that faces a
+// (J to Ward, up and back down, every 10 m, each frame with its rock and sky share, 8.16a), warps (N, E, S, W), trail ends (facing out), stops (every invisible collider that faces a
 // walker within 5 m of a trail centre line, one frame per 8 m cluster, facing it), the top-down map with trails, warps and
 // stops marked, and the day halves of the ten day and night pairs (kept in Temp/ReviewCapture).
 // 8.14a (Gate.md 2.7, 2.8 and 4; Marlow's hand-walk views): four compass views from the tower deck; the walk views (P4 looking
@@ -197,7 +197,7 @@ string GreyTrails(string lookName)
     var frames = new System.Collections.Generic.List<(UnityEngine.Color32[] px, string label)>();
     string file = "Grey_Trails_" + lookName.Replace(' ', '_') + ".jpg";
     greyMd.Append("\n## Trail grey, " + lookName + "\n\nSheet [" + file + "](" + file + "). Mean grey (0 to 255, filter on) of the trail centre and of the floor " + greySide.ToString("F0", inv) + " m to either side, " + greyNear.ToString("F0", inv) + " m and " + greyFar.ToString("F0", inv) + " m ahead, over frames every " + greyStep.ToString("F0", inv) + " m looking along the trail. A point is left out when it is off screen or behind a collider (hedges included), and a trail point also when the terrain grass covers it (its patch changes by more than " + greyHidden.ToString("F0", inv) + " grey with the grass hidden); the frame label shows - for it. Pass: the difference is " + greyNeed.ToString("F0", inv) + " or more either way.\n\n");
-    greyMd.Append("| Trail | Frames | Trail 5 m | Floor 5 m | Diff 5 m | Trail 20 m | Floor 20 m | Diff 20 m | Pass |\n|---|---|---|---|---|---|---|---|---|\n");
+    greyMd.Append("| Trail | Frames | Trail 5 m | Floor 5 m | Diff 5 m | Trail 20 m | Floor 20 m | Diff 20 m | Diff 20 m, fog off | Pass |\n|---|---|---|---|---|---|---|---|---|---|\n");
     int passN = 0;
     foreach (var leg in legs)
     {
@@ -281,6 +281,7 @@ try
             var standIn = UnityEngine.Shader.Find("DieAlone/FireStandIn");
             foreach (var r in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshRenderer>(UnityEngine.FindObjectsSortMode.None)) if (r.enabled && r.sharedMaterial != null && r.sharedMaterial.shader == standIn && r.bounds.size.magnitude < nightMarkerMax) lights.Add(r.bounds.center);
             bool allPass = true;
+            var ruleFrames = new System.Collections.Generic.List<(UnityEngine.Color32[] px, string label)>();   // 8.16a (Pim): every night-rule frame on a sheet
             foreach (var ln in new[] { "Camp to J", "J to Ward" })
             {
                 var leg = legs.Find(q => q.name == ln); if (leg.pts == null) continue; float len = Length(leg.pts); int frames = 0, n1 = 0, n2 = 0; float dSum = 0f; int dN = 0; var miss = new System.Collections.Generic.List<string>();
@@ -298,10 +299,20 @@ try
                     var q = At(leg.pts, s + greyNear); var q2 = At(leg.pts, s + greyNear + 1f); var t = new UnityEngine.Vector3(q2.x - q.x, 0f, q2.z - q.z).normalized; var side = new UnityEngine.Vector3(t.z, 0f, -t.x);
                     float tg = PatchGrey(src, new UnityEngine.Vector3(q.x, Ground(q.x, q.z, q.y), q.z), null); float fg = 0f; int fn = 0;
                     foreach (var sgn in new[] { -1f, 1f }) { var fx = q + side * greySide * sgn; float g = PatchGrey(src, new UnityEngine.Vector3(fx.x, Ground(fx.x, fx.z, q.y), fx.z), null); if (g >= 0f) { fg += g; fn++; } }
-                    if (tg >= 0f && fn > 0) { float d = tg - fg / fn; dSum += d; dN++; if (UnityEngine.Mathf.Abs(d) >= nightEdge) n2++; else miss.Add("N2 " + s.ToString("F0", inv) + " (" + d.ToString("F0", inv) + ")"); }
+                    string n2Label = "N2 -";
+                    if (tg >= 0f && fn > 0) { float d = tg - fg / fn; dSum += d; dN++; n2Label = "N2 " + d.ToString("F0", inv); if (UnityEngine.Mathf.Abs(d) >= nightEdge) n2++; else miss.Add("N2 " + s.ToString("F0", inv) + " (" + d.ToString("F0", inv) + ")"); }
+                    ruleFrames.Add((Shrink(src, greyDiv), ln + " " + s.ToString("F0", inv) + " M N1 " + (lit ? "OK" : "NO") + " " + n2Label));
                 }
                 bool pass = n1 == frames && dN > 0 && n2 == dN; if (!pass) allPass = false;
                 nm.Append("| " + ln + " | " + frames + " | " + n1 + " of " + frames + " | " + n2 + " of " + dN + " | " + (dN > 0 ? (dSum / dN).ToString("F0", inv) : "-") + " | " + (miss.Count == 0 ? "none" : string.Join(", ", miss)) + " |\n");
+            }
+            {
+                int ntw = shotW / greyDiv, nth = shotH / greyDiv, nRows = (ruleFrames.Count + greyCols - 1) / greyCols;
+                NewCanvas(greyCols * (ntw + gap) + gap, headH + nRows * (labelH + nth + gap) + gap);
+                Text(gap + 4, 12, "Night rule frames, Camp to J and J to Ward: every " + trailStep.ToString("F0", inv) + " m, N1 light in frame, N2 trail minus floor at " + greyNear.ToString("F0", inv) + " m", 3, gold);
+                for (int i = 0; i < ruleFrames.Count; i++) { int x = gap + (i % greyCols) * (ntw + gap), y = headH + (i / greyCols) * (labelH + nth + gap); Blit(ruleFrames[i].px, ntw, nth, x, y + labelH); Text(x + 2, y + 4, ruleFrames[i].label, 1, white); }
+                SaveCanvas("Night_Rule_Frames.jpg", "Night rule frames", ruleFrames.Count);
+                nm.Append("\nSheet [Night_Rule_Frames.jpg](Night_Rule_Frames.jpg): every frame above, labelled N1 OK or NO and the N2 difference.\n");
             }
             System.IO.File.AppendAllText(System.IO.Path.Combine(outDir, "index.md"), nm.ToString().Replace("\r", ""));
             nightRule = "night rule " + (allPass ? "PASS" : "FAIL") + nm.ToString().Substring(nm.ToString().IndexOf("|---|---|---|---|---|---|") + 26).Replace("\n", " ");
@@ -340,15 +351,64 @@ try
     // 4. the climb, J to Ward, up
     var climb = legs.Find(q => q.name == "J to Ward");
     if (climb.pts == null) return "no leg J to Ward";
+    // 8.16a (ClimbFix.md 3): forward and back every 10 m, each frame labelled with its rock and sky share. A ray per sample pixel
+    // (climbRaysX by climbRaysY): rock is terrain whose rock layer weighs climbRockWeight or more, any mesh under the Rock root, or a
+    // mesh on the band rock material; sky is a ray above the horizon that hits nothing (far land below it, drawn without colliders,
+    // counts as neither); drawn trees within climbTreeNear m of the climb get temporary colliders on their first LOD
+    const int climbRaysX = 64, climbRaysY = 33; const float climbRockWeight = 0.5f, climbTreeNear = 120f, climbRayMax = 3000f;
+    var climbRockSky = new System.Text.StringBuilder("\n## Climb rock and sky (ClimbFix.md 3)\n\nShare of each Climb frame that is rock and sky, from " + climbRaysX + " x " + climbRaysY + " rays per frame (method in main3_review_capture.cs, step 4). Cleft frames are the slot (exempt from the rock bar).\n\n| Frame | Rock pct | Sky pct |\n|---|---|---|\n");
     {
-        var frames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>(); float len = Length(climb.pts);
-        for (float s = 0f; s <= len + 0.01f; s += trailStep)
+        var climbTemp = new System.Collections.Generic.List<UnityEngine.Collider>(); var climbMid = At(climb.pts, Length(climb.pts) * 0.5f);
+        foreach (var lod in UnityEngine.Object.FindObjectsByType<UnityEngine.LODGroup>(UnityEngine.FindObjectsSortMode.None))
         {
-            var p = At(climb.pts, s); var c = p + UnityEngine.Vector3.up * eye; var ahead = At(climb.pts, s + 3f); var far = At(climb.pts, s + trailStep);
-            var yawDir = new UnityEngine.Vector3(ahead.x - p.x, 0f, ahead.z - p.z).normalized;
-            frames.Add((c, c + yawDir * 10f + UnityEngine.Vector3.up * (far.y - p.y), "CLIMB " + s.ToString("F0", inv) + " M  Y " + p.y.ToString("F0", inv)));
+            if (new UnityEngine.Vector2(lod.transform.position.x - climbMid.x, lod.transform.position.z - climbMid.z).magnitude > climbTreeNear) continue;
+            var lods = lod.GetLODs(); if (lods.Length == 0) continue;
+            foreach (var r in lods[0].renderers) { var mf = r != null ? r.GetComponent<UnityEngine.MeshFilter>() : null; if (mf == null || mf.sharedMesh == null || r.GetComponent<UnityEngine.Collider>() != null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; climbTemp.Add(mc); }
         }
-        Sheet("Climb_J_to_Ward.jpg", "Climb J to Ward, up, every 10 m (" + len.ToString("F0", inv) + " m)", frames, trailDiv, trailCols);
+        UnityEngine.Physics.SyncTransforms();
+        var tdata = terrain.terrainData; int rockIdx = -1; for (int k = 0; k < tdata.terrainLayers.Length; k++) if (tdata.terrainLayers[k] != null && tdata.terrainLayers[k].name == "Layer_Rock") rockIdx = k;
+        // 8.1's rock root, looked up among the scene roots (a find by name can return a child)
+        UnityEngine.GameObject rockRootT = null; foreach (var r0 in scene.GetRootGameObjects()) if (r0.name == "Rock") rockRootT = r0;
+        var bandRock = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_BandRock.mat");
+        (float rock, float sky) RockSky()
+        {
+            cam.targetTexture = rt; int rock = 0, sky = 0, n = 0;
+            for (int gy = 0; gy < climbRaysY; gy++) for (int gx = 0; gx < climbRaysX; gx++)
+            {
+                var ray = cam.ViewportPointToRay(new UnityEngine.Vector3((gx + 0.5f) / climbRaysX, (gy + 0.5f) / climbRaysY, 0f)); n++;
+                if (!UnityEngine.Physics.Raycast(ray, out var h, climbRayMax, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) { if (ray.direction.y > 0f) sky++; continue; }
+                if (h.collider is UnityEngine.TerrainCollider)
+                {
+                    if (rockIdx < 0) continue; var tp = terrain.transform.position; int ax = UnityEngine.Mathf.Clamp((int)((h.point.x - tp.x) / tdata.size.x * tdata.alphamapWidth), 0, tdata.alphamapWidth - 1), az = UnityEngine.Mathf.Clamp((int)((h.point.z - tp.z) / tdata.size.z * tdata.alphamapHeight), 0, tdata.alphamapHeight - 1);
+                    if (tdata.GetAlphamaps(ax, az, 1, 1)[0, 0, rockIdx] >= climbRockWeight) rock++; continue;
+                }
+                var hr = h.collider.GetComponent<UnityEngine.Renderer>();
+                if ((rockRootT != null && h.collider.transform.IsChildOf(rockRootT.transform)) || (hr != null && bandRock != null && hr.sharedMaterial == bandRock)) rock++;
+            }
+            cam.targetTexture = null; return (100f * rock / n, 100f * sky / n);
+        }
+        float len = Length(climb.pts);
+        foreach (var back in new[] { false, true })
+        {
+            var l = new System.Collections.Generic.List<UnityEngine.Vector3>(climb.pts); if (back) l.Reverse();
+            int tw = shotW / trailDiv, th = shotH / trailDiv; var frames = new System.Collections.Generic.List<(UnityEngine.Color32[] px, string label)>();
+            for (float s = 0f; s <= len + 0.01f; s += trailStep)
+            {
+                var p = At(l, s); var c = p + UnityEngine.Vector3.up * eye; var ahead = At(l, s + 3f); var far = At(l, s + trailStep);
+                var yawDir = new UnityEngine.Vector3(ahead.x - p.x, 0f, ahead.z - p.z).normalized;
+                Pose(c, c + yawDir * 10f + UnityEngine.Vector3.up * (far.y - p.y)); var rs = RockSky();
+                float sUp = back ? len - s : s; string name = (back ? "BACK " : "FWD ") + sUp.ToString("F0", inv) + " M";
+                climbRockSky.Append("| " + name + " | " + rs.rock.ToString("F0", inv) + " | " + rs.sky.ToString("F0", inv) + " |\n");
+                frames.Add((Render(trailDiv), "CLIMB " + name + "  Y " + p.y.ToString("F0", inv) + "  ROCK " + rs.rock.ToString("F0", inv) + " SKY " + rs.sky.ToString("F0", inv)));
+            }
+            int rows = (frames.Count + trailCols - 1) / trailCols; NewCanvas(trailCols * (tw + gap) + gap, headH + rows * (labelH + th + gap) + gap);
+            string title = "Climb J to Ward, " + (back ? "back down" : "up") + ", every 10 m (" + len.ToString("F0", inv) + " m), rock and sky percent";
+            Text(gap + 4, 12, title, 3, gold);
+            for (int i = 0; i < frames.Count; i++) { int x = gap + (i % trailCols) * (tw + gap), y = headH + (i / trailCols) * (labelH + th + gap); Blit(frames[i].px, tw, th, x, y + labelH); Text(x + 2, y + 4, frames[i].label, 2, white); }
+            SaveCanvas(back ? "Climb_J_to_Ward_Back.jpg" : "Climb_J_to_Ward.jpg", title, frames.Count);
+        }
+        foreach (var c in climbTemp) if (c != null) UnityEngine.Object.DestroyImmediate(c);
+        UnityEngine.Physics.SyncTransforms();
     }
 
     // 2. warps, N E S W
@@ -374,6 +434,8 @@ try
 
     // 3b. stops: invisible colliders (no Renderer on the collider's object, not terrain) hit within 5 m of a trail centre line whose
     // face turns toward the walker (|normal . trail direction| over 0.7), so side walls running along the trail are left out
+    // 8.16a: pack trees and hollow logs keep their own trunk and log colliders inside the drawn trunk; they are counted apart, not as stops
+    bool InPackTree(UnityEngine.Collider c) { for (var t = c.transform; t != null; t = t.parent) { var n = t.name; if (n.StartsWith("Sequoia") || n.StartsWith("RedFir") || n.StartsWith("RedPine") || n.StartsWith("RedwoodHollowLog")) return true; } return false; }
     var hits = new System.Collections.Generic.List<(UnityEngine.Vector3 hit, UnityEngine.Vector3 from, string what, string leg, float s, float d)>();
     foreach (var leg in legs)
     {
@@ -386,7 +448,7 @@ try
             {
                 var dir = UnityEngine.Quaternion.Euler(0f, k * 360f / stopRays, 0f) * UnityEngine.Vector3.forward;
                 if (!UnityEngine.Physics.Raycast(o, dir, out var h, stopReach, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) continue;
-                if (h.collider is UnityEngine.TerrainCollider || h.collider.GetComponent<UnityEngine.Renderer>() != null) continue;
+                if (h.collider is UnityEngine.TerrainCollider || h.collider.GetComponent<UnityEngine.Renderer>() != null || InPackTree(h.collider)) continue;
                 var n = new UnityEngine.Vector3(h.normal.x, 0f, h.normal.z); if (n.sqrMagnitude < 0.25f) continue; n.Normalize();
                 if (UnityEngine.Mathf.Abs(UnityEngine.Vector3.Dot(n, t)) < stopFacing) continue;
                 string path = h.collider.name; var tr = h.collider.transform.parent; if (tr != null) path = tr.name + "/" + path;
@@ -514,7 +576,7 @@ try
     }
 
     // 3e. every collider without a renderer, scene-wide, active or not (Pim, Gate_8_14_Pim.md: only IW1 to IW3 may be invisible walls)
-    int invisibleCount = 0; var invGroups = new System.Collections.Generic.SortedDictionary<string, (int n, int active, UnityEngine.Bounds b)>();
+    int invisibleCount = 0, trunkColliders = 0; var invGroups = new System.Collections.Generic.SortedDictionary<string, (int n, int active, UnityEngine.Bounds b)>();
     {
         var list = new System.Text.StringBuilder("# Main3 colliders without a renderer\n\nEvery Collider in Main3 (active or not) whose GameObject has no Renderer, terrain and the player left out, from Tools/Recipes/main3_review_capture.cs. Each sits inside a visible mesh, is a stair or step ramp under visible steps, or is an invisible wall; the reviewers judge which. Positions are the collider's bounds centre and size in metres (x east, z north).\n\n");
         list.Append("| Collider | Kind | Active | Trigger | Layer | Centre x, y, z | Size x, y, z |\n|---|---|---|---|---|---|---|\n");
@@ -524,6 +586,7 @@ try
         foreach (var col in all)
         {
             if (col is UnityEngine.TerrainCollider || col.GetComponent<UnityEngine.Renderer>() != null || col.transform.IsChildOf(pc.transform) || col.gameObject.scene != scene) continue;
+            if (InPackTree(col)) { trunkColliders++; continue; }
             bool active = col.enabled && col.gameObject.activeInHierarchy;
             var b = col.bounds;   // bounds of an inactive collider read zero: from its transform instead
             if (!active) { var bc = col as UnityEngine.BoxCollider; b = bc != null ? new UnityEngine.Bounds(col.transform.TransformPoint(bc.center), UnityEngine.Vector3.Scale(bc.size, col.transform.lossyScale)) : new UnityEngine.Bounds(col.transform.position, col.transform.lossyScale); }   // 8.14a gate (Pim): an inactive box reports its own size
@@ -534,7 +597,7 @@ try
         }
         System.IO.File.WriteAllText(System.IO.Path.Combine(outDir, "InvisibleColliders.md"), list.ToString().Replace("\r", ""));
     }
-    sb.Append("invisible colliders " + invisibleCount + " in " + invGroups.Count + " groups (InvisibleColliders.md)\n");
+    sb.Append("invisible colliders " + invisibleCount + " in " + invGroups.Count + " groups (InvisibleColliders.md); tree trunk and log colliders " + trunkColliders + "\n");
 
     // 3e2. hedge boxes under brush (Gate_8_15_Pim.md 6): each HedgeCollider's top face sampled every hedgeSample m; a sample is covered
     // when a drawn bush or log (Ground815/Stops) stands over it (its bounds hold the point across and reach the box's top)
@@ -563,7 +626,9 @@ try
     var warpLines = new System.Collections.Generic.List<string>();
     {
         var fol = new System.Collections.Generic.List<UnityEngine.Renderer>();
-        foreach (var r in UnityEngine.Object.FindObjectsByType<UnityEngine.Renderer>(UnityEngine.FindObjectsSortMode.None)) { var n = r.name; if (n.StartsWith("CS_Bush") || n.StartsWith("RedFir") || n.StartsWith("RedPine") || n.StartsWith("Branchs") || n.StartsWith("Bush")) fol.Add(r); }
+        // 8.16a: of a tree with LODs only its first LOD counts (the far impostor cards have 14 m bounds and are never drawn near a warp)
+        var farLods = new System.Collections.Generic.HashSet<UnityEngine.Renderer>(); foreach (var lg in UnityEngine.Object.FindObjectsByType<UnityEngine.LODGroup>(UnityEngine.FindObjectsSortMode.None)) { var ls = lg.GetLODs(); for (int li = 1; li < ls.Length; li++) foreach (var lr in ls[li].renderers) if (lr != null) farLods.Add(lr); }
+        foreach (var r in UnityEngine.Object.FindObjectsByType<UnityEngine.Renderer>(UnityEngine.FindObjectsSortMode.None)) { var n = r.name; if (farLods.Contains(r)) continue; if (n.StartsWith("CS_Bush") || n.StartsWith("RedFir") || n.StartsWith("RedPine") || n.StartsWith("Branchs") || n.StartsWith("Bush")) fol.Add(r); }
         foreach (var w in warpList)
         {
             var e = Eye(w.position);
@@ -665,6 +730,7 @@ try
     md.Append("\n## Pair spots\n\n");
     foreach (var p in pairs) md.Append("- " + p.n + ": stand (" + p.x.ToString("F0", inv) + ", " + p.z.ToString("F0", inv) + "), facing (" + p.lx.ToString("F0", inv) + ", " + p.lz.ToString("F0", inv) + ")\n");
     md.Append(greyMd);
+    md.Append(climbRockSky.ToString());
     System.IO.File.WriteAllText(System.IO.Path.Combine(outDir, "index.md"), md.ToString().Replace("\r", ""));
 }
 finally { cam.targetTexture = null; rt.Release(); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(shot); }

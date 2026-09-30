@@ -24,18 +24,20 @@ foreach (var mf in giants.GetComponentsInChildren<UnityEngine.MeshFilter>()) if 
 UnityEngine.Physics.SyncTransforms();
 bool IsUnder(UnityEngine.Transform t, UnityEngine.Transform root) { for (var p = t; p != null; p = p.parent) if (p == root) return true; return false; }
 // first hit along a segment that is not the tower (and, with trees off, not a giant)
+// 8.16a: pack trees, hollow logs and snags carry trunk colliders; "trees off" leaves them out as it leaves out the giants
+bool IsPackTree(UnityEngine.Transform t) { for (; t != null; t = t.parent) { var n = t.name; if (n.StartsWith("Sequoia") || n.StartsWith("RedFir") || n.StartsWith("RedPine") || n.StartsWith("RedwoodHollowLog") || n.StartsWith("Tree_Dead")) return true; } return false; }
 bool FirstHit(UnityEngine.Vector3 a, UnityEngine.Vector3 b, bool treesOn, out UnityEngine.RaycastHit hit)
 {
     var d = b - a; var hits = UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore);
     System.Array.Sort(hits, (p, q) => p.distance.CompareTo(q.distance));
-    foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) continue; if (!treesOn && IsUnder(h.collider.transform, giants)) continue; hit = h; return true; }
+    foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) continue; if (!treesOn && (IsUnder(h.collider.transform, giants) || IsPackTree(h.collider.transform))) continue; hit = h; return true; }
     hit = default; return false;
 }
 // height of whatever is under (x, z): terrain, rock, buildings, and giants when trees are on
 float Surface(float x, float z, bool treesOn)
 {
     var hits = UnityEngine.Physics.RaycastAll(V(x, 200f, z), UnityEngine.Vector3.down, 260f, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore);
-    float best = -999f; foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) continue; if (!treesOn && IsUnder(h.collider.transform, giants)) continue; if (h.point.y > best) best = h.point.y; }
+    float best = -999f; foreach (var h in hits) { if (IsUnder(h.collider.transform, tower)) continue; if (!treesOn && (IsUnder(h.collider.transform, giants) || IsPackTree(h.collider.transform))) continue; if (h.point.y > best) best = h.point.y; }
     return best;
 }
 // line clearance: min over samples of (line - surface), from 3 m after the eye to 'endSkip' short of the target
