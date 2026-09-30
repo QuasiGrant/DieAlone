@@ -10,6 +10,7 @@ Shader "DieAlone/SkyGradient"
         _SunGlowColor ("Sun Glow", Color) = (1.0, 0.6, 0.3, 1)
         _SunGlowSize ("Sun Glow Size", Float) = 24
         _SunDir ("Sun Direction", Vector) = (0, 0.25, -1, 0)
+        _SkyBandSin ("Sine of the horizon band height", Float) = 0
     }
     SubShader
     {
@@ -24,7 +25,7 @@ Shader "DieAlone/SkyGradient"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             float4 _TopColor, _HorizonColor, _GroundColor, _SunGlowColor;
-            float _SunGlowSize;
+            float _SunGlowSize, _SkyBandSin;
             float4 _SunDir;
 
             struct Attributes { float4 positionOS : POSITION; };
@@ -43,7 +44,7 @@ Shader "DieAlone/SkyGradient"
                 float3 d = normalize(i.dirWS);
                 float up = d.y;
                 float3 col = up >= 0.0
-                    ? lerp(_HorizonColor.rgb, _TopColor.rgb, saturate(up * 1.8))
+                    ? lerp(_HorizonColor.rgb, _TopColor.rgb, saturate((up - _SkyBandSin) * 1.8))   // holds the horizon colour up to the band, then blends
                     : lerp(_HorizonColor.rgb, _GroundColor.rgb, saturate(-up * 4.0));
                 float toSun = saturate(dot(d, normalize(-_SunDir.xyz)));
                 col += _SunGlowColor.rgb * pow(toSun, _SunGlowSize);

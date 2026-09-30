@@ -19,6 +19,7 @@ public class LookEnvironment : MonoBehaviour
     private static readonly int TopId = Shader.PropertyToID("_TopColor");
     private static readonly int HorizonId = Shader.PropertyToID("_HorizonColor");
     private static readonly int GroundId = Shader.PropertyToID("_GroundColor");
+    private static readonly int BandId = Shader.PropertyToID("_SkyBandSin");
     private static readonly int SunGlowId = Shader.PropertyToID("_SunGlowColor");
     private static readonly int SunSizeId = Shader.PropertyToID("_SunGlowSize");
     private static readonly int SunDirId = Shader.PropertyToID("_SunDir");
@@ -83,6 +84,7 @@ public class LookEnvironment : MonoBehaviour
             skyMaterial.SetColor(TopId, tuning.skyTop);
             skyMaterial.SetColor(HorizonId, tuning.skyHorizon);
             skyMaterial.SetColor(GroundId, tuning.skyGround);
+            skyMaterial.SetFloat(BandId, Mathf.Sin(tuning.skyBandHeight * Mathf.Deg2Rad));
             skyMaterial.SetColor(SunGlowId, tuning.sunGlowColor);
             skyMaterial.SetFloat(SunSizeId, tuning.sunGlowSize);
             var sun = RenderSettings.sun;

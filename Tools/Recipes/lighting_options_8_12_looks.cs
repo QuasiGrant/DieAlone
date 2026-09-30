@@ -25,7 +25,7 @@ var options = new (string key, string label, System.Action<LookTuning> change, s
     ("V9", "V9 Corners", t => t.darkCorners = 0.4f, "darkCorners 0.4"),
     ("V10", "V10 Glow", t => { t.sunGlowSize = 80f; t.sunGlowColor = Hex("#C8A070"); }, "sunGlow 80 #C8A070"),
     ("A", "A Vesper", CandidateA, "candidate A"),
-    ("ATri", "A Tri", t => { CandidateA(t); t.sunsetTrilight = true; t.sunsetAmbientSky = Hex("#6A7080"); t.sunsetAmbientGround = Hex("#3A3228"); }, "A with Trilight #6A7080 / #6E6658 / #3A3228"),
+    ("ATri", "A Tri", t => { CandidateA(t); t.sunsetTrilight = true; t.sunsetAmbientSky = Hex("#6A7080"); t.sunsetAmbientGround = Hex("#3A3228"); t.skyBandHeight = 30f; }, "A with Trilight #6A7080 / #6E6658 / #3A3228 and a 30 degree gold band (Vesper verdict, LightingOptions.md 6)"),
     ("B", "B Late gold", t => { Sun(t, 16f, 212f, 1.35f, "#FFB878"); t.sunsetAmbient = Hex("#66584A"); Fog(t, "#A89A86", 90f, 750f); Tape(t, 0.30f, 0.16f, 0.4f); Sky(t, "#E39A58", 60f, "#D09060"); }, "candidate B"),
     ("C", "C Overcast", t => { Sun(t, 30f, 205f, 0.7f, "#E8DCC8"); t.sunsetAmbient = Hex("#6A6C6C"); Fog(t, "#8E9296", 70f, 600f); Tape(t, 0.32f, 0.22f, 0.4f); Sky(t, "#A8A8A4", 200f, "#A8A49C"); }, "candidate C") };
 

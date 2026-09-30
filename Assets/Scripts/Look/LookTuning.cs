@@ -75,6 +75,8 @@ public class LookTuning : ScriptableObject
     [Header("Sunset sky")]
     public Color skyTop = new Color(0.22f, 0.11f, 0.10f);
     public Color skyHorizon = new Color(0.85f, 0.40f, 0.18f);
+    [Tooltip("Degrees above the horizon that the sky holds skyHorizon before it blends to skyTop. 0 blends from the horizon up.")]
+    [Range(0f, 60f)] public float skyBandHeight = 0f;
     public Color skyGround = new Color(0.30f, 0.16f, 0.10f);
     public Color sunGlowColor = new Color(1.0f, 0.55f, 0.25f);
     [Tooltip("Higher is a tighter glow around the sun.")]

@@ -148,7 +148,7 @@ string SunReport()
 // Where the sky meets the land: every SkyColumnStep columns, scan down from the top while the frame matches a sky-only
 // render (culling mask 0); the last match is the skyline. Reports the share of columns with sky, the lowest and the
 // median skyline elevation, and how far SkyGradient has blended from horizon to top at the median
-// (t = saturate(1.8 * sin(elevation)), the shader's own formula), with the frame's colour there.
+// (t = saturate(1.8 * (sin(elevation) - sin(skyBandHeight))), the shader's own formula), with the frame's colour there.
 string SkyLine(UnityEngine.Color32[] full, UnityEngine.Color32[] skyOnly)
 {
     float f = (shotH * 0.5f) / UnityEngine.Mathf.Tan(cam.fieldOfView * 0.5f * UnityEngine.Mathf.Deg2Rad);
@@ -169,7 +169,8 @@ string SkyLine(UnityEngine.Color32[] full, UnityEngine.Color32[] skyOnly)
     if (elevs.Count == 0) return "no sky in frame";
     elevs.Sort((p, q) => p.e.CompareTo(q.e));
     var mid = elevs[elevs.Count / 2];
-    float t = UnityEngine.Mathf.Clamp01(1.8f * UnityEngine.Mathf.Sin(mid.e * UnityEngine.Mathf.Deg2Rad));
+    var bandLook = LookOverride.Tuning; float band = bandLook != null ? UnityEngine.Mathf.Sin(bandLook.skyBandHeight * UnityEngine.Mathf.Deg2Rad) : 0f;
+    float t = UnityEngine.Mathf.Clamp01(1.8f * (UnityEngine.Mathf.Sin(mid.e * UnityEngine.Mathf.Deg2Rad) - band));
     return "sky in " + (100 * elevs.Count / columns) + " pct of columns; skyline lowest " + elevs[0].e.ToString("F1", inv) + " deg, median " + mid.e.ToString("F1", inv)
         + " deg, where the gradient is " + (t * 100f).ToString("F0", inv) + " pct of the way from horizon to top; sky there #" + UnityEngine.ColorUtility.ToHtmlStringRGB(mid.c);
 }
