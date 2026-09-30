@@ -4,7 +4,7 @@ using UnityEngine;
 /// B on a gamepad also closes it. Three labelled sections:
 /// SCENES every scene in the build list (picking one loads it),
 /// WARPS the open scene's warp points (children of a "DevWarps" object, shown with readable names),
-/// LOOK the looks listed on LookPreview (Current, Day one, Day two).
+/// LOOK the looks listed on LookPreview (Night, the scene's own look; Day one; Day two).
 /// Text scales with the screen height from a 720 reference, never below 1 reference pixel per screen pixel.
 /// Mouse clicks, arrow keys or WASD with Enter, and stick or d-pad with A all work.
 /// Exists only in the Editor and development builds. In a release build this class

@@ -837,7 +837,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: DieAlone::LookPreview
   looks:
-  - label: Current
+  - label: Night
     tuning: {fileID: 0}
     daylight: 0
   - label: Day one
