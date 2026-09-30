@@ -61,6 +61,7 @@ MonoBehaviour:
   lampIntensity: 1
   lanternIntensity: 0.8
   practicalDayScale: 0.4
+  interiorFillScale: 1
   cabLampBulbIntensity: 3
   cabWindowGlowIntensity: 0.6
   lotLightColor: {r: 0.941, g: 0.541, b: 0.165, a: 1}

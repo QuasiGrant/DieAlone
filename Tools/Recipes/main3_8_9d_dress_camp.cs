@@ -151,12 +151,12 @@ UnityEngine.GameObject Slab(string name, UnityEngine.Transform parent, UnityEngi
     g.GetComponent<UnityEngine.Renderer>().sharedMaterial = mat != null ? mat : WoodFor(size); return g;
 }
 // practical light (LookSlice 4): #FFA860 through PracticalLight, no shadows, brightness relative to the fire pit
-UnityEngine.Light Practical(string name, UnityEngine.Transform parent, UnityEngine.Vector3 pos, float range, PracticalLight.Kind kind, PracticalLight.ByDay byDay)
+UnityEngine.Light Practical(string name, UnityEngine.Transform parent, UnityEngine.Vector3 pos, float range, PracticalLight.Kind kind, PracticalLight.ByDay byDay, bool interior = false)
 {
     var g = new UnityEngine.GameObject(name); g.transform.SetParent(parent, false); g.transform.localPosition = pos;
     var l = g.AddComponent<UnityEngine.Light>(); l.type = UnityEngine.LightType.Point; l.range = range; l.intensity = look.firePitIntensity; l.shadows = UnityEngine.LightShadows.None; l.color = look.practicalColor;
     var pl = g.AddComponent<PracticalLight>(); var so = new UnityEditor.SerializedObject(pl);
-    so.FindProperty("tuning").objectReferenceValue = look; so.FindProperty("kind").enumValueIndex = (int)kind; so.FindProperty("byDay").enumValueIndex = (int)byDay; so.ApplyModifiedPropertiesWithoutUndo();
+    so.FindProperty("tuning").objectReferenceValue = look; so.FindProperty("kind").enumValueIndex = (int)kind; so.FindProperty("byDay").enumValueIndex = (int)byDay; so.FindProperty("interior").boolValue = interior; so.ApplyModifiedPropertiesWithoutUndo();
     return l;
 }
 void Hide(UnityEngine.Transform t) { if (t == null) return; foreach (var r in t.GetComponentsInChildren<UnityEngine.Renderer>()) r.enabled = false; }
@@ -308,12 +308,12 @@ var inside = Group("Interior", C, V(0f, 0f, 0f));
 On(CI + "Furniture/CITW_Bed", inside, -1.74f, floorTop, inD * 0.5f - 0.76f, 90f, UnityEngine.Vector3.one, false);
 var stove = On(CI + "Furniture/CITW_Wood_Stove", inside, inW * 0.5f - 0.31f, floorTop, 1.85f, 90f, UnityEngine.Vector3.one, true);
 On(CI + "Props/CITW_Kettle", inside, 2.4f, 0.86f, 1.85f, 200f, UnityEngine.Vector3.one, false);
-Practical("StoveLight", inside, V(2.1f, 0.5f, 1.6f), 4f, PracticalLight.Kind.Stove, PracticalLight.ByDay.Full);
+Practical("StoveLight", inside, V(2.1f, 0.5f, 1.6f), 4f, PracticalLight.Kind.Stove, PracticalLight.ByDay.Full, true);
 On(CI + "Furniture/CITW_Table", inside, -2.6f, floorTop, 0f, 90f, V(0.7f, 0.83f, 0.7f), false);
 float deskTop = floorTop + 0.9f * 0.83f;
 On(CI + "Props/CITW_Crate", inside, -2.6f, deskTop, 0.35f, 0f, V(0.3f, 0.3f, 0.4f), false);   // report box
 On(CI + "Props/CITW_Oil_Lamp_1", inside, -2.65f, deskTop, -0.4f, 0f, UnityEngine.Vector3.one, false);
-Practical("DeskLamp", inside, V(-2.65f, deskTop + 0.35f, -0.4f), 3f, PracticalLight.Kind.Lamp, PracticalLight.ByDay.Dimmed);
+Practical("DeskLamp", inside, V(-2.65f, deskTop + 0.35f, -0.4f), 3f, PracticalLight.Kind.Lamp, PracticalLight.ByDay.Dimmed, true);
 On(CI + "Props/CITW_Mug", inside, -2.4f, deskTop, -0.05f, 60f, UnityEngine.Vector3.one, false);
 On(CI + "Props/CITW_Book_1", inside, -2.85f, deskTop, -0.62f, 0f, UnityEngine.Vector3.one, false);
 On(CI + "Props/CITW_Book_3", inside, -2.85f, deskTop, -0.55f, 0f, UnityEngine.Vector3.one, false);
@@ -450,7 +450,8 @@ void SetLook(string path, string sun, float elev, float inten, string amb, strin
 SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 28f, 1.1f, "#998A73", "#5E6878", "#E3A968", "#A8A08E", 40f, 600f);
 {
     var dayOneLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayOne.asset");
-    if (dayOneLook != null) { dayOneLook.crushBlacks = 0.15f; dayOneLook.darkCorners = 0.3f; UnityEditor.EditorUtility.SetDirty(dayOneLook); }
+    // cabin interior fill +25 percent on day one (Vesper, 8.9g check) so the ceiling planks separate; outdoors unchanged
+    if (dayOneLook != null) { dayOneLook.crushBlacks = 0.15f; dayOneLook.darkCorners = 0.3f; dayOneLook.interiorFillScale = 1.25f; UnityEditor.EditorUtility.SetDirty(dayOneLook); }
 }
 SetLook("Assets/Settings/LookTuning_DayTwo.asset", "#FF8C40", 6f, 1.2f, "#734D42", "#381C1A", "#D9662E", "#9E5C38", 25f, 420f);
 

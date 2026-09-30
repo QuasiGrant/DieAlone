@@ -14,6 +14,8 @@ public class PracticalLight : MonoBehaviour
     [SerializeField] private Kind kind = Kind.Lamp;
     [Tooltip("What the light does in a daylight look (LookSlice.md 4).")]
     [SerializeField] private ByDay byDay = ByDay.Dimmed;
+    [Tooltip("Inside a room (the cabin): brightness also scales by LookTuning.interiorFillScale.")]
+    [SerializeField] private bool interior;
 
     private Light lightSource;
 
@@ -40,7 +42,7 @@ public class PracticalLight : MonoBehaviour
         if (t == null || lightSource == null) return;
         bool day = LookOverride.ForceSunset;
         lightSource.enabled = !(day && byDay == ByDay.Off);
-        float scale = Strength(t, kind) * (day && byDay == ByDay.Dimmed ? t.practicalDayScale : 1f);
+        float scale = Strength(t, kind) * (day && byDay == ByDay.Dimmed ? t.practicalDayScale : 1f) * (interior ? t.interiorFillScale : 1f);
         lightSource.color = t.practicalColor * scale;
     }
 }
