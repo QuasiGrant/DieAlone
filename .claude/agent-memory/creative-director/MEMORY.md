@@ -10,5 +10,6 @@
 - [Lighting options 8.12](project_lighting_options.md) — 2026-09-30 LightingOptions.md: V1-V10, candidates A/B/C, six spots, bar, missing fields
 - [Forest plan 8.15/8.16](project_forest_plan.md) — 2026-09-30 ForestPlan.md: grove counts, crest, wall, verge, ground greys, thin order
 - [Gate 8.14 and 8.14a](project_gate_8_14.md) — 2026-09-30 both FAIL; 8.14a: bands, climb F; A Tri C kept; lip fix, not fires west
+- [Forest calls 8.16](project_forest_calls_816.md) — 2026-09-30 LightingOptions 7: trail material not ambient, sky blend 4.5, lodBias 1.25
 - [Gate 8.15](project_gate_8_15.md) — 2026-09-30 FAIL; sun 20 kept; proposed night path rule (lamp, Ward route only, no moon)
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions

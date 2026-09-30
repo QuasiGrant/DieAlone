@@ -68,3 +68,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: Lanterns with small glows at the chute foot and on P1 to P4 stay (Rook's addition for the night rule).
 - 2026-09-30: The cleft is a slot, so all-wall frames inside it are allowed; the chute must still open up.
 - 2026-09-30: Rook moves on to the forest (8.16) now; the remaining day-path contrast, hedge cover and next-place frames are remeasured after it, since groves change the floor light. One gate covers 8.14a, 8.15, 8.15a and 8.16.
+- 2026-09-30: Vesper's forest look calls adopted: trail material fixed for distance (no ambient change), sky blend rate 4.5, lodBias 2 to 1.25 on PC (never below 1.0).
