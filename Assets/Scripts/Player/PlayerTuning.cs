@@ -21,6 +21,16 @@ public class PlayerTuning : ScriptableObject
     [Tooltip("Speed in m/s the player slides down ground steeper than the controller's slope limit, where no jump is allowed.")]
     public float steepSlideSpeed = 5f;
 
+    [Header("Night lamp")]
+    [Tooltip("Colour of the carried kerosene lamp (#FFA860).")]
+    public Color lampColor = new Color(1f, 0.659f, 0.376f);
+    [Tooltip("How far the lamp's light reaches, in metres (6 to 8).")]
+    public float lampRange = 7f;
+    [Tooltip("Brightness of the lamp at full strength.")]
+    public float lampIntensity = 2f;
+    [Tooltip("Height of the lamp over the player's feet, in metres (held at the side).")]
+    public float lampHeight = 1.1f;
+
     [Header("Crouch")]
     public float standHeight = 1.8f;
     public float crouchHeight = 1.0f;

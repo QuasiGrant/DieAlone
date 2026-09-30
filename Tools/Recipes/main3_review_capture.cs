@@ -31,6 +31,7 @@ const int mapTiles = 5, mapPx = 512; const float mapTileM = 100f, mapX0 = -50f, 
 // every drawn mesh within wardNear m of the Ward warp a temporary collider
 // compassOut: the deck walkway, the cab's half width 2.2 plus half the 2.2 m walkway; markerBack: marker frames stand this far along
 // the trail from the point nearest the marker
+const int nightBlock = 12; const float nightLightOver = 40f, nightEdge = 20f, nightMarkerMax = 6f;   // Gate.md 4 night rule; nightMarkerMax: FireStandIn meshes smaller than this are lamp heads and markers, not the fire
 const float markerBack = 5f, markerLookUp = 1.4f, markerRise = 1.5f, hedgeSample = 0.5f, hedgeNeed = 0.8f, hedgeTopSlack = 0.5f, warpNear = 1.5f, roadZoomFov = 15f;   // hedge and warp checks (Pim 8.15), the road zoom   // markerRise: a stand this much above or below the marker is on a bank
 const float wardNear = 60f, compassOut = 3.3f, compassDip = 15f, p4Dip = 10f, finStep = 2f, fireLookX = -230f, fireLookY = 40f, valleyLookY = -40f, eastLookX = 440f;
 var slotExit = new UnityEngine.Vector2(4f, 257.3f); var pumpBack = new[] { 30f, 15f, 5f };
@@ -269,12 +270,48 @@ try
         }
         UnityEngine.Object.DestroyImmediate(tmp);
         SaveCanvas("Pairs_DayOne_Night.jpg", "Day one and Night pairs", pairs.Length * 2);
+        // Gate.md 4, the night rule (Camp to J and J to Ward, night look, frames every trailStep m along the trail): N1 a practical light in
+        // frame (a Light not on the player, or a DieAlone/FireStandIn marker, in sight) whose patch is nightLightOver grey or more over the
+        // frame mean; N2 the trail centre nightEdge grey or more from the floor greySide m beside it, greyNear m ahead, inside the carried lamp
+        string nightRule;
+        {
+            var nm = new System.Text.StringBuilder("\n## Night rule (Gate.md 4)\n\nCamp to J and J to Ward, a frame every " + trailStep.ToString("F0", inv) + " m looking along the trail, the carried lamp on. N1: a practical light in frame " + nightLightOver.ToString("F0", inv) + " grey or more over the frame mean. N2: trail " + nightEdge.ToString("F0", inv) + " grey or more from the floor " + greySide.ToString("F0", inv) + " m beside it, " + greyNear.ToString("F0", inv) + " m ahead.\n\n| Trail | Frames | N1 pass | N2 pass | Mean N2 diff | Fails (metres along) |\n|---|---|---|---|---|---|\n");
+            var lights = new System.Collections.Generic.List<UnityEngine.Vector3>();
+            foreach (var l in UnityEngine.Object.FindObjectsByType<UnityEngine.Light>(UnityEngine.FindObjectsSortMode.None)) if (l.enabled && l.type != UnityEngine.LightType.Directional && !l.transform.IsChildOf(pc.transform)) lights.Add(l.transform.position);
+            var standIn = UnityEngine.Shader.Find("DieAlone/FireStandIn");
+            foreach (var r in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshRenderer>(UnityEngine.FindObjectsSortMode.None)) if (r.enabled && r.sharedMaterial != null && r.sharedMaterial.shader == standIn && r.bounds.size.magnitude < nightMarkerMax) lights.Add(r.bounds.center);
+            bool allPass = true;
+            foreach (var ln in new[] { "Camp to J", "J to Ward" })
+            {
+                var leg = legs.Find(q => q.name == ln); if (leg.pts == null) continue; float len = Length(leg.pts); int frames = 0, n1 = 0, n2 = 0; float dSum = 0f; int dN = 0; var miss = new System.Collections.Generic.List<string>();
+                for (float s = 0f; s <= len + 0.01f; s += trailStep)
+                {
+                    var p = At(leg.pts, s); var c = p + UnityEngine.Vector3.up * eye; var ahead = At(leg.pts, s + 3f); var far = At(leg.pts, s + trailStep);
+                    var yawDir = new UnityEngine.Vector3(ahead.x - p.x, 0f, ahead.z - p.z).normalized;
+                    Pose(c, c + yawDir * 10f + UnityEngine.Vector3.up * (far.y - p.y)); var src = Capture(); frames++;
+                    float mean = 0f; for (int i = 0; i < src.Length; i += 7) mean += Grey(src[i]); mean /= (src.Length + 6) / 7;
+                    bool lit = false; foreach (var lp in lights) { float g = PatchGrey(src, lp, null); if (g >= 0f && g >= mean + nightLightOver) { lit = true; break; } }
+                    // the fire glow over the crest counts too (Gate_8_15_Pim.md 3): any nightBlock-pixel block above the lower third (where the
+                    // carried lamp lights the ground) at nightLightOver or more over the mean
+                    if (!lit) for (int by = shotH / 3; by + nightBlock <= shotH && !lit; by += nightBlock) for (int bx = 0; bx + nightBlock <= shotW && !lit; bx += nightBlock) { float bs = 0f; for (int yy = by; yy < by + nightBlock; yy += 2) for (int xx = bx; xx < bx + nightBlock; xx += 2) bs += Grey(src[yy * shotW + xx]); if (bs / (nightBlock * nightBlock / 4f) >= mean + nightLightOver) lit = true; }
+                    if (lit) n1++; else miss.Add("N1 " + s.ToString("F0", inv));
+                    var q = At(leg.pts, s + greyNear); var q2 = At(leg.pts, s + greyNear + 1f); var t = new UnityEngine.Vector3(q2.x - q.x, 0f, q2.z - q.z).normalized; var side = new UnityEngine.Vector3(t.z, 0f, -t.x);
+                    float tg = PatchGrey(src, new UnityEngine.Vector3(q.x, Ground(q.x, q.z, q.y), q.z), null); float fg = 0f; int fn = 0;
+                    foreach (var sgn in new[] { -1f, 1f }) { var fx = q + side * greySide * sgn; float g = PatchGrey(src, new UnityEngine.Vector3(fx.x, Ground(fx.x, fx.z, q.y), fx.z), null); if (g >= 0f) { fg += g; fn++; } }
+                    if (tg >= 0f && fn > 0) { float d = tg - fg / fn; dSum += d; dN++; if (UnityEngine.Mathf.Abs(d) >= nightEdge) n2++; else miss.Add("N2 " + s.ToString("F0", inv) + " (" + d.ToString("F0", inv) + ")"); }
+                }
+                bool pass = n1 == frames && dN > 0 && n2 == dN; if (!pass) allPass = false;
+                nm.Append("| " + ln + " | " + frames + " | " + n1 + " of " + frames + " | " + n2 + " of " + dN + " | " + (dN > 0 ? (dSum / dN).ToString("F0", inv) : "-") + " | " + (miss.Count == 0 ? "none" : string.Join(", ", miss)) + " |\n");
+            }
+            System.IO.File.AppendAllText(System.IO.Path.Combine(outDir, "index.md"), nm.ToString().Replace("\r", ""));
+            nightRule = "night rule " + (allPass ? "PASS" : "FAIL") + nm.ToString().Substring(nm.ToString().IndexOf("|---|---|---|---|---|---|") + 26).Replace("\n", " ");
+        }
         string greyNight = GreyTrails("Night");
         string indexPath = System.IO.Path.Combine(outDir, "index.md");
         if (!System.IO.File.Exists(indexPath)) return "missing " + indexPath + ": run step day first";
         System.IO.File.AppendAllText(indexPath, greyMd.ToString().Replace("\r", ""));
         System.IO.Directory.Delete(tempDir, true);
-        return "night done: wrote Pairs_DayOne_Night.jpg (" + pairs.Length + " pairs), Grey_Trails_Night.jpg in " + clock.Elapsed.TotalSeconds.ToString("F0") + " s | " + greyNight;
+        return "night done: wrote Pairs_DayOne_Night.jpg (" + pairs.Length + " pairs), Grey_Trails_Night.jpg in " + clock.Elapsed.TotalSeconds.ToString("F0") + " s | " + greyNight + " | " + nightRule;
     }
 
     // 1. trails, both directions

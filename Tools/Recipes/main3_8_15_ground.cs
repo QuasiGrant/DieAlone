@@ -568,7 +568,27 @@ foreach (var r in root.GetComponentsInChildren<UnityEngine.Renderer>(true))
     r.sharedMaterial = ol; oliveN++;
 }
 
+// 8.15 gate (Pim: foliage at arm's length at some warps): dressing firs, pines, branches and bushes (not the hedges over their
+// colliders, which would leave an invisible wall) whose bounds come within warpFoliage m of a warp are removed
+const float warpFoliage = 2.5f; int warpCleared = 0;
+{
+    var doomed = new System.Collections.Generic.HashSet<UnityEngine.GameObject>();
+    var roots = new System.Collections.Generic.List<UnityEngine.Transform> { root.transform }; var slice = Root("SliceLook"); if (slice != null) roots.Add(slice.transform);
+    foreach (var rt in roots) foreach (var r in rt.GetComponentsInChildren<UnityEngine.Renderer>(true))
+    {
+        var n = r.name; if (!(n.StartsWith("CS_Bush") || n.StartsWith("RedFir") || n.StartsWith("RedPine") || n.StartsWith("Branchs"))) continue;
+        var top = r.transform; while (top.parent != null && top.parent != rt && top.parent.parent != rt && !top.parent.name.StartsWith("Hedge")) top = top.parent;
+        if (top.parent != null && top.parent.name.StartsWith("Hedge")) continue;   // hedge brush stays over its collider
+        foreach (UnityEngine.Transform w in Root("DevWarps").transform)
+        {
+            var b = r.bounds; float dx = UnityEngine.Mathf.Max(b.min.x - w.position.x, 0f, w.position.x - b.max.x), dz = UnityEngine.Mathf.Max(b.min.z - w.position.z, 0f, w.position.z - b.max.z);
+            if (dx * dx + dz * dz < warpFoliage * warpFoliage) { doomed.Add(top.gameObject); break; }
+        }
+    }
+    foreach (var g in doomed) { UnityEngine.Object.DestroyImmediate(g); warpCleared++; }
+}
+
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " | layers: floor GrassPine, SoilPine added, shore and burn GrassMud, trail Ground054, rock Rocks_a | cover " + detailNames.Length + " detail kinds | trail edges " + edgeN
-    + " | markers " + markers.childCount + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes, " + oliveN + " bush renderers olive, rock on " + rockCells + " slope cells | rims " + rimSegs + " pieces | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));
+    + " | markers " + markers.childCount + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes, " + oliveN + " bush renderers olive, rock on " + rockCells + " slope cells, " + warpCleared + " plants cleared at warps | rims " + rimSegs + " pieces | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));

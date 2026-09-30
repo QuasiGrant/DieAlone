@@ -44,19 +44,30 @@ var cairnStone = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>
 foreach (var s in new[] { (1.4f, 0.5f), (1.1f, 0.45f), (0.85f, 0.4f), (0.6f, 0.35f), (0.4f, 0.3f) })
 { Prim(Sph, "Stone", cairnGate, V(cairnPos.x, cy + s.Item2 * 0.45f, cairnPos.z), V(s.Item1, s.Item2, s.Item1)).GetComponent<UnityEngine.MeshRenderer>().sharedMaterial = cairnStone; cy += s.Item2 * 0.8f; }
 var lookCairn = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning.asset"); if (lookCairn == null) return "no LookTuning";
-// the cairn lamp (Valley.md 1.6: "the cairn lamp at J is lit" at night; 8.14a): an owned lantern on the cairn's top stone with a practical
-// light, on at night and off by day (PracticalLight, LookTuning's lantern brightness), so the one night walk has its lead-on
+// the cairn lamp (Valley.md 1.6: "the cairn lamp at J is lit" at night; 8.14a) and, 8.15a (Gate.md 4 night rule N1), a lantern at the chute
+// foot and on each platform: owned lanterns with a practical light, on at night and off by day (PracticalLight, LookTuning's lantern
+// brightness), and a small unfogged glow at the flame (DieAlone/FireStandIn, shown at night only) so each reads from the one before
+// through the 8 to 60 m night fog
+const float lanternRange = 8f, glowSize = 0.6f, glowUp = 0.3f;   // a 0.6 m glow reads as a point from 60 m through the filter (0.25 was sub-pixel)
+var nightGlows = new System.Collections.Generic.List<UnityEngine.GameObject>();
+var lanternPf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Revolving Pizza Games/Campsite/Prefabs/CS_Lantern_Old.prefab"); if (lanternPf == null) return "missing CS_Lantern_Old";
+var glowMatL = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_LanternGlow.mat");
+if (glowMatL == null) { glowMatL = new UnityEngine.Material(UnityEngine.Shader.Find("DieAlone/FireStandIn")); UnityEditor.AssetDatabase.CreateAsset(glowMatL, "Assets/Materials/Blockout/Blockout_LanternGlow.mat"); }
+glowMatL.shader = UnityEngine.Shader.Find("DieAlone/FireStandIn"); glowMatL.SetColor("_Color", lookCairn.practicalColor); glowMatL.SetFloat("_Intensity", lookCairn.farMarkerIntensity); UnityEditor.EditorUtility.SetDirty(glowMatL);
+void NightLantern(string name, UnityEngine.Transform parent, UnityEngine.Vector3 at)
 {
-    const float lampRange = 8f;
-    var lanternPf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Revolving Pizza Games/Campsite/Prefabs/CS_Lantern_Old.prefab"); if (lanternPf == null) return "missing CS_Lantern_Old";
-    var lantern = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(lanternPf, cairnGate.parent); lantern.name = "CairnLamp";
+    var lantern = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(lanternPf, parent); lantern.name = name;
     foreach (var c in lantern.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
-    lantern.transform.position = V(cairnPos.x, cy, cairnPos.z);
-    var lg = new UnityEngine.GameObject("CairnLampLight"); lg.transform.SetParent(lantern.transform, false); lg.transform.localPosition = V(0f, 0.3f, 0f);
-    var l = lg.AddComponent<UnityEngine.Light>(); l.type = UnityEngine.LightType.Point; l.range = lampRange; l.intensity = lookCairn.firePitIntensity; l.shadows = UnityEngine.LightShadows.None; l.color = lookCairn.practicalColor;
+    lantern.transform.position = at;
+    var lg = new UnityEngine.GameObject(name + "Light"); lg.transform.SetParent(lantern.transform, false); lg.transform.localPosition = V(0f, glowUp, 0f);
+    var l = lg.AddComponent<UnityEngine.Light>(); l.type = UnityEngine.LightType.Point; l.range = lanternRange; l.intensity = lookCairn.firePitIntensity; l.shadows = UnityEngine.LightShadows.None; l.color = lookCairn.practicalColor;
     var pl = lg.AddComponent<PracticalLight>(); var so = new UnityEditor.SerializedObject(pl);
     so.FindProperty("tuning").objectReferenceValue = lookCairn; so.FindProperty("kind").enumValueIndex = (int)PracticalLight.Kind.Lantern; so.FindProperty("byDay").enumValueIndex = (int)PracticalLight.ByDay.Off; so.ApplyModifiedPropertiesWithoutUndo();
+    var glow = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere); glow.name = name + "Glow"; UnityEngine.Object.DestroyImmediate(glow.GetComponent<UnityEngine.Collider>());
+    glow.transform.SetParent(lantern.transform, false); glow.transform.localPosition = V(0f, glowUp, 0f); glow.transform.localScale = V(glowSize, glowSize, glowSize) / UnityEngine.Mathf.Max(0.01f, lantern.transform.lossyScale.x);
+    var gr = glow.GetComponent<UnityEngine.MeshRenderer>(); gr.sharedMaterial = glowMatL; gr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; nightGlows.Add(glow);
 }
+NightLantern("CairnLamp", cairnGate.parent, V(cairnPos.x, cy, cairnPos.z));
 const float gapX = 86f, gapZ0 = 211.5f, gapZ1 = 214.5f, chainH = 0.9f, iw2Over = 3f, iw2Thick = 0.5f;
 float gapG = H(gapX + 0.5f, (gapZ0 + gapZ1) * 0.5f);
 var chainA = V(gapX, gapG + chainH, gapZ0); var chainB = V(gapX, gapG + chainH, gapZ1);
@@ -149,6 +160,18 @@ Owned("SplitSnag_R", climbDeadTree, sSnag, 1.2f, 0.3f, DeadScale(6f, 1.1f), V(0f
 Owned("P1_Overhang", bkRocks + "Boulder_2.prefab", sP1, -2.6f, 0.6f, V(0.55f, 0.55f, 0.55f), V(8f, 30f, 0f));
 Owned("P2_RockRoof", bkRocks + "BigBoulders_3.prefab", sP2, -3f, 1f, V(0.5f, 0.45f, 0.5f), V(-10f, 70f, 6f));
 Owned("P3_RootPlate", climbDeadTree, sP3, 2.6f, -0.4f, DeadScale(6f, 1.4f), V(0f, 60f, 84f));   // a fallen snag, its root end toward the trail
+// 8.15a: the climb's lanterns, at the chute foot and on each platform, beside the tread on the wall side, each in sight of the next
+const float chuteFootIn = 3f, lanternSide = -1.8f; float chuteFootS = SAt(86f, 213f) + chuteFootIn;   // 3 m inside the chute mouth
+foreach (var ln in new[] { ("ChuteFootLantern", chuteFootS), ("P1Lantern", sP1), ("P2Lantern", sP2), ("P3Lantern", sP3), ("P4Lantern", sP4) })
+{
+    var a = AtS(ln.Item2); var sd = V(a.dir.z, 0f, -a.dir.x); var p = a.p + sd * lanternSide; p.y = H(p.x, p.z);
+    NightLantern(ln.Item1, climbRoot, p);
+}
+{   // the lantern glows show at night only (the practical lights switch themselves)
+    var glowVis = new UnityEngine.GameObject("LanternGlows"); glowVis.transform.SetParent(ward, false);
+    var vis = glowVis.AddComponent<LookVisibility>(); var so = new UnityEditor.SerializedObject(vis); so.FindProperty("show").enumValueIndex = (int)LookVisibility.Show.Night;
+    var tp = so.FindProperty("targets"); tp.arraySize = nightGlows.Count; for (int i = 0; i < nightGlows.Count; i++) tp.GetArrayElementAtIndex(i).objectReferenceValue = nightGlows[i]; so.ApplyModifiedPropertiesWithoutUndo();
+}
 
 // Ward stones (Valley.md rev 10, 4): on the ledge south of the path end and off to one side of the approach, 3.6 x 4 m, tops 70
 const float stoneTop = 70f;
