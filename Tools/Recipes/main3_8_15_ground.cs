@@ -4,7 +4,7 @@
 // 1. Ground layers: the floor GrassPine, SoilPine under the north groves and the fir wall, GrassMud on the lake shore and in the old
 //    burn, bare Ground054 dirt on the trails (8.3 paints them 1.4 m wide with a 0.4 m blend), Rocks_a on every slope over 35 degrees
 //    (8.1 paints it), Mud_darker on the lake bed. Raw greys (AssetCatalogue): trail 140, floors 79 to 89.
-// 2. Ground cover to the trail's edge: grass and fern details from 0.4 m off the trail edge, thick for 8 m, thinner beyond.
+// 2. Ground cover to the trail's edge: grass and fern details whose tufts reach the edge (cells from half the widest tuft past it), thick for 8 m, thinner beyond.
 // 3. Trail edges: a pale stone or a log on one edge every 4 m, sides alternating (Valley.md 12.1; the night cue), looks only.
 // 4. Junction markers (section 11): signposts at camp, the pump, Jg and J; the trailhead board at T; a blaze on a post on W1's Camp 3
 //    branch; a blaze on a stump where the north loop leaves Camp 1. The gate T is 8.6's.
@@ -67,14 +67,15 @@ void SetLayer(UnityEngine.TerrainLayer l, UnityEngine.Texture2D albedo, UnityEng
     l.diffuseTexture = albedo; l.normalMapTexture = normal; l.tileSize = new UnityEngine.Vector2(tile, tile);
     l.diffuseRemapMin = UnityEngine.Vector4.zero; l.diffuseRemapMax = new UnityEngine.Vector4(remap.r, remap.g, remap.b, 1f); UnityEditor.EditorUtility.SetDirty(l);
 }
-const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f;   // rock at 10 m so its forms read at a distance through the look filter (8.14a)
+const float floorTile = 4f, trailTile = 2f, rockTile = 10f, rockLuma = 0.55f, trailLift = 1.35f;   // trailLift: the dirt brightened so the tread stands 20 grey over the floor 20 m ahead (Gate.md 4; 8.14a measured about 10)
+// rockTile: rock at 10 m so its forms read at a distance through the look filter (8.14a)
 UnityEngine.ColorUtility.TryParseHtmlString("#6E6660", out var granite);   // Style.md granite; Rocks_a's mean luma is 0.55 (AssetCatalogue)
 var white = UnityEngine.Color.white;
 var lGround = LayerNamed("Layer_Ground"); var lRock = LayerNamed("Layer_Rock"); var lBurn = LayerNamed("Layer_Burn"); var lTrail = LayerNamed("Layer_Trail"); var lBed = LayerNamed("Layer_LakeBed");
 if (lGround == null || lRock == null || lBurn == null || lTrail == null || lBed == null) return "8.1's terrain layers missing";
 SetLayer(lGround, Tex(surf + "GrassPine_a.png"), Tex(surf + "GrassPine_n.png"), floorTile, white);
 SetLayer(lBurn, Tex(surf + "GrassMud_a.png"), Tex(surf + "GrassMud_n.png"), floorTile, white);
-SetLayer(lTrail, Tex("Assets/Textures/Ground054/Ground054_Color.jpg"), null, trailTile, white);
+SetLayer(lTrail, Tex("Assets/Textures/Ground054/Ground054_Color.jpg"), null, trailTile, new UnityEngine.Color(trailLift, trailLift, trailLift));
 SetLayer(lRock, Tex(BK + "Models/Rocks/Textures/Rocks_a.png"), Tex(BK + "Models/Rocks/Textures/Rocks_n.png"), rockTile, new UnityEngine.Color(granite.r / rockLuma, granite.g / rockLuma, granite.b / rockLuma));
 SetLayer(lBed, Tex(surf + "Mud_darker_a.png"), Tex(surf + "Mud_darker_n.png"), floorTile, white);
 const string soilPath = "Assets/Terrain/Main3/Layer_SoilPine.terrainlayer";
@@ -162,7 +163,7 @@ for (float s = sP2 + 4f; s < sP3 - 2f; s += snagStep)
 }
 for (float s = sP3 + 3f; s < sP4 - firEndBeforeP4; s += firStep) Dress(BK + "Prefabs/Trees/RedFir" + (1 + rng.Next(4)), s, dressOff + R(0.3f, 1.2f), R(3f, 6f), 0f);
 
-// ---------- 2. ground cover: grass and fern details from 0.4 m off the trail edge ----------
+// ---------- 2. ground cover: grass and fern details, the tufts reaching the trail edge ----------
 string[] detailNames = { "Detail_Grass1", "Detail_Grass2", "Detail_Grass3", "Detail_Fern1", "Detail_Fern2" };
 var protos = new UnityEngine.DetailPrototype[detailNames.Length];
 for (int i = 0; i < detailNames.Length; i++)
@@ -171,7 +172,12 @@ for (int i = 0; i < detailNames.Length; i++)
     bool fern = detailNames[i].Contains("Fern");
     protos[i] = new UnityEngine.DetailPrototype { prototype = pf, usePrototypeMesh = true, renderMode = UnityEngine.DetailRenderMode.VertexLit, useInstancing = true, minHeight = fern ? 1.0f : 1.2f, maxHeight = fern ? 1.6f : 2.0f, minWidth = fern ? 1.0f : 1.2f, maxWidth = fern ? 1.6f : 2.0f, noiseSpread = 0.4f, alignToGround = 0.3f };
 }
-const int detailRes = 1024, detailPatch = 32; const float coverEdge = 1.1f, coverBand = 8f, coverFar = 0.35f, coverDistance = 60f, coverFrontX = 338f, clearingPad = 2f;
+// 8.14a grey check: a tuft is drawn centred on its cell up to maxWidth wide, so cells start half the widest tuft past the trail's
+// painted half-width; at 1.1 m the tufts leaned over the tread and hid it from 20 m
+const float trailPaintHalf = 0.7f, tuftClear = 0.1f;   // trailPaintHalf is 8.3's trailHalf
+float widest = 0f; foreach (var pr in protos) widest = UnityEngine.Mathf.Max(widest, pr.maxWidth);
+float coverEdge = trailPaintHalf + widest * 0.5f + tuftClear;
+const int detailRes = 1024, detailPatch = 32; const float coverBand = 8f, coverFar = 0.35f, coverDistance = 60f, coverFrontX = 338f, clearingPad = 2f;
 data.SetDetailResolution(detailRes, detailPatch); data.detailPrototypes = protos; data.SetDetailScatterMode(UnityEngine.DetailScatterMode.InstanceCountMode);
 terrain.detailObjectDistance = coverDistance;
 var clearings = new (UnityEngine.Vector2 c, float r)[] { (campC, campR), (P(282f, 238f), 30f), (P(292f, 108f), 20f), (P(78f, 146f), 8f) };
