@@ -4,6 +4,7 @@
 // Also checks the open state (TIME row selected, TIME and Ward rows inside the viewport, "more below" and the
 // scrollbar showing when rows are hidden), Right and wrap on the TIME row, free wheel scrolling (the list stays
 // where the wheel put it and the selection does not move), and section jumps (Page Up/Down, LB/RB).
+// 8.14a: also J at night (F1, Left, Down, Down, Enter / View, d-pad Left, Down, Down, A), 5 presses or fewer.
 // Runs from EditorApplication.update and removes itself. Log: Temp/dev_panel_8_11.txt ("done" on the last line).
 // Leaves the panel open on Day one for the opening screenshot (capture_game_view source=screen).
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
@@ -19,8 +20,8 @@ UnityEngine.Transform warps = null;
 foreach (var r in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects()) if (r.name == "DevWarps") warps = r.transform;
 if (dm == null || preview == null || pc == null || warps == null) return "missing DevMenu, LookPreview, player or DevWarps";
 var ward = warps.Find("Ward"); var cabin = warps.Find("Cabin");
-int dayOne = -1, night = -1, dayTwo = -1;
-for (int i = 0; i < preview.Count; i++) { if (preview.Label(i) == "Day one") dayOne = i; if (preview.Label(i) == "Night") night = i; if (preview.Label(i) == "Day two") dayTwo = i; }
+int dayOne = -1, night = -1;
+for (int i = 0; i < preview.Count; i++) { if (preview.Label(i) == "Day one") dayOne = i; if (preview.Label(i) == "Night") night = i; }
 if (GamePause.Instance != null && GamePause.Instance.IsPaused) GamePause.Instance.Resume();
 
 var kb = UnityEngine.InputSystem.InputSystem.AddDevice<UnityEngine.InputSystem.Keyboard>("KeyCheck811");
@@ -75,7 +76,7 @@ Check("open state", OpenState);
 Key(UnityEngine.InputSystem.Key.LeftArrow); Wait(1);
 Check("Left sets Night at once", NightOn); CheckTask("keyboard night");
 Key(UnityEngine.InputSystem.Key.LeftArrow); Wait(1);   // wraps
-Check("Left from Night wraps to Day two", () => (preview.Current == dayTwo, preview.CurrentLabel));
+Check("Left from Night wraps to the last look row", () => (preview.Current == preview.Count - 1, preview.CurrentLabel));   // 8.12 added the lighting options after Day two
 Key(UnityEngine.InputSystem.Key.RightArrow); Wait(1);
 Check("Right steps back to Night", () => (preview.Current == night, preview.CurrentLabel));
 Check("TIME row label follows", () => { var t = Row("Row_Time").GetComponentInChildren<UnityEngine.UI.Text>(); return (t.text == "Time: Night", t.text); });
@@ -98,6 +99,18 @@ Reset("pad: Ward");
 Pad(UnityEngine.InputSystem.LowLevel.GamepadButton.Select); Wait(SettleSteps);
 Pad(UnityEngine.InputSystem.LowLevel.GamepadButton.DpadDown); Pad(UnityEngine.InputSystem.LowLevel.GamepadButton.South); Wait(SettleSteps);
 Check("warped to the Ward", AtWard); CheckTask("pad Ward");
+
+// J at night (8.14a, Wren: the WARD CLIMB rows sit under the Ward row): F1, Left, Down, Down, Enter / View, d-pad Left, Down, Down, A.
+var junctionJ = warps.Find("Junction_J");
+(bool, string) AtJNight() { if (junctionJ == null) return (false, "no Junction_J warp"); float d = UnityEngine.Vector3.Distance(pc.transform.position, junctionJ.position); return (d < 0.5f && !IsOpen() && preview.Current == night, "distance " + d.ToString("F2") + " m, look " + preview.CurrentLabel + ", panel open " + IsOpen()); }
+Reset("keyboard: J at night");
+Key(UnityEngine.InputSystem.Key.F1); Wait(SettleSteps);
+Key(UnityEngine.InputSystem.Key.LeftArrow); Key(UnityEngine.InputSystem.Key.DownArrow); Key(UnityEngine.InputSystem.Key.DownArrow); Key(UnityEngine.InputSystem.Key.Enter); Wait(SettleSteps);
+Check("warped to J at night", AtJNight); CheckTask("keyboard J at night");
+Reset("pad: J at night");
+Pad(UnityEngine.InputSystem.LowLevel.GamepadButton.Select); Wait(SettleSteps);
+Pad(UnityEngine.InputSystem.LowLevel.GamepadButton.DpadLeft); Pad(UnityEngine.InputSystem.LowLevel.GamepadButton.DpadDown); Pad(UnityEngine.InputSystem.LowLevel.GamepadButton.DpadDown); Pad(UnityEngine.InputSystem.LowLevel.GamepadButton.South); Wait(SettleSteps);
+Check("warped to J at night", AtJNight); CheckTask("pad J at night");
 
 // Wheel: scrolls freely, selection stays.
 Reset("mouse wheel");
