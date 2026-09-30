@@ -35,24 +35,20 @@ const float cx = 190f, cz = 60f, a = 54.8f, b = 27.6f, water = -5.5f;
 var w = Prim(Cyl, "Water", Lk, V(cx, water - 0.01f, cz), V(a * 2f, 0.01f, b * 2f), null, false);
 w.GetComponent<UnityEngine.Renderer>().sharedMaterial = waterMat;
 
-// wade limit: invisible boxes on the ellipse at 0.97 of its radii, tops at -5.0 or 0.9 m over the ground if higher (under the dock deck and the boathouse floor), so the player
-// wades the shallow edge but never walks out into deep water
+// wade limit: invisible boxes on the water line (8.15; the rev 7 ring stood 3 percent inside it and the thicket held the shore), tops
+// wadeOver over the ground there, so the water's visible edge is the stop (Valley.md 8); under the dock deck and the boathouse floor they stay low
 var wade = new UnityEngine.GameObject("WadeLimit"); wade.transform.SetParent(Lk, false);
-var trailMarks = new System.Collections.Generic.List<UnityEngine.Vector2>();
-foreach (UnityEngine.Transform leg in Root("Trails").transform) foreach (UnityEngine.Transform m in leg) trailMarks.Add(new UnityEngine.Vector2(m.position.x, m.position.z));
-const int segs = 96;
+const int segs = 96; const float wadeRing = 1f, wadeOver = 1.5f;
 for (int i = 0; i < segs; i++)
 {
     float t0 = i * 2f * UnityEngine.Mathf.PI / segs, t1 = (i + 1) * 2f * UnityEngine.Mathf.PI / segs;
-    var p0 = V(cx + a * 0.97f * UnityEngine.Mathf.Cos(t0), 0f, cz + b * 0.97f * UnityEngine.Mathf.Sin(t0));
-    var p1 = V(cx + a * 0.97f * UnityEngine.Mathf.Cos(t1), 0f, cz + b * 0.97f * UnityEngine.Mathf.Sin(t1));
+    var p0 = V(cx + a * wadeRing * UnityEngine.Mathf.Cos(t0), 0f, cz + b * wadeRing * UnityEngine.Mathf.Sin(t0));
+    var p1 = V(cx + a * wadeRing * UnityEngine.Mathf.Cos(t1), 0f, cz + b * wadeRing * UnityEngine.Mathf.Sin(t1));
     var mid = (p0 + p1) * 0.5f; var dir = p1 - p0;
     var box = new UnityEngine.GameObject("W" + i); box.transform.SetParent(wade.transform, false);
-    // top 0.9 m over the ground where the ring runs up the bank (a buried box leaked, Marlow finding 2), -5.0 under the dock deck
-    bool underDock = mid.x > 187.5f && mid.x < 192.5f && mid.z > 80f; float boxTop = underDock ? -5.0f : UnityEngine.Mathf.Max(-5.0f, H(mid.x, mid.z) + 0.9f);
+    // -5.0 under the dock deck, only as wide as the deck, so the notch beside the dock root is closed at the water too
+    bool underDock = mid.x > 188.4f && mid.x < 191.6f && mid.z > 80f; float boxTop = underDock ? -5.0f : H(mid.x, mid.z) + wadeOver;
     if (mid.x > 236f && mid.x < 244f && mid.z > 49f && mid.z < 56f) boxTop = UnityEngine.Mathf.Min(boxTop, -4.05f);   // under the boathouse floor (-3.8)
-    // where a shore trail runs over the ring the box stays buried: the trail is walkable and the thicket on its lake side holds the player
-    foreach (var tm in trailMarks) if (UnityEngine.Vector2.Distance(tm, new UnityEngine.Vector2(mid.x, mid.z)) < 3f) { boxTop = -5.0f; break; }
     box.transform.position = V(mid.x, (boxTop - 8.5f) * 0.5f, mid.z); box.transform.rotation = UnityEngine.Quaternion.LookRotation(dir.normalized, UnityEngine.Vector3.up);
     box.AddComponent<UnityEngine.BoxCollider>().size = V(0.4f, boxTop + 8.5f, dir.magnitude + 0.3f);   // y -8.5 to the top
 }

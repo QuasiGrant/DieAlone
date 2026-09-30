@@ -32,6 +32,7 @@ run main3_8_8_cave.cs "saved=True" "terrain never enters the passage or chamber:
 run main3_8_9e_layers.cs "saved=True" "missing: none"
 run main3_8_9d_dress_camp.cs "saved=True" "missing: none"
 run main3_8_9f_look.cs "saved=True" "missing: none"
+run main3_8_15_ground.cs "saved=True" "missing: none"
 run look_day_one_8_9g.cs "day one sun 32 bearing 200 crush 0.15 corners 0.3 fill #998A73" "night crush 0.3 corners 0.45" "open-scene overrides: none"
 run main3_8_9_sightlines.cs "all seen: True" "Ward hidden: True, cave hidden: True" "ok True | next:" "all True" "ok True | cab from" "F-1 hidden: True"
 run main3_e1_edges.cs "E-1 pass: True" "grazing rays ok True"

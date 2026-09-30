@@ -240,20 +240,9 @@ if (office != null && glowWin != null)
     var olp = lampGo.AddComponent<PracticalLight>(); var olo = new UnityEditor.SerializedObject(olp); olo.FindProperty("tuning").objectReferenceValue = look; olo.FindProperty("kind").enumValueIndex = (int)PracticalLight.Kind.Lamp; olo.FindProperty("byDay").enumValueIndex = (int)PracticalLight.ByDay.Off; olo.ApplyModifiedPropertiesWithoutUndo();
     var og = new UnityEngine.GameObject("OfficeNightGlow"); og.transform.SetParent(root, false); Visibility(og, LookVisibility.Show.Night, officeGlow);
 }
-// the ground reads as ground, not a flat gray plane or bright diagram strips: every gray terrain layer takes the project
-// Ground054 texture tinted to the palette (forest floor, granite, burnt earth, worn trail earth, dark lake bed). (The thicket markers
-// this used to hide are gone with the thicket, 8.14.)
-var burnEarth = UnityEngine.Color.Lerp(charC, Hex("#8A8078"), 0.5f); var lakeBed = UnityEngine.Color.Lerp(charC, floorC, 0.5f);
-var layerTint = new System.Collections.Generic.Dictionary<string, UnityEngine.Color> { { "Layer_Ground", floorC }, { "Layer_Rock", granite }, { "Layer_Burn", burnEarth }, { "Layer_Trail", trailEarth }, { "Layer_LakeBed", lakeBed } };
-var dataT = terrain.terrainData; int trailLayers = 0;
-var gtex = groundM.GetTexture("_BaseMap") as UnityEngine.Texture2D; var ga = AvgRGB(gtex);
-foreach (var tlayer in dataT.terrainLayers)
-{
-    if (tlayer == null || !layerTint.TryGetValue(tlayer.name, out var tc)) continue;
-    var te = tc.linear; tlayer.diffuseTexture = gtex; tlayer.tileSize = new UnityEngine.Vector2(3f, 3f);
-    tlayer.diffuseRemapMax = new UnityEngine.Vector4(UnityEngine.Mathf.LinearToGammaSpace(te.r / UnityEngine.Mathf.Max(ga.r, 0.02f)), UnityEngine.Mathf.LinearToGammaSpace(te.g / UnityEngine.Mathf.Max(ga.g, 0.02f)), UnityEngine.Mathf.LinearToGammaSpace(te.b / UnityEngine.Mathf.Max(ga.b, 0.02f)), 1f);
-    UnityEditor.EditorUtility.SetDirty(tlayer); trailLayers++;
-}
+// the ground layers' textures moved to 8.15 (main3_8_15_ground.cs: owned floor, trail, rock, shore and bed textures); this look pass
+// no longer retints them (the one-texture Ground054 retint is in git history)
+int trailLayers = 0;
 int markerN = 0;   // 8.14: the thicket and its markers are gone (Valley.md rev 10 section 8)
 // the old burn: dense young regrowth 4 to 6 m (4 m in the last 40 m before the front zone), off the trails (Main3.md 2.10)
 var burnPoly = new[] { new UnityEngine.Vector2(185f, 181f), new UnityEngine.Vector2(340f, 213f), new UnityEngine.Vector2(340f, 143f), new UnityEngine.Vector2(185f, 151f) };

@@ -54,6 +54,8 @@ var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2
     ("W1 to Camp 3", new[] { P(128,70), P(96,104), P(78,146) }, false, 114f, false, 0.25f, new[] { ("Footbridge", P(114.8f,85.2f), "on"), ("Camper trailer", P(94,114.4f), "side"), ("Log steps", P(83.1f,134.1f), "steps"), ("Boulder", P(102.5f,102.2f), "tree") }),   // log steps down the hollow wall (rev 15 leftover 3)
     ("W1 to cave", new[] { P(128,70), P(108,48), P(84,64), P(52,37.5f) }, false, 109f, false, 0.25f, new[] { ("Rope handrail", P(106.8f,57.6f), "on"), ("Coloured bulbs", P(82,52), "side") }),
     ("Camp to J", new[] { P(170,160), P(136,196), P(104,206) }, false, 96f, false, 0.25f, new[] { ("Burn-map board", P(136.4f,189.6f), "side"), ("Plank bridge", P(104.8f,203.2f), "on"), ("Boulder", P(146.9f,182f), "tree"), ("Boulder", P(123.9f,197.7f), "tree") }),
+    // the north loop (Valley.md rev 10, 1.3; 8.15): Camp 1 west past forage C and the ruin, to the spring and J; the map's centre line
+    ("Camp 1 to J", new[] { P(282,238), P(250,262), P(225,266), P(195,273), P(168,270), P(140,262), P(118,236), P(106,214), P(104,206) }, true, 235f, false, 0.25f, new (string n, UnityEngine.Vector2 p, string kind)[0]),
     // Valley.md rev 10 section 4 (8.14): J to the chute mouth, leg 1 up the boulder chute west to P1, leg 2 north along the shelf to
     // P2, leg 3 north-west up the burned cwm to P3, leg 4 south under the crest wall to P4, west into the cleft (dogleg), south round
     // the fin and along the ledge to the path end. The points are 8.1's climb (main3_8_1_scene_ground.cs, the climb array): change
@@ -263,7 +265,8 @@ for (int z = 0; z < res; z++) for (int x = 0; x < res; x++)
 }
 data.SetHeights(0, 0, hm);
 
-// ---------- paint: Trail layer (index 3) 1.2 m, soft to 1.8 m ----------
+// ---------- paint: Trail layer (index 3), 1.4 m wide with a 0.4 m blend (Valley.md 12.1, 8.15) ----------
+const float trailHalf = 0.7f, trailBlend = 0.4f;
 int ares = data.alphamapResolution; var alpha = data.GetAlphamaps(0, 0, ares, ares); int layersN = alpha.GetLength(2);
 float aX = size.x / ares, aZ = size.z / ares;
 var aD = new float[ares, ares]; for (int z = 0; z < ares; z++) for (int x = 0; x < ares; x++) aD[z, x] = float.MaxValue;
@@ -275,7 +278,7 @@ foreach (var b in built) foreach (var p in b.path) if (!InCamp(p))
 }
 for (int z = 0; z < ares; z++) for (int x = 0; x < ares; x++)
 {
-    float w = 1f - UnityEngine.Mathf.Clamp01((aD[z, x] - 1.2f) / 0.6f); if (w <= 0f) continue;
+    float w = 1f - UnityEngine.Mathf.Clamp01((aD[z, x] - trailHalf) / trailBlend); if (w <= 0f) continue;
     for (int k = 0; k < layersN; k++) alpha[z, x, k] *= 1f - w; alpha[z, x, 3] += w;
 }
 data.SetAlphamaps(0, 0, alpha);

@@ -1,0 +1,398 @@
+// Main3 task 8.15: paths, ground and stops (Valley.md rev 10 sections 8, 9, 11 and 12; Docs/Design/ForestPlan.md section 6; owned
+// assets per Docs/Process/AssetCatalogue.md). Run after 8.9f in Main3, edit mode (the runner runs it before the day-one start and the
+// sightlines). No trees (8.16).
+// 1. Ground layers: the floor GrassPine, SoilPine under the north groves and the fir wall, GrassMud on the lake shore and in the old
+//    burn, bare Ground054 dirt on the trails (8.3 paints them 1.4 m wide with a 0.4 m blend), Rocks_a on every slope over 35 degrees
+//    (8.1 paints it), Mud_darker on the lake bed. Raw greys (AssetCatalogue): trail 140, floors 79 to 89.
+// 2. Ground cover to the trail's edge: grass and fern details from 0.4 m off the trail edge, thick for 8 m, thinner beyond.
+// 3. Trail edges: a pale stone or a log on one edge every 4 m, sides alternating (Valley.md 12.1; the night cue), looks only.
+// 4. Junction markers (section 11): signposts at camp, the pump, Jg and J; the trailhead board at T; a blaze on a post on W1's Camp 3
+//    branch; a blaze on a stump where the north loop leaves Camp 1. The gate T is 8.6's.
+// 5. Stops (section 8), every one a visible thing with its collider inside it: brush hedges (Campsite CS_Bush_Large and BK hollow
+//    logs, the AssetCatalogue fallback for brush over 2 m) round the old burn and between the knoll switchbacks (traced round the
+//    trail corridors, so junctions stay open), across the south-east corner, the W foot pocket, the mid pocket and both ends of the
+//    lake's south shore, and dressing 8.6's gray brush bands; rock rims (1.3 m, as 8.1's climb ring) round the ravine above the cave
+//    spur and the Camp 3 hollow, open where the trails go in. The lake's edge is 8.4's wade limit, at the water line.
+if (UnityEngine.Application.isPlaying) return "stop play mode first";
+var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
+UnityEngine.GameObject Root(string name) { foreach (var r in scene.GetRootGameObjects()) if (r.name == name) return r; return null; }
+if (Root("SliceLook") == null) return "run 8.9f first";
+if (Root("Ground815") != null) return "Ground815 already exists; rebuild Main3 from 8.1";
+var V = new System.Func<float, float, float, UnityEngine.Vector3>((x, y, z) => new UnityEngine.Vector3(x, y, z));
+UnityEngine.Vector2 P(float x, float z) => new UnityEngine.Vector2(x, z);
+var terrain = Root("Terrain").GetComponent<UnityEngine.Terrain>(); var data = terrain.terrainData; var tOrg = terrain.transform.position; var size = data.size;
+float H(float x, float z) => terrain.SampleHeight(V(x, 0f, z)) + tOrg.y;
+float SS(float a) => UnityEngine.Mathf.SmoothStep(0f, 1f, UnityEngine.Mathf.Clamp01(a));
+float SegD(UnityEngine.Vector2 p, UnityEngine.Vector2 a, UnityEngine.Vector2 b) { var ab = b - a; float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(p - a, ab) / UnityEngine.Mathf.Max(ab.sqrMagnitude, 1e-6f)); return UnityEngine.Vector2.Distance(p, a + ab * t); }
+bool Inside(UnityEngine.Vector2 p, UnityEngine.Vector2[] poly)
+{
+    bool c = false;
+    for (int i = 0, j = poly.Length - 1; i < poly.Length; j = i++)
+        if (((poly[i].y > p.y) != (poly[j].y > p.y)) && (p.x < (poly[j].x - poly[i].x) * (p.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x)) c = !c;
+    return c;
+}
+var rng = new System.Random(8151);
+float R(float a, float b) => a + (float)rng.NextDouble() * (b - a);
+var missing = new System.Collections.Generic.List<string>();
+UnityEngine.GameObject Spawn(string path, UnityEngine.Transform parent)
+{
+    var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path + ".prefab"); if (pf == null) { if (!missing.Contains(path)) missing.Add(path); return null; }
+    var g = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(pf, parent);
+    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);   // dressing never catches the player; stops carry their own colliders
+    return g;
+}
+float Bottom(UnityEngine.GameObject g) { float low = float.MaxValue; foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) low = UnityEngine.Mathf.Min(low, r.bounds.min.y); return low; }
+float Top(UnityEngine.GameObject g) { float hi = float.MinValue; foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) hi = UnityEngine.Mathf.Max(hi, r.bounds.max.y); return hi; }
+void SitOn(UnityEngine.GameObject g, float x, float z, float sink) { g.transform.position = V(x, 0f, z); float b = Bottom(g); g.transform.position = V(x, H(x, z) - b - sink, z); }
+const string BK = "Assets/BK/PureNature_Redwood/", CS = "Assets/Revolving Pizza Games/Campsite/Prefabs/";
+var root = new UnityEngine.GameObject("Ground815").transform;
+
+// trails: every leg's centre points (8.3, 2 m apart)
+var legs = new System.Collections.Generic.List<(string name, System.Collections.Generic.List<UnityEngine.Vector3> pts)>();
+foreach (UnityEngine.Transform leg in Root("Trails").transform) { var l = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform p in leg) l.Add(p.position); legs.Add((leg.name, l)); }
+var allPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (var lg in legs) foreach (var p in lg.pts) allPts.Add(P(p.x, p.z));
+var pois = new System.Collections.Generic.List<UnityEngine.Vector2>(); if (Root("PointsOfInterest") != null) foreach (UnityEngine.Transform t in Root("PointsOfInterest").transform) pois.Add(P(t.position.x, t.position.z));
+var lakeC = P(190f, 60f); const float lakeA = 54.8f, lakeB = 27.6f;
+float LakeRe(UnityEngine.Vector2 p) { var q = p - lakeC; return UnityEngine.Mathf.Sqrt((q.x / lakeA) * (q.x / lakeA) + (q.y / lakeB) * (q.y / lakeB)); }
+var campC = P(170f, 160f); const float campR = 18f;
+var burnPoly = new[] { P(185f, 181f), P(340f, 213f), P(340f, 143f), P(185f, 151f) };
+
+// ---------- 1. ground layers ----------
+UnityEngine.Texture2D Tex(string path) { var t = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(path); if (t == null) missing.Add(path); return t; }
+const string surf = BK + "Textures/Surfaces/";
+UnityEngine.TerrainLayer LayerNamed(string n) { foreach (var l in data.terrainLayers) if (l != null && l.name == n) return l; return null; }
+void SetLayer(UnityEngine.TerrainLayer l, UnityEngine.Texture2D albedo, UnityEngine.Texture2D normal, float tile, UnityEngine.Color remap)
+{
+    l.diffuseTexture = albedo; l.normalMapTexture = normal; l.tileSize = new UnityEngine.Vector2(tile, tile);
+    l.diffuseRemapMin = UnityEngine.Vector4.zero; l.diffuseRemapMax = new UnityEngine.Vector4(remap.r, remap.g, remap.b, 1f); UnityEditor.EditorUtility.SetDirty(l);
+}
+const float floorTile = 4f, trailTile = 2f, rockTile = 4f, rockLuma = 0.55f;
+UnityEngine.ColorUtility.TryParseHtmlString("#6E6660", out var granite);   // Style.md granite; Rocks_a's mean luma is 0.55 (AssetCatalogue)
+var white = UnityEngine.Color.white;
+var lGround = LayerNamed("Layer_Ground"); var lRock = LayerNamed("Layer_Rock"); var lBurn = LayerNamed("Layer_Burn"); var lTrail = LayerNamed("Layer_Trail"); var lBed = LayerNamed("Layer_LakeBed");
+if (lGround == null || lRock == null || lBurn == null || lTrail == null || lBed == null) return "8.1's terrain layers missing";
+SetLayer(lGround, Tex(surf + "GrassPine_a.png"), Tex(surf + "GrassPine_n.png"), floorTile, white);
+SetLayer(lBurn, Tex(surf + "GrassMud_a.png"), Tex(surf + "GrassMud_n.png"), floorTile, white);
+SetLayer(lTrail, Tex("Assets/Textures/Ground054/Ground054_Color.jpg"), null, trailTile, white);
+SetLayer(lRock, Tex(BK + "Models/Rocks/Textures/Rocks_a.png"), Tex(BK + "Models/Rocks/Textures/Rocks_n.png"), rockTile, new UnityEngine.Color(granite.r / rockLuma, granite.g / rockLuma, granite.b / rockLuma));
+SetLayer(lBed, Tex(surf + "Mud_darker_a.png"), Tex(surf + "Mud_darker_n.png"), floorTile, white);
+const string soilPath = "Assets/Terrain/Main3/Layer_SoilPine.terrainlayer";
+var lSoil = new UnityEngine.TerrainLayer { name = "Layer_SoilPine" }; UnityEditor.AssetDatabase.CreateAsset(lSoil, soilPath);
+SetLayer(lSoil, Tex(surf + "SoilPine_a.png"), Tex(surf + "SoilPine_n.png"), floorTile, white);
+if (missing.Count > 0) return "missing: " + string.Join(", ", missing);
+var layerList = new System.Collections.Generic.List<UnityEngine.TerrainLayer>(data.terrainLayers); layerList.Add(lSoil); data.terrainLayers = layerList.ToArray();
+int iGround = layerList.IndexOf(lGround), iBurn = layerList.IndexOf(lBurn), iSoil = layerList.IndexOf(lSoil);
+// SoilPine (needles) under the north and west groves and the north fir wall (ForestPlan 6), GrassMud on the shore band (lake radii
+// 1.03 to 1.25), both taken from the floor layer only, so trail, rock and bed paint stay
+var soilCircles = new (UnityEngine.Vector2 c, float r)[] { (P(175f, 282f), 20f), (P(120f, 280f), 16f), (P(92f, 250f), 14f), (P(132f, 212f), 14f), (P(115f, 128f), 14f), (P(92f, 75f), 14f), (P(65f, 20f), 14f) };
+const float soilBlend = 4f, wallX0 = 90f, wallX1 = 300f, wallZ0 = 285f, wallZ1 = 310f, shoreIn = 1.03f, shoreOut = 1.25f, shoreBlend = 0.08f;
+{
+    int ares = data.alphamapResolution; var alpha = data.GetAlphamaps(0, 0, ares, ares); float aX = size.x / ares, aZ = size.z / ares;
+    for (int zi = 0; zi < ares; zi++) for (int xi = 0; xi < ares; xi++)
+    {
+        var p = P(tOrg.x + (xi + 0.5f) * aX, tOrg.z + (zi + 0.5f) * aZ); float g = alpha[zi, xi, iGround]; if (g <= 0f) continue;
+        float soil = 0f;
+        foreach (var c in soilCircles) soil = UnityEngine.Mathf.Max(soil, 1f - SS((UnityEngine.Vector2.Distance(p, c.c) - c.r) / soilBlend));
+        float dWall = UnityEngine.Mathf.Max(UnityEngine.Mathf.Max(wallX0 - p.x, p.x - wallX1), UnityEngine.Mathf.Max(wallZ0 - p.y, p.y - wallZ1));
+        soil = UnityEngine.Mathf.Max(soil, 1f - SS(dWall / soilBlend));
+        float re = LakeRe(p), shore = re < shoreIn || re > shoreOut + shoreBlend ? 0f : 1f - SS((re - shoreOut) / shoreBlend);
+        float toSoil = g * soil, toShore = (g - toSoil) * shore;
+        alpha[zi, xi, iGround] = g - toSoil - toShore; alpha[zi, xi, iSoil] += toSoil; alpha[zi, xi, iBurn] += toShore;
+    }
+    data.SetAlphamaps(0, 0, alpha);
+}
+
+// ---------- 2. ground cover: grass and fern details from 0.4 m off the trail edge ----------
+string[] detailNames = { "Detail_Grass1", "Detail_Grass2", "Detail_Grass3", "Detail_Fern1", "Detail_Fern2" };
+var protos = new UnityEngine.DetailPrototype[detailNames.Length];
+for (int i = 0; i < detailNames.Length; i++)
+{
+    var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>("Assets/Prefabs/Forest/" + detailNames[i] + ".prefab"); if (pf == null) return "missing detail prefab " + detailNames[i];
+    bool fern = detailNames[i].Contains("Fern");
+    protos[i] = new UnityEngine.DetailPrototype { prototype = pf, usePrototypeMesh = true, renderMode = UnityEngine.DetailRenderMode.VertexLit, useInstancing = true, minHeight = fern ? 1.0f : 1.2f, maxHeight = fern ? 1.6f : 2.0f, minWidth = fern ? 1.0f : 1.2f, maxWidth = fern ? 1.6f : 2.0f, noiseSpread = 0.4f, alignToGround = 0.3f };
+}
+const int detailRes = 1024, detailPatch = 32; const float coverEdge = 1.1f, coverBand = 8f, coverFar = 0.35f, coverDistance = 60f, coverFrontX = 338f, clearingPad = 2f;
+data.SetDetailResolution(detailRes, detailPatch); data.detailPrototypes = protos; data.SetDetailScatterMode(UnityEngine.DetailScatterMode.InstanceCountMode);
+terrain.detailObjectDistance = coverDistance;
+var clearings = new (UnityEngine.Vector2 c, float r)[] { (campC, campR), (P(282f, 238f), 30f), (P(292f, 108f), 20f), (P(78f, 146f), 8f) };
+{
+    float dX = size.x / detailRes, dZ = size.z / detailRes; var dist = new float[detailRes, detailRes];
+    for (int z = 0; z < detailRes; z++) for (int x = 0; x < detailRes; x++) dist[z, x] = float.MaxValue;
+    const float reach = 12f;
+    foreach (var p in allPts)
+    {
+        int x0 = UnityEngine.Mathf.Max(0, (int)((p.x - tOrg.x - reach) / dX)), x1 = UnityEngine.Mathf.Min(detailRes - 1, (int)((p.x - tOrg.x + reach) / dX) + 1);
+        int z0 = UnityEngine.Mathf.Max(0, (int)((p.y - tOrg.z - reach) / dZ)), z1 = UnityEngine.Mathf.Min(detailRes - 1, (int)((p.y - tOrg.z + reach) / dZ) + 1);
+        for (int z = z0; z <= z1; z++) for (int x = x0; x <= x1; x++) { float d = UnityEngine.Vector2.Distance(p, P(tOrg.x + (x + 0.5f) * dX, tOrg.z + (z + 0.5f) * dZ)); if (d < dist[z, x]) dist[z, x] = d; }
+    }
+    var layers = new int[protos.Length][,]; for (int k = 0; k < protos.Length; k++) layers[k] = new int[detailRes, detailRes];
+    for (int z = 0; z < detailRes; z++) for (int x = 0; x < detailRes; x++)
+    {
+        var p = P(tOrg.x + (x + 0.5f) * dX, tOrg.z + (z + 0.5f) * dZ); float d = dist[z, x];
+        if (d < coverEdge || p.x > coverFrontX || LakeRe(p) < shoreIn) continue;
+        if (data.GetSteepness((x + 0.5f) / detailRes, (z + 0.5f) / detailRes) > 35f) continue;
+        bool inClearing = false; foreach (var c in clearings) if (UnityEngine.Vector2.Distance(p, c.c) < c.r - clearingPad) { inClearing = true; break; } if (inClearing) continue;
+        if (d > coverBand && rng.NextDouble() > coverFar) continue;
+        layers[rng.Next(protos.Length)][z, x] = 1;
+    }
+    for (int k = 0; k < protos.Length; k++) data.SetDetailLayer(0, 0, k, layers[k]);
+}
+UnityEditor.EditorUtility.SetDirty(data);
+
+// ---------- 3. trail edges: a pale stone or a log every 4 m on one edge, sides alternating ----------
+var edges = new UnityEngine.GameObject("TrailEdges").transform; edges.SetParent(root, false);
+var paleStone = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Concrete034_1.0x1.0.mat"); if (paleStone == null) return "no Concrete034_1.0x1.0.mat";
+const float edgeStep = 4f, edgeOff = 1.05f, stoneLow = 0.35f, stoneHigh = 0.6f, logEvery = 4f;
+int edgeN = 0;
+foreach (var lg in legs)
+{
+    var ps = lg.pts; float acc = 0f, next = edgeStep; int k = 0;
+    for (int i = 1; i < ps.Count; i++)
+    {
+        var a = P(ps[i - 1].x, ps[i - 1].z); var b = P(ps[i].x, ps[i].z); acc += UnityEngine.Vector2.Distance(a, b); if (acc < next) continue; next += edgeStep; k++;
+        if (UnityEngine.Vector2.Distance(b, campC) < campR || b.x > coverFrontX) continue;
+        var t = (b - a).normalized; var n = P(-t.y, t.x) * (k % 2 == 0 ? 1f : -1f); var q = b + n * edgeOff;
+        bool isLog = k % (int)logEvery == 0;
+        var g = Spawn(isLog ? CS + "Wood/CS_Log_Firewood_Short" : CS + "Rocks and Stones/CS_Stone_" + (1 + rng.Next(8)), edges); if (g == null) continue;
+        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, isLog ? UnityEngine.Mathf.Atan2(t.x, t.y) * UnityEngine.Mathf.Rad2Deg + R(-20f, 20f) : R(0f, 360f), 0f);
+        if (!isLog) { float s = R(stoneLow, stoneHigh) / UnityEngine.Mathf.Max(0.1f, Top(g) - Bottom(g)); g.transform.localScale = V(s, s, s); foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) r.sharedMaterial = paleStone; }
+        SitOn(g, q.x, q.y, 0.08f); edgeN++;
+    }
+}
+
+// ---------- 4. junction markers (Valley.md 11) ----------
+var markers = new UnityEngine.GameObject("JunctionMarkers").transform; markers.SetParent(root, false);
+var plank = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Planks023A_1.0x1.0.mat"); if (plank == null) return "no Planks023A_1.0x1.0.mat";
+var font = UnityEngine.Resources.GetBuiltinResource<UnityEngine.Font>("LegacyRuntime.ttf");
+UnityEngine.GameObject Box(string name, UnityEngine.Transform parent, UnityEngine.Vector3 pos, UnityEngine.Vector3 sc, UnityEngine.Quaternion rot, UnityEngine.Material m, bool collider)
+{
+    var g = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube); g.name = name; g.transform.SetParent(parent, false); g.transform.SetPositionAndRotation(pos, rot); g.transform.localScale = sc;
+    g.GetComponent<UnityEngine.Renderer>().sharedMaterial = m; if (!collider) UnityEngine.Object.DestroyImmediate(g.GetComponent<UnityEngine.Collider>()); return g;
+}
+void Label(UnityEngine.Transform board, string text)   // world-space text on both faces of a board (the project's sign pattern, build_signs.cs), unscaled by the board
+{
+    const float textScale = 0.01f, faceOff = 0.035f;
+    foreach (var face in new[] { 1f, -1f })
+    {
+        var cg = new UnityEngine.GameObject("Label", typeof(UnityEngine.RectTransform)); cg.transform.SetParent(board.parent, false);
+        var canvas = cg.AddComponent<UnityEngine.Canvas>(); canvas.renderMode = UnityEngine.RenderMode.WorldSpace;
+        cg.GetComponent<UnityEngine.RectTransform>().sizeDelta = new UnityEngine.Vector2(board.localScale.x / textScale, board.localScale.y / textScale);
+        cg.transform.SetPositionAndRotation(board.position + board.forward * faceOff * face, board.rotation * UnityEngine.Quaternion.Euler(0f, face > 0f ? 180f : 0f, 0f));
+        cg.transform.localScale = V(textScale, textScale, textScale);
+        var tg = new UnityEngine.GameObject("Text", typeof(UnityEngine.RectTransform)); tg.transform.SetParent(cg.transform, false);
+        var trt = tg.GetComponent<UnityEngine.RectTransform>(); trt.anchorMin = UnityEngine.Vector2.zero; trt.anchorMax = UnityEngine.Vector2.one; trt.offsetMin = trt.offsetMax = UnityEngine.Vector2.zero;
+        var tx = tg.AddComponent<UnityEngine.UI.Text>(); tx.font = font; tx.fontSize = 14; tx.fontStyle = UnityEngine.FontStyle.Bold; tx.alignment = UnityEngine.TextAnchor.MiddleCenter;
+        tx.color = new UnityEngine.Color(0.95f, 0.9f, 0.8f); tx.text = text; tx.horizontalOverflow = UnityEngine.HorizontalWrapMode.Overflow;
+    }
+}
+UnityEngine.Vector2 LegToward(string leg, UnityEngine.Vector2 from, float along)   // a point 'along' metres down the named leg from its end nearest 'from'
+{
+    var l = legs.Find(x => x.name == leg).pts; if (l == null) return from; bool rev = UnityEngine.Vector2.Distance(P(l[0].x, l[0].z), from) > UnityEngine.Vector2.Distance(P(l[l.Count - 1].x, l[l.Count - 1].z), from);
+    int idx = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(along / 2f), 0, l.Count - 1); var q = rev ? l[l.Count - 1 - idx] : l[idx]; return P(q.x, q.z);
+}
+const float postH = 2.4f, armLen = 1.1f, armH = 0.22f, armT = 0.05f, signAlong = 8f;
+void Signpost(string name, UnityEngine.Vector2 at, (string text, UnityEngine.Vector2 toward)[] arms)
+{
+    var s = new UnityEngine.GameObject(name).transform; s.SetParent(markers, false); float gy = H(at.x, at.y); s.position = V(at.x, gy, at.y);
+    Box("Post", s, V(at.x, gy + postH * 0.5f - 0.3f, at.y), V(0.14f, postH + 0.6f, 0.14f), UnityEngine.Quaternion.identity, plank, true);
+    for (int i = 0; i < arms.Length; i++)
+    {
+        var d = (arms[i].toward - at).normalized; var rot = UnityEngine.Quaternion.LookRotation(V(d.x, 0f, d.y)) * UnityEngine.Quaternion.Euler(0f, 90f, 0f);
+        var b = Box("Arm_" + arms[i].text, s, V(at.x + d.x * armLen * 0.5f, gy + postH - 0.2f - i * 0.3f, at.y + d.y * armLen * 0.5f), V(armLen, armH, armT), rot, plank, false);
+        Label(b.transform, arms[i].text);
+    }
+}
+void Blaze(string name, UnityEngine.Vector2 at, bool stump)
+{
+    var s = new UnityEngine.GameObject(name).transform; s.SetParent(markers, false); float gy = H(at.x, at.y); s.position = V(at.x, gy, at.y);
+    float top = gy + 1.4f;
+    if (stump) { var st = Spawn("Assets/Revolving Pizza Games/Cabin In The Woods/Prefabs/Vegetation/CITW_Tree_Stump", s); if (st != null) { SitOn(st, at.x, at.y, 0.05f); top = Top(st); } }
+    else Box("Post", s, V(at.x, gy + 0.7f, at.y), V(0.14f, 1.8f, 0.14f), UnityEngine.Quaternion.identity, plank, true);
+    Box("Blaze", s, V(at.x, top - 0.35f, at.y), V(0.2f, 0.3f, 0.2f), UnityEngine.Quaternion.identity, paleStone, false);   // a pale painted band
+}
+Signpost("Sign_Camp", P(165f, 158f), new[] { ("LAKE", LegToward("Camp to pump", campC, signAlong + campR)), ("CAMP 3", LegToward("Camp to Camp 3", campC, signAlong + campR)), ("SPRING", LegToward("Camp to J", campC, signAlong + campR)), ("LOT", LegToward("Camp to Jg", campC, signAlong + campR)) });
+Signpost("Sign_Pump", P(193f, 99f), new[] { ("CAMP", LegToward("Camp to pump", P(190f, 96f), signAlong)), ("BOATHOUSE", LegToward("Pump to boathouse", P(190f, 96f), signAlong)), ("WEST SHORE", LegToward("Pump to W1", P(190f, 96f), signAlong)) });
+Signpost("Sign_Jg", P(265f, 169f), new[] { ("CAMP", LegToward("Camp to Jg", P(262f, 172f), signAlong)), ("LOT", LegToward("Jg to T", P(262f, 172f), signAlong)), ("CAMP 1", LegToward("Jg to Camp 1", P(262f, 172f), signAlong)) });
+Signpost("Sign_J", P(107f, 203f), new[] { ("CAMP", LegToward("Camp to J", P(104f, 206f), signAlong)), ("NORTH LOOP", LegToward("Camp 1 to J", P(104f, 206f), signAlong)) });
+{
+    // the trailhead board with the trail map at T (338, 170), facing the lot
+    var tb = new UnityEngine.GameObject("Trailhead_Board").transform; tb.SetParent(markers, false); var at = P(338f, 172.5f); float gy = H(at.x, at.y);
+    foreach (var dz in new[] { -0.9f, 0.9f }) Box("Post", tb, V(at.x, gy + 1.0f, at.y + dz), V(0.14f, 2.0f, 0.14f), UnityEngine.Quaternion.identity, plank, true);
+    var board = Box("Board", tb, V(at.x, gy + 1.5f, at.y), V(1.9f, 1.1f, 0.06f), UnityEngine.Quaternion.Euler(0f, 90f, 0f), plank, false);
+    Label(board.transform, "VALLEY TRAILS");
+}
+Blaze("Blaze_W1_Camp3", LegToward("W1 to Camp 3", P(128f, 70f), 6f) + P(1.8f, 0f), false);
+Blaze("Blaze_Camp1_Stump", P(272f, 246f), true);
+
+// ---------- 5. stops ----------
+var stops = new UnityEngine.GameObject("Stops").transform; stops.SetParent(root, false);
+string[] bushes = { "CS_Bush_Large_1", "CS_Bush_Large_1_1", "CS_Bush_Large_1_2", "CS_Bush_Large_1_3", "CS_Bush_Large_1_4", "CS_Bush_Large_2", "CS_Bush_Large_2_1", "CS_Bush_Large_2_2", "CS_Bush_Large_2_3", "CS_Bush_Large_2_4" };
+// a hedge: brush every hedgeStep along the line (pushed toward the closed side), a hollow log every few metres, and inside it a
+// collider hedgeColH over the highest ground under it, on the Ignore Raycast layer (sight checks see the brush, not the box)
+const float hedgeStep = 1.4f, bushLow = 2.0f, bushHigh = 2.5f, hedgeColH = 1.8f, hedgeColT = 1.0f, hedgeJitter = 0.35f; const int logEveryBush = 9;
+int bushN = 0, hedgeCols = 0; float hedgeLen = 0f;
+void Hedge(string name, System.Collections.Generic.List<UnityEngine.Vector2> line, float closedSide)   // closedSide +1: the closed ground is on the line's left
+{
+    if (line.Count < 2) return;
+    var h = new UnityEngine.GameObject(name).transform; h.SetParent(stops, false);
+    float acc = 0f, next = 0f; int n = 0;
+    for (int i = 0; i < line.Count - 1; i++)
+    {
+        var a = line[i]; var b = line[i + 1]; float len = UnityEngine.Vector2.Distance(a, b); if (len < 0.01f) continue; var t = (b - a) / len; var nl = P(-t.y, t.x) * closedSide;
+        // the collider
+        float gTop = UnityEngine.Mathf.Max(H(a.x, a.y), H(b.x, b.y)), gLow = UnityEngine.Mathf.Min(H(a.x, a.y), H(b.x, b.y)); var mid = (a + b) * 0.5f;
+        var col = new UnityEngine.GameObject("HedgeCollider"); col.transform.SetParent(h, false); col.layer = 2;
+        col.transform.SetPositionAndRotation(V(mid.x, (gLow - 0.5f + gTop + hedgeColH) * 0.5f, mid.y), UnityEngine.Quaternion.LookRotation(V(t.x, 0f, t.y)));
+        col.AddComponent<UnityEngine.BoxCollider>().size = V(hedgeColT, gTop + hedgeColH - (gLow - 0.5f), len + 0.3f); hedgeCols++; hedgeLen += len;
+        // the brush over it
+        while (next <= acc + len)
+        {
+            var q = a + t * (next - acc) + nl * R(0.1f, hedgeJitter) + P(-t.y, t.x) * R(-0.1f, 0.1f); next += hedgeStep; n++;
+            bool log = n % logEveryBush == 0;
+            var g = Spawn(log ? BK + "Prefabs/HollowLogs/RedwoodHollowLog_" + rng.Next(3) : CS + "Vegetation/" + bushes[rng.Next(bushes.Length)], h); if (g == null) continue;
+            g.transform.rotation = UnityEngine.Quaternion.Euler(0f, log ? UnityEngine.Mathf.Atan2(t.x, t.y) * UnityEngine.Mathf.Rad2Deg + R(-15f, 15f) : R(0f, 360f), 0f);
+            float want = log ? 1.2f : R(bushLow, bushHigh), s = want / UnityEngine.Mathf.Max(0.2f, Top(g) - Bottom(g)); g.transform.localScale = V(s, s, s);
+            SitOn(g, q.x, q.y, 0.1f); bushN++;
+        }
+        acc += len;
+    }
+}
+System.Collections.Generic.List<UnityEngine.Vector2> Line(params UnityEngine.Vector2[] pts) => new System.Collections.Generic.List<UnityEngine.Vector2>(pts);
+// (a) the old burn and the knoll switchbacks: closed ground traced round the trail corridors (marching squares on a 0.5 m grid, as
+// the rev 7 thicket traced its walls), so the hedge follows each trail and junctions and side pieces stay open
+var knollHull = new[] { P(152f, 145f), P(170f, 160f), P(188f, 133f), P(190f, 96f), P(176f, 105f) };
+const float corridorHW = 2.5f, gridCell = 0.5f, gx0 = 145f, gx1 = 345f, gz0 = 90f, gz1 = 220f, poiPad = 2.5f;
+int GW = UnityEngine.Mathf.RoundToInt((gx1 - gx0) / gridCell), GH = UnityEngine.Mathf.RoundToInt((gz1 - gz0) / gridCell);
+var fld = new float[GW + 1, GH + 1];   // > 0 walkable, < 0 closed
+for (int i = 0; i <= GW; i++) for (int j = 0; j <= GH; j++)
+{
+    var p = P(gx0 + i * gridCell, gz0 + j * gridCell);
+    bool closed = Inside(p, burnPoly) || Inside(p, knollHull);
+    fld[i, j] = closed ? -1f : 1f;
+}
+void Stamp(UnityEngine.Vector2 c, float r)
+{
+    int i0 = UnityEngine.Mathf.Max(0, (int)((c.x - r - gx0) / gridCell) - 1), i1 = UnityEngine.Mathf.Min(GW, (int)((c.x + r - gx0) / gridCell) + 1);
+    int j0 = UnityEngine.Mathf.Max(0, (int)((c.y - r - gz0) / gridCell) - 1), j1 = UnityEngine.Mathf.Min(GH, (int)((c.y + r - gz0) / gridCell) + 1);
+    for (int i = i0; i <= i1; i++) for (int j = j0; j <= j1; j++) { float v = r - UnityEngine.Vector2.Distance(c, P(gx0 + i * gridCell, gz0 + j * gridCell)); if (v > fld[i, j]) fld[i, j] = v; }
+}
+foreach (var p in allPts) Stamp(p, corridorHW);
+Stamp(campC, campR); Stamp(P(262f, 172f), 4f); Stamp(P(340f, 170f), 4f);
+foreach (var q in pois) Stamp(q, poiPad + 1.5f);
+// marching squares: segments between edge crossings, chained into loops
+var ptOf = new System.Collections.Generic.Dictionary<long, UnityEngine.Vector2>(); var adj = new System.Collections.Generic.Dictionary<long, System.Collections.Generic.List<long>>();
+long EKey(int i, int j, int dir) => ((long)j * (GW + 1) + i) * 2 + dir;
+UnityEngine.Vector2 EPoint(int i, int j, int dir) { float va = fld[i, j], vb = dir == 0 ? fld[i + 1, j] : fld[i, j + 1]; float t = va / (va - vb); return dir == 0 ? P(gx0 + (i + t) * gridCell, gz0 + j * gridCell) : P(gx0 + i * gridCell, gz0 + (j + t) * gridCell); }
+void Link(long a, long b, UnityEngine.Vector2 pa, UnityEngine.Vector2 pb)
+{
+    ptOf[a] = pa; ptOf[b] = pb;
+    if (!adj.TryGetValue(a, out var la)) adj[a] = la = new System.Collections.Generic.List<long>(); la.Add(b);
+    if (!adj.TryGetValue(b, out var lb)) adj[b] = lb = new System.Collections.Generic.List<long>(); lb.Add(a);
+}
+for (int i = 0; i < GW; i++) for (int j = 0; j < GH; j++)
+{
+    int cs = (fld[i, j] > 0 ? 1 : 0) | (fld[i + 1, j] > 0 ? 2 : 0) | (fld[i + 1, j + 1] > 0 ? 4 : 0) | (fld[i, j + 1] > 0 ? 8 : 0);
+    if (cs == 0 || cs == 15) continue;
+    long B = EKey(i, j, 0), Rr = EKey(i + 1, j, 1), T = EKey(i, j + 1, 0), Lf = EKey(i, j, 1);
+    UnityEngine.Vector2 pB() => EPoint(i, j, 0); UnityEngine.Vector2 pR() => EPoint(i + 1, j, 1); UnityEngine.Vector2 pT() => EPoint(i, j + 1, 0); UnityEngine.Vector2 pL() => EPoint(i, j, 1);
+    bool centre = (fld[i, j] + fld[i + 1, j] + fld[i + 1, j + 1] + fld[i, j + 1]) > 0f;
+    switch (cs)
+    {
+        case 1: case 14: Link(Lf, B, pL(), pB()); break;
+        case 2: case 13: Link(B, Rr, pB(), pR()); break;
+        case 3: case 12: Link(Lf, Rr, pL(), pR()); break;
+        case 4: case 11: Link(Rr, T, pR(), pT()); break;
+        case 6: case 9: Link(B, T, pB(), pT()); break;
+        case 7: case 8: Link(Lf, T, pL(), pT()); break;
+        case 5: if (centre) { Link(B, Rr, pB(), pR()); Link(T, Lf, pT(), pL()); } else { Link(Lf, B, pL(), pB()); Link(Rr, T, pR(), pT()); } break;
+        case 10: if (centre) { Link(Lf, B, pL(), pB()); Link(Rr, T, pR(), pT()); } else { Link(B, Rr, pB(), pR()); Link(T, Lf, pT(), pL()); } break;
+    }
+}
+var seen = new System.Collections.Generic.HashSet<long>(); int loopN = 0;
+System.Collections.Generic.List<UnityEngine.Vector2> Simplify(System.Collections.Generic.List<UnityEngine.Vector2> pts, float tol)
+{
+    var keep = new bool[pts.Count]; keep[0] = keep[pts.Count - 1] = true; var st = new System.Collections.Generic.Stack<(int, int)>(); st.Push((0, pts.Count - 1));
+    while (st.Count > 0) { var (a, b) = st.Pop(); float best = 0f; int bi = -1; for (int i = a + 1; i < b; i++) { float d = SegD(pts[i], pts[a], pts[b]); if (d > best) { best = d; bi = i; } } if (bi >= 0 && best > tol) { keep[bi] = true; st.Push((a, bi)); st.Push((bi, b)); } }
+    var o = new System.Collections.Generic.List<UnityEngine.Vector2>(); for (int i = 0; i < pts.Count; i++) if (keep[i]) o.Add(pts[i]); return o;
+}
+bool Walkable(UnityEngine.Vector2 q) { int i = UnityEngine.Mathf.RoundToInt((q.x - gx0) / gridCell), j = UnityEngine.Mathf.RoundToInt((q.y - gz0) / gridCell); return i < 0 || j < 0 || i > GW || j > GH || fld[i, j] > 0f; }
+foreach (var k0 in adj.Keys)
+{
+    if (seen.Contains(k0)) continue;
+    var loop = new System.Collections.Generic.List<UnityEngine.Vector2>(); long prev = -1, cur = k0;
+    while (true) { seen.Add(cur); loop.Add(ptOf[cur]); long nx = -1; foreach (var m in adj[cur]) if (m != prev && !seen.Contains(m)) { nx = m; break; } if (nx < 0) break; prev = cur; cur = nx; }
+    if (loop.Count < 3) continue; loop.Add(loop[0]);
+    var line = Simplify(loop, 0.3f);
+    // which side is closed: test a point a metre to the left of the first segment
+    var t0 = (line[1] - line[0]).normalized; var probe = (line[0] + line[1]) * 0.5f + P(-t0.y, t0.x);
+    Hedge("Hedge_Burn_" + (loopN++), line, Walkable(probe) ? -1f : 1f);
+}
+// (b) straight closures (Valley.md 8 and 9.2): the south-east corner, the W foot pocket, both ends of the lake's south shore
+Hedge("Hedge_SE_North", Line(P(345f, 100f), P(395.8f, 100f)), -1f);
+Hedge("Hedge_SE_West", Line(P(345f, -3f), P(345f, 100f)), -1f);
+Hedge("Hedge_WFootPocket", Line(P(46.5f, 166f), P(84f, 166f), P(84f, 199.6f)), 1f);
+Hedge("Hedge_LakeSouth_West", Line(P(140f, 50f), P(140f, 1f)), 1f);
+Hedge("Hedge_LakeSouth_East", Line(P(248.6f, 49.3f), P(248.6f, -4f)), -1f);
+// (c) the mid pocket (215, 222): a ring of brush round its thicket core
+{ var ring = new System.Collections.Generic.List<UnityEngine.Vector2>(); for (int i = 0; i <= 32; i++) { float a = i * UnityEngine.Mathf.PI * 2f / 32f; ring.Add(P(215f + UnityEngine.Mathf.Cos(a) * 12f, 222f + UnityEngine.Mathf.Sin(a) * 12f)); } Hedge("Hedge_MidPocket", ring, 1f); }
+// (d) 8.6's gray brush bands round the closed campground: owned brush over them, the gray boxes stop drawing (their colliders stay)
+int bandsDressed = 0;
+var fzBrush = Root("FrontZone").transform.Find("BrushBands");
+if (fzBrush != null) foreach (UnityEngine.Transform b in fzBrush)
+{
+    var r = b.GetComponent<UnityEngine.Renderer>(); if (r != null) r.enabled = false;
+    var bb = b.GetComponent<UnityEngine.Collider>().bounds; var band = new UnityEngine.GameObject("Dress_" + b.name).transform; band.SetParent(stops, false);
+    for (float x = bb.min.x + 0.7f; x <= bb.max.x - 0.3f; x += hedgeStep) for (float z = bb.min.z + 0.7f; z <= bb.max.z - 0.3f; z += hedgeStep)
+    {
+        var g = Spawn(CS + "Vegetation/" + bushes[rng.Next(bushes.Length)], band); if (g == null) continue;
+        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f); float s = R(bushLow, bushHigh) / UnityEngine.Mathf.Max(0.2f, Top(g) - Bottom(g)); g.transform.localScale = V(s, s, s);
+        SitOn(g, x + R(-0.3f, 0.3f), z + R(-0.3f, 0.3f), 0.1f); bushN++;
+    }
+    bandsDressed++;
+}
+// (e) rock rims: 1.3 m over the ground outside, 1.2 m thick, open where a trail goes in (gap within rimGap of a trail point)
+const float rimH = 1.3f, rimThick = 1.2f, rimGap = 2.6f, rimStep = 0.5f;
+var rockMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_BandRock.mat"); if (rockMat == null) return "no Blockout_BandRock.mat (8.1)";
+var boxes = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); int rimSegs = 0;
+void Rim(UnityEngine.Vector2[] poly, float outSide)   // outSide +1: the high (outer) ground is on the line's left; the rock sits there
+{
+    for (int i = 0; i < poly.Length - 1; i++)
+    {
+        var a = poly[i]; var b = poly[i + 1]; float len = UnityEngine.Vector2.Distance(a, b); var t = (b - a) / len; var o = P(-t.y, t.x) * outSide;
+        for (float s = 0f; s < len; s += rimStep)
+        {
+            var c = a + t * (s + rimStep * 0.5f) + o * (rimThick * 0.5f); bool gap = false; foreach (var q in allPts) if (UnityEngine.Vector2.Distance(q, c) < rimGap) { gap = true; break; } if (gap) continue;
+            float gHi = UnityEngine.Mathf.Max(H(c.x, c.y), H(c.x + o.x * rimThick, c.y + o.y * rimThick)), gLo = UnityEngine.Mathf.Min(H(c.x, c.y), H(c.x - o.x * rimThick, c.y - o.y * rimThick));
+            boxes.Add(UnityEngine.Matrix4x4.TRS(V(c.x, (gLo - 1f + gHi + rimH) * 0.5f, c.y), UnityEngine.Quaternion.LookRotation(V(t.x, 0f, t.y)), V(rimThick, gHi + rimH - (gLo - 1f), rimStep + 0.04f))); rimSegs++;
+        }
+    }
+}
+// the ravine round the cave mouth (8.1's ravine polygon), east of the W band (x 38); the Camp 3 hollow's edge at r 12.5
+Rim(new[] { P(38f, 21.6f), P(80f, 25.2f), P(94.8f, 50f), P(74f, 60f), P(70f, 62f), P(38f, 56.6f) }, -1f);
+{ var hol = new UnityEngine.Vector2[33]; for (int i = 0; i <= 32; i++) { float a = -i * UnityEngine.Mathf.PI * 2f / 32f; hol[i] = P(78f + UnityEngine.Mathf.Cos(a) * 12.5f, 146f + UnityEngine.Mathf.Sin(a) * 12.5f); } Rim(hol, 1f); }
+{
+    var cubeTmp = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube); var cubeMesh = cubeTmp.GetComponent<UnityEngine.MeshFilter>().sharedMesh;
+    var ci = new UnityEngine.CombineInstance[boxes.Count]; for (int k = 0; k < ci.Length; k++) ci[k] = new UnityEngine.CombineInstance { mesh = cubeMesh, transform = boxes[k] };
+    var mesh = new UnityEngine.Mesh { name = "Rims815", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 }; mesh.CombineMeshes(ci, true, true);
+    var vs = mesh.vertices; var nr = mesh.normals; var uv = new UnityEngine.Vector2[vs.Length];
+    for (int k = 0; k < vs.Length; k++) uv[k] = nr[k].y > 0.5f ? P(vs[k].x / 4f, vs[k].z / 4f) : P((vs[k].x + vs[k].z) / 4f, vs[k].y / 4f);
+    mesh.uv = uv; mesh.RecalculateBounds(); UnityEngine.Object.DestroyImmediate(cubeTmp);
+    UnityEditor.AssetDatabase.CreateAsset(mesh, "Assets/Terrain/Main3/Rims815.asset");
+    var go = new UnityEngine.GameObject("Rims"); go.transform.SetParent(stops, false);
+    go.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; go.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = rockMat; go.AddComponent<UnityEngine.MeshCollider>().sharedMesh = mesh;
+}
+// the lake's south belt: brush down to the water between the two south hedges, looks only (the wade limit holds the water's edge)
+int shoreBush = 0;
+for (float x = 142f; x <= 246f; x += 2.2f)
+{
+    float dz = 1f - ((x - lakeC.x) / lakeA) * ((x - lakeC.x) / lakeA); if (dz <= 0f) continue; float shoreZ = lakeC.y - lakeB * UnityEngine.Mathf.Sqrt(dz);
+    var g = Spawn(CS + "Vegetation/" + bushes[rng.Next(bushes.Length)], stops); if (g == null) continue;
+    g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f); float s = R(bushLow, bushHigh) / UnityEngine.Mathf.Max(0.2f, Top(g) - Bottom(g)); g.transform.localScale = V(s, s, s);
+    SitOn(g, x + R(-0.6f, 0.6f), shoreZ - R(1.5f, 4f), 0.1f); shoreBush++;
+}
+
+UnityEditor.AssetDatabase.SaveAssets();
+bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
+return "saved=" + saved + " | layers: floor GrassPine, SoilPine added, shore and burn GrassMud, trail Ground054, rock Rocks_a | cover " + detailNames.Length + " detail kinds | trail edges " + edgeN
+    + " | markers " + markers.childCount + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes | rims " + rimSegs + " pieces | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));
