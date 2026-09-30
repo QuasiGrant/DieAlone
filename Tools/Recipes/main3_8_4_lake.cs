@@ -96,18 +96,18 @@ float gx0 = bx1, gx1 = bx1 + 3.8f, gy0 = floorY, gy1 = H(gx1, doorZ);
 float glen = UnityEngine.Mathf.Sqrt((gx1 - gx0) * (gx1 - gx0) + (gy0 - gy1) * (gy0 - gy1)), groll = UnityEngine.Mathf.Atan2(gy0 - gy1, gx1 - gx0) * UnityEngine.Mathf.Rad2Deg;
 Prim(Cube, "Gangway", B, V((gx0 + gx1) * 0.5f, (gy0 + gy1) * 0.5f - 0.06f, doorZ), V(glen, 0.12f, 1.4f), V(0f, 0f, -groll));
 // bank pockets beside the gangway (rev 15 leftover 4, 8.9e re-walk): the bank drops from the gangway foot to 0.2 m over the
-// water north and south of the boathouse's east wall, with no walk out, and a wall only closed one way in. So each pocket
-// gets an invisible fill (Ignore Raycast layer) level with the bank at the gangway foot: the player walks over it, never down
-const float pocketW = 1.9f, pocketGap = 0.75f, pocketLen = 3f, pocketDepth = 3f, pocketRail = 2.5f;   // the fill covers the pocket to the water line; a wall on its lake side
+// water north and south of the boathouse's east wall, with no walk out. Each pocket gets a plank deck level with the bank at the
+// gangway foot and a rail on its lake side, both visible (Valley.md rev 10 section 8: no invisible stops; 8.14 replaced the
+// invisible fill and rail, which are in git history)
+const float pocketW = 1.9f, pocketGap = 0.75f, pocketLen = 3f, pocketDeck = 0.12f, pocketRail = 1.0f, pocketPost = 0.1f;
 float pocketTop = H(bx1 + pocketW + 0.3f, doorZ);   // the bank at the gangway foot
 foreach (var sgn in new[] { -1f, 1f })
 {
-    var pf = new UnityEngine.GameObject(sgn > 0f ? "PocketFill_N" : "PocketFill_S"); pf.transform.SetParent(B, false); pf.layer = 2;
-    pf.transform.position = V(bx1 + pocketW * 0.5f, pocketTop - pocketDepth * 0.5f, doorZ + sgn * (pocketGap + pocketLen * 0.5f));
-    pf.AddComponent<UnityEngine.BoxCollider>().size = V(pocketW, pocketDepth, pocketLen);
-    var pr = new UnityEngine.GameObject(sgn > 0f ? "PocketRail_N" : "PocketRail_S"); pr.transform.SetParent(B, false); pr.layer = 2;
-    pr.transform.position = V(bx1 + pocketW * 0.5f, pocketTop + pocketRail * 0.5f - 1f, doorZ + sgn * (pocketGap + pocketLen));
-    pr.AddComponent<UnityEngine.BoxCollider>().size = V(pocketW + 0.6f, pocketRail + 2f, 0.3f);
+    Prim(Cube, sgn > 0f ? "PocketDeck_N" : "PocketDeck_S", B, V(bx1 + pocketW * 0.5f, pocketTop - pocketDeck * 0.5f, doorZ + sgn * (pocketGap + pocketLen * 0.5f)), V(pocketW, pocketDeck, pocketLen));
+    // the deck's underside down to the water, so nothing walks under it
+    Prim(Cube, sgn > 0f ? "PocketSkirt_N" : "PocketSkirt_S", B, V(bx1 + pocketW * 0.5f, (pocketTop + water) * 0.5f - pocketDeck, doorZ + sgn * (pocketGap + pocketLen)), V(pocketW, pocketTop - water, pocketPost));
+    Prim(Cube, sgn > 0f ? "PocketRail_N" : "PocketRail_S", B, V(bx1 + pocketW * 0.5f, pocketTop + pocketRail, doorZ + sgn * (pocketGap + pocketLen)), V(pocketW + 0.6f, pocketPost, pocketPost));
+    foreach (var px in new[] { bx1 + 0.1f, bx1 + pocketW - 0.1f }) Prim(Cube, "PocketPost", B, V(px, pocketTop + pocketRail * 0.5f, doorZ + sgn * (pocketGap + pocketLen)), V(pocketPost, pocketRail, pocketPost));
 }
 var spot = Prim(Cap, "Resident_Lake_Spot", B, V(238.6f, floorY + 0.9f, 51.2f), V(0.6f, 0.9f, 0.6f), null, false);
 

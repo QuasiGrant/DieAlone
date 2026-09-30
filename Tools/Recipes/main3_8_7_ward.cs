@@ -1,13 +1,14 @@
 // Main3 task 8.7: Ward pieces, gray. Run after 8.6 in Main3, edit mode.
-// Cairn gate 4 m up the J to Ward trail: pale cairn on its west side, clear of the Camp to J trail end (Marlow finding 9), and a
-// solid chain at 0.9 m across it to a post: the climb is closed by day (DECISIONS 2026-09-25); a later night rule opens it,
-// and the dev warps reach the ledge meanwhile. The climb itself is 8.3's J to Ward trail; the ridge, cleft and ledge are 8.1's terrain.
-// Ward on the ledge (Valley.md rev 5, 5.6): stones at (-4, 268), (1, 271), (-7, 272), 3.6 x 4 m, tops 110, to the right of the
-// path end (-2, 258), all behind the knob from the tower. The rock lip is gone (the ledge edge is the stop).
-// The stand-in fire west of the W ridge (Valley.md 3.1, Edges.md 9.3), always on (DECISIONS 2026-09-29: the land hides it):
-// a gray floor at -40 from the terrain's west edge out past the far ridge; the far ridge (crest 30, x -300 to -500) with burning
-// giants and flame tops at 130; valley fires on the floor at x -50 to -150, z 0 to 500, flame tops 60. Floor and ridge run 500 m
-// past the last flame, no colliders. No smoke (Valley.md 3.2 is being redrawn, Wren 2026-09-29).
+// 8.14 (Valley.md rev 10): the cairn 2 m up the approach from J; the chain and IW2 across the 3 m gap in the W foot rock band at the
+// chute mouth (the climb is closed by day, DECISIONS 2026-09-25 and 2026-09-30; a later night rule opens it, the dev warps reach the
+// ledge meanwhile). The climb itself is 8.3's J to Ward trail on 8.1's carved ground and rock; here are its gray pieces: the cut steps
+// of the chute, a landmark per leg, a hiding place per platform. Stones on the ledge at (-4, 226), (1, 223), (-7, 221), 3.6 x 4 m,
+// tops 70, left of the path end (-8.5, 246), behind the knob from the tower. The rev 7 gate, stones and fire are in git history.
+// The stand-in fire west of the W ridge (Valley.md 5), always on (DECISIONS 2026-09-29: the land hides it): a gray floor at -40
+// from the terrain's west edge out past the far ridge; the far ridge rising from the floor at x -200 to its crest (30) at x -240;
+// the far front on it, x -240 to -400, z -60 to 650 (rev 10 trims the south end; Wren 2026-09-30 keeps the north end at 650), burning
+// giants and flame tops at 105; valley fires on the floor at x -110 to -220, z 0 to 500, flame tops 20; the day-one smoke sheet
+// streaming west, top 60 at x -110 rising to 110 at x -500, z -60 to 400, shown in the day-one look only. No colliders.
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 UnityEngine.GameObject Root(string name) { foreach (var r in scene.GetRootGameObjects()) if (r.name == name) return r; return null; }
@@ -24,37 +25,89 @@ UnityEngine.GameObject Prim(UnityEngine.PrimitiveType t, string name, UnityEngin
     if (!collider) UnityEngine.Object.DestroyImmediate(g.GetComponent<UnityEngine.Collider>());
     return g;
 }
-var Cube = UnityEngine.PrimitiveType.Cube; var Sph = UnityEngine.PrimitiveType.Sphere;
+var Cube = UnityEngine.PrimitiveType.Cube; var Sph = UnityEngine.PrimitiveType.Sphere; var Cyl = UnityEngine.PrimitiveType.Cylinder;
 var ward = new UnityEngine.GameObject("Ward").transform;
 
-// the J to Ward trail start, for placing the cairn gate across it
+// the cairn at J and the day gate at the chute mouth (Valley.md rev 10, 1.6 and 8): a pale cairn 2 m up the approach from J; the
+// chain hangs across the 3 m gap in the W foot rock band between the two rock arms (x 86, z 211.5 to 214.5), and IW2 fills the same
+// gap exactly: invisible, on the Ignore Raycast layer, taller than the arms, so the climb is closed by day (a later night rule turns
+// CairnGate off). The rev 7 gate across the old trail start is in git history.
 var legT = Root("Trails").transform.Find("J to Ward"); if (legT == null) return "no J to Ward trail";
-var p0 = legT.GetChild(0).position; var p1 = legT.GetChild(2).position;
-var along = V(p1.x - p0.x, 0f, p1.z - p0.z).normalized; var side = V(along.z, 0f, -along.x);
-var gateAt = p0 + along * 4.0f;
+var jPt = legT.GetChild(0).position; var jNext = legT.GetChild(1).position;
+var along = V(jNext.x - jPt.x, 0f, jNext.z - jPt.z).normalized; var side = V(along.z, 0f, -along.x);
 var cairnGate = new UnityEngine.GameObject("CairnGate").transform; cairnGate.SetParent(ward, false);
-var cairnPos = gateAt - side * 2.2f; cairnPos.y = H(cairnPos.x, cairnPos.z);
+const float cairnAlong = 2f, cairnSide = 2.2f;
+var cairnPos = jPt + along * cairnAlong + side * cairnSide; cairnPos.y = H(cairnPos.x, cairnPos.z);
 float cy = cairnPos.y;
 // pale matte stone (8.12 fix): the default Lit primitive material is smooth and mirrors the blue default reflection, so the cairn read see-through
 var cairnStone = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Concrete034_1.0x1.0.mat"); if (cairnStone == null) return "no Concrete034_1.0x1.0.mat";
 foreach (var s in new[] { (1.4f, 0.5f), (1.1f, 0.45f), (0.85f, 0.4f), (0.6f, 0.35f), (0.4f, 0.3f) })
 { Prim(Sph, "Stone", cairnGate, V(cairnPos.x, cy + s.Item2 * 0.45f, cairnPos.z), V(s.Item1, s.Item2, s.Item1)).GetComponent<UnityEngine.MeshRenderer>().sharedMaterial = cairnStone; cy += s.Item2 * 0.8f; }
-var postPos = gateAt + side * 2.2f; postPos.y = H(postPos.x, postPos.z);
-Prim(Cube, "ChainPost", cairnGate, postPos + V(0f, 0.55f, 0f), V(0.15f, 1.1f, 0.15f));
-var chainA = cairnPos + V(0f, 0.9f, 0f); var chainB = postPos + V(0f, 0.9f, 0f);
-var chain = Prim(Cube, "Chain", cairnGate, (chainA + chainB) * 0.5f, V(0.06f, 0.06f, UnityEngine.Vector3.Distance(chainA, chainB)), 0f, true);   // solid: the climb is closed by day
+const float gapX = 86f, gapZ0 = 211.5f, gapZ1 = 214.5f, chainH = 0.9f, iw2Over = 3f, iw2Thick = 0.5f;
+float gapG = H(gapX + 0.5f, (gapZ0 + gapZ1) * 0.5f);
+var chainA = V(gapX, gapG + chainH, gapZ0); var chainB = V(gapX, gapG + chainH, gapZ1);
+var chain = Prim(Cube, "Chain", cairnGate, (chainA + chainB) * 0.5f, V(0.06f, 0.06f, UnityEngine.Vector3.Distance(chainA, chainB)), 0f, false);
 chain.transform.rotation = UnityEngine.Quaternion.LookRotation(chainB - chainA, UnityEngine.Vector3.up);
-// the gate proper (8.9b): an invisible block 3 m tall across the whole trail corridor and into the side walls, on the
-// Ignore Raycast layer, so the climb cannot be crouched under the chain, jumped over it or passed round the cairn end
+// IW2: from under the ground to iw2Over above the highest rock-arm top beside the gap
+float armTop = gapG; foreach (var r in new[] { gapZ0 - 1f, gapZ1 + 1f }) if (UnityEngine.Physics.Raycast(V(gapX + 0.5f, 200f, r), UnityEngine.Vector3.down, out var ah, 300f)) armTop = UnityEngine.Mathf.Max(armTop, ah.point.y);
 var gateBlock = new UnityEngine.GameObject("GateBlocker"); gateBlock.transform.SetParent(cairnGate, false); gateBlock.layer = 2;
-gateBlock.transform.position = V(gateAt.x, H(gateAt.x, gateAt.z) + 1.2f, gateAt.z); gateBlock.transform.rotation = UnityEngine.Quaternion.LookRotation(along, UnityEngine.Vector3.up);
-gateBlock.AddComponent<UnityEngine.BoxCollider>().size = V(6.0f, 3.4f, 0.5f);
+float iwBot = gapG - 1f, iwTop = armTop + iw2Over;
+gateBlock.transform.position = V(gapX, (iwBot + iwTop) * 0.5f, (gapZ0 + gapZ1) * 0.5f);
+gateBlock.AddComponent<UnityEngine.BoxCollider>().size = V(iw2Thick, iwTop - iwBot, gapZ1 - gapZ0 + 0.4f);
 
+// the climb's pieces (Valley.md rev 10 section 4), gray stand-ins with no colliders (they must not catch the player): leg 1's three
+// flights of 18 cut steps on the chute floor (the ground under them is their nosing line, 8.1), and one landmark per leg and a hiding
+// place per platform at their chainage along the trail from J: the seep and tin cup (54), the rune post (88, on the outer edge),
+// the split snag (144, the trail passes through it), the bent fir (191, knee height beside the trail); P1's boulder overhang, P2's
+// rock roof, P3's root plate
+var climbPts = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform m in legT) climbPts.Add(m.position);
+var climbS = new float[climbPts.Count]; for (int i = 1; i < climbPts.Count; i++) climbS[i] = climbS[i - 1] + UnityEngine.Vector2.Distance(new UnityEngine.Vector2(climbPts[i - 1].x, climbPts[i - 1].z), new UnityEngine.Vector2(climbPts[i].x, climbPts[i].z));
+(UnityEngine.Vector3 p, UnityEngine.Vector3 dir) AtS(float s)
+{
+    int i = 1; while (i < climbPts.Count - 1 && climbS[i] < s) i++;
+    float t = UnityEngine.Mathf.InverseLerp(climbS[i - 1], climbS[i], s); var d = climbPts[i] - climbPts[i - 1]; d.y = 0f;
+    return (UnityEngine.Vector3.Lerp(climbPts[i - 1], climbPts[i], t), d.normalized);
+}
+float L2(float a, float b, float t) => a + (b - a) * t;
+var climbRoot = new UnityEngine.GameObject("Climb").transform; climbRoot.SetParent(ward, false);
+var steps = new UnityEngine.GameObject("ChuteSteps").transform; steps.SetParent(climbRoot, false);
+{
+    // 8.1's leg 1: from the chute mouth, ramp and flight in turn; the chute runs straight, so the flights start at fixed distances
+    var mouth = new UnityEngine.Vector2(86f, 213f); var p1In = new UnityEngine.Vector2(52f, 216f) + (mouth - new UnityEngine.Vector2(52f, 216f)).normalized * 2f;
+    const int stepsPerFlight = 18; const float stepRise = 0.25f, stepRun = 0.3f, stepWidth = 3f;
+    float leg1 = UnityEngine.Vector2.Distance(mouth, p1In), flightRun = stepsPerFlight * stepRun, rampRun = (leg1 - 3f * flightRun) / 4f;
+    var dir2 = (p1In - mouth).normalized; float yaw = UnityEngine.Mathf.Atan2(dir2.x, dir2.y) * UnityEngine.Mathf.Rad2Deg;
+    for (int f = 0; f < 3; f++)
+    {
+        float s0 = rampRun * (f + 1) + flightRun * f;
+        for (int k = 0; k < stepsPerFlight; k++)
+        {
+            var q = mouth + dir2 * (s0 + (k + 0.5f) * stepRun); float top = H(mouth.x + dir2.x * (s0 + (k + 1) * stepRun), mouth.y + dir2.y * (s0 + (k + 1) * stepRun));
+            Prim(Cube, "Step", steps, V(q.x, top - stepRise * 0.5f, q.y), V(stepWidth, stepRise, stepRun), yaw, false);
+        }
+    }
+}
+void Mark(string name, float s, float sideOff, UnityEngine.PrimitiveType t, UnityEngine.Vector3 size, float up, float tilt = 0f)
+{
+    var a = AtS(s); var sd = V(a.dir.z, 0f, -a.dir.x); var p = a.p + sd * sideOff; p.y = H(p.x, p.z) + up;
+    var g = Prim(t, name, climbRoot, p, size, UnityEngine.Mathf.Atan2(a.dir.x, a.dir.z) * UnityEngine.Mathf.Rad2Deg, false);
+    if (tilt != 0f) g.transform.rotation = g.transform.rotation * UnityEngine.Quaternion.Euler(0f, 0f, tilt);
+}
+// chainage of the trail point nearest a map point; the landmarks sit by 8.1's climb points (the doc's chainages are from the paper map)
+float SAt(float x, float z) { int bi = 0; float bd = float.MaxValue; for (int i = 0; i < climbPts.Count; i++) { float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(climbPts[i].x, climbPts[i].z), new UnityEngine.Vector2(x, z)); if (d < bd) { bd = d; bi = i; } } return climbS[bi]; }
+const float landmarkShare = 0.6f;
+float sP1 = SAt(52f, 216f), sP2 = SAt(57f, 276f), sP3 = SAt(26f, 304f), sP4 = SAt(26f, 262f), sSeep = sP1 - 3.5f, sRune = (sP1 + sP2) * 0.5f;
+float sSnag = L2(sP2, sP3, landmarkShare), sFir = L2(sP3, sP4, landmarkShare);
+Mark("Seep_Rock", sSeep, -2.1f, Cube, V(0.4f, 2.5f, 2f), 1.25f); Mark("Seep_Cup", sSeep, -1.8f, Cyl, V(0.1f, 0.06f, 0.1f), 1.3f);
+Mark("RunePost", sRune, 2.6f, Cube, V(0.3f, 2f, 0.3f), 1f);
+Mark("SplitSnag_L", sSnag, -1.2f, Cyl, V(1.2f, 7f, 1.2f), 7f); Mark("SplitSnag_R", sSnag, 1.2f, Cyl, V(1.2f, 6f, 1.2f), 6f);
+Mark("BentFir", sFir, 2.2f, Cyl, V(0.35f, 2f, 0.35f), 0.5f, 90f);
+Mark("P1_Overhang", sP1, -2.2f, Cube, V(1.5f, 0.5f, 3f), 2.4f); Mark("P2_RockRoof", sP2, -2f, Cube, V(2f, 0.5f, 2.5f), 2.5f); Mark("P3_RootPlate", sP3, 2.3f, Cyl, V(4f, 0.3f, 4f), 2f, 90f);
 
-// Ward stones (Valley.md rev 5, 5.6): on the ledge, to the right of the path end, facing the fire
-const float stoneTop = 110f;
+// Ward stones (Valley.md rev 10, 4): on the ledge south of the path end and off to one side of the approach, 3.6 x 4 m, tops 70
+const float stoneTop = 70f;
 var stones = new UnityEngine.GameObject("Stones").transform; stones.SetParent(ward, false);
-var stonePos = new[] { P2(-4f, 268f), P2(1f, 271f), P2(-7f, 272f) };
+var stonePos = new[] { P2(-4f, 226f), P2(1f, 223f), P2(-7f, 221f) };
 for (int n = 0; n < stonePos.Length; n++)
 {
     float g = H(stonePos[n].x, stonePos[n].y);
@@ -74,13 +127,15 @@ var rng = new System.Random(8013);
 float R(float a, float b) => a + (float)rng.NextDouble() * (b - a);
 // the far side: floor at -40 (a 2 m roll, zero at the terrain's edge, so it is land and not a flat plane) and the far ridge
 const float floorY = -40f, floorRoll = 2f, floorX0 = -1100f, floorX1 = -40f, floorZ0 = -1000f, floorZ1 = 1250f, floorStep = 50f;
-const float ridgeX0 = -500f, ridgeX1 = -300f, ridgeZ0 = -750f, ridgeZ1 = 1250f, ridgeStep = 20f, ridgeCrestLo = 25f, ridgeCrest = 30f;
 float FloorY(float x, float z) => floorY + floorRoll * UnityEngine.Mathf.PerlinNoise(x / 170f + 2.3f, z / 170f + 8.1f) * UnityEngine.Mathf.Clamp01((floorX1 - x) / floorStep);
+// the far ridge (Valley.md 5.1): rises from the floor at x -200 to its crest at x -240, holds it under the far front to x -400,
+// and falls back to the floor by x -500
+const float ridgeFoot = -200f, ridgeFront = -240f, ridgeBack = -400f, ridgeBackFoot = -500f, ridgeX0 = -520f, ridgeX1 = -190f, ridgeZ0 = -750f, ridgeZ1 = 1250f, ridgeStep = 10f, ridgeCrestLo = 25f, ridgeCrest = 30f;
 float RidgeY(float x, float z)
 {
-    if (x <= ridgeX0 || x >= ridgeX1) return FloorY(x, z);
-    float u = (x - (ridgeX0 + ridgeX1) * 0.5f) / ((ridgeX1 - ridgeX0) * 0.5f), crest = UnityEngine.Mathf.Lerp(ridgeCrestLo, ridgeCrest, UnityEngine.Mathf.PerlinNoise(z / 140f + 4.4f, 0.37f));
-    return UnityEngine.Mathf.Max(FloorY(x, z), floorY + (crest - floorY) * UnityEngine.Mathf.Pow(1f - u * u, 0.8f));
+    float crest = UnityEngine.Mathf.Lerp(ridgeCrestLo, ridgeCrest, UnityEngine.Mathf.PerlinNoise(z / 140f + 4.4f, 0.37f));
+    float w = x > ridgeFront ? UnityEngine.Mathf.SmoothStep(0f, 1f, (ridgeFoot - x) / (ridgeFoot - ridgeFront)) : x > ridgeBack ? 1f : UnityEngine.Mathf.SmoothStep(0f, 1f, (x - ridgeBackFoot) / (ridgeBack - ridgeBackFoot));
+    return UnityEngine.Mathf.Max(FloorY(x, z), floorY + (crest - floorY) * UnityEngine.Mathf.Clamp01(w));
 }
 UnityEngine.GameObject Grid(string name, float x0, float x1, float z0, float z1, float step, System.Func<float, float, float> y)
 {
@@ -109,7 +164,7 @@ if (flameMat == null) { flameMat = new UnityEngine.Material(cardSh); UnityEditor
 flameMat.shader = cardSh; flameMat.SetTexture("_BaseMap", flameTex); flameMat.SetColor("_Color", UnityEngine.Color.white); flameMat.SetFloat("_Intensity", lookT.fireGlowIntensity); UnityEditor.EditorUtility.SetDirty(flameMat);
 const int sheetTiles = 8;   // the pack flipbooks are 8 x 8
 const float flameShare = 1f;   // the card top is the flame top (was 2/3, an unmeasured guess; 8.9k)
-var faceTo = new UnityEngine.Vector2(-2f, 258f);   // cards turn toward the path end on the ledge
+var faceTo = new UnityEngine.Vector2(-8.5f, 246f);   // cards turn toward the path end on the ledge
 UnityEngine.GameObject Cards(string name, UnityEngine.Transform parent, System.Collections.Generic.List<(UnityEngine.Vector3 b, float w, float h, int frame, float lean, float alpha)> cs, UnityEngine.Material mat, int tiles)
 {
     var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var uvs = new System.Collections.Generic.List<UnityEngine.Vector2>();
@@ -133,35 +188,81 @@ UnityEngine.GameObject Cards(string name, UnityEngine.Transform parent, System.C
 }
 int FlameFrame() => 16 + rng.Next(32);   // the middle rows: full flames, not the first flicker or the dying tail
 float CardH(float baseY, float top) => (top - baseY) / flameShare;
-// the far front: burning giants on the far ridge (the pack's dead tree stretched to a giant), flame tops 130
+// the far front: burning giants on the far ridge (the pack's dead tree stretched to a giant), a near and a far row, flame tops 105
 const string deadTreePath = "Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Decoration_Out/Tree_Dead.prefab";
 var deadTree = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(deadTreePath); if (deadTree == null) return "dead tree prefab missing";
 const float deadTreeGirth = 0.6f, giantGirth = 6f;   // the pack tree's trunk is about 0.6 m across; a giant's about 6 m
-const float frontZ0 = -250f, frontZ1 = 750f, frontX0 = -470f, frontX1 = -330f, frontTop = 130f, frontStep = 30f, flameSink = 8f;
+const float frontZ0 = -60f, frontZ1 = 650f, frontTop = 105f, frontStep = 30f, flameSink = 8f, frontJitterZ = 8f, giantLow = 40f, giantHigh = 50f;
+var frontRows = new[] { (-240f, -300f), (-330f, -400f) };
 float deadTreeTall = 0f; foreach (var rr in deadTree.GetComponentsInChildren<UnityEngine.Renderer>()) deadTreeTall = UnityEngine.Mathf.Max(deadTreeTall, rr.bounds.max.y);
 var giants = new UnityEngine.GameObject("BurningGiants").transform; giants.SetParent(fire.transform, false);
 var flameCards = new System.Collections.Generic.List<(UnityEngine.Vector3, float, float, int, float, float)>();
-for (float z = frontZ0; z <= frontZ1; z += frontStep)
-{
-    float x = R(frontX0, frontX1), baseY = RidgeY(x, z), tall = R(40f, 50f);
-    var t = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(deadTree, giants); t.name = "Trunk";
-    t.transform.position = V(x, baseY, z); t.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
-    float sxz = giantGirth / deadTreeGirth, sy = tall / UnityEngine.Mathf.Max(0.5f, deadTreeTall); t.transform.localScale = V(sxz, sy, sxz);
-    foreach (var c in t.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
-    foreach (var rr in t.GetComponentsInChildren<UnityEngine.Renderer>()) rr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-    for (int k = 0; k < 3; k++) { float fb = baseY - flameSink; flameCards.Add((V(x + R(-6f, 6f), fb, z + R(-10f, 10f)), R(40f, 56f), CardH(fb, frontTop) * R(0.85f, 1f), FlameFrame(), R(-4f, 4f), 1f)); }
-}
+foreach (var row in frontRows)
+    for (float z = frontZ0; z <= frontZ1; z += frontStep)
+    {
+        float x = R(row.Item2, row.Item1), baseY = RidgeY(x, z), tall = R(giantLow, giantHigh);
+        var t = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(deadTree, giants); t.name = "Trunk";
+        t.transform.position = V(x, baseY, z); t.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
+        float sxz = giantGirth / deadTreeGirth, sy = tall / UnityEngine.Mathf.Max(0.5f, deadTreeTall); t.transform.localScale = V(sxz, sy, sxz);
+        foreach (var c in t.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+        foreach (var rr in t.GetComponentsInChildren<UnityEngine.Renderer>()) rr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        for (int k = 0; k < 3; k++)
+        {
+            float fb = baseY - flameSink, cz = UnityEngine.Mathf.Clamp(z + R(-frontJitterZ, frontJitterZ), frontZ0, frontZ1);
+            flameCards.Add((V(UnityEngine.Mathf.Clamp(x + R(-6f, 6f), row.Item2, row.Item1), fb, cz), R(40f, 56f), CardH(fb, frontTop) * R(0.85f, 1f), FlameFrame(), R(-4f, 4f), 1f));
+        }
+    }
 Cards("RidgeFlames", giants, flameCards, flameMat, sheetTiles);
-// the valley fires on the -40 floor, x -50 to -150, z 0 to 500, flame tops 60
-const float valleyX0 = -150f, valleyX1 = -50f, valleyZ0 = 0f, valleyZ1 = 500f, valleyTop = 60f, valleyStepX = 20f, valleyStepZ = 26f, valleyJitter = 8f;
+// the valley fires on the -40 floor, x -110 to -220, z 0 to 500, flame tops 20
+const float valleyX0 = -220f, valleyX1 = -110f, valleyZ0 = 0f, valleyZ1 = 500f, valleyTop = 20f, valleyStepX = 20f, valleyStepZ = 26f, valleyJitter = 8f;
 var valley = new UnityEngine.GameObject("ValleyFires").transform; valley.SetParent(fire.transform, false);
 var valleyCards = new System.Collections.Generic.List<(UnityEngine.Vector3, float, float, int, float, float)>();
 for (float z = valleyZ0; z <= valleyZ1; z += valleyStepZ)
     for (float x = valleyX1; x >= valleyX0; x -= valleyStepX)
     {
-        float fx = UnityEngine.Mathf.Clamp(x + R(-valleyJitter, valleyJitter), valleyX0, valleyX1), fz = UnityEngine.Mathf.Clamp(z + R(-valleyJitter, valleyJitter), valleyZ0, valleyZ1), fb = FloorY(fx, fz) - 2f;
+        float fx = UnityEngine.Mathf.Clamp(x + R(-valleyJitter, valleyJitter), valleyX0, valleyX1), fz = UnityEngine.Mathf.Clamp(z + R(-valleyJitter, valleyJitter), valleyZ0, valleyZ1), fb = RidgeY(fx, fz) - 2f;
         valleyCards.Add((V(fx, fb, fz), R(40f, 56f), CardH(fb, valleyTop) * R(0.85f, 1f), FlameFrame(), 0f, 1f));
     }
 Cards("ValleyFlames", valley, valleyCards, flameMat, sheetTiles);
+// the day-one smoke sheet (5.3): one low sheet streaming west on the east wind: its top 60 over x -110 rising to 110 at x -500, level
+// past it to x -900; z -60 to 400; a front face down to the floor at x -110 and side faces at both ends. Drawn on DieAlone/Backdrop in
+// the day-one smoke colour, hazed toward the fog; shown in the day-one look only (LookVisibility). Its top edge points are marked
+// (SheetTop_*) for F-1.
+const float sheetX0 = -110f, sheetX1 = -500f, sheetXEnd = -900f, sheetZ0 = -60f, sheetZ1 = 400f, sheetTop0 = 60f, sheetTop1 = 110f, sheetStepX = 40f, sheetStepZ = 20f, sheetHaze = 0.6f;
+var dayOneLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayOne.asset"); if (dayOneLook == null) return "no LookTuning_DayOne";
+var dayTwoLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayTwo.asset"); if (dayTwoLook == null) return "no LookTuning_DayTwo";
+var sheetMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_SmokeSheet.mat");
+if (sheetMat == null) { sheetMat = new UnityEngine.Material(backSh); UnityEditor.AssetDatabase.CreateAsset(sheetMat, "Assets/Materials/Blockout/Blockout_SmokeSheet.mat"); }
+sheetMat.shader = backSh; sheetMat.SetColor("_Color", dayOneLook.smokeBodyColor); sheetMat.SetFloat("_HazeBlend", sheetHaze); UnityEditor.EditorUtility.SetDirty(sheetMat);
+float SheetTop(float x) => x >= sheetX1 ? L2(sheetTop0, sheetTop1, (sheetX0 - x) / (sheetX0 - sheetX1)) : sheetTop1;
+var sheet = new UnityEngine.GameObject("SmokeSheet"); sheet.transform.SetParent(ward, false);
+{
+    var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var tris = new System.Collections.Generic.List<int>();
+    var xs = new System.Collections.Generic.List<float>(); for (float x = sheetX0; x >= sheetXEnd - 0.1f; x -= sheetStepX) xs.Add(x);
+    var zs = new System.Collections.Generic.List<float>(); for (float z = sheetZ0; z <= sheetZ1 + 0.1f; z += sheetStepZ) zs.Add(z);
+    int cols = xs.Count, rows = zs.Count;
+    // both windings on every face, so the sheet reads from above and below
+    for (int r = 0; r < rows; r++) for (int c = 0; c < cols; c++) vs.Add(V(xs[c], SheetTop(xs[c]), zs[r]));   // the top
+    for (int r = 0; r < rows - 1; r++) for (int c = 0; c < cols - 1; c++) { int a = r * cols + c, b = a + 1, d = a + cols, e = d + 1; tris.AddRange(new[] { a, d, b, b, d, e, a, b, d, b, e, d }); }
+    int f0 = vs.Count; foreach (var z in zs) { vs.Add(V(sheetX0, SheetTop(sheetX0), z)); vs.Add(V(sheetX0, floorY, z)); }   // the front face, down to the floor
+    for (int r = 0; r < rows - 1; r++) { int a = f0 + r * 2, b = a + 1, d = a + 2, e = a + 3; tris.AddRange(new[] { a, b, d, d, b, e, a, d, b, d, e, b }); }
+    foreach (var ez in new[] { sheetZ0, sheetZ1 })
+    {
+        int s0 = vs.Count; foreach (var x in xs) { vs.Add(V(x, SheetTop(x), ez)); vs.Add(V(x, floorY, ez)); }
+        for (int c = 0; c < cols - 1; c++) { int a = s0 + c * 2, b = a + 1, d = a + 2, e = a + 3; tris.AddRange(new[] { a, b, d, d, b, e, a, d, b, d, e, b }); }
+    }
+    var mesh = new UnityEngine.Mesh { name = "SmokeSheet", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+    mesh.SetVertices(vs); mesh.SetTriangles(tris, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+    UnityEditor.AssetDatabase.CreateAsset(mesh, fireDir + "/SmokeSheet.asset");
+    var body = new UnityEngine.GameObject("Body"); body.transform.SetParent(sheet.transform, false);
+    body.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; var mr = body.AddComponent<UnityEngine.MeshRenderer>(); mr.sharedMaterial = sheetMat;
+    mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false;
+    foreach (var x in new[] { sheetX0, (sheetX0 + sheetX1) * 0.5f, sheetX1 })
+        foreach (var z in zs) { var mk = new UnityEngine.GameObject("SheetTop_" + x.ToString("F0") + "_" + z.ToString("F0")); mk.transform.SetParent(sheet.transform, false); mk.transform.position = V(x, SheetTop(x), z); }
+    var vis = sheet.AddComponent<LookVisibility>(); var so = new UnityEditor.SerializedObject(vis);
+    so.FindProperty("show").enumValueIndex = (int)LookVisibility.Show.DayOne; so.FindProperty("dayTwo").objectReferenceValue = dayTwoLook;
+    var tp = so.FindProperty("targets"); tp.arraySize = 1; tp.GetArrayElementAtIndex(0).objectReferenceValue = body; so.ApplyModifiedPropertiesWithoutUndo();
+}
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " cairn at " + cairnPos.ToString("F1") + " solid chain 4 m up the trail | stones ground " + H(-4f, 268f).ToString("F1") + " tops " + stoneTop + " | stand-in fire built, on: floor " + floorY + ", far ridge crest " + ridgeCrest + ", " + flameCards.Count + " front cards to " + frontTop + ", " + valleyCards.Count + " valley cards to " + valleyTop;
+return "saved=" + saved + " cairn at " + cairnPos.ToString("F1") + " | chain and IW2 across the chute gap, IW2 " + iwBot.ToString("F1") + " to " + iwTop.ToString("F1") + " | steps " + steps.childCount + ", climb pieces " + climbRoot.childCount
+    + " | stones ground " + H(-4f, 226f).ToString("F1") + " tops " + stoneTop + " | stand-in fire: floor " + floorY + ", far ridge crest " + ridgeCrest + ", " + flameCards.Count + " front cards to " + frontTop + " (z " + frontZ0 + " to " + frontZ1 + "), " + valleyCards.Count + " valley cards to " + valleyTop + " | day-one sheet " + sheet.transform.childCount + " parts";

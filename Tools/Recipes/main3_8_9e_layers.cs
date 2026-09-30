@@ -100,11 +100,14 @@ var westFar = Mat("Backdrop_WestFar", look.backdropRangeColor, UnityEngine.Mathf
 Band("West_Far", new UnityEngine.Vector2(-40f, 0f), alongZ, W, -2500f, 2800f, 60f, 1500f, 2500f, 105f, 120f, 800f, farFrontY, 3000f, farBackY, 900f, 7.7f, westFar);
 
 // ---------- the outer ground (Valley.md rev 5, 2.7): one mesh, x -40 to 1200, z -900 to 1000, outside the terrain ----------
-// Floor() and Outer() are copies of 8.1's (change both together): gently rolling 0 to 10; west of x 0 a 45 degree step down to the
+// Floor(), EastHills() and Outer() are copies of 8.1's (change both together): gently rolling 0 to 10; west of x 0 a 45 degree step down to the
 // -40 floor at x -40, the same slope as the terrain's, so no ray can pass under it. Vertices inside the terrain sit 2 m under the
 // ground there, so the mesh runs under the terrain's edge with no crack; cells well inside the terrain are left out.
 float Floor(float x, float z) => UnityEngine.Mathf.Clamp(5f + 4.5f * (UnityEngine.Mathf.PerlinNoise(x / 280f + 11.3f, z / 280f + 4.7f) * 2f - 1f), 0f, 10f);
-float Outer(float x, float z) => x >= 0f ? Floor(x, z) : UnityEngine.Mathf.Lerp(-40f, Floor(0f, z), (x + 40f) / 40f);
+// 8.14 (Valley.md rev 10, 3.5): east of the highway the land rolls up to 20 to 35 m (EastHills), as in 8.1
+const float hillX0 = 520f, hillRamp = 100f, hillLow = 20f, hillSpan = 15f, hillScale = 160f;
+float EastHills(float x, float z) => UnityEngine.Mathf.SmoothStep(0f, 1f, UnityEngine.Mathf.Clamp01((x - hillX0) / hillRamp)) * (hillLow + hillSpan * UnityEngine.Mathf.PerlinNoise(x / hillScale + 2.2f, z / hillScale + 6.1f));
+float Outer(float x, float z) => x >= 0f ? Floor(x, z) + EastHills(x, z) : UnityEngine.Mathf.Lerp(-40f, Floor(0f, z), (x + 40f) / 40f);
 const float outerX0 = -40f, outerX1 = 1200f, outerZ0 = -900f, outerZ1 = 1000f, outerStep = 20f, underTerrain = 2f, keepUnder = 40f;
 var tp = terrain.transform.position; var ts = terrain.terrainData.size;
 float tX0 = tp.x, tX1 = tp.x + ts.x, tZ0 = tp.z, tZ1 = tp.z + ts.z;

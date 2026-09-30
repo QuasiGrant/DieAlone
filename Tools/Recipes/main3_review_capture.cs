@@ -141,7 +141,7 @@ var pairs = new (string n, float x, float z, float lx, float ly, float lz)[] {
     ("Office (Office warp)", 340f, 196f, 340f + 40f * UnityEngine.Mathf.Sin(68f * UnityEngine.Mathf.Deg2Rad), float.NaN, 196f + 40f * UnityEngine.Mathf.Cos(68f * UnityEngine.Mathf.Deg2Rad)),
     ("Lot centre looking north to office and store", 358f, 170f, 358f, float.NaN, 200f),
     ("J (Junction J warp)", 106f, 203f, 106f + 40f * UnityEngine.Mathf.Sin(316f * UnityEngine.Mathf.Deg2Rad), float.NaN, 203f + 40f * UnityEngine.Mathf.Cos(316f * UnityEngine.Mathf.Deg2Rad)),
-    ("Ward path end (Ward warp)", -2f, 258f, -42f, float.NaN, 258f) };
+    ("Ward path end (Ward warp)", -8.5f, 246f, -48.5f, float.NaN, 246f) };   // Valley.md rev 10 (8.14)
 System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)> PairFrames(string half)
 {
     var f = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();

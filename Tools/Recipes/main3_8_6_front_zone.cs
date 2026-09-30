@@ -1,6 +1,7 @@
 // Main3 task 8.6: front zone and gate, gray. Run after 8.5 in Main3, edit mode. Main3.md 3.1 and 3.2, map positions.
 // Ground surfaces (lot, drive, turning circle, spur, loop, pitches) are colliderless slabs 2 cm over the flat 3 m ground.
-// Shift walls are built inactive: nothing starts a shift yet (the gate minigame is not designed); a later task turns them on.
+// The shift wall (IW3) is built inactive: nothing starts a shift yet (the gate minigame is not designed); a later task turns it on.
+// 8.14 (Valley.md rev 10): the highway, the T at the gate, the verge tree, and the brush bands that close the campground.
 // The gate's PlayerBlocker is always on (8.1 builds no gate wall; the fence gap is closed here).
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
@@ -114,19 +115,62 @@ foreach (var gzz in new[] { 167.2f, 172.8f }) Prim(Cube, "Post", gate, V(396f, G
 Prim(Cube, "BarrierArm", gate, V(396f, G + 1.0f, 170f), V(0.12f, 0.12f, 5.4f), 0f, false);
 var blocker = new UnityEngine.GameObject("PlayerBlocker"); blocker.transform.SetParent(gate, false); blocker.transform.position = V(396f, G + 20f, 170f);
 blocker.AddComponent<UnityEngine.BoxCollider>().size = V(0.6f, 60f, 5.2f);
-// shift walls (3.2.7), inactive until a shift system exists
+// IW3 (Valley.md rev 10 section 8): the only shift wall, across the spur's gap in the brush band at z 210 from the band's east end
+// (x 386) to the fence, so an admitted car cannot be followed to the closed campground. Inactive until a shift system exists. The
+// rev 7 walls (spur mouth and the 24 turning-circle pieces) are in git history; IW1 stops a player following a refused car.
 var shift = Group("ShiftWalls", fz);
-// Walls that cannot be walked around (8.9a, Marlow finding 7): the thicket (8.3) closes everything off the surfaces, so a U
-// across the spur mouth (z 178.8 from x 380.5 to the fence, and down to the drive at x 380.5) and a closed ring round the
-// turning circle (r 9.3) seal both. The drive stays open between them.
-void ShiftWall(string name, UnityEngine.Vector2 a, UnityEngine.Vector2 b) { var w = new UnityEngine.GameObject(name); w.transform.SetParent(shift, false); var d = b - a; w.transform.position = V((a.x + b.x) * 0.5f, G + 5f, (a.y + b.y) * 0.5f); w.transform.rotation = UnityEngine.Quaternion.LookRotation(V(d.x, 0f, d.y).normalized, UnityEngine.Vector3.up); w.AddComponent<UnityEngine.BoxCollider>().size = V(0.4f, 10f, d.magnitude + 0.4f); }
-ShiftWall("SpurMouth", new UnityEngine.Vector2(380.5f, 178.8f), new UnityEngine.Vector2(395.9f, 178.8f));
-ShiftWall("SpurMouthWest", new UnityEngine.Vector2(380.5f, 173.6f), new UnityEngine.Vector2(380.5f, 178.8f));
-for (int i = 0; i < 24; i++) { float a0 = i * UnityEngine.Mathf.PI / 12f, a1 = (i + 1) * UnityEngine.Mathf.PI / 12f; ShiftWall("TurningCircle" + i, new UnityEngine.Vector2(384f + UnityEngine.Mathf.Cos(a0) * 9.3f, 160f + UnityEngine.Mathf.Sin(a0) * 9.3f), new UnityEngine.Vector2(384f + UnityEngine.Mathf.Cos(a1) * 9.3f, 160f + UnityEngine.Mathf.Sin(a1) * 9.3f)); }
+const float iw3Z = 210f, iw3X0 = 386f, iw3X1 = 396f, iw3H = 10f, iw3Thick = 0.4f;
+{ var w = new UnityEngine.GameObject("IW3_SpurGap"); w.transform.SetParent(shift, false); w.transform.position = V((iw3X0 + iw3X1) * 0.5f, G + iw3H * 0.5f, iw3Z); w.AddComponent<UnityEngine.BoxCollider>().size = V(iw3X1 - iw3X0 + iw3Thick, iw3H, iw3Thick); }
 shift.gameObject.SetActive(false);
+// brush bands round the closed campground (Valley.md 8, rev 10): gray stand-ins 1.4 m tall, solid, x 345 to 386 at z 206 to 215
+// (behind the office and store) and x 340 to 348 from z 206 to 310 (into the N foot rock band). 8.15 dresses them with owned brush.
+const float brushH = 1.4f;
+var brush = Group("BrushBands", fz);
+foreach (var bb in new[] { (345f, 386f, 206f, 215f), (340f, 348f, 206f, 310f) })
+    Prim(Cube, "Brush", brush, V((bb.Item1 + bb.Item2) * 0.5f, H((bb.Item1 + bb.Item2) * 0.5f, (bb.Item3 + bb.Item4) * 0.5f) + brushH * 0.5f - 0.2f, (bb.Item3 + bb.Item4) * 0.5f), V(bb.Item2 - bb.Item1, brushH + 0.4f, bb.Item4 - bb.Item3));
+// the highway and the gate junction (Valley.md 3): the drive runs on 32 m from the gate to a T on the highway (x 428), two lanes
+// 7.5 m on 8.1's road bed, a painted centre line, reflector posts every 25 m, power poles on the far side, a stop sign, the
+// park's entrance sign facing the road and a mailbox post at the T; the dead broken-top verge giant at (418, 136). Gray, no colliders
+// (the player never reaches them).
+const float roadX = 428f, roadW = 7.5f, roadN = 430f, roadS = -130f, roadR = 120f, lineW = 0.15f, driveW = 5f, postStep = 25f, poleStep = 50f, poleH = 9f, poleOff = 9f, postOff = 4.6f;
+var road = Group("Highway", fz);
+UnityEngine.GameObject Flat(string name, UnityEngine.Transform parent, UnityEngine.Vector2 a, UnityEngine.Vector2 b, float w, float y)
+{
+    var d = b - a; return Prim(Cube, name, parent, V((a.x + b.x) * 0.5f, y, (a.y + b.y) * 0.5f), V(w, slab, d.magnitude + 0.05f), UnityEngine.Mathf.Atan2(d.x, d.y) * UnityEngine.Mathf.Rad2Deg, false);
+}
+const int roadArcSteps = 5;   // the arcs run to the terrain edge (z about 486 and -186), 28 degrees round; the arms hide the rest
+var roadLine = new System.Collections.Generic.List<UnityEngine.Vector2>();
+for (int i = roadArcSteps; i >= 1; i--) { float a = -i * UnityEngine.Mathf.PI / 32f; roadLine.Add(new UnityEngine.Vector2(roadX - roadR + UnityEngine.Mathf.Cos(a) * roadR, roadS + UnityEngine.Mathf.Sin(a) * roadR)); }   // south arc
+for (float z = roadS; z <= roadN + 0.1f; z += 20f) roadLine.Add(new UnityEngine.Vector2(roadX, z));
+for (int i = 1; i <= roadArcSteps; i++) { float a = i * UnityEngine.Mathf.PI / 32f; roadLine.Add(new UnityEngine.Vector2(roadX - roadR + UnityEngine.Mathf.Cos(a) * roadR, roadN + UnityEngine.Mathf.Sin(a) * roadR)); }
+var lineMat = new UnityEngine.Material(UnityEngine.Shader.Find("Universal Render Pipeline/Unlit"));
+const string lineMatPath = "Assets/Materials/Blockout/Blockout_RoadLine.mat";
+{ var m = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(lineMatPath); if (m == null) UnityEditor.AssetDatabase.CreateAsset(lineMat, lineMatPath); else lineMat = m; UnityEngine.ColorUtility.TryParseHtmlString("#C8A848", out var lc); lineMat.SetColor("_BaseColor", lc); UnityEditor.EditorUtility.SetDirty(lineMat); }
+for (int i = 0; i < roadLine.Count - 1; i++)
+{
+    var a = roadLine[i]; var b = roadLine[i + 1]; float y = G + slab * 0.5f;
+    Flat("Road", road, a, b, roadW, y);
+    Flat("CentreLine", road, a, b, lineW, y + slab).GetComponent<UnityEngine.Renderer>().sharedMaterial = lineMat;
+}
+Flat("Drive_To_T", road, new UnityEngine.Vector2(396.5f, 170f), new UnityEngine.Vector2(roadX - roadW * 0.5f, 170f), driveW, G + slab * 0.5f);
+for (float z = roadS; z <= roadN; z += postStep) foreach (var sx in new[] { -1f, 1f }) Prim(Cube, "ReflectorPost", road, V(roadX + sx * postOff, G + 0.5f, z), V(0.1f, 1f, 0.1f), 0f, false);
+for (float z = roadS; z <= roadN; z += poleStep) { Prim(Cyl, "PowerPole", road, V(roadX + poleOff, G + poleH * 0.5f, z), V(0.3f, poleH * 0.5f, 0.3f), 0f, false); Prim(Cube, "Crossarm", road, V(roadX + poleOff, G + poleH - 0.4f, z), V(0.12f, 0.12f, 2f), 0f, false); }
+var tJ = Group("GateT", fz);
+Prim(Cube, "StopSignPost", tJ, V(roadX - roadW * 0.5f - 1.2f, G + 1.1f, 173f), V(0.08f, 2.2f, 0.08f), 0f, false);
+Prim(Cube, "StopSign", tJ, V(roadX - roadW * 0.5f - 1.2f, G + 2.3f, 173f), V(0.75f, 0.75f, 0.05f), 45f, false);
+foreach (var ez in new[] { 164f, 166.5f }) Prim(Cube, "EntranceSignPost", tJ, V(roadX - roadW * 0.5f - 3f, G + 1f, ez), V(0.15f, 2f, 0.15f), 0f, false);
+Prim(Cube, "EntranceSign", tJ, V(roadX - roadW * 0.5f - 3f, G + 1.7f, 165.25f), V(0.1f, 1.2f, 3.2f), 0f, false);   // faces the road (east)
+Prim(Cube, "MailboxPost", tJ, V(roadX - roadW * 0.5f - 1.2f, G + 0.6f, 176f), V(0.1f, 1.2f, 0.1f), 0f, false);
+Prim(Cube, "Mailbox", tJ, V(roadX - roadW * 0.5f - 1.2f, G + 1.3f, 176f), V(0.5f, 0.3f, 0.25f), 0f, false);
+// the verge tree: a dead giant with a broken top, 6 m off the road edge, read from the deck at 250 m (3.4)
+const float vergeTall = 30f, vergeGirth = 3f;
+var verge = Group("VergeTree", fz); var vp = new UnityEngine.Vector2(418f, 136f);
+Prim(Cyl, "Trunk", verge, V(vp.x, H(vp.x, vp.y) + vergeTall * 0.5f - 1f, vp.y), V(vergeGirth, vergeTall * 0.5f + 1f, vergeGirth), 0f, false);
+var snapped = Prim(Cyl, "BrokenTop", verge, V(vp.x + 1.2f, H(vp.x, vp.y) + vergeTall + 2f, vp.y), V(vergeGirth * 0.6f, 3f, vergeGirth * 0.6f), 0f, false);
+snapped.transform.rotation = UnityEngine.Quaternion.Euler(0f, 0f, -35f);
 
 // warps: booth doorway, closed campground behind the chain
 var warps = Root("DevWarps").transform;
 var wb = warps.Find("Gate_Booth"); if (wb != null) { wb.position = V(389.5f, G + 0.2f, 176.05f); wb.rotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f); }
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " ground at lot " + H(358f, 170f).ToString("F2") + ", gate " + H(395f, 170f).ToString("F2") + ", loop " + H(372f, 244.5f).ToString("F2") + " | shift walls inactive, gate blocker on";
+return "saved=" + saved + " ground at lot " + H(358f, 170f).ToString("F2") + ", gate " + H(395f, 170f).ToString("F2") + ", loop " + H(372f, 244.5f).ToString("F2") + " | IW3 inactive, gate blocker (IW1) on | highway " + roadLine.Count + " points, brush bands " + brush.childCount;

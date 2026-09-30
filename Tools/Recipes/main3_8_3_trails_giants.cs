@@ -1,7 +1,8 @@
 // Main3 task 8.3: trails flattened and painted along every route in Main3.md 4, points of interest as gray stand-ins,
-// gray giant trees (hero trunks with mesh colliders), and the thicket that keeps walkers on the trails. Run after 8.2 in Main3, edit mode.
-// Grades: every leg at 25 percent or less (DailyLoop.md, rev 13 3.4.7), the log steps excepted. J to Ward (8.9j, Valley.md rev 5) climbs the W ridge
-// on four benched legs at 23.5 percent, through the cleft to the ledge, about 490 m, carved by 8.1 and not flattened here.
+// and gray giant trees (hero trunks with mesh colliders). Run after 8.2 in Main3, edit mode.
+// Grades: every leg at 25 percent or less (DailyLoop.md, rev 13 3.4.7), the log steps excepted. J to Ward (8.14, Valley.md rev 10) climbs the W ridge
+// on four legs (the chute with three flights of cut steps, the shelf, the cwm, under the wall), through the cleft to the ledge, 265 m,
+// carved by 8.1 and not flattened here.
 // Trails: the map curve (Main3_map.svg) is the centre line; ends and on-trail points of interest are anchors; between
 // anchors the trail meanders (half-waves about 18 m long) with one amplitude factor per leg, solved so the walked
 // length matches table 4 (Docs/Design/Main3_BuildNotes.md). Shore legs meander only to the land side.
@@ -26,6 +27,14 @@ float LakeRe(UnityEngine.Vector2 p) { var q = p - lakeC; return UnityEngine.Math
 // poi kind: "on" = the trail passes through it; "side" = stands beside the trail
 // sight-break boulders (8.9e re-walk): 2.5 m round, 4 m over the ground, on the four legs whose straight views passed 60 m
 const string CarvedLeg = "J to Ward";   // 8.9j: carved into the terrain by 8.1, never flattened here
+// the Ward climb's centre line, the same points as 8.1's climb array (platform edges 2 m from P1, 1.5 m from P2 and P3, 3 m from P4)
+UnityEngine.Vector2[] ClimbPts()
+{
+    UnityEngine.Vector2 Tw(UnityEngine.Vector2 a, UnityEngine.Vector2 b, float d) => a + (b - a).normalized * d;
+    var j = P(104f, 206f); var mouth = P(86f, 213f); var p1 = P(52f, 216f); var p2 = P(57f, 276f); var l3 = P(44f, 278f); var p3 = P(26f, 304f); var l4 = P(30f, 284f); var p4 = P(26f, 262f);
+    return new[] { j, mouth, Tw(p1, mouth, 2f), p1, Tw(p1, p2, 2f), Tw(p2, p1, 1.5f), p2, Tw(p2, l3, 1.5f), l3, Tw(p3, l3, 1.5f), p3, Tw(p3, l4, 1.5f), l4, Tw(p4, l4, 3f), p4,
+        P(24.5f, 262f), P(18f, 262f), P(14.5f, 265.5f), P(4f, 265.5f), P(4f, 257.3f), P(-8.5f, 246f) };
+}
 const float boulderR = 2.5f, boulderH = 4f;
 const float sideLevelTol = 0.5f;   // side pieces: ground differences under this count as level
 const float sideWalkTol = 1.5f;    // side pieces this far above or below their trail get no walkable circle
@@ -45,11 +54,11 @@ var legs = new System.Collections.Generic.List<(string name, UnityEngine.Vector2
     ("W1 to Camp 3", new[] { P(128,70), P(96,104), P(78,146) }, false, 114f, false, 0.25f, new[] { ("Footbridge", P(114.8f,85.2f), "on"), ("Camper trailer", P(94,114.4f), "side"), ("Log steps", P(83.1f,134.1f), "steps"), ("Boulder", P(102.5f,102.2f), "tree") }),   // log steps down the hollow wall (rev 15 leftover 3)
     ("W1 to cave", new[] { P(128,70), P(108,48), P(84,64), P(52,37.5f) }, false, 109f, false, 0.25f, new[] { ("Rope handrail", P(106.8f,57.6f), "on"), ("Coloured bulbs", P(82,52), "side") }),
     ("Camp to J", new[] { P(170,160), P(136,196), P(104,206) }, false, 96f, false, 0.25f, new[] { ("Burn-map board", P(136.4f,189.6f), "side"), ("Plank bridge", P(104.8f,203.2f), "on"), ("Boulder", P(146.9f,182f), "tree"), ("Boulder", P(123.9f,197.7f), "tree") }),
-    // Valley.md rev 5 (8.9j): J west to leg 1 across the ridge foot, four legs on the W face (x 72 north, 59 south, 46 north,
-    // 33 south, each 85 m rising 20 m) joined by the platforms P1 to P3, P4 at the top, leg 5 north-west to the cleft's east mouth,
-    // part A west along z 230, part B north to the west mouth, and the ramp up onto the ledge to the path end facing west. 8.1
-    // carves all of it into the terrain (benches, platforms, slot, ramp), so this leg is not flattened: its profile is the ground.
-    ("J to Ward", new[] { P(104,206), P(80,205.5f), P(72,205), P(72,291), P(59,291), P(59,204), P(46,204), P(46,291), P(33,291), P(33,204), P(27,206), P(20,230), P(4.25f,230), P(4.25f,238.5f), P(0.5f,238.5f), P(-2,258) }, true, 487f, false, 0.24f, new (string n, UnityEngine.Vector2 p, string kind)[0]),
+    // Valley.md rev 10 section 4 (8.14): J to the chute mouth, leg 1 up the boulder chute west to P1, leg 2 north along the shelf to
+    // P2, leg 3 north-west up the burned cwm to P3, leg 4 south under the crest wall to P4, west into the cleft (dogleg), south round
+    // the fin and along the ledge to the path end. The points are 8.1's climb (main3_8_1_scene_ground.cs, the climb array): change
+    // both together. 8.1 carves all of it, so this leg is not flattened: its profile is the ground.
+    ("J to Ward", ClimbPts(), true, 265f, false, 0.25f, new (string n, UnityEngine.Vector2 p, string kind)[0]),
 };
 
 // ---------- centre line sampling ----------
@@ -462,206 +471,10 @@ foreach (var g2 in groves) { var cc = UnityEngine.Vector2.zero; foreach (var q i
 report.Append(")");
 
 
-// ---------- thicket (8.9a): the ground keeps walkers on the trails (DailyLoop.md 1.2, Main3.md 2.10) ----------
-// The walkable area is the union of trail corridors (2.2 m each side), clearings, the lake landings, the front zone's
-// surfaces and buildings, the Ward ledge and the cave mouth approach (positions from Main3.md and the later recipes).
-// Its outline is traced (marching squares on a 0.5 m grid) and simplified. Off-trail blocking in the blockout is invisible walls
-// too high to jump with low gray markers (8.9b); real vegetation comes in Milestone 11. Meshes per 50 m tile under
-// Assets/Terrain/Main3/Thicket: Wall_* (collider only, Ignore Raycast layer) and Marker_* (visible, no collider).
-const float cellT = 0.5f, gridX0 = -40f; int GW = 880, GH = 600;   // x -40 to 400 (8.9j: the ledge reaches x -9), z 0 to 300
-var fld = new float[GW + 1, GH + 1];
-for (int i = 0; i <= GW; i++) for (int j = 0; j <= GH; j++) fld[i, j] = -10f;
-void Stamp(float x0, float x1, float z0, float z1, System.Func<UnityEngine.Vector2, float> val)
-{
-    int i0 = UnityEngine.Mathf.Max(1, (int)((x0 - gridX0) / cellT) - 1), i1 = UnityEngine.Mathf.Min(GW - 1, (int)((x1 - gridX0) / cellT) + 1);
-    int j0 = UnityEngine.Mathf.Max(1, (int)(z0 / cellT) - 1), j1 = UnityEngine.Mathf.Min(GH - 1, (int)(z1 / cellT) + 1);
-    for (int i = i0; i <= i1; i++) for (int j = j0; j <= j1; j++) { float v = val(P(gridX0 + i * cellT, j * cellT)); if (v > fld[i, j]) fld[i, j] = v; }
-}
-void Circle(UnityEngine.Vector2 c, float r) => Stamp(c.x - r - 1f, c.x + r + 1f, c.y - r - 1f, c.y + r + 1f, q => r - UnityEngine.Vector2.Distance(q, c));
-void Rect(float x0, float x1, float z0, float z1) => Stamp(x0 - 1f, x1 + 1f, z0 - 1f, z1 + 1f, q => UnityEngine.Mathf.Min(UnityEngine.Mathf.Min(q.x - x0, x1 - q.x), UnityEngine.Mathf.Min(q.y - z0, z1 - q.y)));
-void Seg(UnityEngine.Vector2 a, UnityEngine.Vector2 b, float hw) => Stamp(UnityEngine.Mathf.Min(a.x, b.x) - hw - 1f, UnityEngine.Mathf.Max(a.x, b.x) + hw + 1f, UnityEngine.Mathf.Min(a.y, b.y) - hw - 1f, UnityEngine.Mathf.Max(a.y, b.y) + hw + 1f, q => hw - SegD(q, a, b));
-void Ring(UnityEngine.Vector2 c, float r0, float r1) => Stamp(c.x - r1 - 1f, c.x + r1 + 1f, c.y - r1 - 1f, c.y + r1 + 1f, q => { float d = UnityEngine.Vector2.Distance(q, c); return UnityEngine.Mathf.Min(d - r0, r1 - d); });
-// the Ward climb's corridor is narrower on the Wall's face (1.1 m each side, to the pass): its stacked shelves are 3 m apart,
-// so each shelf gets its own outline and walls between them (8.9e re-walk: jumping up or dropping off a shelf skipped legs)
-const float corridorHW = 2.2f, climbHW = 1.1f, cleftHW = 0.8f;
-// in the cleft (parts A and B and the exit) the walls stand 0.8 m each side, on its flat floor: the terrain steps up to the slot walls
-// over one heightmap cell, and a sprint-jump at 1.1 m reached that step and fell 2.9 m back (8.9k climb push check)
-bool InCleft(UnityEngine.Vector2 q) => q.x < 22f && q.y > 225f && q.y < 240f;
-foreach (var b in built)
-{
-    // the whole Ward climb is narrow (1.1 m each side, 8.9j): its benches are 13 m apart but 4 m wide, the cleft 2.5 m
-    for (int i = 0; i < b.path.Count - 1; i++) Seg(b.path[i], b.path[i + 1], b.name != CarvedLeg ? corridorHW : InCleft(b.path[i]) ? cleftHW : climbHW);
-}
-Circle(P(170, 160), 18f); Circle(P(282, 238), 30f); Circle(P(292, 108), 20f); Circle(P(78, 146), 9f);
-Circle(P(104, 206), 4f); Circle(P(128, 70), 5f);   // J 4 m (8.9e re-walk: 5 m met the climb's second leg 6 m away)
-Circle(P(262, 172), 4f); Circle(P(340, 170), 4f);
-Rect(-9f, 4f, 232f, 275f);                                                         // the Ward ledge (8.9j, Valley 5.6 widened to hold the stones); its west and north edges drop away
-Rect(49.5f, 54.5f, 30f, 41f);                                                      // in front of the cave mouth and into the passage (8.9b: no wall across it)
-Rect(187.5f, 192.5f, 86f, 98f); Rect(236.3f, 248.3f, 49.1f, 55.7f);                // dock notch; boathouse and gangway
-Rect(342f, 374f, 149f, 191f); Rect(373f, 395.6f, 166.5f, 173.5f); Circle(P(384, 160), 9f);   // lot, drive, turning circle
-Rect(342f, 372f, 189f, 206f); Rect(388.5f, 395.6f, 172f, 179f); Rect(385f, 395.6f, 234f, 242f); // office and store, booth, chain
-var spurW = new[] { P(385, 172.5f), P(385, 186), P(390, 196), P(390, 244) };
-for (int i = 0; i < spurW.Length - 1; i++) Seg(spurW[i], spurW[i + 1], 3f);
-Ring(P(372, 262), 9.5f, 21f);                                                      // loop road and pitches
-Seg(P(390, 243), P(387, 255), 3f);                                                 // spur on into the loop (8.9b)
-// a side piece is walkable round only where it stands level with its trail (8.9e re-walk: the coloured bulbs pushed up onto
-// the ravine rim made a walkable pocket there)
-foreach (var q in poiPlaced) if (q.kind == "side" && UnityEngine.Mathf.Abs(H(q.obj.x, q.obj.y) - q.height) < sideWalkTol) Circle(q.obj, poiRadius[q.n] + 1.5f);
-// marching squares: segments between edge crossings, keyed by edge so neighbouring cells join
-var ptOf = new System.Collections.Generic.Dictionary<long, UnityEngine.Vector2>();
-var adj = new System.Collections.Generic.Dictionary<long, System.Collections.Generic.List<long>>();
-long EKey(int i, int j, int dir) => ((long)j * (GW + 1) + i) * 2 + dir;
-UnityEngine.Vector2 EPoint(int i, int j, int dir)
-{
-    float va = fld[i, j], vb = dir == 0 ? fld[i + 1, j] : fld[i, j + 1]; float t = va / (va - vb);
-    return dir == 0 ? P(gridX0 + (i + t) * cellT, j * cellT) : P(gridX0 + i * cellT, (j + t) * cellT);
-}
-void Link(long a, long b, UnityEngine.Vector2 pa, UnityEngine.Vector2 pb)
-{
-    ptOf[a] = pa; ptOf[b] = pb;
-    if (!adj.TryGetValue(a, out var la)) adj[a] = la = new System.Collections.Generic.List<long>(); la.Add(b);
-    if (!adj.TryGetValue(b, out var lb)) adj[b] = lb = new System.Collections.Generic.List<long>(); lb.Add(a);
-}
-for (int i = 0; i < GW; i++) for (int j = 0; j < GH; j++)
-{
-    int cs = (fld[i, j] > 0 ? 1 : 0) | (fld[i + 1, j] > 0 ? 2 : 0) | (fld[i + 1, j + 1] > 0 ? 4 : 0) | (fld[i, j + 1] > 0 ? 8 : 0);
-    if (cs == 0 || cs == 15) continue;
-    long B = EKey(i, j, 0), R = EKey(i + 1, j, 1), T = EKey(i, j + 1, 0), Lf = EKey(i, j, 1);
-    UnityEngine.Vector2 pB() => EPoint(i, j, 0); UnityEngine.Vector2 pR() => EPoint(i + 1, j, 1); UnityEngine.Vector2 pT() => EPoint(i, j + 1, 0); UnityEngine.Vector2 pL() => EPoint(i, j, 1);
-    bool centre = (fld[i, j] + fld[i + 1, j] + fld[i + 1, j + 1] + fld[i, j + 1]) > 0f;
-    switch (cs)
-    {
-        case 1: case 14: Link(Lf, B, pL(), pB()); break;
-        case 2: case 13: Link(B, R, pB(), pR()); break;
-        case 3: case 12: Link(Lf, R, pL(), pR()); break;
-        case 4: case 11: Link(R, T, pR(), pT()); break;
-        case 6: case 9: Link(B, T, pB(), pT()); break;
-        case 7: case 8: Link(Lf, T, pL(), pT()); break;
-        case 5: if (centre) { Link(B, R, pB(), pR()); Link(T, Lf, pT(), pL()); } else { Link(Lf, B, pL(), pB()); Link(R, T, pR(), pT()); } break;
-        case 10: if (centre) { Link(Lf, B, pL(), pB()); Link(R, T, pR(), pT()); } else { Link(B, R, pB(), pR()); Link(T, Lf, pT(), pL()); } break;
-    }
-}
-// chain the crossings into closed loops and simplify them (Douglas-Peucker, 0.3 m)
-var loops = new System.Collections.Generic.List<System.Collections.Generic.List<UnityEngine.Vector2>>();
-var seen = new System.Collections.Generic.HashSet<long>();
-foreach (var k0 in adj.Keys)
-{
-    if (seen.Contains(k0)) continue;
-    var loop = new System.Collections.Generic.List<UnityEngine.Vector2>(); long prev = -1, cur = k0;
-    while (true)
-    {
-        seen.Add(cur); loop.Add(ptOf[cur]); long next = -1;
-        foreach (var n in adj[cur]) if (n != prev && !seen.Contains(n)) { next = n; break; }
-        if (next < 0) break; prev = cur; cur = next;
-    }
-    if (loop.Count > 2) { loop.Add(loop[0]); loops.Add(loop); }
-}
-System.Collections.Generic.List<UnityEngine.Vector2> Simplify(System.Collections.Generic.List<UnityEngine.Vector2> pts, float tol)
-{
-    var keep = new bool[pts.Count]; keep[0] = keep[pts.Count - 1] = true;
-    var stack = new System.Collections.Generic.Stack<(int, int)>(); stack.Push((0, pts.Count - 1));
-    while (stack.Count > 0)
-    {
-        var (a, b) = stack.Pop(); float best = 0f; int bi = -1;
-        for (int i = a + 1; i < b; i++) { float d = SegD(pts[i], pts[a], pts[b]); if (d > best) { best = d; bi = i; } }
-        if (bi >= 0 && best > tol) { keep[bi] = true; stack.Push((a, bi)); stack.Push((bi, b)); }
-    }
-    var outp = new System.Collections.Generic.List<UnityEngine.Vector2>(); for (int i = 0; i < pts.Count; i++) if (keep[i]) outp.Add(pts[i]); return outp;
-}
-// Each outline segment gets two boxes (8.9b): an invisible wall 4 m over the highest ground under it (the player jumps 0.6 m,
-// so it cannot be climbed from a slope or a boulder), on the Ignore Raycast layer so no sight line or landmark check sees it;
-// and a low visible marker 0.3 m over the lowest ground, no collider, so the edge reads in gray without hiding anything.
-const float wallReach = 3f;
-var tileWalls = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
-var tileMarks = new System.Collections.Generic.Dictionary<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>();
-// visible stops (8.9k): gray rocks along the wall line at every face, drop or ridge foot. Vesper (8.9k edge check): not a
-// battlement: two rocks per wall piece, each set back 0.5 to 1.5 m on the far side of the line, scaled 0.6 to 1.1, turned at
-// random (fixed seed, so rebuilds match); none on the ledge inside the middle 60 degrees of the west view from the path end,
-// where the lip itself is the stop (the wall stays on the lip)
-const float stopRise = 2f, stopRockSize = 1.6f, stopRockH = 1.0f, stopRockSink = 0.5f, stopSetback0 = 0.5f, stopSetback1 = 1.5f, stopScale0 = 0.6f, stopScale1 = 1.1f, stopTilt = 10f;
-var rocks = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); var stopRng = new System.Random(8911);
-float SR(float a, float b) => a + (float)stopRng.NextDouble() * (b - a);
-bool RidgeZone(UnityEngine.Vector2 q) => (q.x < 85f && q.y > 190f) || q.x < 48f || q.y > 296f || q.y < 4f;   // the climb and ledge, the W ridge foot, the N and S map edges
-var ledgeView = P(-2f, 258f); const float ledgeViewHalf = 30f, ledgeViewReach = 40f;
-bool InLedgeView(UnityEngine.Vector2 q) { var d = q - ledgeView; if (d.magnitude > ledgeViewReach || d.x >= 0f) return false; return UnityEngine.Vector2.Angle(d, P(-1f, 0f)) < ledgeViewHalf; }
-bool Walkable(UnityEngine.Vector2 q) { int i = UnityEngine.Mathf.RoundToInt((q.x - gridX0) / cellT), j = UnityEngine.Mathf.RoundToInt(q.y / cellT); return i >= 0 && j >= 0 && i <= GW && j <= GH && fld[i, j] > 0f; }
-int boxes = 0;
-foreach (var raw0 in loops)
-{
-    // a closed loop starts and ends on the same point, so split it at the point farthest from its start before simplifying
-    int far = 0; for (int i = 1; i < raw0.Count; i++) if ((raw0[i] - raw0[0]).sqrMagnitude > (raw0[far] - raw0[0]).sqrMagnitude) far = i;
-    var pl = Simplify(raw0.GetRange(0, far + 1), 0.3f); var back2 = Simplify(raw0.GetRange(far, raw0.Count - far), 0.3f); back2.RemoveAt(0); pl.AddRange(back2);
-    for (int i = 0; i < pl.Count - 1; i++)
-    {
-        var a = pl[i]; var b = pl[i + 1]; float len = UnityEngine.Vector2.Distance(a, b); if (len < 0.05f) continue;
-        int parts = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(len / 4f));   // at most 4 m per box so heights follow the ground
-        for (int k = 0; k < parts; k++)
-        {
-            var sa = UnityEngine.Vector2.Lerp(a, b, k / (float)parts); var sb2 = UnityEngine.Vector2.Lerp(a, b, (k + 1) / (float)parts); var mid = (sa + sb2) * 0.5f;
-            float g0 = H(sa.x, sa.y), g1 = H(sb2.x, sb2.y), gm = H(mid.x, mid.y);
-            float gLow = UnityEngine.Mathf.Min(gm, UnityEngine.Mathf.Min(g0, g1)), gTop = UnityEngine.Mathf.Max(gm, UnityEngine.Mathf.Max(g0, g1));
-            // 8.9e re-walk: also the ground up to wallReach either side, so a steep bank or a shelf just past the wall cannot
-            // be bounced up beside it and stepped over (the ravine rim at Wall_100, the stacked switchbacks on the Wall)
-            var perp = P(-(sb2 - sa).y, (sb2 - sa).x).normalized;
-            for (float o = 1f; o <= wallReach; o += 1f) foreach (var sg in new[] { -1f, 1f }) gTop = UnityEngine.Mathf.Max(gTop, H(mid.x + perp.x * o * sg, mid.y + perp.y * o * sg));
-            float lo = gLow - 0.4f, wallTop = gTop + 4f, markTop = gLow + 0.3f;
-            var dir = sb2 - sa; float l = dir.magnitude + 0.5f; var rot = UnityEngine.Quaternion.LookRotation(V(dir.x, 0f, dir.y).normalized, UnityEngine.Vector3.up);
-            int key = ((int)(mid.x / 50f)) * 100 + (int)(mid.y / 50f);
-            if (!tileWalls.TryGetValue(key, out var lw)) { tileWalls[key] = lw = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); tileMarks[key] = new System.Collections.Generic.List<UnityEngine.Matrix4x4>(); }
-            lw.Add(UnityEngine.Matrix4x4.TRS(V(mid.x, (lo + wallTop) * 0.5f, mid.y), rot, V(0.6f, wallTop - lo, l)));
-            tileMarks[key].Add(UnityEngine.Matrix4x4.TRS(V(mid.x, (lo + markTop) * 0.5f, mid.y), rot, V(0.5f, markTop - lo, l)));
-            // ridge-foot stops (8.9k, Edges.md 9.4): where the wall stands at a face or drop, or in the ring of ridges and on the climb, a
-            // visible gray rock stands just beyond the line as well, so no invisible stop stands on open ground; no collider (the wall holds)
-            if ((gTop - gLow >= stopRise || RidgeZone(mid)) && !InLedgeView(mid))
-                foreach (var u in new[] { 0.25f, 0.75f })
-                {
-                    var on = UnityEngine.Vector2.Lerp(sa, sb2, u); float back = SR(stopSetback0, stopSetback1);
-                    var outDir = Walkable(on + perp * 0.8f) ? -perp : perp;   // the far side of the line, away from the walkable ground
-                    var rp = on + outDir * back; float s = SR(stopScale0, stopScale1), gR = H(rp.x, rp.y), rh = stopRockH * s;
-                    var rrot = UnityEngine.Quaternion.Euler(SR(-stopTilt, stopTilt), SR(0f, 360f), SR(-stopTilt, stopTilt));
-                    rocks.Add(UnityEngine.Matrix4x4.TRS(V(rp.x, gR + (rh - stopRockSink) * 0.5f, rp.y), rrot, V(stopRockSize * s, rh + stopRockSink, stopRockSize * s * SR(0.8f, 1.2f))));
-                }
-            boxes++;
-        }
-    }
-}
-const string thDir = "Assets/Terrain/Main3/Thicket";
-if (!UnityEditor.AssetDatabase.IsValidFolder(thDir)) UnityEditor.AssetDatabase.CreateFolder("Assets/Terrain/Main3", "Thicket");
-var cubeTmp = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube);
-var cubeMesh = cubeTmp.GetComponent<UnityEngine.MeshFilter>().sharedMesh; var grayMat = cubeTmp.GetComponent<UnityEngine.MeshRenderer>().sharedMaterial;
-var thicket = new UnityEngine.GameObject("Thicket"); long verts = 0;
-UnityEngine.Mesh Combine(string name, System.Collections.Generic.List<UnityEngine.Matrix4x4> ms, bool keepNormals)
-{
-    var ci = new UnityEngine.CombineInstance[ms.Count];
-    for (int i = 0; i < ci.Length; i++) ci[i] = new UnityEngine.CombineInstance { mesh = cubeMesh, transform = ms[i] };
-    var mesh = new UnityEngine.Mesh { name = name, indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
-    mesh.CombineMeshes(ci, true, true); mesh.uv = null; mesh.tangents = null; if (!keepNormals) mesh.normals = null; mesh.RecalculateBounds(); verts += mesh.vertexCount;
-    UnityEditor.AssetDatabase.CreateAsset(mesh, thDir + "/" + name + ".asset"); return mesh;
-}
-foreach (var kv in tileWalls)
-{
-    var wallMesh = Combine("Wall_" + kv.Key, kv.Value, false); var markMesh = Combine("Marker_" + kv.Key, tileMarks[kv.Key], true);
-    var wgo = new UnityEngine.GameObject("Wall_" + kv.Key); wgo.transform.SetParent(thicket.transform, false); wgo.layer = 2;   // Ignore Raycast
-    wgo.AddComponent<UnityEngine.MeshCollider>().sharedMesh = wallMesh;
-    var mgo = new UnityEngine.GameObject("Marker_" + kv.Key); mgo.transform.SetParent(thicket.transform, false);
-    mgo.AddComponent<UnityEngine.MeshFilter>().sharedMesh = markMesh; mgo.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = grayMat;
-}
-// ridge-foot stop rocks: one mesh, granite gray (Style.md #6E6660), no collider
-{
-    const string rockMatPath = "Assets/Materials/Blockout/Blockout_RidgeRock.mat";
-    var rockMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(rockMatPath);
-    if (rockMat == null) { rockMat = new UnityEngine.Material(grayMat.shader); UnityEditor.AssetDatabase.CreateAsset(rockMat, rockMatPath); }
-    UnityEngine.ColorUtility.TryParseHtmlString("#6E6660", out var granite); rockMat.SetColor("_BaseColor", granite); UnityEditor.EditorUtility.SetDirty(rockMat);
-    var stopsGo = new UnityEngine.GameObject("RidgeStops");
-    if (rocks.Count > 0)
-    {
-        var rockMesh = Combine("RidgeStops", rocks, true);
-        stopsGo.AddComponent<UnityEngine.MeshFilter>().sharedMesh = rockMesh; stopsGo.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = rockMat;
-    }
-    report.Append("ridge stops: " + rocks.Count + " rocks on the wall line\n");
-}
-UnityEngine.Object.DestroyImmediate(cubeTmp);
-report.Append("thicket: " + loops.Count + " outlines, " + boxes + " wall and marker pairs, " + tileWalls.Count + " tiles, " + verts + " vertices\n");
+// The thicket (8.9a to 8.9k: invisible walls along every trail corridor with low markers, and the RidgeStops rocks) is gone
+// (Valley.md rev 10 section 8, DECISIONS 2026-09-30: invisible walls only at the front and the Ward path by day). It is in git
+// history (tag main3-rev7). Boundaries are the land now: 8.1's rock bands and climb rock, the fence, the water; visible stops
+// for the rest of the valley come with 8.15.
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " giants=" + made + " + 3 heroes, POIs=" + poiRoot.transform.childCount + "\n" + report;

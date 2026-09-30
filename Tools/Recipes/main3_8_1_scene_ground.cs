@@ -1,11 +1,14 @@
-// Main3 task 8.1: scene, terrain, fence, bounds, spawn, dev warps.
-// Source: Docs/Design/Main3.md rev 16 table 2.1 for the valley floor; Docs/Design/Valley.md revision 5 (8.9j) for the ring of
-// ridges, the Ward knob, the climb, the cleft and the ledge; resolutions in Docs/Design/Main3_BuildNotes.md.
+// Main3 task 8.1: scene, terrain, rock bands, fence, spawn, dev warps.
+// Source: Docs/Design/Main3.md rev 16 table 2.1 for the valley floor; Docs/Design/Valley.md revision 10 (8.14) for the horseshoe:
+// the W ridge (crest 80, knob 84, shoulder), the N and S arms, the open east with the highway, the Ward climb (four legs, the
+// cleft with its dogleg and fin) and the ledge; resolutions in Docs/Design/Main3_BuildNotes.md. Wren 2026-09-30: the N arm holds 50
+// at x 170. The rev 7 ring of ridges, the E ridge, the road cut, the benched climb and the Bounds walls are in git history
+// (tag main3-rev7).
 // Run from Graybox (or any saved scene) in edit mode. Refuses if Main3.unity exists: delete it and its terrain folder to rebuild,
 // then rerun every later Main3 recipe in task order (Tools/Recipes/main3_rebuild.sh).
-// 8.9j: the terrain is placed at (-40, -200) and runs to (595, 500), so the W ridge's west face, the N, S and E ridges and their
-// back slopes are real terrain with a collider; no world coordinate in any recipe changed. Later recipes that index the
-// heightmap, alphamap or holes add the terrain origin.
+// The terrain is placed at (-40, -200) and runs to (595, 500); later recipes that index the heightmap, alphamap or holes add the
+// terrain origin. Boundaries come from the land (Valley.md 8): a rock band with a collider along every ridge foot, the fence,
+// and rock walls on the climb and the ledge ("Rock" root, visible, MeshColliders). No invisible wall is built here.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().isDirty) return "active scene dirty, save first";
 const string scenePath = "Assets/Scenes/Main3.unity";
@@ -174,136 +177,238 @@ float Valley(float x, float z)
     return h;
 }
 
-// ---------- the ring of ridges (Valley.md rev 5, section 2) ----------
-// Outer ground (2.7): gently rolling 0 to 10 outside the ridges. Floor() is copied in main3_8_9e_layers.cs (the outer ground
-// mesh beyond the terrain); change both together. West of x 0 the ground steps down at 45 degrees to the -40 floor at x -40,
-// the same slope in the terrain and the mesh, so no ray can pass under it.
+// ---------- outer ground (Valley.md 2.6 and 3.5) ----------
+// Gently rolling 0 to 10 outside the horseshoe; east of the highway the land rolls up to 20 to 35 m from about 100 m past the
+// road ("rolling forest", 3.5). Floor(), EastHills() and Outer() are copied in main3_8_9e_layers.cs (the outer ground mesh
+// beyond the terrain); change both together. West of x 0 the ground steps down at 45 degrees to the -40 floor at x -40.
 float Floor(float x, float z) => UnityEngine.Mathf.Clamp(5f + 4.5f * (UnityEngine.Mathf.PerlinNoise(x / 280f + 11.3f, z / 280f + 4.7f) * 2f - 1f), 0f, 10f);
-float Outer(float x, float z) => x >= 0f ? Floor(x, z) : L(-40f, Floor(0f, z), (x + 40f) / 40f);
+const float hillX0 = 520f, hillRamp = 100f, hillLow = 20f, hillSpan = 15f, hillScale = 160f;
+float EastHills(float x, float z) => SS((x - hillX0) / hillRamp) * (hillLow + hillSpan * UnityEngine.Mathf.PerlinNoise(x / hillScale + 2.2f, z / hillScale + 6.1f));
+float Outer(float x, float z) => x >= 0f ? Floor(x, z) + EastHills(x, z) : L(-40f, Floor(0f, z), (x + 40f) / 40f);
 const float backLen = 150f, westFloor = -40f, westEdge = -40f, wFade = 100f;
-// W ridge: crest line and heights along it, the east foot; the knob and the NW corner are raised after
-float[] wT = { -60f, 60f, 150f, 200f, 230f, 242f, 280f, 300f, 360f }; float[] wX = { 0f, 0f, 4f, 8f, 10f, 12f, 12f, 8f, 4f };
-float[] wHT = { -60f, 0f, 60f, 150f, 200f, 235f, 242f, 280f, 300f, 360f }; float[] wH = { 95f, 100f, 95f, 108f, 106f, 106f, 113f, 113f, 105f, 103f };
-float[] fT = { -60f, 85f, 100f, 180f, 195f, 360f }; float[] fX = { 38f, 38f, 46f, 46f, 80f, 80f };
-float CrestX(float z) => PL(z, wT, wX);
-float CrestW(float z)   // fades to the outer ground past both ends (z -60, z 360) so the hooks fold down onto the west step
+
+// ---------- the horseshoe (Valley.md rev 10, sections 2, 3, 4 and 8) ----------
+// Ridge feet, the valley side edge of each ridge (Valley_map.svg rock bands). The chute's two rock arms step the W band out to
+// x 86 between z 200 and 226 (IW2 fills the 3 m gap at the chute mouth, 8.7). Past the fence the arms end on a diagonal.
+const float armEndSlope = 1f, fenceX = 396f;
+float[] wfZ = { 10f, 85f, 100f, 180f, 195f, 290f }; float[] wfX = { 38f, 38f, 46f, 46f, 80f, 80f };
+const float armZ0 = 200f, armZ1 = 226f, armX = 86f, gapZ0 = 211.5f, gapZ1 = 214.5f;
+float FootW(float z) => (z >= armZ0 && z <= armZ1) ? armX : PL(z, wfZ, wfX);
+float[] nfX = { 80f, 100f, 200f, 300f, 390f, 396f }; float[] nfZ = { 290f, 295f, 298f, 302f, 305f, 305f };
+float FootN(float x) => x > fenceX ? 305f + (x - fenceX) * armEndSlope : PL(x, nfX, nfZ);
+float[] sfX = { 38f, 120f, 200f, 300f, 390f, 396f }; float[] sfZ = { 10f, 2f, -4f, -2f, -8f, -8f };
+float FootS(float x) => x > fenceX ? -8f - (x - fenceX) * armEndSlope : PL(x, sfX, sfZ);
+bool InValley(float x, float z) => x >= FootW(z) && z <= FootN(x) && z >= FootS(x);
+// the W foot apron (Valley.md 2.5: the W foot ground is about 12): within apronW of the W band between z 185 and 300 the valley
+// rises to 12, so the band stands 4 m over the ground there and the chute mouth (12.6) is not a causeway up to the band top
+const float apronH = 12f, apronW = 15f, apronZ0 = 185f, apronZ1 = 300f;
+float ValleyA(float x, float z)
 {
-    float out0 = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(-60f - z, z - 360f));
-    return L(PL(z, wHT, wH), Floor(CrestX(z), z), SS(out0 / wFade));
+    float h = Valley(x, z); if (z < apronZ0 || z > apronZ1) return h;
+    float d = x - FootW(z); return d < 0f || d > apronW ? h : UnityEngine.Mathf.Max(h, L(apronH, h, SS(d / apronW)));
 }
-float FootW(float z) => PL(z, fT, fX);
-// N (crest z 350), S (crest z -50), E (crest x 445, road cut V at z 170)
-float[] nT = { 0f, 20f, 60f, 90f, 120f, 170f, 250f, 320f, 400f, 440f }; float[] nH = { 103f, 103f, 88f, 84f, 94f, 72f, 50f, 70f, 62f, 58f };
-float[] sT = { 0f, 60f, 110f, 170f, 240f, 320f, 400f, 440f }; float[] sH = { 95f, 90f, 75f, 50f, 70f, 58f, 52f, 50f };
-float[] eT = { -50f, -40f, 60f, 120f, 250f, 340f, 350f }; float[] eH = { 45f, 45f, 57f, 47f, 60f, 55f, 55f };
-const float crestN = 350f, crestS = -50f, crestE = 445f, footN = 300f, footS = 0f, footE = 400f, roadZ = 170f, roadHalf = 4f, roadLevel = 3f, cutSlope = 1f;
-// every ridge fades to the outer ground within backLen past its ends, so the terrain meets the outer ground mesh at its edges
-float EndFade(float over) => SS(UnityEngine.Mathf.Max(0f, over) / backLen);
-float CrestN(float x) => L(PL(x, nT, nH), Floor(x, crestN), EndFade(x - crestE));
-float CrestS(float x) => L(PL(x, sT, sH), Floor(x, crestS), EndFade(x - crestE));
-float CrestE(float z) => L(UnityEngine.Mathf.Min(PL(z, eT, eH), roadLevel + UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Abs(z - roadZ) - roadHalf) * cutSlope), Floor(crestE, z), EndFade(UnityEngine.Mathf.Max(z - crestN, crestS - z)));
-// a small roll on the faces, zero at crest and foot so both stay exact
-float Rough(float x, float z, float t) => (UnityEngine.Mathf.PerlinNoise(x / 23f + 5.5f, z / 23f + 1.9f) - 0.5f) * 6f * t * (1f - t);
-// one ridge side toward the valley: from the foot ground (t 0) up to the crest (t 1), steepest near the crest
-float Face(float footG, float crest, float t, float x, float z) => footG + (crest - footG) * UnityEngine.Mathf.Pow(Clamp01(t), 1.6f) + Rough(x, z, Clamp01(t));
-// one back slope: from the crest down to the outer ground within backLen
+
+// N and S arms: crest lines and heights (2.2; rev 10 N arm east half; Wren 2026-09-30: 50 held at x 170). Each arm falls to the
+// valley at armK and away from it through its back slope; past the fence the heights fade to the verge by x 412.
+const float armK = 1f;
+float[] nCX = { 12f, 100f, 250f, 395f, 412f }; float[] nCZ = { 340f, 345f, 338f, 332f, 332f };
+float[] nHX = { 15f, 40f, 60f, 80f, 120f, 170f, 250f, 320f, 380f, 400f, 412f }; float[] nHH = { 80f, 76f, 76f, 70f, 58f, 50f, 40f, 38f, 20f, 10f, 3f };
+float[] sCX = { 14f, 100f, 240f, 395f, 412f }; float[] sCZ = { -40f, -45f, -38f, -30f, -30f };
+float[] sHX = { 14f, 40f, 60f, 80f, 110f, 170f, 240f, 320f, 380f, 400f, 412f }; float[] sHH = { 76f, 72f, 72f, 66f, 50f, 32f, 45f, 30f, 16f, 8f, 3f };
 float Back(float crest, float outer, float d) => d >= backLen ? outer : outer + (crest - outer) * (1f - d / backLen) * (1f - d / backLen);
+// crests hold their height across a flat armCrestHalf either side (Wren 2026-09-30: the N arm holds 50 at x 170)
+const float armCrestHalf = 1.5f;
+float ArmN(float x, float z) { float cz = PL(x, nCX, nCZ), ch = PL(x, nHX, nHH); return z <= cz ? ch - armK * UnityEngine.Mathf.Max(0f, cz - armCrestHalf - z) : Back(ch, Outer(x, z), UnityEngine.Mathf.Max(0f, z - cz - armCrestHalf)); }
+float ArmS(float x, float z) { float cz = PL(x, sCX, sCZ), ch = PL(x, sHX, sHH); return z >= cz ? ch - armK * UnityEngine.Mathf.Max(0f, z - cz - armCrestHalf) : Back(ch, Outer(x, z), UnityEngine.Mathf.Max(0f, cz - armCrestHalf - z)); }
 
-// ---------- the climb, the cleft, the ledge (Valley.md 5) ----------
-// Four legs on the W face, each 85 m rising 20 m, benches 4 m wide; platforms at the turns come out of the leg heights (the
-// two legs meeting at a turn have the same height there, so the ground between them is level).
-float[] legX = { 72f, 59f, 46f, 33f }; const float benchHalf = 2f, legZ0 = 205f, legZ1 = 290f, zoneZ0 = 202.5f, zoneZ1 = 292.5f, zoneBlend = 4f;
-float LegH(int i, float z)
-{
-    float t = (UnityEngine.Mathf.Clamp(z, legZ0, legZ1) - legZ0) / (legZ1 - legZ0);
-    switch (i) { case 0: return 12f + 20f * t; case 1: return 52f - 20f * t; case 2: return 52f + 20f * t; default: return 92f - 20f * t; }
-}
-float ClimbFace(float x, float z, float footG)   // across the face from the crest down through the four benches to the foot
-{
-    var xs = new[] { CrestX(z), legX[3] - benchHalf, legX[3] + benchHalf, legX[2] - benchHalf, legX[2] + benchHalf, legX[1] - benchHalf, legX[1] + benchHalf, legX[0] - benchHalf, legX[0] + benchHalf, 80f };
-    var hs = new[] { CrestW(z), LegH(3, z), LegH(3, z), LegH(2, z), LegH(2, z), LegH(1, z), LegH(1, z), LegH(0, z), LegH(0, z), footG };
-    return PL(x, xs, hs);
-}
-// carved paths: J to leg 1, leg 5, the ramp from the cleft's west mouth to the path end on the ledge
-var approach = new[] { (P(104f, 206f), 10f), (P(80f, 205.5f), 11.5f), (P(72f, 205f), 12f) };
-// leg 5 leaves P4 west first (to (27, 206)), then runs north-west to the east mouth: straight from P4 it ran 27 degrees off leg 4 and
-// stayed within 2 m of it for 5 m while the two parted in height, so the ground between them was a step (8.9j climb check)
-var leg5 = new[] { (P(33f, 204f), 92f), (P(27f, 206f), 92.6f), (P(20f, 230f), 95f) };
-// Valley.md rev 7 (Sable, the stones fix): part B exits west along z 238.5 through the 2.5 m gap between the fin end (z 237.2) and
-// the cap rock, to (0.5, 238.5), then rises round the cap onto the ledge to the path end
-var ramp = new[] { (P(4.25f, 238.5f), 95f), (P(0.5f, 238.5f), 95.48f), (P(-2f, 258f), 98f) };
-const float rampHalf = 1.2f;   // the exit gap is 2.5 m: fin end z 237.2 to cap z 239.7
-const float capX0 = 1.5f, capX1 = 6.25f, capZ0 = 239.7f, capZ1 = 242.2f, capTop = 104f;   // the cap rock, joined to the east wall
-float PathH((UnityEngine.Vector2, float)[] pts, UnityEngine.Vector2 p, out float dist)
-{
-    dist = float.MaxValue; float hBest = 0f;
-    for (int i = 0; i < pts.Length - 1; i++) { float d = SegDist(p, pts[i].Item1, pts[i + 1].Item1, out float t); if (d < dist) { dist = d; hBest = L(pts[i].Item2, pts[i + 1].Item2, t); } }
-    return hBest;
-}
-const float knobX0 = 8f, knobX1 = 18f, knobZ0 = 242f, knobZ1 = 280f, knobTop = 113f, knobSummit = 115f; var knobPeak = P(12f, 258f);
-const float cleftFloor = 95f, cleftWall = 106f, ledgeH = 98f;
-const float cellPad = 0.7f;   // raised areas reach one heightmap cell past their stated edges, so the ground at the edge itself holds the height
-const float ledgeX0 = -9f, ledgeX1 = 4f, ledgeZ0 = 232f, ledgeZ1 = 275f;   // Valley 5.6 (x -8 to 4, z 232 to 272) widened 1 m west and 3 m north so the stones stand on it (Marlow R3.8)
+// W ridge crest (2.2, 2.4): a flat top 6 m wide (x 10 to 16) at 80 from z 40 to 345, where daytime lines to the fire cross it;
+// south of z 40 the top falls to the saddle 74 at z -10 and 76 at the SW corner (z -40). The knob and the shoulder sit on it.
+float[] cLZ = { -45f, -40f, -10f, 40f }; float[] cLX = { 14f, 14f, 10f, 10f }; float[] cLH = { 76f, 76f, 74f, 80f };
+const float crestTop = 80f, crestX0 = 10f, crestX1 = 16f, crestZ0 = 40f, crestZ1 = 345f;
+float CrestH(float z) => z >= crestZ0 ? crestTop : PL(z, cLZ, cLH);
+float CrestE(float z) => z >= crestZ0 ? crestX1 : PL(z, cLZ, cLX) + (crestX1 - crestX0);   // east edge of the crest top
+const float knobX0 = 8f, knobX1 = 20f, knobZ0 = 200f, knobZ1 = 245f, knobTop = 84f;
+const float shoulderX0 = 6f, shoulderX1 = 20f, shoulderZ0 = 245f, shoulderZ1 = 297f, shoulderTopS = 82f, shoulderTopN = 80f;
+float CrestW(float z) => z >= shoulderZ0 && z <= shoulderZ1 ? shoulderX0 : z >= knobZ0 && z < shoulderZ0 ? knobX0 : z >= crestZ0 ? crestX0 : PL(z, cLZ, cLX);   // west edge of the top
+float TopH(float z) => z >= shoulderZ0 && z <= shoulderZ1 ? L(shoulderTopS, shoulderTopN, (z - shoulderZ0) / (shoulderZ1 - shoulderZ0)) : z >= knobZ0 && z < shoulderZ0 ? knobTop : CrestH(z);
 
-float Height(float x, float z)
+// ---------- the Ward climb (Valley.md rev 10 section 4) ----------
+// Centre line with ground heights; the platforms are level (P1 4 x 4, P2 and P3 3 x 3, P4 6 m). P2 is 41.5 and P3 51.5 (each 0.5 m
+// off table 4, inside WalkChecks 3's tolerance) so leg 3 holds 25 percent: at 41 and 52 its 41.8 m of slope would be 26.3 percent.
+// Leg 1: from the chute mouth, ramps at 24.5 percent between three flights of 18 cut steps (0.25 rise, 0.3 run); the steps are
+// looks only (8.7), the ground under them is their nosing line (40 degrees, walkable), so no StairRamp is needed.
+const float mouthH = 12.6f, p1H = 30f, p2H = 41.5f, p3H = 51.5f, p4H = 60f, exitH = 61f, endH = 62f;
+var pJ = P(104f, 206f); var pMouth = P(86f, 213f); var pP1 = P(52f, 216f); var pP2 = P(57f, 276f); var pL3 = P(44f, 278f);
+var pP3 = P(26f, 304f); var pL4 = P(30f, 284f); var pP4 = P(26f, 262f);
+UnityEngine.Vector2 Toward(UnityEngine.Vector2 a, UnityEngine.Vector2 b, float d) => a + (b - a).normalized * d;
+const float p1Half = 2f, p23Half = 1.5f, p4Half = 3f;
+var p1In = Toward(pP1, pMouth, p1Half); var p1Out = Toward(pP1, pP2, p1Half);
+var p2In = Toward(pP2, pP1, p23Half); var p2Out = Toward(pP2, pL3, p23Half);
+var p3In = Toward(pP3, pL3, p23Half); var p3Out = Toward(pP3, pL4, p23Half);
+var p4In = Toward(pP4, pL4, p4Half);
+var slotIn = P(24.5f, 262f); var slotDog0 = P(18f, 262f); var slotDog1 = P(14.5f, 265.5f); var slotEnd = P(4f, 265.5f); var slotExit = P(4f, 257.3f);   // table 4 has (4, 262.5); 5.2 m further south so the fin covers the whole slot mouth (8.14 F-1: from the mouth's south corner a ray passed the fin's end at 262.4)
+var pathEnd = P(-8.5f, 246f);
+// leg 3 and leg 4 heights at their bends, by walked length between the platforms
+float lenL3a = UnityEngine.Vector2.Distance(p2Out, pL3), lenL3b = UnityEngine.Vector2.Distance(pL3, p3In);
+float hL3 = p2H + (p3H - p2H) * lenL3a / (lenL3a + lenL3b);
+float lenL4a = UnityEngine.Vector2.Distance(p3Out, pL4), lenL4b = UnityEngine.Vector2.Distance(pL4, p4In);
+float hL4 = p3H + (p4H - p3H) * lenL4a / (lenL4a + lenL4b);
+float lenSlot = UnityEngine.Vector2.Distance(slotIn, slotDog0) + UnityEngine.Vector2.Distance(slotDog0, slotDog1) + UnityEngine.Vector2.Distance(slotDog1, slotEnd) + UnityEngine.Vector2.Distance(slotEnd, slotExit);
+float SlotH(float s) => L(p4H, exitH, s / lenSlot);
+float sDog0 = UnityEngine.Vector2.Distance(slotIn, slotDog0), sDog1 = sDog0 + UnityEngine.Vector2.Distance(slotDog0, slotDog1), sEnd = sDog1 + UnityEngine.Vector2.Distance(slotDog1, slotEnd);
+// the climb as one polyline (8.3 lays the J to Ward trail on the same points; the check recipes walk it)
+var climb = new (UnityEngine.Vector2 p, float h)[] {
+    (pJ, 10f), (pMouth, mouthH), (p1In, p1H), (pP1, p1H), (p1Out, p1H), (p2In, p2H), (pP2, p2H), (p2Out, p2H), (pL3, hL3), (p3In, p3H), (pP3, p3H), (p3Out, p3H),
+    (pL4, hL4), (p4In, p4H), (pP4, p4H), (slotIn, p4H), (slotDog0, SlotH(sDog0)), (slotDog1, SlotH(sDog1)), (slotEnd, SlotH(sEnd)), (slotExit, exitH), (pathEnd, endH) };
+// leg 1 ground along the chute, from the mouth: ramp, flight, ramp, flight, ramp, flight, ramp
+const int stepsPerFlight = 18; const float stepRise = 0.25f, stepRun = 0.3f;
+float leg1Len = UnityEngine.Vector2.Distance(pMouth, p1In), flightRun = stepsPerFlight * stepRun, flightRise = stepsPerFlight * stepRise;
+float rampRun = (leg1Len - 3f * flightRun) / 4f, rampRise = (p1H - mouthH - 3f * flightRise) / 4f;
+float Leg1H(float s)
+{
+    float h = mouthH;
+    for (int i = 0; i < 7; i++)
+    {
+        bool flight = i % 2 == 1; float run = flight ? flightRun : rampRun, rise = flight ? flightRise : rampRise;
+        if (s <= run) return h + rise * UnityEngine.Mathf.Clamp01(s / run);
+        s -= run; h += rise;
+    }
+    return h;
+}
+// W ridge east face as shelves, west uphill (Valley.md 4.4 and 8): each shelf is level west of its east edge xb(z) inside its z
+// range, and falls at k east of that edge and past its z ends. The face is the max of all shelves, so every bench runs level
+// to the foot of the face above it (no gutter between) and every face between benches is at least 63 degrees (k 2).
+const float faceK = 2f, cwmWallK = 4f, shoulderK = 5f, leg4K = 4f, legHalf = 2f, leg4Half = 1.5f;
+float X2(float z) => L(p1Out.x, p2In.x, (z - p1Out.y) / (p2In.y - p1Out.y));
+float H2(float z) => L(p1H, p2H, (z - p1Out.y) / (p2In.y - p1Out.y));
+float X4(float z) => z >= pL4.y ? L(pL4.x, p3Out.x, (z - pL4.y) / (p3Out.y - pL4.y)) : L(p4In.x, pL4.x, (z - p4In.y) / (pL4.y - p4In.y));
+float H4(float z) => z >= pL4.y ? L(hL4, p3H, (z - pL4.y) / (p3Out.y - pL4.y)) : L(p4H, hL4, (z - p4In.y) / (pL4.y - p4In.y));
+var shelves = new (float z0, float z1, System.Func<float, float> xb, System.Func<float, float> h, float k)[] {
+    (-45f, 350f, CrestE, CrestH, faceK),                                                                     // crest top (k 4 by the cwm, below)
+    (knobZ0, knobZ1, z => knobX1, z => knobTop, faceK),                                                       // the knob
+    (shoulderZ0, shoulderZ1, z => shoulderX1, z => L(shoulderTopS, shoulderTopN, (z - shoulderZ0) / (shoulderZ1 - shoulderZ0)), shoulderK),   // the shoulder: the crest wall over leg 4
+    (pP1.y - p1Half, pP1.y + p1Half, z => pP1.x + p1Half, z => p1H, faceK),                                  // P1
+    (p1Out.y, p2In.y, z => X2(z) + legHalf, H2, faceK),                                                       // leg 2, the exposed shelf
+    (pP2.y - p23Half, pP2.y + p23Half, z => pP2.x + p23Half, z => p2H, faceK),                                // P2
+    (p4In.y, p3Out.y, z => X4(z) + leg4Half, H4, leg4K),                                                      // leg 4, under the wall
+    (pP3.y - p23Half, pP3.y + p23Half, z => pP3.x + p23Half, z => p3H, leg4K),                                // P3
+    (pP4.y - p4Half, pP4.y + p4Half, z => pP4.x + 4f, z => p4H, faceK),                                       // P4, the look-back (x 24.5 to 30)
+};
+const float cwmZ0 = 297f, cwmZ1 = 350f;   // the crest's east face is the cwm's west wall here, at k 4, so P3 sits clear of it
+float WEast(float x, float z)
+{
+    float best = float.MinValue;
+    for (int i = 0; i < shelves.Length; i++)
+    {
+        var s = shelves[i]; float zc = UnityEngine.Mathf.Clamp(z, s.z0, s.z1), k = i == 0 && z > cwmZ0 && z < cwmZ1 ? cwmWallK : s.k;
+        best = UnityEngine.Mathf.Max(best, s.h(zc) - k * (UnityEngine.Mathf.Max(0f, x - s.xb(zc)) + UnityEngine.Mathf.Abs(z - zc)));
+    }
+    return best;
+}
+// the burned cwm (leg 3): a bowl floor at the leg's height round the leg, rims all round (1.6): the crest wall west, the N hook top
+// north, an east rim; each falls into the bowl at k 2
+float SegDist2(UnityEngine.Vector2 p, UnityEngine.Vector2 a, UnityEngine.Vector2 b, out float t) => SegDist(p, a, b, out t);
+var cwmC = P(34f, 298f); const float cwmRX = 12f, cwmRZ = 14f;
+float Leg3(float x, float z)
 {
     var p = P(x, z);
-    float uW = x - CrestX(z), uN = crestN - z, uS = z - crestS, uE = crestE - x;
-    bool inside = uW > 0f && uN > 0f && uS > 0f && uE > 0f;
-    float h = inside ? Valley(x, z) : Outer(x, z);
-    // faces toward the valley (each meets the valley ground at its foot) and back slopes away from it
-    if (uN >= 0f && uN < crestN - footN && uW > 0f) h = UnityEngine.Mathf.Max(h, Face(Valley(x, footN), CrestN(x), 1f - uN / (crestN - footN), x, z));
-    else if (uN < 0f) h = UnityEngine.Mathf.Max(h, Back(CrestN(x), Outer(x, z), -uN));
-    if (uS >= 0f && uS < footS - crestS && uW > 0f) h = UnityEngine.Mathf.Max(h, Face(Valley(x, footS), CrestS(x), 1f - uS / (footS - crestS), x, z));
-    else if (uS < 0f) h = UnityEngine.Mathf.Max(h, Back(CrestS(x), Outer(x, z), -uS));
-    if (uE >= 0f && uE < crestE - footE) h = UnityEngine.Mathf.Max(h, Face(Valley(footE, z), CrestE(z), 1f - uE / (crestE - footE), x, z));
-    else if (uE < 0f) h = UnityEngine.Mathf.Max(h, Back(CrestE(z), Outer(x, z), -uE));
-    float xc = CrestX(z), cw = CrestW(z);
-    if (uW >= 0f)
+    float d1 = SegDist2(p, p2Out, pL3, out float t1), d2 = SegDist2(p, pL3, p3In, out float t2);
+    float hq = d1 < d2 ? L(p2H, hL3, t1) : L(hL3, p3H, t2), d = UnityEngine.Mathf.Min(d1, d2) - legHalf;
+    var q = p - cwmC; float re = UnityEngine.Mathf.Sqrt((q.x / cwmRX) * (q.x / cwmRX) + (q.y / cwmRZ) * (q.y / cwmRZ));
+    float dBowl = (re - 1f) * UnityEngine.Mathf.Min(cwmRX, cwmRZ);
+    return hq - faceK * UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Min(d, dBowl));
+}
+const float nwX0 = 10f, nwX1 = 70f, nwZ0 = 322f, nwZ1 = 350f;
+float[] nwHX = { 20f, 40f, 60f, 70f }; float[] nwHH = { 80f, 76f, 76f, 72f };
+float NWTop(float x, float z)   // the N hook's top over the cwm
+{
+    float xc = UnityEngine.Mathf.Clamp(x, nwX0, nwX1), zc = UnityEngine.Mathf.Clamp(z, nwZ0, nwZ1);
+    return PL(xc, nwHX, nwHH) - faceK * (UnityEngine.Mathf.Abs(x - xc) + UnityEngine.Mathf.Abs(z - zc));
+}
+var rimA = P(54f, 300f); var rimB = P(54f, 324f); const float rimHalf = 1.5f, rimHA = 72f, rimHB = 76f;
+float CwmRim(float x, float z) { float d = SegDist2(P(x, z), rimA, rimB, out float t); return L(rimHA, rimHB, t) - faceK * UnityEngine.Mathf.Max(0f, d - rimHalf); }
+// leg 1, the boulder chute: a trench from the mouth to P1, 3.2 m floor, walls 3 m (near vertical), on ribs that fall away at k 2
+const float chuteHalf = 1.6f, chuteWall = 3f, chuteWallK = 6f, ribHalf = 4f;
+// both stop at P1: past the chute's end (t 1) P1 and leg 2 shape the ground
+float ChuteRib(float x, float z) { float d = SegDist2(P(x, z), pMouth, p1In, out float t); if (t >= 1f) return float.MinValue; return Leg1H(t * leg1Len) + chuteWall - faceK * UnityEngine.Mathf.Max(0f, d - ribHalf); }
+float ChuteCut(float x, float z) { float d = SegDist2(P(x, z), pMouth, p1In, out float t); if (t >= 1f) return float.MaxValue; return Leg1H(t * leg1Len) + chuteWallK * UnityEngine.Mathf.Max(0f, d - chuteHalf); }
+// the cleft: a slot 2.5 m wide through the shoulder, walls to the top; the ledge; the fin and the rock round it are meshes (below)
+var slotPts = new[] { slotIn, slotDog0, slotDog1, slotEnd, slotExit }; const float slotHalf = 1.25f, slotWallK = 25f;
+float SlotCut(float x, float z)
+{
+    var p = P(x, z); float best = float.MaxValue, hs = p4H, acc = 0f;
+    for (int i = 0; i < slotPts.Length - 1; i++)
     {
-        float xf = FootW(z);
-        if (x < xf)
-        {
-            float footG = Valley(xf, z);
-            float face = Face(footG, cw, 1f - (x - xc) / (xf - xc), x, z);
-            // the climb zone replaces the plain face with the benches, blending back at the zone's ends
-            float zw = SS((z - (zoneZ0 - zoneBlend)) / zoneBlend) * SS(((zoneZ1 + zoneBlend) - z) / zoneBlend);
-            if (zw > 0f) face = L(face, ClimbFace(x, z, footG), zw);
-            h = UnityEngine.Mathf.Max(h, face);
-        }
+        float d = SegDist(p, slotPts[i], slotPts[i + 1], out float t), sl = UnityEngine.Vector2.Distance(slotPts[i], slotPts[i + 1]);
+        if (d < best) { best = d; hs = SlotH(acc + t * sl); }
+        acc += sl;
+    }
+    return hs + slotWallK * UnityEngine.Mathf.Max(0f, best - slotHalf);
+}
+const float ledgeX0 = -10f, ledgeX1 = 6f, ledgeZ0 = 215f, ledgeZ1 = 285f, ledgeBlend = 16f;
+float LedgeH(float x, float z) => L(exitH, endH, SS(UnityEngine.Vector2.Distance(P(x, z), slotExit) / ledgeBlend));
+// the approach, J to the chute mouth, carved on the valley side (flat 2 m each side, blended 1.5 m)
+float ApproachH(UnityEngine.Vector2 p, out float d) { d = SegDist(p, pJ, pMouth, out float t); return L(10f, mouthH, t); }
+
+// ---------- the highway (3.2): x 428, curving away west behind the arm ends at z 430 and z -130 ----------
+const float roadX = 428f, roadN = 430f, roadS = -130f, roadR = 120f, roadY = 3f, roadHalf = 5f, ditchW = 2.5f, ditchD = 0.8f, roadBlend = 12f;
+float RoadDist(float x, float z)
+{
+    if (z >= roadS && z <= roadN) return UnityEngine.Mathf.Abs(x - roadX);
+    var c = z > roadN ? P(roadX - roadR, roadN) : P(roadX - roadR, roadS); var q = P(x, z) - c;
+    if (q.x < 0f) return float.MaxValue;   // the arcs turn 90 degrees west; nothing past that
+    return UnityEngine.Mathf.Abs(q.magnitude - roadR);
+}
+float RoadCarve(float x, float z, float h)
+{
+    float d = RoadDist(x, z); if (d >= roadHalf + ditchW + roadBlend) return h;
+    if (d <= roadHalf) return roadY;
+    if (d <= roadHalf + ditchW) return roadY - ditchD * UnityEngine.Mathf.Sin(UnityEngine.Mathf.PI * (d - roadHalf) / ditchW);
+    return L(roadY, h, SS((d - roadHalf - ditchW) / roadBlend));
+}
+
+// band plateau: the land just behind each band is the band's top (foot ground plus 4 m west, 3 m north and south)
+const float bandW = 4f, bandNS = 3f;
+float Plateau(float x, float z, float footWG, float footNG, float footSG)
+{
+    float best = float.MinValue;
+    if (x < FootW(z) && x > CrestE(z) && z > 10f && z < 290f) best = UnityEngine.Mathf.Max(best, footWG + bandW);
+    if (z > FootN(x) && z < PL(x, nCX, nCZ) && x > 80f) best = UnityEngine.Mathf.Max(best, footNG + bandNS);
+    if (z < FootS(x) && z > PL(x, sCX, sCZ) && x > 38f) best = UnityEngine.Mathf.Max(best, footSG + bandNS);
+    return best;
+}
+
+const float roadEastX = 440f, roadEastRamp = 120f;
+float Height(float x, float z, float footWG, float footNG, float footSG)
+{
+    var p = P(x, z); float h;
+    if (InValley(x, z))
+    {
+        h = ValleyA(x, z);
+        if (x > roadEastX) h = L(3f, Outer(x, z), SS((x - roadEastX) / roadEastRamp));   // past the road the land rolls up to the outer ground
+        if (x > armX && x < 110f) { float ah = ApproachH(p, out float d); if (d < 3.5f) h = L(ah, h, SS((d - 2f) / 1.5f)); }
     }
     else
     {
-        // west of the crest everything is capped by the west face: the crest down to -40 at x -40 (a cliff), so the hooks of the
-        // N and S ridges fold down along it and no ridge stands over the -40 floor
-        float out0 = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(-60f - z, z - 360f));
-        float westFace = L(cw + (x - xc) * (cw - westFloor) / (xc - westEdge), Outer(x, z), SS(out0 / wFade));   // past the W ridge ends: the west step
-        h = westFace;
+        h = UnityEngine.Mathf.Max(Plateau(x, z, footWG, footNG, footSG), UnityEngine.Mathf.Max(ArmN(x, z), ArmS(x, z)));
+        if (z > -60f && z < 360f) h = UnityEngine.Mathf.Max(h, WEast(x, z));
+        if (x < 70f && z > 270f && z < 360f) h = UnityEngine.Mathf.Max(h, UnityEngine.Mathf.Max(Leg3(x, z), UnityEngine.Mathf.Max(NWTop(x, z), CwmRim(x, z))));
+        // the chute: ribs, then the trench cut into them and into the knob's face
+        if (x < armX + 1f && x > 40f && z > 195f && z < 232f) { h = UnityEngine.Mathf.Max(h, ChuteRib(x, z)); h = UnityEngine.Mathf.Min(h, ChuteCut(x, z)); }
+        // west of the top the W face falls to the -40 floor at x -40; past the ridge's ends it folds onto the outer ground
+        float zc = UnityEngine.Mathf.Clamp(z, -45f, 350f), xw = CrestW(zc), th = TopH(zc);
+        if (x < xw)
+        {
+            float out0 = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(-45f - z, z - 350f));
+            float westFace = L(th + (x - xw) * (th - westFloor) / (xw - westEdge), Outer(x, z), SS(out0 / wFade));
+            h = UnityEngine.Mathf.Min(h, westFace);
+        }
+        if (x >= ledgeX0 && x <= ledgeX1 && z >= ledgeZ0 && z <= ledgeZ1) h = LedgeH(x, z);
+        if (x < 26f && x > 0f && z > 255f && z < 270f) h = UnityEngine.Mathf.Min(h, SlotCut(x, z));
     }
-    // NW corner (2.6): 103 or more over x 0 to 20, z 340 to 360
-    if (x >= 0f - cellPad && x <= 20f + cellPad && z >= 340f - cellPad && z <= 360f + cellPad) h = UnityEngine.Mathf.Max(h, 103f);
-    // the ledge on the west face at 98, and the rock between it and the knob
-    if (x >= ledgeX0 && x <= ledgeX1 && z >= ledgeZ0 && z <= ledgeZ1) h = ledgeH;
-    if (x > ledgeX1 && x < knobX0 && z >= 240f && z <= knobZ1) h = UnityEngine.Mathf.Max(h, L(ledgeH, knobTop, (x - ledgeX1) / (knobX0 - ledgeX1)));
-    // the Ward knob: flat-topped, square ends, 113 or more across all of it, summit 115
-    if (x >= knobX0 - cellPad && x <= knobX1 + cellPad && z >= knobZ0 - cellPad && z <= knobZ1 + cellPad) h = UnityEngine.Mathf.Max(h, knobTop + (knobSummit - knobTop) * Clamp01(1f - UnityEngine.Vector2.Distance(p, knobPeak) / 15f));
-    // the cleft's rock (walls 106 or higher), the fin west of part B, then the slot cut to 95
-    if (x >= 3f && x <= 22f && z >= 225f && z <= 240f) h = UnityEngine.Mathf.Max(h, cleftWall);
-    if (x >= 1f && x < 3f && z >= 225f && z <= 237.2f) h = UnityEngine.Mathf.Max(h, cleftWall);   // south wall and the fin (x 1 to 3, to z 237.2)
-    if (x >= 3f && x <= 22f && z >= 228.75f && z <= 231.25f) h = cleftFloor;                           // part A along z 230
-    if (x >= 3f && x <= 5.5f && z >= 228.75f && z <= 238.5f) h = cleftFloor;                            // part B north to the west mouth
-    // carved paths: flat 2 m each side at the path height, blended 1.5 m (a trench where the ground is higher)
-    // the approach stops at leg 1's east edge (x 74): the bench is already 12 at its south end, and carving round the path's end
-    // flattened the bench's first metres to 12 and left a 28 percent step (8.9k slope check)
-    if (x > legX[0] + benchHalf) { float ph = PathH(approach, p, out float d); if (d < 3.5f) h = L(ph, h, SS((d - 2f) / 1.5f)); }
-    // leg 5 is flattened on the upper face; over bench 4 (x from 31) it only cuts down: near P4 it runs beside leg 4, which falls
-    // north as leg 5 rises, so raising the bench to leg 5's height made a step across leg 4 (8.9j climb check)
-    { float ph = PathH(leg5, p, out float d); if (d < 3.5f) { float c5 = L(ph, h, SS((d - 2f) / 1.5f)); h = x < legX[3] - benchHalf ? c5 : UnityEngine.Mathf.Min(h, c5); } }
-    // the cap rock (rev 7) closes part B's view north onto the ledge and the stones; it runs into the cleft's east wall
-    if (x >= capX0 - cellPad && x <= capX1 + cellPad && z >= capZ0 - cellPad && z <= capZ1 + cellPad) h = UnityEngine.Mathf.Max(h, capTop);   // the exit carve below trims its south face back to z 239.7
-    { float ph = PathH(ramp, p, out float d); if (d < rampHalf) h = UnityEngine.Mathf.Min(h, ph); }   // the exit and ramp are sunk in the ledge (they rise 95 to 98)
-    return h;
+    return RoadCarve(x, z, h);
 }
+
 
 if (!UnityEditor.AssetDatabase.IsValidFolder(dir)) UnityEditor.AssetDatabase.CreateFolder("Assets/Terrain", "Main3");
 // Layers and their textures are imported before the terrain data exists: an import refresh can reload an unsaved TerrainData empty.
@@ -331,9 +436,16 @@ data.alphamapResolution = ares;
 data.baseMapResolution = 1024;
 UnityEditor.AssetDatabase.CreateAsset(data, dir + "/Main3_TerrainData.asset");
 var hm = new float[res, res];
+// the valley ground at each foot, once per row (W) and column (N, S): the band plateau behind it is that plus the band height
+var footWG = new float[res]; var footNG = new float[res]; var footSG = new float[res];
+for (int i = 0; i < res; i++)
+{
+    float x = originX + i * sizeX / (res - 1), z = originZ + i * sizeZ / (res - 1);
+    footWG[i] = ValleyA(FootW(z) + 1f, z); footNG[i] = ValleyA(x, FootN(x) - 1f); footSG[i] = ValleyA(x, FootS(x) + 1f);
+}
 for (int zi = 0; zi < res; zi++)
     for (int xi = 0; xi < res; xi++)
-        hm[zi, xi] = Clamp01((Height(originX + xi * sizeX / (res - 1), originZ + zi * sizeZ / (res - 1)) - baseY) / sizeY);
+        hm[zi, xi] = Clamp01((Height(originX + xi * sizeX / (res - 1), originZ + zi * sizeZ / (res - 1), footWG[zi], footNG[xi], footSG[xi]) - baseY) / sizeY);
 data.SetHeights(0, 0, hm);
 UnityEditor.EditorUtility.SetDirty(data);
 UnityEditor.AssetDatabase.SaveAssets();
@@ -358,18 +470,181 @@ terrainGo.transform.position = V(originX, baseY, originZ);
 var terrain = terrainGo.GetComponent<UnityEngine.Terrain>();
 float H(float x, float z) => terrain.SampleHeight(V(x, 0f, z)) + baseY;
 
-// ---------- bounds: invisible walls on the north and south map edges (the east edge is the fence; 8.6 builds the gate).
-// The west is the W ridge: its face and the thicket keep walkers off it; the climb is the only way up (8.9j). ----------
-var bounds = new UnityEngine.GameObject("Bounds");
-void Wall(string name, UnityEngine.Vector3 c, UnityEngine.Vector3 s)
+// ---------- rock: every stop the land makes is a visible rock mesh with a collider (Valley.md 8; root "Rock") ----------
+// Rock bands along the ridge feet (4 m over the valley ground west, 3 m north and south), the two rock arms at the chute mouth,
+// an outcrop tying each fence end into its band, the rock steps on the uphill side of every climb bench and along the chute and
+// the cleft, the fin at the cleft mouth, the lip, the walls across the ledge ends and at the back of the ledge.
+// F-1 counts this root as land (solid rock), never trees.
+const string rockDir = dir + "/Rock";
+if (!UnityEditor.AssetDatabase.IsValidFolder(rockDir)) UnityEditor.AssetDatabase.CreateFolder(dir, "Rock");
+const string rockMatPath = "Assets/Materials/Blockout/Blockout_BandRock.mat";
+const string rockTexPath = "Assets/BK/PureNature_Redwood/Models/Rocks/Textures/Rocks_a.png";   // owned pack texture (git-ignored); plain granite if absent
+const float rockTexLuma = 0.55f, rockTile = 4f, rockSmooth = 0.1f;
+var rockMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(rockMatPath);
+if (rockMat == null) { rockMat = new UnityEngine.Material(UnityEngine.Shader.Find("Universal Render Pipeline/Lit")); UnityEditor.AssetDatabase.CreateAsset(rockMat, rockMatPath); }
 {
-    var w = new UnityEngine.GameObject(name); w.transform.SetParent(bounds.transform, false);
-    w.transform.position = c; w.AddComponent<UnityEngine.BoxCollider>().size = s;
+    UnityEngine.ColorUtility.TryParseHtmlString("#6E6660", out var granite);   // Style.md granite
+    var rockTex = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(rockTexPath);
+    rockMat.SetTexture("_BaseMap", rockTex);
+    rockMat.SetColor("_BaseColor", rockTex != null ? new UnityEngine.Color(granite.r / rockTexLuma, granite.g / rockTexLuma, granite.b / rockTexLuma) : granite);
+    rockMat.SetFloat("_Smoothness", rockSmooth); UnityEditor.EditorUtility.SetDirty(rockMat);
 }
-Wall("Wall_North", V(200f, 25f, 300f), V(400f, 150f, 1f));
-Wall("Wall_South", V(200f, 25f, 0f), V(400f, 150f, 1f));
+var rockRoot = new UnityEngine.GameObject("Rock");
+var rockRng = new System.Random(8141);
+float RR(float a, float b) => a + (float)rockRng.NextDouble() * (b - a);
+int rockMeshes = 0; float rockLength = 0f;
+System.Collections.Generic.List<UnityEngine.Vector2> Resample(UnityEngine.Vector2[] poly, float step)
+{
+    var outp = new System.Collections.Generic.List<UnityEngine.Vector2>();
+    for (int i = 0; i < poly.Length - 1; i++)
+    {
+        float len = UnityEngine.Vector2.Distance(poly[i], poly[i + 1]); int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(len / step));
+        for (int k = 0; k < n; k++) outp.Add(UnityEngine.Vector2.Lerp(poly[i], poly[i + 1], k / (float)n));
+    }
+    outp.Add(poly[poly.Length - 1]); return outp;
+}
+UnityEngine.Vector2 LeftN(System.Collections.Generic.List<UnityEngine.Vector2> pts, int i)
+{
+    var t = (pts[UnityEngine.Mathf.Min(i + 1, pts.Count - 1)] - pts[UnityEngine.Mathf.Max(i - 1, 0)]).normalized; return P(-t.y, t.x);
+}
+// one wall: its front face on the polyline (moved 'offset' toward the right, then pushed back into the rock by up to 'push'),
+// its body 'thick' metres to the left, from yb to yt at each point. Faces are wound outward; the mesh is its own collider.
+void RockWall(string name, UnityEngine.Transform parent, System.Collections.Generic.List<UnityEngine.Vector2> pts, float[] yb, float[] yt, float thick, float offset, float push)
+{
+    int n = pts.Count; if (n < 2) return;
+    var fb = new UnityEngine.Vector3[n]; var ft = new UnityEngine.Vector3[n]; var bt = new UnityEngine.Vector3[n]; var bb = new UnityEngine.Vector3[n]; var along = new float[n];
+    for (int i = 0; i < n; i++)
+    {
+        var nl = LeftN(pts, i); var f = pts[i] - nl * offset + nl * RR(0f, push); var b = pts[i] + nl * thick;
+        fb[i] = V(f.x, yb[i], f.y); ft[i] = V(f.x, yt[i], f.y); bt[i] = V(b.x, yt[i], b.y); bb[i] = V(b.x, yb[i], b.y);
+        along[i] = i == 0 ? 0f : along[i - 1] + UnityEngine.Vector2.Distance(pts[i - 1], pts[i]);
+    }
+    var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var uvs = new System.Collections.Generic.List<UnityEngine.Vector2>(); var tris = new System.Collections.Generic.List<int>();
+    // world-space UVs: sides by (x + z, y), tops by (x, z), one rock tile every rockTile metres
+    void Quad(UnityEngine.Vector3 a, UnityEngine.Vector3 b, UnityEngine.Vector3 c, UnityEngine.Vector3 d, UnityEngine.Vector3 outward)
+    {
+        if (UnityEngine.Vector3.Dot(UnityEngine.Vector3.Cross(b - a, c - a), outward) < 0f) { var s = b; b = d; d = s; }
+        bool top = outward.y > 0.5f; int i0 = vs.Count;
+        foreach (var v in new[] { a, b, c, d }) { vs.Add(v); uvs.Add(top ? new UnityEngine.Vector2(v.x / rockTile, v.z / rockTile) : new UnityEngine.Vector2((v.x + v.z) / rockTile, v.y / rockTile)); }
+        tris.AddRange(new[] { i0, i0 + 1, i0 + 2, i0, i0 + 2, i0 + 3 });
+    }
+    for (int i = 0; i < n - 1; i++)
+    {
+        var nl = LeftN(pts, i); var o = V(nl.x, 0f, nl.y);
+        Quad(fb[i], fb[i + 1], ft[i + 1], ft[i], -o);
+        Quad(bb[i], bb[i + 1], bt[i + 1], bt[i], o);
+        Quad(ft[i], ft[i + 1], bt[i + 1], bt[i], UnityEngine.Vector3.up);
+    }
+    var t0 = pts[1] - pts[0]; var t1 = pts[n - 1] - pts[n - 2];
+    Quad(fb[0], ft[0], bt[0], bb[0], -V(t0.x, 0f, t0.y));
+    Quad(fb[n - 1], ft[n - 1], bt[n - 1], bb[n - 1], V(t1.x, 0f, t1.y));
+    var mesh = new UnityEngine.Mesh { name = name, indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+    mesh.SetVertices(vs); mesh.SetUVs(0, uvs); mesh.SetTriangles(tris, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+    UnityEditor.AssetDatabase.CreateAsset(mesh, rockDir + "/" + name + ".asset");
+    var g = new UnityEngine.GameObject(name); g.transform.SetParent(parent, false);
+    g.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; g.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = rockMat;
+    g.AddComponent<UnityEngine.MeshCollider>().sharedMesh = mesh;
+    rockMeshes++; rockLength += along[n - 1];
+}
+// a wall from explicit end points: level top, base under the lowest ground along it
+void FlatWall(string name, UnityEngine.Transform parent, UnityEngine.Vector2[] poly, float top, float thick, float jag)
+{
+    var pts = Resample(poly, 1f); var yb = new float[pts.Count]; var yt = new float[pts.Count];
+    for (int i = 0; i < pts.Count; i++) { var nl = LeftN(pts, i); yb[i] = UnityEngine.Mathf.Min(H(pts[i].x, pts[i].y), H(pts[i].x + nl.x * thick, pts[i].y + nl.y * thick)) - 1f; yt[i] = top + RR(0f, jag); }
+    RockWall(name, parent, pts, yb, yt, thick, 0f, 0.15f);
+}
+// bands: front face 0.7 m in front of the foot line, so the terrain's one-cell step up at the foot stays inside the rock
+const float bandThick = 3f, bandOffset = 0.7f, bandJag = 0.6f, bandFront = 1.5f, bandPush = 0.3f;
+var bands = new UnityEngine.GameObject("Bands").transform; bands.SetParent(rockRoot.transform, false);
+void Band(string name, UnityEngine.Vector2[] poly, System.Func<UnityEngine.Vector2, float> bandH)
+{
+    var pts = Resample(poly, 1f); var yb = new float[pts.Count]; var yt = new float[pts.Count];
+    for (int i = 0; i < pts.Count; i++)
+    {
+        var nl = LeftN(pts, i); var front = pts[i] - nl * (bandOffset + bandFront); float g = H(front.x, front.y);
+        yb[i] = UnityEngine.Mathf.Min(g, H(pts[i].x + nl.x * bandThick, pts[i].y + nl.y * bandThick)) - 1f; yt[i] = g + bandH(pts[i]) + RR(0f, bandJag);
+    }
+    RockWall(name, bands, pts, yb, yt, bandThick, bandOffset, bandPush);
+}
+float BandHAt(UnityEngine.Vector2 q) => q.y < FootS(q.x) + 1f || q.y > FootN(q.x) - 1f ? bandNS : bandW;   // N and S 3 m, W and the arms 4 m
+// south band east to west, then the W band north to the south arm's end at the chute gap; the north arm from the gap to the N band
+Band("Band_S_W", new[] { P(396f, -8f), P(390f, -8f), P(300f, -2f), P(200f, -4f), P(120f, 2f), P(38f, 10f), P(38f, 85f), P(46f, 100f), P(46f, 180f), P(80f, 195f), P(80f, 200f), P(armX, armZ0), P(armX, gapZ0) }, BandHAt);
+Band("Band_W_N", new[] { P(armX, gapZ1), P(armX, armZ1), P(80f, armZ1), P(80f, 290f), P(100f, 295f), P(200f, 298f), P(300f, 302f), P(390f, 305f), P(396f, 305f) }, BandHAt);
+// the fence ends tied into the bands (Valley.md 8): an outcrop over each end
+const float outcropTop = 5f, outcropThick = 9f;
+FlatWall("Outcrop_N", bands, new[] { P(391.5f, 302.5f), P(403f, 302.5f) }, H(fenceX, 302f) + outcropTop, outcropThick, bandJag);
+FlatWall("Outcrop_S", bands, new[] { P(403f, -5.5f), P(391.5f, -5.5f) }, H(fenceX, -6f) + outcropTop, outcropThick, bandJag);
+// the ledge (4.7 and 8, rev 10): the lip 0.8 m over the ledge along x -10; rock walls across both ends, 4.5 m over the ledge and
+// past the lip into the west face; the back wall along the knob and shoulder faces, 3 m over the ledge, open at the cleft exit
+var ledgeRock = new UnityEngine.GameObject("Ledge").transform; ledgeRock.SetParent(rockRoot.transform, false);
+const float lipH = 0.8f, lipThick = 1.2f, endWallTop = 66.5f, endWallThick = 2f, backWallH = 3f, backWallThick = 1.5f, finTop = 78f;
+{
+    var lip = Resample(new[] { P(ledgeX0, ledgeZ0), P(ledgeX0, ledgeZ1) }, 1f); var yb = new float[lip.Count]; var yt = new float[lip.Count];
+    for (int i = 0; i < lip.Count; i++) { yb[i] = H(ledgeX0 - lipThick, lip[i].y) - 1f; yt[i] = LedgeH(ledgeX0, lip[i].y) + lipH + RR(0f, 0.1f); }
+    RockWall("Lip", ledgeRock, lip, yb, yt, lipThick, 0f, 0f);
+}
+FlatWall("EndWall_N", ledgeRock, new[] { P(-12f, ledgeZ1), P(ledgeX1 + 0.5f, ledgeZ1) }, endWallTop, endWallThick, 0.4f);
+FlatWall("EndWall_S", ledgeRock, new[] { P(knobX0 + 0.5f, ledgeZ0), P(-12f, ledgeZ0) }, endWallTop, endWallThick, 0.4f);
+// the back wall runs on north to the slot's south wall, so the terrain's one-cell slope at the slot mouth's south corner shows no sky
+FlatWall("BackWall_S", ledgeRock, new[] { P(ledgeX1, slotEnd.y - slotHalf - 0.05f), P(ledgeX1, ledgeZ0 - 1f) }, endH + backWallH, backWallThick, 0.3f);
+FlatWall("BackWall_N", ledgeRock, new[] { P(ledgeX1, ledgeZ1 + 0.5f), P(ledgeX1, 270f) }, endH + backWallH, backWallThick, 0.3f);
+// the fin at the cleft mouth (4.6): x 1 to 3 from the exit north to z 270, and the rock over the slot's last metres (z 266.8 to 270)
+// to the shoulder, top 78, so no flame top shows from inside the slot; the way runs south between the fin and the back wall and
+// turns round the fin's end, just past the exit
+FlatWall("Fin", ledgeRock, new[] { P(3f, slotExit.y + 0.2f), P(3f, 270f) }, finTop, 2f, 0.4f);
+FlatWall("FinCap", ledgeRock, new[] { P(3f, slotEnd.y + slotHalf + 0.05f), P(ledgeX1 + 0.3f, slotEnd.y + slotHalf + 0.05f) }, finTop, 3.3f, 0.4f);
+// climb rock steps (4.4, 8): along each side of the climb, wherever the ground rises more than stepRiseMin over the trail within
+// stepReach, a rock wall at the foot of that rise, stepH over the trail, so no leg can be skipped by jumping up a face. Not where the
+// rising ground is the same trail further on (a platform or hairpin within stepSkipS metres of walking).
+var steps = new UnityEngine.GameObject("ClimbSteps").transform; steps.SetParent(rockRoot.transform, false);
+const float stepRiseMin = 1f, stepReach = 14f, stepMarch = 0.25f, stepH = 2.6f, stepThick = 1.5f, stepGap = 2.5f, stepSkipS = 25f, stepSkipD = 2.6f, stepDrop = 1.5f, stepStart = 1.2f;
+var cl = new System.Collections.Generic.List<(UnityEngine.Vector2 p, float h, float s)>();
+{
+    float acc = 0f;
+    for (int i = 1; i < climb.Length - 1; i++)   // from the chute mouth to the path end
+    {
+        var a = climb[i]; var b = climb[i + 1]; float len = UnityEngine.Vector2.Distance(a.p, b.p); int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(len));
+        for (int k = 0; k < n; k++) { float t = k / (float)n; var q = UnityEngine.Vector2.Lerp(a.p, b.p, t); cl.Add((q, H(q.x, q.y), acc + t * len)); }
+        acc += len;
+    }
+    cl.Add((climb[climb.Length - 1].p, H(pathEnd.x, pathEnd.y), acc));
+}
+int stepWalls = 0; float stepLen = 0f;
+foreach (var side in new[] { 1f, -1f })
+{
+    var run = new System.Collections.Generic.List<(UnityEngine.Vector2 toe, float top, float bot)>();
+    void Flush()
+    {
+        if (run.Count >= 2)
+        {
+            if (side < 0f) run.Reverse();   // the wall's body goes on its left: away from the trail on both sides
+            var pts = new System.Collections.Generic.List<UnityEngine.Vector2>(); var yb = new float[run.Count]; var yt = new float[run.Count];
+            for (int i = 0; i < run.Count; i++) { pts.Add(run[i].toe); yb[i] = run[i].bot; yt[i] = run[i].top + RR(0f, 0.4f); }
+            RockWall("Step_" + (side > 0f ? "L" : "R") + "_" + stepWalls, steps, pts, yb, yt, stepThick, 0f, 0.1f); stepWalls++;
+            for (int i = 1; i < pts.Count; i++) stepLen += UnityEngine.Vector2.Distance(pts[i - 1], pts[i]);
+        }
+        run.Clear();
+    }
+    for (int i = 0; i < cl.Count; i++)
+    {
+        var c = cl[i]; var t = (cl[UnityEngine.Mathf.Min(i + 1, cl.Count - 1)].p - cl[UnityEngine.Mathf.Max(i - 1, 0)].p).normalized; var nrm = P(-t.y, t.x) * side;
+        UnityEngine.Vector2? toe = null;
+        for (float d = stepStart; d <= stepReach; d += stepMarch)
+        {
+            var q = c.p + nrm * d; float g = H(q.x, q.y);
+            if (g < c.h - stepDrop) break;
+            if (g > c.h + stepRiseMin) { toe = c.p + nrm * UnityEngine.Mathf.Max(stepStart, d - stepMarch); break; }
+        }
+        bool skip = false;
+        if (toe.HasValue) foreach (var o in cl) if (UnityEngine.Mathf.Abs(o.s - c.s) < stepSkipS && o.s != c.s && UnityEngine.Vector2.Distance(o.p, toe.Value) < stepSkipD && o.h > c.h + 0.3f) { skip = true; break; }
+        if (!toe.HasValue || skip) { Flush(); continue; }
+        if (run.Count > 0 && UnityEngine.Vector2.Distance(run[run.Count - 1].toe, toe.Value) > stepGap) Flush();
+        run.Add((toe.Value, c.h + stepH, UnityEngine.Mathf.Min(c.h, H(toe.Value.x, toe.Value.y)) - 1f));
+    }
+    Flush();
+}
 
-// ---------- fence along x 396, gray, 2.1 m, gap for the gate lane z 167.5 to 172.5 ----------
+// ---------- fence along x 396, gray, 2.1 m, from the S band to the N band, gap for the gate lane z 167.5 to 172.5 ----------
 var fence = new UnityEngine.GameObject("Fence");
 void Cube(string name, UnityEngine.Transform parent, UnityEngine.Vector3 c, UnityEngine.Vector3 s)
 {
@@ -379,10 +654,10 @@ void Cube(string name, UnityEngine.Transform parent, UnityEngine.Vector3 c, Unit
 void Run(float z0, float z1)
 {
     int n = UnityEngine.Mathf.CeilToInt((z1 - z0) / 2.5f); float step = (z1 - z0) / n;
-    for (int i = 0; i <= n; i++) { float z = z0 + i * step; Cube("Post", fence.transform, V(396f, H(396f, z) + 1.05f, z), V(0.12f, 2.1f, 0.12f)); }
-    for (int i = 0; i < n; i++) { float z = z0 + (i + 0.5f) * step; Cube("Panel", fence.transform, V(396f, H(396f, z) + 1.05f, z), V(0.04f, 2.0f, step)); }
+    for (int i = 0; i <= n; i++) { float z = z0 + i * step; Cube("Post", fence.transform, V(fenceX, H(fenceX, z) + 1.05f, z), V(0.12f, 2.1f, 0.12f)); }
+    for (int i = 0; i < n; i++) { float z = z0 + (i + 0.5f) * step; Cube("Panel", fence.transform, V(fenceX, H(fenceX, z) + 1.05f, z), V(0.04f, 2.0f, step)); }
 }
-Run(0f, 167.5f); Run(172.5f, 300f);
+Run(-8f, 167.5f); Run(172.5f, 305f);
 
 // ---------- lighting: day sun on (Main3.md: day is the sunset from waking), moon off ----------
 foreach (var r in scene.GetRootGameObjects()) if (r.name == "NightLighting")
@@ -399,7 +674,7 @@ if (player == null) return "no Player in the new scene";
 player.transform.position = V(178f, H(178f, 168f) + 0.1f, 168f);
 player.transform.rotation = UnityEngine.Quaternion.Euler(0f, 250f, 0f);
 
-// ---------- dev warps: every place in Main3.md plus the junctions, and the climb (8.9j) ----------
+// ---------- dev warps: every place in Main3.md plus the junctions, the climb and the lot (Valley.md 14) ----------
 var warps = new UnityEngine.GameObject("DevWarps");
 void Warp(string name, float x, float z, float lx, float lz)
 {
@@ -419,28 +694,35 @@ Warp("Store", 366f, 193f, 366f, 200f);
 Warp("Gate_Booth", 388f, 176f, 396f, 170f);
 Warp("Closed_Campground", 385f, 232f, 372f, 262f);
 Warp("Trailhead_T", 337f, 170f, 358f, 170f);
+Warp("Lot_Highway", 360f, 172f, roadX, 172f);                // the lot, facing the gate and the highway (Valley.md 14)
 Warp("Junction_Jg", 262f, 168f, 340f, 170f);
-Warp("Junction_J", 106f, 203f, 85f, 225f);
+Warp("Junction_J", 106f, 203f, pMouth.x, pMouth.y);           // facing the chute mouth
 Warp("Junction_W1", 130f, 72f, 190f, 60f);
 Warp("Cave_Mouth", 58f, 44f, 52f, 34f);
-Warp("Ward_P3", 39f, 291f, 164f, 166f);    // the first platform above the tower deck, looking back east (Valley 5.3)
-Warp("Ward_P4", 33f, 204f, 164f, 166f);    // the highest platform, looking back east
-Warp("Ward", -2f, 258f, -40f, 258f);       // the path end on the ledge, facing west (Valley 5.6)
+Warp("Ward_P3", pP3.x, pP3.y, cwmC.x + 8f, cwmC.y - 8f);     // the burned cwm, looking back down it
+Warp("Ward_P4", pP4.x + 1.5f, pP4.y, 164f, 166f);              // the look-back: tower cab, cabin, highway
+Warp("Ward", pathEnd.x, pathEnd.y, -40f, pathEnd.y);          // the path end on the ledge, facing west (Valley.md 4)
 Warp("Old_Burn", 230f, 166f, 340f, 178f);
 
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 string F(float v) => v.ToString("F1");
+float CrestLow(float z0, float z1, float xa, float xb, float skipZ0, float skipZ1)   // lowest of the highest ground across x xa to xb, z z0 to z1
+{
+    float low = float.MaxValue;
+    for (float z = z0; z <= z1; z += 1f) { if (z > skipZ0 && z < skipZ1) continue; float hi = float.MinValue; for (float x = xa; x <= xb; x += 0.5f) hi = UnityEngine.Mathf.Max(hi, H(x, z)); low = UnityEngine.Mathf.Min(low, hi); }
+    return low;
+}
 var sb = new System.Text.StringBuilder("saved=" + saved + " warps=" + warps.transform.childCount + " fence pieces=" + fence.transform.childCount);
 sb.Append(" | terrain " + originX + ".." + (originX + sizeX) + " x " + originZ + ".." + (originZ + sizeZ) + ", " + res + " heights");
 sb.Append(" | ground: camp=" + F(H(170, 160)) + " tower=" + F(H(164, 166)) + " camp1=" + F(H(282, 238)) + " camp2=" + F(H(292, 108))
     + " hollow=" + F(H(78, 146)) + " J=" + F(H(104, 206)) + " bridge=" + F(H(104.8f, 203.2f)) + " lakeC=" + F(H(190, 60)) + " pump=" + F(H(190, 96)) + " W1=" + F(H(128, 70))
     + " mouthFloor=" + F(H(52, 38)) + " overPassage=" + F(H(52, 28)) + " overChamber=" + F(H(80, 12)) + " office=" + F(H(350, 200)));
-sb.Append(" | W crest: z-60 " + F(H(0, -60)) + " z0 " + F(H(0, 0)) + " saddle(0,60) " + F(H(0, 60)) + " z150 " + F(H(4, 150)) + " z200 " + F(H(8, 200)) + " z300 " + F(H(8, 300)) + " z360 " + F(H(4, 360)));
-sb.Append(" | knob: (8,242) " + F(H(8.2f, 242.2f)) + " (18,242) " + F(H(17.8f, 242.2f)) + " (18,280) " + F(H(17.8f, 279.8f)) + " (8,280) " + F(H(8.2f, 279.8f)) + " summit " + F(H(12, 258)) + " east edge (18,258) " + F(H(17.8f, 258)));
-sb.Append(" | NW corner (6,350) " + F(H(6, 350)) + " (0,340) " + F(H(0.2f, 340.2f)) + " (20,360) " + F(H(19.8f, 359.8f)));
-sb.Append(" | N saddle (250,350) " + F(H(250, 350)) + " S saddle (170,-50) " + F(H(170, -50)) + " E crest z-40 " + F(H(445, -40)) + " road cut (445,170) " + F(H(445, 170)) + " E z250 " + F(H(445, 250)));
-sb.Append(" | climb: J " + F(H(104, 206)) + " leg1 start " + F(H(72, 205)) + " P1 " + F(H(65, 291)) + " P2 " + F(H(52, 204)) + " P3 " + F(H(39, 291)) + " P4 " + F(H(33, 204)) + " cleft east " + F(H(20, 230)) + " part A " + F(H(10, 230)) + " part B " + F(H(4.25f, 234)) + " west mouth " + F(H(4.25f, 238)) + " fin " + F(H(2, 233)) + " cleft wall " + F(H(12, 233)) + " path end " + F(H(-2, 258)) + " ledge " + F(H(-6, 250)));
-sb.Append(" | west: x-40 z150 " + F(H(-39.8f, 150)) + " x-40 z480 " + F(H(-39.8f, 480)) + " edges N " + F(H(200, 499.5f)) + " S " + F(H(200, -199.5f)) + " E " + F(H(594.5f, 150)));
+sb.Append(" | W crest lowest over x 5 to 20, z 40 to 345 (cleft left out) " + F(CrestLow(40f, 345f, 5f, 20f, 261f, 268f)) + "; z -10 " + F(H(10, -10)) + " z -40 " + F(H(14, -40)) + " knob " + F(H(14, 222)) + " shoulder " + F(H(13, 270)));
+sb.Append(" | N arm x120 " + F(ArmN(120f, PL(120f, nCX, nCZ))) + " x170 " + F(H(170, PL(170f, nCX, nCZ))) + " x250 " + F(H(250, 338)) + " x320 " + F(H(320, 334)) + " x380 " + F(H(380, 332)) + " | S arm x110 " + F(H(110, -44)) + " x170 " + F(H(170, -42)) + " x240 " + F(H(240, -38)) + " x320 " + F(H(320, -34)));
+sb.Append(" | climb: J " + F(H(pJ.x, pJ.y)) + " mouth " + F(H(pMouth.x + 0.5f, pMouth.y)) + " P1 " + F(H(pP1.x, pP1.y)) + " P2 " + F(H(pP2.x, pP2.y)) + " cwm bend " + F(H(pL3.x, pL3.y)) + " P3 " + F(H(pP3.x, pP3.y)) + " leg 4 bend " + F(H(pL4.x, pL4.y)) + " P4 " + F(H(pP4.x, pP4.y))
+    + " dogleg " + F(H(slotDog1.x, slotDog1.y)) + " slot end " + F(H(slotEnd.x, slotEnd.y)) + " exit " + F(H(slotExit.x, slotExit.y)) + " path end " + F(H(pathEnd.x, pathEnd.y)) + " ledge " + F(H(-5f, 230f)) + " (leg 1 ramps " + (100f * rampRise / rampRun).ToString("F1") + " percent, leg 3 " + (100f * (p3H - p2H) / (lenL3a + lenL3b)).ToString("F1") + ", leg 4 " + (100f * (p4H - p3H) / (lenL4a + lenL4b)).ToString("F1") + ")");
+sb.Append(" | rock: " + rockMeshes + " meshes, " + rockLength.ToString("F0") + " m, climb steps " + stepWalls + " walls " + stepLen.ToString("F0") + " m");
+sb.Append(" | road (428, 170) " + F(H(roadX, 170)) + " ditch " + F(H(roadX + roadHalf + ditchW * 0.5f, 170)) + " east hills (590,150) " + F(H(590, 150)) + " | west: x-40 z150 " + F(H(-39.8f, 150)) + " edges N " + F(H(200, 499.5f)) + " S " + F(H(200, -199.5f)) + " E " + F(H(594.5f, 150)));
 sb.Append(" | build list: "); foreach (var s in UnityEditor.EditorBuildSettings.scenes) sb.Append(System.IO.Path.GetFileNameWithoutExtension(s.path) + " ");
 return sb.ToString();

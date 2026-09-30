@@ -175,6 +175,7 @@ var matGravel = Tinted("Slice_Gravel", groundM, gravel, new UnityEngine.Vector2(
 var matSiding = Tinted("Slice_Siding", planksM, woodC, new UnityEngine.Vector2(4f, 1f));
 var matRoof = Tinted("Slice_RoofChar", concrete, charC, new UnityEngine.Vector2(4f, 4f));
 var matSteel = Tinted("Slice_Steel", concrete, granite, new UnityEngine.Vector2(1f, 4f));
+var matBrush = Tinted("Slice_Brush", groundM, Hex("#4F4A2C"), new UnityEngine.Vector2(2f, 2f));   // 8.14 brush bands: dull olive (Style.md)
 // front zone: surfaces to asphalt and gravel, buildings to siding and roofs, everything else gray to steel (the fire-marker
 // lamps on DieAlone/FireStandIn keep theirs)
 int fzN = 0;
@@ -182,7 +183,11 @@ foreach (var r in Root("FrontZone").GetComponentsInChildren<UnityEngine.MeshRend
 {
     if (r.sharedMaterial != null && r.sharedMaterial.shader.name.StartsWith("DieAlone/")) continue;
     string n = r.name; UnityEngine.Material m;
-    if (n == "ParkingLot" || n == "Drive" || n == "TurningCircle") m = matAsphalt;
+    if (n == "CentreLine") continue;   // 8.14: the highway centre line keeps its paint
+    if (n == "ParkingLot" || n == "Drive" || n == "TurningCircle" || n == "Road" || n == "Drive_To_T") m = matAsphalt;
+    else if (n == "Brush") m = matBrush;
+    else if (n == "Trunk" || n == "BrokenTop") m = matRoof;   // the dead verge giant, charred
+    else if (n == "PowerPole" || n == "Crossarm" || n == "ReflectorPost" || n == "StopSignPost" || n == "EntranceSignPost" || n == "MailboxPost" || n == "EntranceSign") m = matSiding;
     else if (n.StartsWith("Spur") || n.StartsWith("Loop") || n == "Pitch") m = matGravel;
     else if (n == "Roof") m = matRoof;
     else if (n.StartsWith("Wall") || n == "Floor") m = matSiding;
@@ -236,8 +241,8 @@ if (office != null && glowWin != null)
     var og = new UnityEngine.GameObject("OfficeNightGlow"); og.transform.SetParent(root, false); Visibility(og, LookVisibility.Show.Night, officeGlow);
 }
 // the ground reads as ground, not a flat gray plane or bright diagram strips: every gray terrain layer takes the project
-// Ground054 texture tinted to the palette (forest floor, granite, burnt earth, worn trail earth, dark lake bed); the gray
-// thicket edge markers stop drawing (their invisible walls stay; the look pass puts vegetation on those edges later)
+// Ground054 texture tinted to the palette (forest floor, granite, burnt earth, worn trail earth, dark lake bed). (The thicket markers
+// this used to hide are gone with the thicket, 8.14.)
 var burnEarth = UnityEngine.Color.Lerp(charC, Hex("#8A8078"), 0.5f); var lakeBed = UnityEngine.Color.Lerp(charC, floorC, 0.5f);
 var layerTint = new System.Collections.Generic.Dictionary<string, UnityEngine.Color> { { "Layer_Ground", floorC }, { "Layer_Rock", granite }, { "Layer_Burn", burnEarth }, { "Layer_Trail", trailEarth }, { "Layer_LakeBed", lakeBed } };
 var dataT = terrain.terrainData; int trailLayers = 0;
@@ -249,7 +254,7 @@ foreach (var tlayer in dataT.terrainLayers)
     tlayer.diffuseRemapMax = new UnityEngine.Vector4(UnityEngine.Mathf.LinearToGammaSpace(te.r / UnityEngine.Mathf.Max(ga.r, 0.02f)), UnityEngine.Mathf.LinearToGammaSpace(te.g / UnityEngine.Mathf.Max(ga.g, 0.02f)), UnityEngine.Mathf.LinearToGammaSpace(te.b / UnityEngine.Mathf.Max(ga.b, 0.02f)), 1f);
     UnityEditor.EditorUtility.SetDirty(tlayer); trailLayers++;
 }
-int markerN = 0; foreach (UnityEngine.Transform t in Root("Thicket").transform) if (t.name.StartsWith("Marker_")) { t.GetComponent<UnityEngine.Renderer>().enabled = false; markerN++; }
+int markerN = 0;   // 8.14: the thicket and its markers are gone (Valley.md rev 10 section 8)
 // the old burn: dense young regrowth 4 to 6 m (4 m in the last 40 m before the front zone), off the trails (Main3.md 2.10)
 var burnPoly = new[] { new UnityEngine.Vector2(185f, 181f), new UnityEngine.Vector2(340f, 213f), new UnityEngine.Vector2(340f, 143f), new UnityEngine.Vector2(185f, 151f) };
 bool InBurn(UnityEngine.Vector2 p) { bool c = false; for (int i = 0, j = burnPoly.Length - 1; i < burnPoly.Length; j = i++) if (((burnPoly[i].y > p.y) != (burnPoly[j].y > p.y)) && (p.x < (burnPoly[j].x - burnPoly[i].x) * (p.y - burnPoly[i].y) / (burnPoly[j].y - burnPoly[i].y) + burnPoly[i].x)) c = !c; return c; }
@@ -308,22 +313,8 @@ for (float x = 186f; x < 340f; x += branchStep) for (float z = 143f; z < 213f; z
     var b = Spawn(BK + "Plants/Branchs", regrowth); if (b == null) continue; float s = R(1.5f, 3f);
     b.transform.localScale = V(s, s, s); b.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f); b.transform.position = V(p.x, H(p.x, p.y), p.y); branchN++;
 }
-// east of the fence (S4's far ground): real trees 20 to 35 m from the map edge back into the rolling east forest mesh, so its
-// front reads as forest, not a flat wall over bare ground; the road's gap at z 170 stays open; no colliders (off-map)
-// 8.9j: they stand on the E ridge's front slope (terrain now), below its crest at x 445 (Edges.md 9.5: no trees on crests)
-const float eastX0 = 404f, eastX1 = 430f, eastStep = 11f, eastJitter = 4f, eastTreeLow = 20f, eastTreeHigh = 35f, eastRoadZ = 170f, eastRoadGap = 12f;
-
-
-var eastEdge = new UnityEngine.GameObject("EastEdgeForest").transform; eastEdge.SetParent(root, false); int eastN = 0;
-for (float x = eastX0; x <= eastX1; x += eastStep) for (float z = -20f; z <= 320f; z += eastStep)
-{
-    float px = x + R(-eastJitter, eastJitter), pz = z + R(-eastJitter, eastJitter); if (UnityEngine.Mathf.Abs(pz - eastRoadZ) < eastRoadGap) continue;
-    var g = Spawn(BK + "Trees/" + (rng.NextDouble() < 0.6 ? "RedFir" + (1 + rng.Next(8)) : "RedPine" + (1 + rng.Next(5))), eastEdge); if (g == null) continue;
-    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
-    float eastY = H(px, pz); g.transform.position = V(px, eastY, pz); g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
-    float hgt = 0f; foreach (var rr in g.GetComponentsInChildren<UnityEngine.Renderer>()) hgt = UnityEngine.Mathf.Max(hgt, rr.bounds.max.y - eastY);
-    float s = R(eastTreeLow, eastTreeHigh) / UnityEngine.Mathf.Max(0.5f, hgt); g.transform.localScale = V(s, s, s); eastN++;
-}
+// 8.14 (Valley.md rev 10, 3.7): the east edge forest strip (x 400 to 430) is removed; the open east runs to the highway. In git history.
+int eastN = 0;
 // the dead Snag and the Gate Tree stub: a dead pack tree stretched to their heights instead of plain wood columns
 const float deadTreeGirth = 0.6f;   // the pack dead tree's trunk, about 0.6 m across
 int deadN = 0;

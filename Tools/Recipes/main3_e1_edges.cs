@@ -62,10 +62,19 @@ try
     UnityEngine.Physics.SyncTransforms();
     var terrainCols = new System.Collections.Generic.List<UnityEngine.TerrainCollider>();
     foreach (var tc in UnityEngine.Object.FindObjectsByType<UnityEngine.TerrainCollider>(UnityEngine.FindObjectsSortMode.None)) if (tc.enabled) terrainCols.Add(tc);
+    // a terrain collider raycast in segments of TerrainRaySegment metres (8.14): one long PhysX heightfield raycast (2 km) missed a
+    // plain crossing 450 m out (J to Ward/P110 at bearing 110, -5 degrees) while the same ray cast from 300 m out hit it
+    const float TerrainRaySegment = 200f;
+    bool TerrainRay(UnityEngine.TerrainCollider tc, UnityEngine.Ray ray, out UnityEngine.RaycastHit hit)
+    {
+        for (float s = 0f; s < reach; s += TerrainRaySegment)
+            if (tc.Raycast(new UnityEngine.Ray(ray.origin + ray.direction * s, ray.direction), out hit, UnityEngine.Mathf.Min(TerrainRaySegment, reach - s))) { hit.distance += s; return true; }
+        hit = default; return false;
+    }
 
     // ---- origins
     var origins = new System.Collections.Generic.List<(string kind, string name, UnityEngine.Vector3 p)>();
-    float deckTop = tower.position.y + 48f;   // as main3_8_9_sightlines.cs
+    float deckTop = tower.Find("Cab").position.y;   // the deck top, as main3_8_9_sightlines.cs (8.14: was tower.position.y + 48, 7 m high since rev 13)
     foreach (var h in new[] { ("eye", deckTop + EyeHeight), ("jump", deckTop + 2.2f) })
         for (float gx = -3.5f; gx <= 3.5f; gx += 1f) for (float gz = -3.5f; gz <= 3.5f; gz += 1f)
             origins.Add(("deck", h.Item1, V(tower.position.x + gx, h.Item2, tower.position.z + gz)));
@@ -95,7 +104,7 @@ try
             c[0]++;
             var ray = new UnityEngine.Ray(o.p, r.d);
             float tDist = float.MaxValue;
-            foreach (var tc in terrainCols) if (tc.Raycast(ray, out var th, reach)) tDist = UnityEngine.Mathf.Min(tDist, th.distance);
+            foreach (var tc in terrainCols) if (TerrainRay(tc, ray, out var th)) tDist = UnityEngine.Mathf.Min(tDist, th.distance);
             bool landHit = UnityEngine.Physics.Raycast(ray, out var lh, reach, mask, UnityEngine.QueryTriggerInteraction.Ignore) && lh.distance < tDist;
             string fail = null;
             if (landHit) { if (planar.Contains(lh.collider)) { fail = "flat plane"; c[5]++; string n = probeName.TryGetValue(lh.collider, out var pn) ? pn : lh.collider.name; flatBy[n] = (flatBy.TryGetValue(n, out var k) ? k : 0) + 1; } else c[2]++; }
@@ -157,7 +166,7 @@ try
         if (float.IsNaN(pr.from.x)) { md.AppendLine("- " + pr.n + ": origin missing"); probesOk = false; continue; }
         var ray = new UnityEngine.Ray(pr.from, (pr.aim - pr.from).normalized);
         float tDist = float.MaxValue; UnityEngine.Vector3 tPt = default;
-        foreach (var tc in terrainCols) if (tc.Raycast(ray, out var th, reach) && th.distance < tDist) { tDist = th.distance; tPt = th.point; }
+        foreach (var tc in terrainCols) if (TerrainRay(tc, ray, out var th) && th.distance < tDist) { tDist = th.distance; tPt = th.point; }
         string what;
         if (UnityEngine.Physics.Raycast(ray, out var lh, reach, mask, UnityEngine.QueryTriggerInteraction.Ignore) && lh.distance < tDist)
             what = (probeName.TryGetValue(lh.collider, out var pn) ? pn : lh.collider.name) + (planar.Contains(lh.collider) ? " (FLAT PLANE)" : "") + " at " + lh.point.ToString("F0");
