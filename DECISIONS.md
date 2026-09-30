@@ -186,3 +186,4 @@
 - 2026-09-29: All menus and screens are responsive to screen size and aspect; nothing may sit off screen.
 - 2026-09-29: The wildfire is never switched off to hide it; the land hides it. The Ward sits on a hill even higher than the tower. Grant is considering setting the whole game in a valley; the team drafts it on paper first.
 - 2026-09-29: Build the valley version of Main3 from Sable's new drawing (Docs/Design/Valley.md) far enough for Grant to walk it; the team checks the work first.
+- 2026-09-30: Minigames may load their own levels, separate from Main3. Examples: the escape room takes place inside one of the Artist's paintings; the store loads a new level for its anomaly minigame.
