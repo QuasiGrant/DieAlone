@@ -6,4 +6,8 @@
 - [Valley and brightness](project_valley_and_brightness.md) — 2026-09-29 valley read, fire hidden by west ridge, day one too dark causes
 - [Map edges](project_edges.md) — 2026-09-29 Edges.md rev 2; valley sun 200/32, night-1 calls, rev 2 back-slope fail, gray-walk minimum
 - [Check 3 valley quality](project_check3_quality.md) — 2026-09-30 FAIL; proposed light set 24/205, grove rule change, ranked fixes
+- [Valley rev 8 review](project_valley8_review.md) — 2026-09-30 FIX; belt leaks at trunk band, knob 84, ledge fire scale short
+- [Lighting options 8.12](project_lighting_options.md) — 2026-09-30 LightingOptions.md: V1-V10, candidates A/B/C, six spots, bar, missing fields
+- [Forest plan 8.15/8.16](project_forest_plan.md) — 2026-09-30 ForestPlan.md: grove counts, crest, wall, verge, ground greys, thin order
+- [Gate 8.14](project_gate_8_14.md) — 2026-09-30 FAIL: F floor, W ridge, bands, climb; A Tri yes; climb walls rejected as built
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions
