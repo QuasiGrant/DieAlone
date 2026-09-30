@@ -35,8 +35,10 @@ var gateAt = p0 + along * 4.0f;
 var cairnGate = new UnityEngine.GameObject("CairnGate").transform; cairnGate.SetParent(ward, false);
 var cairnPos = gateAt - side * 2.2f; cairnPos.y = H(cairnPos.x, cairnPos.z);
 float cy = cairnPos.y;
+// pale matte stone (8.12 fix): the default Lit primitive material is smooth and mirrors the blue default reflection, so the cairn read see-through
+var cairnStone = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Concrete034_1.0x1.0.mat"); if (cairnStone == null) return "no Concrete034_1.0x1.0.mat";
 foreach (var s in new[] { (1.4f, 0.5f), (1.1f, 0.45f), (0.85f, 0.4f), (0.6f, 0.35f), (0.4f, 0.3f) })
-{ Prim(Sph, "Stone", cairnGate, V(cairnPos.x, cy + s.Item2 * 0.45f, cairnPos.z), V(s.Item1, s.Item2, s.Item1)); cy += s.Item2 * 0.8f; }
+{ Prim(Sph, "Stone", cairnGate, V(cairnPos.x, cy + s.Item2 * 0.45f, cairnPos.z), V(s.Item1, s.Item2, s.Item1)).GetComponent<UnityEngine.MeshRenderer>().sharedMaterial = cairnStone; cy += s.Item2 * 0.8f; }
 var postPos = gateAt + side * 2.2f; postPos.y = H(postPos.x, postPos.z);
 Prim(Cube, "ChainPost", cairnGate, postPos + V(0f, 0.55f, 0f), V(0.15f, 1.1f, 0.15f));
 var chainA = cairnPos + V(0f, 0.9f, 0f); var chainB = postPos + V(0f, 0.9f, 0f);
