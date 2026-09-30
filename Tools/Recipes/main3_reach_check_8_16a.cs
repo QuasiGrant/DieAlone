@@ -101,7 +101,25 @@ try
         for (int i = 0; i < NX; i++) for (int j = 0; j < NZ; j++) if (at[i, j].HasValue && zc.r.Contains(new UnityEngine.Vector2(CX(i), CZ(j)))) { n++; if (first == "") { var (fi, fj) = from[i, j]; first = " first (" + CX(i).ToString("F0", inv) + ", " + CZ(j).ToString("F0", inv) + ") from (" + CX(fi).ToString("F0", inv) + ", " + CZ(fj).ToString("F0", inv) + ")"; } }
         closedIn += n; sb.Append("CLOSED " + zc.n + ": " + n + " cells reached" + first + ": " + (n == 0 ? "PASS" : "FAIL") + "\n");
     }
-    pass = lost == 0 && closedIn == 0;
+    // 8.16b (Wren, Marlow: a sprint-jump south from Pump to W1 P48 (144.4, 81.7) cleared the wade limit near (144.7, 76.5) and walked
+    // the lake bed): from every trail point within lakeNear m of the water, sprint-jump toward the lake centre and due south for jumpSteps;
+    // a jump fails when the player's feet end more than lakeDeep under the water surface
+    const float lakeX = 190f, lakeZ = 60f, lakeA = 54.8f, lakeB = 27.6f, lakeWater = -5.5f, lakeNear = 12f, lakeDeep = 0.1f; const int jumpSteps = 150, jumpEvery = 25;
+    int jumps = 0, wet = 0; string firstWet = "";
+    foreach (var p in trailPts)
+    {
+        float ex = (p.x - lakeX) / lakeA, ez = (p.z - lakeZ) / lakeB, r = UnityEngine.Mathf.Sqrt(ex * ex + ez * ez); if (r < 1f || (r - 1f) * lakeB > lakeNear) continue;
+        foreach (var dir in new[] { new UnityEngine.Vector3(lakeX - p.x, 0f, lakeZ - p.z).normalized, UnityEngine.Vector3.back })
+        {
+            Put(p); jumps++;
+            for (int s = 0; s < jumpSteps; s++) pc.Step(dir, s % jumpEvery == 0, true, dt);
+            for (int k = 0; k < 20; k++) pc.Step(UnityEngine.Vector3.zero, false, false, dt);
+            var e = pc.transform.position;
+            if (e.y < lakeWater - lakeDeep) { wet++; if (firstWet == "") firstWet = " first from (" + p.x.ToString("F1", inv) + ", " + p.z.ToString("F1", inv) + ") to (" + e.x.ToString("F1", inv) + ", " + e.y.ToString("F1", inv) + ", " + e.z.ToString("F1", inv) + ")"; }
+        }
+    }
+    sb.Append("LAKE JUMP: " + jumps + " sprint-jumps from trail points by the water, " + wet + " into the lake" + firstWet + ": " + (wet == 0 ? "PASS" : "FAIL") + "\n");
+    pass = lost == 0 && closedIn == 0 && wet == 0;
     sb.Append("REACH: " + moves + " sprint moves on a " + cell.ToString("F0", inv) + " m grid, " + reached + " cells reached, " + far + " over " + farLimit.ToString("F0", inv) + " m from a trail or road (" + roadPts + " road points; worst " + worstD.ToString("F0", inv) + " m at " + worst + "), " + lost + " of them LOST (no tower, no trail within " + seeTrail.ToString("F0", inv) + " m in sight): " + (pass ? "PASS" : "FAIL") + "\n");
     foreach (var kv in areas) sb.Append("  " + kv.Key + ": " + kv.Value.n + " far, " + kv.Value.lost + " lost, worst " + kv.Value.worst.ToString("F0", inv) + " m at (" + kv.Value.at.x.ToString("F0", inv) + ", " + kv.Value.at.y.ToString("F0", inv) + ")\n");
     if (lostList.Count > 0) sb.Append("  LOST cells: " + string.Join("; ", lostList) + "\n");

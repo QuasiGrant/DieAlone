@@ -38,7 +38,7 @@ w.GetComponent<UnityEngine.Renderer>().sharedMaterial = waterMat;
 // wade limit: invisible boxes on the water line (8.15; the rev 7 ring stood 3 percent inside it and the thicket held the shore), tops
 // wadeOver over the ground there, so the water's visible edge is the stop (Valley.md 8); under the dock deck and the boathouse floor they stay low
 var wade = new UnityEngine.GameObject("WadeLimit"); wade.transform.SetParent(Lk, false);
-const int segs = 96; const float wadeRing = 1f, wadeOver = 1.5f;
+const int segs = 96; const float wadeRing = 1f, wadeOver = 1.5f, wadeReach = 10f, wadeReachStep = 1f, wadeSide = 1f;
 // 8.14a gate (Marlow: at the lake's ends the ring stood 1.1 to 1.5 m short of the water on dry ground): each ring point moves in along
 // its ray from the centre to where the ground first falls to the water (searched from wadeOut down to wadeIn of the ellipse)
 const float wadeOut = 1.1f, wadeIn = 0.8f, wadeSearch = 0.005f, wadeWet = 0.05f;
@@ -59,7 +59,11 @@ for (int i = 0; i < segs; i++)
     var mid = (p0 + p1) * 0.5f; var dir = p1 - p0;
     var box = new UnityEngine.GameObject("W" + i); box.transform.SetParent(wade.transform, false);
     // -5.0 under the dock deck, only as wide as the deck, so the notch beside the dock root is closed at the water too
-    bool underDock = mid.x > 188.4f && mid.x < 191.6f && mid.z > 80f; float boxTop = underDock ? -5.0f : H(mid.x, mid.z) + wadeOver;
+    // 8.16b (Marlow: a sprint-jump from the bank cleared a top only wadeOver over the water line): the top stands wadeOver over the highest
+    // ground within wadeReach landward of the box (on the ray from the lake centre, and wadeSide either side), so no jump from the bank clears it
+    float bankTop = H(mid.x, mid.z); var outDir = new UnityEngine.Vector2(mid.x - cx, mid.z - cz).normalized;
+    for (float s = 0f; s <= wadeReach; s += wadeReachStep) foreach (var sd in new[] { -wadeSide, 0f, wadeSide }) bankTop = UnityEngine.Mathf.Max(bankTop, H(mid.x + outDir.x * s - outDir.y * sd, mid.z + outDir.y * s + outDir.x * sd));
+    bool underDock = mid.x > 188.4f && mid.x < 191.6f && mid.z > 80f; float boxTop = underDock ? -5.0f : bankTop + wadeOver;
     if (mid.x > 236f && mid.x < 244f && mid.z > 49f && mid.z < 56f) boxTop = UnityEngine.Mathf.Min(boxTop, -4.05f);   // under the boathouse floor (-3.8)
     box.transform.position = V(mid.x, (boxTop - 8.5f) * 0.5f, mid.z); box.transform.rotation = UnityEngine.Quaternion.LookRotation(dir.normalized, UnityEngine.Vector3.up);
     box.AddComponent<UnityEngine.BoxCollider>().size = V(0.4f, boxTop + 8.5f, dir.magnitude + 0.3f);   // y -8.5 to the top
@@ -116,6 +120,10 @@ foreach (var sgn in new[] { -1f, 1f })
     Prim(Cube, sgn > 0f ? "PocketSkirt_N" : "PocketSkirt_S", B, V(bx1 + pocketW * 0.5f, (pocketTop + water) * 0.5f - pocketDeck, doorZ + sgn * (pocketGap + pocketLen)), V(pocketW, pocketTop - water, pocketPost));
     Prim(Cube, sgn > 0f ? "PocketRail_N" : "PocketRail_S", B, V(bx1 + pocketW * 0.5f, pocketTop + pocketRail, doorZ + sgn * (pocketGap + pocketLen)), V(pocketW + 0.6f, pocketPost, pocketPost));
     foreach (var px in new[] { bx1 + 0.1f, bx1 + pocketW - 0.1f }) Prim(Cube, "PocketPost", B, V(px, pocketTop + pocketRail * 0.5f, doorZ + sgn * (pocketGap + pocketLen)), V(pocketPost, pocketRail, pocketPost));
+    // 8.16b (Marlow: a sprint-jump from the deck went off its west end beside the boathouse wall into the lake): a rail along the deck's
+    // west edge from the boathouse wall to the lake-side rail
+    float wallZ = sgn > 0f ? bz1 : bz0, endZ = doorZ + sgn * (pocketGap + pocketLen);
+    Prim(Cube, sgn > 0f ? "PocketRail_WN" : "PocketRail_WS", B, V(bx1 + pocketPost * 0.5f, pocketTop + pocketRail * 0.5f, (wallZ + endZ) * 0.5f), V(pocketPost, pocketRail, UnityEngine.Mathf.Abs(endZ - wallZ)));
 }
 var spot = Prim(Cap, "Resident_Lake_Spot", B, V(238.6f, floorY + 0.9f, 51.2f), V(0.6f, 0.9f, 0.6f), null, false);
 
