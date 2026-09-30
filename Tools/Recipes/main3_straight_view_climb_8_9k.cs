@@ -2,7 +2,8 @@
 // part of the climb. From each trail point, both walking directions, the view reaches the farthest later point for which every
 // trail point up to it is visible (eye 1.6, target 0.3 m over the trail, default layers, so the thicket walls do not count).
 // Parts: J to leg 1, the four legs (Sable's ruling covers them), leg 5, the cleft (parts A and B), the exit and ramp. A view is
-// counted against the part its eye stands on. Pass: 60 m or less except on the four legs.
+// counted against the part its eye stands on. Pass: 60 m or less except J to leg 1, the four legs and leg 5 (views up and across
+// the W ridge face, ruled covered: Sable for the legs, Wren 2026-09-29 for J to leg 1 and leg 5).
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 UnityEngine.GameObject Root(string name) { foreach (var r in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects()) if (r.name == name) return r; return null; }
 const float eye = 1.6f, target = 0.3f, limit = 60f;
@@ -29,7 +30,7 @@ foreach (var rev in new[] { false, true })
 var sb = new System.Text.StringBuilder(); bool ok = true;
 foreach (var kv in best)
 {
-    bool ruled = kv.Key == "legs 1 to 4"; bool pass = ruled || kv.Value.d <= limit; ok &= pass;
+    bool ruled = kv.Key == "legs 1 to 4" || kv.Key == "J to leg 1" || kv.Key == "leg 5";   // Wren 2026-09-29: views up and across the W ridge face count as covered bool pass = ruled || kv.Value.d <= limit; ok &= pass;
     sb.Append(kv.Key + ": " + kv.Value.d.ToString("F0") + " m, " + kv.Value.a.ToString("F0") + " to " + kv.Value.b.ToString("F0") + (ruled ? " (ruled covered)" : pass ? "" : " OVER 60") + "\n");
 }
 return (ok ? "PASS" : "FAIL") + "\n" + sb;

@@ -4,7 +4,8 @@
 // - a sprint-jump (5.5 m/s, 0.6 m hop on every landing, 2.2 s, about 12 m) in 12 directions.
 // A push passes when it ends within 4.5 m (3D) of a trail point on the same stretch (at most 20 points, 40 m of trail, from the start, with no fall over 2.5 m,
 // so it neither dropped to a lower bench nor climbed onto a higher one) and the player walks back along the trail to the start.
-// The ledge lip: from x -6 every 1.5 m over z 240 to 274, a 12 m walk and a sprint-jump west must stop at x -9.3 or east of it
+// The ledge lip: from x -6 every 1.5 m over z 240 to 274, a 12 m walk and a sprint-jump west must stop at x -9.3 or east of it;
+// the north end and corners: pushes north from z 270 over x -8.5 to 3.5, and out of both corners, must stop inside z 275.5
 // and on the ledge (98). The day gate is switched off for the check and back on. Bounded loops only. Reset runInBackground after.
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 UnityEngine.Application.runInBackground = true;
@@ -98,10 +99,28 @@ for (float z = 240f; z <= 274f; z += 1.5f)
         var e = pc.transform.position; lipTries++; lipWest = UnityEngine.Mathf.Min(lipWest, e.x);
         if (e.x < lipX || e.y < ledgeFloor) { lipFails++; if (lipFirst == "") lipFirst = " first: " + mode + " at z " + z + " ended " + e.ToString("F1"); }
     }
+// the ledge's north end and corners (Wren, 8.9k): from z 270, every 1.5 m over x -8.5 to 3.5, a 12 m walk and a sprint-jump north
+// toward z 282, plus both corners pushed out diagonally; each must stay on the ledge (98) inside its north edge (z 275) and its
+// west edge (x -9.3)
+const float northStartZ = 270f, northEdgeZ = 275.5f, northAimZ = 282f;
+int northTries = 0, northFails = 0; float northMost = float.MinValue; string northFirst = "";
+var northPushes = new System.Collections.Generic.List<(UnityEngine.Vector3 from, UnityEngine.Vector3 dir)>();
+for (float x = -8.5f; x <= 3.51f; x += 1.5f) northPushes.Add((new UnityEngine.Vector3(x, 0f, northStartZ), new UnityEngine.Vector3(0f, 0f, 1f)));
+northPushes.Add((new UnityEngine.Vector3(-8f, 0f, 273f), new UnityEngine.Vector3(-(northAimZ - 273f) * 0.5f, 0f, northAimZ - 273f).normalized));   // north-west corner
+northPushes.Add((new UnityEngine.Vector3(3f, 0f, 273f), new UnityEngine.Vector3((northAimZ - 273f) * 0.5f, 0f, northAimZ - 273f).normalized));    // north-east corner
+foreach (var np in northPushes)
+    foreach (var mode in new[] { "walk", "jump" })
+    {
+        Put(new UnityEngine.Vector3(np.from.x, H(np.from.x, np.from.z), np.from.z));
+        if (mode == "walk") Walk(np.dir, 12f); else Hop(np.dir, sprint, hopTime);
+        var e = pc.transform.position; northTries++; northMost = UnityEngine.Mathf.Max(northMost, e.z);
+        if (e.z > northEdgeZ || e.x < lipX || e.y < ledgeFloor) { northFails++; if (northFirst == "") northFirst = " first: " + mode + " from " + np.from.ToString("F1") + " ended " + e.ToString("F1"); }
+    }
 gate.gameObject.SetActive(true); UnityEngine.Physics.SyncTransforms(); pc.enabled = true; UnityEngine.Application.runInBackground = false;
 var sb = new System.Text.StringBuilder();
 sb.Append("climb pushes: " + pushes + " from " + (cl.Count - gateSkip) + " trail points (2 walks, " + hopDirs + " sprint-jumps each), " + fails + " fail; largest fall (air-top to landing) " + worstFall.ToString("F1") + " m\n");
 foreach (var f in failList) sb.Append("  " + f + "\n");
 sb.Append("ledge lip: " + lipTries + " pushes west, " + lipFails + " past x " + lipX + " or off the ledge; westmost x " + lipWest.ToString("F1") + lipFirst + "\n");
-sb.Append("ALL " + (fails == 0 && lipFails == 0 ? "PASS" : "FAIL"));
+sb.Append("ledge north end and corners: " + northTries + " pushes, " + northFails + " past z " + northEdgeZ + " or off the ledge; northmost z " + northMost.ToString("F1") + northFirst + "\n");
+sb.Append("ALL " + (fails == 0 && lipFails == 0 && northFails == 0 ? "PASS" : "FAIL"));
 return sb.ToString();
