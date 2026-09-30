@@ -75,3 +75,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: The 60 fps 1% low floor is a working target until the frame-rate cause is known; Grant can overturn.
 - 2026-09-30: Frame rate passes: the Camp and S1 slow frames are first-view hitches (1% lows 66 and 81 on a second pass). A shader prewarm behind the loading screen goes with Milestone 10's loading and menu work.
 - 2026-09-30: Climb rock count excludes walkable ground: count rock steeper than 35 degrees, and count as open any sky or hit over 60 m. Bar outside the cleft: rock 30 percent or less, open 15 percent or more (Vesper).
+- 2026-09-30: Front-zone roads count as paths for the 50 m rule.
