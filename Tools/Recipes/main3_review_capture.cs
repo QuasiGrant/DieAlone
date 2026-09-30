@@ -7,6 +7,7 @@
 // (J to Ward, up and back down, every 10 m, each frame with its rock and sky share, 8.16a), warps (N, E, S, W), trail ends (facing out), stops (every invisible collider that faces a
 // walker within 5 m of a trail centre line, one frame per 8 m cluster, facing it), the top-down map with trails, warps and
 // stops marked, and the day halves of the ten day and night pairs (kept in Temp/ReviewCapture).
+// 8.17: Places.jpg, four frames of every place built in 8.17 (3c2).
 // 8.14a (Gate.md 2.7, 2.8 and 4; Marlow's hand-walk views): four compass views from the tower deck; the walk views (P4 looking
 // east, the path from the slot exit round the fin with the flame tops in sight per frame, the pump trench to both sides, the lot,
 // store, booth and office facing east); every collider without a renderer in the scene, active or not, listed in
@@ -483,6 +484,42 @@ try
         foreach (var d in new[] { ("NORTH", 0f), ("EAST", 90f), ("SOUTH", 180f), ("WEST", 270f) })
             { var e = deckEye + UnityEngine.Quaternion.Euler(0f, d.Item2, 0f) * UnityEngine.Vector3.forward * compassOut; frames.Add((e, Toward(e, d.Item2, 100f) + UnityEngine.Vector3.down * compassDip, "TOWER DECK WALKWAY FACING " + d.Item1)); }   // 8.14a gate: on the walkway, outside the cab (inside it the posts and lamps covered the view)
         Sheet("Compass_Views.jpg", "Compass views from the tower deck: north, east, south, west", frames, pairDiv, 2);
+    }
+
+    // 3c2. 8.17 places sheet (Gate.md 2.4, Style.md 10 "Places"): four frames of every place built in 8.17, outside and in; each is
+    // (label, stand x, y, z, look x, y, z); a stand y of placeFree drops the eye onto the terrain, any other stand y is the floor the eye
+    // stands on (interiors); a look y of NaN looks level. The four trail boulders get one frame each from the nearest trail point,
+    // placeBack m further out, facing the rock.
+    {
+        const float placeFree = 999f, placeBack = 2f;
+        var spots = new (string n, float x, float y, float z, float lx, float ly, float lz)[] {
+            ("STORE FRONT 12 M", 366f, placeFree, 188f, 366f, 4.5f, 200f), ("STORE FROM THE LOT", 352f, placeFree, 186f, 366f, 4.5f, 200f), ("STORE EAST SIDE", 378f, placeFree, 196f, 366f, 4f, 200f), ("STORE DOOR 4 M", 366f, placeFree, 191.5f, 366f, 4.2f, 197f),
+            ("OFFICE WEST DOOR 6 M", 338f, placeFree, 200f, 344f, 4.5f, 199f), ("OFFICE FROM SOUTH-WEST", 339f, placeFree, 188f, 350f, 4.5f, 200f), ("OFFICE SOUTH FACE", 350f, placeFree, 189f, 350f, 4.5f, 200f), ("OFFICE FRONT ROOM TO BACK ROOM", 345.5f, 3.05f, 200f, 356f, 4.4f, 201f),
+            ("CAMP 1 FROM THE WARP", 268f, placeFree, 226f, 282f, 6f, 238f), ("CAMP 1 FROM THE EAST", 296f, placeFree, 232f, 282f, 6f, 238f), ("CAMP 1 FROM THE NORTH", 282f, placeFree, 252f, 284f, 6f, 238f), ("CAMP 1 KID'S TABLE", 288f, placeFree, 234f, 285.2f, 5.5f, 236.5f),
+            ("CAMP 2 FROM THE SOUTH", 294f, placeFree, 88f, 294f, 8f, 106f), ("CAMP 2 FROM THE WEST", 280f, placeFree, 104f, 292f, 8f, 108f), ("CAMP 2 PAYPHONE AND CARD TABLE", 297f, placeFree, 93f, 298.5f, 4.8f, 99f), ("CAMP 2 STACK TOP", 294.5f, 24f, 107.2f, 292f, 24.5f, 108.5f),
+            ("CAMP 3 EASEL", 76f, placeFree, 142f, 81.5f, -3f, 150.5f), ("CAMP 3 FROM THE CREEK", 84f, placeFree, 138f, 72f, -3.5f, 148f), ("CAMP 3 CANVASES AT THE BANK", 74f, placeFree, 147f, 68f, -3.5f, 146.5f), ("CAMP 3 FROM THE RIM", 100f, placeFree, 148f, 78f, -4f, 146f),
+            ("CAVE MOUTH FROM THE TRAIL", 52f, placeFree, 46f, 52f, -4.5f, 37f), ("CAVE MOUTH FROM THE EAST", 60f, placeFree, 44f, 52f, -4.5f, 36f), ("CAVE MOUTH AT THE BOARD", 52f, placeFree, 40f, 52f, -4.3f, 30f), ("CAVE CHAMBER TO THE SIDE ROOM", 80f, -18f, 12f, 94f, -17f, 12f),
+            ("SIDE ROOM FROM THE DOOR", 90.2f, -18f, 13.8f, 94f, -17.2f, 11.5f), ("SIDE ROOM FROM THE EAST", 96.5f, -18f, 9f, 90f, -17f, 12f), ("SIDE ROOM TABLE", 93.8f, -18f, 9f, 93.8f, -17.4f, 11.5f), ("SIDE ROOM DOOR FROM INSIDE", 96.8f, -18f, 14.8f, 89.5f, -16.8f, 12f),
+            ("BOATHOUSE FROM THE GANGWAY", 252f, placeFree, 50f, 240f, -3f, 52.4f), ("BOATHOUSE ACROSS THE WATER", 226f, placeFree, 64f, 240f, -3.5f, 54f), ("BOATHOUSE INSIDE", 244.6f, -3.8f, 52.4f, 238f, -3f, 52.4f), ("BOATHOUSE STEP, BOWL AND CHAIR", 233f, placeFree, 64f, 240f, -3.3f, 56f),
+            ("DOCK FROM THE PUMP TRAIL", 193f, placeFree, 99f, 190f, -4.8f, 89f), ("DOCK FROM THE WEST SHORE", 182f, placeFree, 93f, 190f, -4.5f, 90f), ("DOCK END LOOKING BACK", 190f, -4.8f, 87.5f, 190f, -4f, 96f), ("THE PUMP", 195f, placeFree, 97f, 190f, -4f, 94.8f),
+            ("NORTH RUIN FROM THE LOOP WARP", 165.8f, placeFree, 267.7f, 172f, 4f, 281f), ("NORTH RUIN DOORWAY", 167f, placeFree, 277f, 172f, 4f, 281f), ("NORTH RUIN FROM THE EAST", 178f, placeFree, 276f, 172f, 3.8f, 281f), ("NORTH RUIN FROM THE NORTH", 172f, placeFree, 288f, 172f, 4f, 281f),
+            ("WARD STONES FROM THE PATH END", -2f, placeFree, 238f, -3f, 65f, 224f), ("WARD STONES FROM THE WARP", -8.5f, placeFree, 246f, -3f, 66f, 224f), ("WARD STONES FROM THE EAST", 6f, placeFree, 230f, -3f, 65f, 224f), ("WARD STONES FROM THE WEST", -12f, placeFree, 228f, -2f, 65f, 224f),
+        };
+        var frames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
+        foreach (var s in spots)
+        {
+            var c = s.y == placeFree ? Eye(new UnityEngine.Vector3(s.x, terrain.SampleHeight(new UnityEngine.Vector3(s.x, 0f, s.z)) + terrain.transform.position.y, s.z)) : new UnityEngine.Vector3(s.x, Ground(s.x, s.z, s.y) + eye, s.z);
+            frames.Add((c, new UnityEngine.Vector3(s.lx, float.IsNaN(s.ly) ? c.y : s.ly, s.lz), s.n));
+        }
+        var poiT = UnityEngine.GameObject.Find("PointsOfInterest"); int bi = 0;
+        if (poiT != null) foreach (UnityEngine.Transform b in poiT.transform)
+        {
+            if (b.name != "POI_Boulder") continue; var bp = b.position; UnityEngine.Vector3 nearP = bp; float best = float.MaxValue;
+            foreach (var leg in legs) foreach (var q in leg.pts) { float d = new UnityEngine.Vector2(q.x - bp.x, q.z - bp.z).magnitude; if (d < best) { best = d; nearP = q; } }
+            var away = new UnityEngine.Vector3(nearP.x - bp.x, 0f, nearP.z - bp.z).normalized; var st = nearP + away * placeBack;
+            var c = Eye(new UnityEngine.Vector3(st.x, nearP.y, st.z)); frames.Add((c, new UnityEngine.Vector3(bp.x, bp.y + 2f, bp.z), "TRAIL BOULDER " + (++bi) + " (" + bp.x.ToString("F0", inv) + ", " + bp.z.ToString("F0", inv) + ")"));
+        }
+        Sheet("Places.jpg", "Places (8.17): four frames each, outside and in; the four trail boulders from their trails", frames, listDiv, 4);
     }
 
     // 3d. Marlow's hand-walk views (Gate_8_14_Marlow.md 13): P4 east, round the fin with flame tops in sight, the pump trench, east from the front

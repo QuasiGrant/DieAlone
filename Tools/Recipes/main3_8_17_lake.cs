@@ -95,7 +95,9 @@ kit.Fill(PlaceKit.CE + "Pipes/Pipe_Green_Elbow_90_Short_Smooth", pump, V(0f, pum
 var handle = kit.Fill(PlaceKit.CE + "Pipes/Pipe_Black_Straight_Short", pump, V(0f, pumpBase - pp.y + 1.0f, 0.25f), V(0.06f, 0.06f, 0.6f));   // the lever handle
 if (handle != null) handle.transform.localRotation *= UnityEngine.Quaternion.Euler(-20f, 0f, 0f);
 kit.On(PlaceKit.CI + "Props/CITW_Bucket", pump, V(0f, pumpBase - pp.y, -0.45f), 0f, 1f, false, null, true);
-kit.Ground(PlaceKit.CE + "Decoration_Bathroom/Bucket", dd, 192f, 96f, 30f, 1f, false);   // the carrying bucket (E6)
+// the carrying bucket (E6), beside the trail at the dock root: no collider (the Celestia pack gives it two, which stalled the
+// Pump to boathouse walk at (191.5, 96.1))
+var carry = kit.Ground(PlaceKit.CE + "Decoration_Bathroom/Bucket", dd, 192f, 96f, 30f, 1f, false); if (carry != null) PlaceKit.StripColliders(carry);
 
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " lake: boathouse renderers " + bd.GetComponentsInChildren<UnityEngine.Renderer>().Length + ", dock planks " + dockPlanks + " | " + kit.Report();
