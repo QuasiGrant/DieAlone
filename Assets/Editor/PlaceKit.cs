@@ -1,0 +1,238 @@
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+/// Shared placing tools for the Main3 place recipes (8.17, Tools/Recipes/main3_8_17_*.cs): owned pack prefabs set on the ground or on
+/// a surface, scaled to a box, fitted colliders, retinted project materials, practical lights and board labels. Editor only; the recipes
+/// create one kit per run and read its report. Every prefab path is relative to Assets/ and has no .prefab extension.
+public sealed class PlaceKit
+{
+    public const string CI = "Revolving Pizza Games/Cabin In The Woods/Prefabs/";
+    public const string CS = "Revolving Pizza Games/Campsite/Prefabs/";
+    public const string CC = "Revolving Pizza Games/Catacombs/Prefabs/";
+    public const string CE = "Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/";
+    public const string BK = "BK/PureNature_Redwood/Prefabs/";
+    public const string SP = "PSX Supplies Pack/Prefabs/";
+    public const string FT = "PSX Farm Tools Pack/Prefabs/Default/";
+    public const string MH = "Effigy GameWorks/Menhir Stone Circle/Prefabs/";
+    const string MaterialDir = "Assets/Materials/Places";
+    const float Smoothness = 0.15f;       // ShaderSwap 2.2: nothing wet or glossy
+    const float LabelScale = 0.01f, LabelFace = 0.035f;
+
+    public readonly Scene Scene;
+    public readonly Terrain Terrain;
+    public readonly LookTuning Look;
+    public readonly List<string> Missing = new List<string>();
+    public int Props { get; private set; }
+    readonly Dictionary<string, Material> mats = new Dictionary<string, Material>();
+    readonly Font font;
+
+    public PlaceKit(Scene scene)
+    {
+        Scene = scene;
+        var t = Root("Terrain"); Terrain = t != null ? t.GetComponent<Terrain>() : null;
+        Look = AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning.asset");
+        font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        if (!AssetDatabase.IsValidFolder(MaterialDir)) AssetDatabase.CreateFolder("Assets/Materials", "Places");
+    }
+
+    public GameObject Root(string name) { foreach (var r in Scene.GetRootGameObjects()) if (r.name == name) return r; return null; }
+    public float H(float x, float z) => Terrain.SampleHeight(new Vector3(x, 0f, z)) + Terrain.transform.position.y;
+
+    /// An empty group, replacing any earlier one of the same name under the parent (so a place recipe can be rerun).
+    public Transform Fresh(string name, Transform parent, Vector3 worldPos, float yaw)
+    {
+        var old = parent.Find(name); if (old != null) Object.DestroyImmediate(old.gameObject);
+        return Group(name, parent, worldPos, yaw);
+    }
+    public Transform Group(string name, Transform parent, Vector3 worldPos, float yaw)
+    {
+        var g = new GameObject(name).transform; g.SetParent(parent, false); g.SetPositionAndRotation(worldPos, Quaternion.Euler(0f, yaw, 0f)); return g;
+    }
+    /// Destroys a gray blockout piece this place replaces; safe when it is already gone.
+    public static void Remove(Transform t) { if (t != null) Object.DestroyImmediate(t.gameObject); }
+
+    public GameObject Spawn(string path, Transform parent)
+    {
+        var src = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/" + path + ".prefab");
+        if (src == null) { if (!Missing.Contains(path)) Missing.Add(path); return null; }
+        Props++; return (GameObject)PrefabUtility.InstantiatePrefab(src, parent);
+    }
+
+    /// World bounds of the mesh renderers (LOD 0 only when the prefab has a LODGroup).
+    public static Bounds MeshBounds(GameObject g)
+    {
+        var rs = new List<Renderer>();
+        var lod = g.GetComponentInChildren<LODGroup>();
+        if (lod != null && lod.GetLODs().Length > 0) rs.AddRange(lod.GetLODs()[0].renderers);
+        else rs.AddRange(g.GetComponentsInChildren<Renderer>());
+        bool any = false; var b = new Bounds(g.transform.position, Vector3.zero);
+        foreach (var r in rs) { if (r == null || !(r is MeshRenderer || r is SkinnedMeshRenderer)) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        return b;
+    }
+
+    /// A prefab in a parent's space: its lowest mesh point on local height lp.y, its mesh centre over (lp.x, lp.z) when centred.
+    public GameObject On(string path, Transform parent, Vector3 lp, float yaw, float scale = 1f, bool collide = false, Vector3? tilt = null, bool centred = false)
+    {
+        var g = Spawn(path, parent); if (g == null) return null;
+        g.transform.localPosition = lp; g.transform.localRotation = Quaternion.Euler(tilt.HasValue ? tilt.Value.x : 0f, yaw, tilt.HasValue ? tilt.Value.z : 0f);
+        g.transform.localScale = Vector3.one * scale;
+        var b = MeshBounds(g); var want = parent.TransformPoint(lp);
+        var shift = new Vector3(centred ? want.x - b.center.x : 0f, want.y - b.min.y, centred ? want.z - b.center.z : 0f);
+        g.transform.position += shift;
+        if (collide) FitCollider(g); return g;
+    }
+
+    /// A prefab on the terrain at world (x, z): its lowest mesh point on the lowest ground under its footprint, less sink.
+    public GameObject Ground(string path, Transform parent, float x, float z, float yaw, float scale = 1f, bool collide = false, float sink = 0.02f, Vector3? tilt = null)
+    {
+        var g = Spawn(path, parent); if (g == null) return null;
+        g.transform.SetPositionAndRotation(new Vector3(x, 0f, z), Quaternion.Euler(tilt.HasValue ? tilt.Value.x : 0f, yaw, tilt.HasValue ? tilt.Value.z : 0f));
+        g.transform.localScale = Vector3.one * scale;
+        var b = MeshBounds(g);
+        float gy = Mathf.Min(Mathf.Min(H(b.min.x, b.min.z), H(b.max.x, b.max.z)), Mathf.Min(Mathf.Min(H(b.min.x, b.max.z), H(b.max.x, b.min.z)), H(x, z)));
+        g.transform.position += new Vector3(0f, gy - b.min.y - sink, 0f);
+        if (collide) FitCollider(g); return g;
+    }
+
+    /// A prefab scaled to fill a box of the given size (parent axes, after yaw), bottom centre at lp; its own colliders removed.
+    public GameObject Fill(string path, Transform parent, Vector3 lp, Vector3 size, float yaw = 0f, bool collide = false)
+    {
+        var g = Spawn(path, parent); if (g == null) return null;
+        StripColliders(g);
+        g.transform.localPosition = Vector3.zero; g.transform.localRotation = Quaternion.Euler(0f, yaw, 0f); g.transform.localScale = Vector3.one;
+        var b = LocalBounds(g, parent);
+        var s = new Vector3(size.x / Mathf.Max(0.01f, b.size.x), size.y / Mathf.Max(0.01f, b.size.y), size.z / Mathf.Max(0.01f, b.size.z));
+        var inv = Quaternion.Inverse(g.transform.localRotation);
+        var sLocal = inv * s; g.transform.localScale = new Vector3(Mathf.Abs(sLocal.x), Mathf.Abs(sLocal.y), Mathf.Abs(sLocal.z));
+        b = LocalBounds(g, parent);
+        g.transform.localPosition = new Vector3(lp.x - b.center.x, lp.y - b.min.y, lp.z - b.center.z);
+        if (collide) FitCollider(g); return g;
+    }
+
+    /// Mesh bounds of g in the parent's axes.
+    public static Bounds LocalBounds(GameObject g, Transform parent)
+    {
+        bool any = false; var b = new Bounds();
+        foreach (var r in g.GetComponentsInChildren<Renderer>())
+        {
+            if (!(r is MeshRenderer)) continue; var wb = r.bounds;
+            for (int i = 0; i < 8; i++)
+            {
+                var c = parent.InverseTransformPoint(new Vector3((i & 1) == 0 ? wb.min.x : wb.max.x, (i & 2) == 0 ? wb.min.y : wb.max.y, (i & 4) == 0 ? wb.min.z : wb.max.z));
+                if (!any) { b = new Bounds(c, Vector3.zero); any = true; } else b.Encapsulate(c);
+            }
+        }
+        return b;
+    }
+
+    public static void StripColliders(GameObject g) { foreach (var c in g.GetComponentsInChildren<Collider>()) Object.DestroyImmediate(c); }
+
+    /// One box round the meshes (in g's own axes), unless the prefab already carries colliders.
+    public static void FitCollider(GameObject g)
+    {
+        if (g.GetComponentInChildren<Collider>() != null) return;
+        var b = LocalBounds(g, g.transform); var bc = g.AddComponent<BoxCollider>(); bc.center = b.center; bc.size = b.size;
+    }
+
+    /// A project material with a retint, saved under Assets/Materials/Places (one per name).
+    public Material Tinted(string name, string fromPath, Color tint, Vector2 tiling)
+    {
+        if (mats.TryGetValue(name, out var have)) return have;
+        var from = AssetDatabase.LoadAssetAtPath<Material>(fromPath); if (from == null) { Missing.Add(fromPath); return null; }
+        string path = MaterialDir + "/" + name + ".mat";
+        var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (m == null) { m = new Material(from); AssetDatabase.CreateAsset(m, path); } else m.CopyPropertiesFromMaterial(from);
+        m.SetColor("_BaseColor", tint); m.SetTextureScale("_BaseMap", tiling); m.SetFloat("_Smoothness", Smoothness);
+        EditorUtility.SetDirty(m); mats[name] = m; return m;
+    }
+    /// An unlit glow (DieAlone/FireStandIn) for lit signs and window panes; the colour and strength come from LookTuning.
+    public Material Glow(string name, Color colour, float intensity)
+    {
+        if (mats.TryGetValue(name, out var have)) return have;
+        var sh = Shader.Find("DieAlone/FireStandIn"); if (sh == null) { Missing.Add("shader DieAlone/FireStandIn"); return null; }
+        string path = MaterialDir + "/" + name + ".mat";
+        var m = AssetDatabase.LoadAssetAtPath<Material>(path); if (m == null) { m = new Material(sh); AssetDatabase.CreateAsset(m, path); }
+        m.shader = sh; m.SetColor("_Color", colour); m.SetFloat("_Intensity", intensity); EditorUtility.SetDirty(m); mats[name] = m; return m;
+    }
+
+    /// A textured box (never an untextured primitive), colliderless unless asked.
+    public GameObject Slab(string name, Transform parent, Vector3 lp, Vector3 size, Material mat, Vector3 euler = default, bool collide = false)
+    {
+        var g = GameObject.CreatePrimitive(PrimitiveType.Cube); g.name = name; g.transform.SetParent(parent, false);
+        g.transform.localPosition = lp; g.transform.localRotation = Quaternion.Euler(euler); g.transform.localScale = size;
+        if (!collide) Object.DestroyImmediate(g.GetComponent<Collider>());
+        g.GetComponent<Renderer>().sharedMaterial = mat; return g;
+    }
+    /// An invisible box collider (for pack meshes that ship without one); it always sits inside a drawn mesh.
+    public GameObject Blocker(string name, Transform parent, Vector3 lp, Vector3 size, float yaw = 0f)
+    {
+        var g = new GameObject(name); g.transform.SetParent(parent, false); g.transform.localPosition = lp; g.transform.localRotation = Quaternion.Euler(0f, yaw, 0f);
+        g.AddComponent<BoxCollider>().size = size; return g;
+    }
+
+    /// A practical light (#FFA860 from LookTuning, no shadows) whose brightness follows the look.
+    public Light Practical(string name, Transform parent, Vector3 lp, float range, PracticalLight.Kind kind, PracticalLight.ByDay byDay)
+    {
+        var g = new GameObject(name); g.transform.SetParent(parent, false); g.transform.localPosition = lp;
+        var l = g.AddComponent<Light>(); l.type = LightType.Point; l.range = range; l.intensity = Look.firePitIntensity; l.shadows = LightShadows.None; l.color = Look.practicalColor;
+        var pl = g.AddComponent<PracticalLight>(); var so = new SerializedObject(pl);
+        so.FindProperty("tuning").objectReferenceValue = Look; so.FindProperty("kind").enumValueIndex = (int)kind; so.FindProperty("byDay").enumValueIndex = (int)byDay; so.ApplyModifiedPropertiesWithoutUndo();
+        return l;
+    }
+
+    /// World-space text on the front face of a board (the project's sign pattern, build_signs.cs); front = the board's -z side.
+    public void Label(Transform board, string text, Color colour, int maxSize = 24)
+    {
+        var cg = new GameObject("Label", typeof(RectTransform)); cg.transform.SetParent(board.parent, false);
+        var canvas = cg.AddComponent<Canvas>(); canvas.renderMode = RenderMode.WorldSpace;
+        cg.GetComponent<RectTransform>().sizeDelta = new Vector2(board.localScale.x / LabelScale, board.localScale.y / LabelScale);
+        cg.transform.SetPositionAndRotation(board.position - board.forward * (board.lossyScale.z * 0.5f + LabelFace * 0.2f), board.rotation);
+        cg.transform.localScale = Vector3.one * LabelScale;
+        var tg = new GameObject("Text", typeof(RectTransform)); tg.transform.SetParent(cg.transform, false);
+        var trt = tg.GetComponent<RectTransform>(); trt.anchorMin = Vector2.zero; trt.anchorMax = Vector2.one; trt.offsetMin = trt.offsetMax = Vector2.zero;
+        var tx = tg.AddComponent<UnityEngine.UI.Text>(); tx.font = font; tx.fontSize = maxSize; tx.fontStyle = FontStyle.Bold; tx.alignment = TextAnchor.MiddleCenter;
+        tx.color = colour; tx.text = text; tx.horizontalOverflow = HorizontalWrapMode.Wrap; tx.resizeTextForBestFit = true; tx.resizeTextMinSize = 6; tx.resizeTextMaxSize = maxSize;
+    }
+
+    /// A working door (Door system, Rules and Tips: DOORS): the hinge at one jamb, the panel along the hinge's +x, the pack door
+    /// mesh filled into the panel box. Swings away from the user.
+    public GameObject Door(Transform parent, Vector3 hingeLocal, float yaw, Vector3 panelSize, string visualPath)
+    {
+        var tuning = AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Settings/PlayerTuning.asset"); if (tuning == null) { Missing.Add("PlayerTuning"); return null; }
+        var hinge = Group("Door", parent, parent.TransformPoint(hingeLocal), 0f); hinge.localRotation = Quaternion.Euler(0f, yaw, 0f);
+        var rb = hinge.gameObject.AddComponent<Rigidbody>(); rb.isKinematic = true; rb.useGravity = false;
+        var panel = Blocker("Panel", hinge, new Vector3(panelSize.x * 0.5f, panelSize.y * 0.5f, 0f), panelSize);
+        Fill(visualPath, hinge, new Vector3(panelSize.x * 0.5f, 0f, 0f), panelSize);
+        var door = hinge.gameObject.AddComponent<global::Door>(); var so = new SerializedObject(door);
+        so.FindProperty("prompt").stringValue = "Open"; so.FindProperty("tuning").objectReferenceValue = tuning;
+        so.FindProperty("panel").objectReferenceValue = panel.GetComponent<BoxCollider>(); so.ApplyModifiedPropertiesWithoutUndo();
+        return hinge.gameObject;
+    }
+
+    /// Shows the targets only in the given looks (LookVisibility on a holder under the parent).
+    public void ShowIn(Transform parent, string name, LookVisibility.Show show, List<GameObject> targets)
+    {
+        var host = new GameObject(name); host.transform.SetParent(parent, false);
+        var v = host.AddComponent<LookVisibility>(); var so = new SerializedObject(v);
+        so.FindProperty("show").enumValueIndex = (int)show;
+        so.FindProperty("dayTwo").objectReferenceValue = AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayTwo.asset");
+        var tp = so.FindProperty("targets"); tp.arraySize = targets.Count; for (int i = 0; i < targets.Count; i++) tp.GetArrayElementAtIndex(i).objectReferenceValue = targets[i];
+        so.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    /// A gray resident capsule becomes a bare marker: same place and name, nothing drawn.
+    public static void MarkerOnly(Transform t)
+    {
+        if (t == null) return;
+        foreach (var r in t.GetComponentsInChildren<Renderer>()) { var mf = r.GetComponent<MeshFilter>(); Object.DestroyImmediate(r); if (mf != null) Object.DestroyImmediate(mf); }
+        foreach (var c in t.GetComponentsInChildren<Collider>()) Object.DestroyImmediate(c);
+    }
+    public Transform Marker(string name, Transform parent, Vector3 lp, float yaw)
+    {
+        var g = new GameObject(name).transform; g.SetParent(parent, false); g.localPosition = lp; g.localRotation = Quaternion.Euler(0f, yaw, 0f); return g;
+    }
+
+    public string Report() => "props " + Props + ", missing: " + (Missing.Count == 0 ? "none" : string.Join(", ", Missing));
+}
