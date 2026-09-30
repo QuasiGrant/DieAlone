@@ -105,4 +105,19 @@ Plus a few more prop packs Grant bought (DECISIONS 2026-09-29), names not yet gi
 1. Answered (DECISIONS 2026-09-29): shaders shipped in bought packs are replaced. Unity's built-in URP shaders already used across the project count as allowed; only shaders shipped in packs are excluded (Style.md 4.5). The fire pack is used for meshes, textures and particle settings; Rook puts them on project or built-in URP shaders.
 2. Open: names of the extra prop packs, so I can judge them.
 
+## 8. Gaps, 2026-09-30
+
+Gaps from Docs/Process/AssetCatalogue.md. Pages fetched 2026-09-30; contents, sizes and look unverified unless stated. Envato licence (per Envato help-centre search results; the licence page itself returned 403, so partly verified): commercial use inside an end product, each item registered to one project, no redistribution, so Envato files are git-ignored like packs and listed in Assets/SOURCES.md.
+
+| Gap | Option | Link | Licence | Fit | Owned fallback |
+|---|---|---|---|---|---|
+| Scree | ambientCG Rocks006, sharp grey gravel, photoscan | https://ambientcg.com/view?id=Rocks006 | CC0, verified (page and docs.ambientcg.com/license) | Good once capped to 512; reads light grey, albedo must come down and warm to the rust palette | Yes, try first: BK Rocks_a at a small tile plus RubbleSparse |
+| Scree | ambientCG Gravel040, grey slate rock | https://ambientcg.com/view?id=Gravel040 | CC0, verified site-wide | Tags only seen; look unverified | as above |
+| Brush over 2 m | Low Poly Bushes by Woxy, $4.99, all three pipelines, 2022.3 | https://assetstore.unity.com/packages/3d/vegetation/low-poly-bushes-by-woxy-274525 | Standard Asset Store EULA, verified | Weak: sizes unverified, flat low poly likely clashes with BK | Yes, preferred: BK RedFir1-4 (2 to 8 m) as young-fir thicket, CS_Bush_Large around the base |
+| Dock, pier, boat | Modular Waterfront System (Lucine), $16.99, URP on 2022.3.62f2, 54 MB; docks and rowboat per page | https://assetstore.unity.com/packages/3d/environments/modular-waterfront-system-fisherman-s-shack-docks-and-rowboat-330373 | Standard Asset Store EULA, verified | "Medieval fantasy" keyword, may read storybook; replace materials with Planks023A and Style.md woods | Piles and pier yes: CITW_Log or cylinder piles, C_Plank deck. Boat no |
+| Dock, pier, boat | Low Poly Dock (Total Game Assets), $15, 2018.2, pipelines not shown | https://assetstore.unity.com/packages/3d/environments/low-poly-dock-112828 | Standard Asset Store EULA, verified | Boat and piles unverified; old | as above |
+| Signpost, marker | Envato "Rustic Arrow Wood Signpost" (TurboSquid), FBX, 1K polys, 219 MB | https://elements.envato.com/rustic-arrow-wood-signpost-JDUSXHF | Envato Elements, partly verified (see above) | Low poly shape fits; cap textures to 512; multi-arrow may read tourist trail, use one arm | Yes, preferred: build_signs.cs board pattern, CS_Stone cairns (as at J) |
+
+Rejected: Envato "Wooden Rowboat", "Old Row Boat", "Wooden Pier Old" (PixelSquid360) are 3D renders, not models. Envato "Detailed Wooden Pier with Lattice Railings": 47k polys, no textures. Envato shrubs: archviz garden bushes, off-brand. Wooden Dock & Bridges (Nick Abrams): Built-in only. Retro PSX Style Tree Pack (elegantcrow, itch): CC0 claimed, but made from Pixabay images, licence chain unverified. Poly Haven nature models (API list): no large brush, boat, dock or sign; its other model categories not checked.
+
 Vesper
