@@ -77,6 +77,8 @@ public class LookTuning : ScriptableObject
     public Color skyHorizon = new Color(0.85f, 0.40f, 0.18f);
     [Tooltip("Degrees above the horizon that the sky holds skyHorizon before it blends to skyTop. 0 blends from the horizon up.")]
     [Range(0f, 60f)] public float skyBandHeight = 0f;
+    [Tooltip("How fast the sky blends from skyHorizon to skyTop above the band, per unit of the sine of elevation (1.8 blends by about 55 degrees, 4.5 by about 20).")]
+    [Range(0.5f, 10f)] public float skyBlendRate = 1.8f;
     public Color skyGround = new Color(0.30f, 0.16f, 0.10f);
     public Color sunGlowColor = new Color(1.0f, 0.55f, 0.25f);
     [Tooltip("Higher is a tighter glow around the sun.")]

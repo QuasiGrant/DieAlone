@@ -468,6 +468,9 @@ void SetLook(string path, string sun, float elev, float bearing, float inten, st
 // 8.15 gate (Vesper, the next single change): the gold band from 30 degrees down to skyBandDayOne, so the sky blends from the #E3A968
 // horizon to the #5E6878 top inside the frame (at 30 the whole frame sat under the band: one flat ochre)
 const float skyBandDayOne = 6f;
+// 8.16 gate (Vesper, LightingOptions.md 7): the sky reaches its #5E6878 top by about 20 degrees up (skyBlendRate 4.5; 1.8, the old
+// hard-coded rate, left the level view one flat ochre)
+const float skyBlendDayOne = 4.5f;
 SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 20f, 205f, 1.25f, "#6E6658", "#5E6878", "#E3A968", "#9A9A94", 110f, 850f);
 {
     var dayOneLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayOne.asset");
@@ -475,7 +478,7 @@ SetLook("Assets/Settings/LookTuning_DayOne.asset", "#FFC98A", 20f, 205f, 1.25f, 
     {
         dayOneLook.crushBlacks = 0.28f; dayOneLook.washOut = 0.18f; dayOneLook.darkCorners = 0.4f;
         dayOneLook.sunGlowSize = 80f; dayOneLook.sunGlowColor = Hex("#C8A070");
-        dayOneLook.sunsetTrilight = true; dayOneLook.sunsetAmbientSky = Hex("#6A7080"); dayOneLook.sunsetAmbientGround = Hex("#3A3228"); dayOneLook.skyBandHeight = skyBandDayOne;
+        dayOneLook.sunsetTrilight = true; dayOneLook.sunsetAmbientSky = Hex("#6A7080"); dayOneLook.sunsetAmbientGround = Hex("#3A3228"); dayOneLook.skyBandHeight = skyBandDayOne; dayOneLook.skyBlendRate = skyBlendDayOne;
         UnityEditor.EditorUtility.SetDirty(dayOneLook);
     }
 }
