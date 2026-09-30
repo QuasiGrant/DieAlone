@@ -164,8 +164,8 @@ Each must stay fixed.
 
 ### 11. Straight view along each trail
 - **Input:** from every point of each leg, both directions. The view reaches the farthest later point for which every trail point up to it is visible (eye 1.6, target 0.3 m over the ground, default layers, crowns on).
-- **Pass:** 60 m or less, except the switchback legs on the W ridge face (Sable's ruling, 2026-09-29: covers the four benched legs). Report every leg of J to Ward separately; J to leg 1, leg 5, the cleft and the ramp are not switchback legs.
-- **Recipe:** none committed.
+- **Pass:** 60 m or less, except the switchback legs on the W ridge face (Sable's ruling, 2026-09-29: covers the four benched legs). Report every leg of J to Ward separately; J to leg 1, leg 5, the cleft and the ramp are not switchback legs. Also covered (Wren's ruling, 2026-09-29, pending Grant's confirmation): J to leg 1 (91 m) and leg 5 (78 m), as views up and across the W ridge face. The cleft and the ramp stay at 60 m or less.
+- **Recipe:** main3_straight_view_climb_8_9k.cs for J to Ward only (must exempt J to leg 1 and leg 5 by name and print PASS). None for the other trails.
 
 ### 12. Day-one state
 - **Input:** the saved scene, edit mode.
