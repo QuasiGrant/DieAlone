@@ -1,6 +1,6 @@
 # Style guide
 
-**DRAFT, 2026-09-28, updated 2026-09-29, Vesper. Nothing here is decided until it is a line in DECISIONS.md and Grant has confirmed it.** Every later review of Main3 checks against this file. Values marked **P** are proposals for Grant. Values marked **now** are what LookTuning.asset holds today. Rook sets LookTuning; I only propose.
+**DRAFT, 2026-09-28, updated 2026-09-30, Vesper. Nothing here is decided until it is a line in DECISIONS.md and Grant has confirmed it.** Every later review of Main3 checks against this file. Values marked **P** are proposals for Grant. Values marked **now** are what LookTuning.asset holds today. Rook sets LookTuning; I only propose.
 
 Binding inputs: DECISIONS.md 2026-09-20 (VHS first, Fears to Fathom, PS1 effects off, own shaders only), 2026-09-27 (SSAO off, render scale 0.5), 2026-09-28 (two states day and night, sun fixed, pass checks, packs for hero pieces, day one plays as a normal job), 2026-09-29 (no fire visible on day one until nightfall; bought pack shaders replaced with project shaders; every asset licensed for commercial sale; from day two the fire may show by day as far glow and smoke, never on day one, and it is huge in the distance).
 
@@ -133,7 +133,7 @@ A structure passes a dressing review when all are true:
 5. It shows use: at least one object mid-task (an axe in the block, a pot on a cold fire, a door ajar).
 6. A clearing holds 15 or more props **P**, grouped in two or three clusters, not scattered evenly.
 7. No untextured primitive in a dressed location. Primitives are for blockout only.
-8. Trees never on a grid. Giants spaced at least 30 m apart **P**, small trees clustered. Giant tops at most 50 m absolute, 42 m tall on the knoll (Main3.md 2.7).
+8. Trees never on a grid. Giants in groves of 4 to 8, 8 to 15 m apart, 40 to 60 m between groves **P**. Each grove has 10 to 15 firs or pines at 8 to 20 m for scale, and brush, fern, fallen logs and leaves at its foot. Small trees in clumps, never evenly sprinkled. (Replaces the 30 m spacing rule, withdrawn 2026-09-30: it made islands; Check3_Quality.md 2.) Giant tops at most 50 m absolute, 42 m tall on the knoll (Main3.md 2.7).
 
 ## 6. Lighting
 
@@ -238,5 +238,25 @@ Per-location boards wait for Main3.md (draft rev 3) to be confirmed. Global boar
 3. Giant trees: trunk scale against a person, bark, how light falls between them.
 4. The Ward: carved standing stones on a cliff edge, weathered, ember runes.
 5. Lived-in camp: props per clearing, abandoned mid-task.
+
+## 10. Eye-height bar (Gate.md step 3)
+
+Absolute. I grade eye-height frames every 25 m (filter on, 1920 x 988), never against the last capture. One letter per zone. There is no "fine for gray": a stage is graded only on what it has built, but what it built meets the full bar.
+- **A** ships. **B** ships, notes logged. **C** passes; each named fix becomes a task. **D** fails: a hard line is broken, or the zone reads empty or wrong. **F** fails: the frame reads as blockout.
+
+Hard lines, every stage (any break is D or lower):
+1. Value order: horizon sky brightest, haze mid, foreground darkest. Every outdoor frame has a near-black area that still shows shape; lit and shade separate in a greyscale thumbnail.
+2. Warm key, cool shade; shadows at least twice object height, falling east; a rim where the sun rakes crests; no white sun smear; gold horizon band where day-one sky shows.
+3. Distance: at least two ridge layers at camp and J, each paler and cooler than the floor; nothing past 50 m melts into the ground tan.
+4. Night: crests read against the #0C1016 horizon; practicals visible and modest; no speckle; nothing solid renders translucent.
+5. Tape: filter on and off differ at a glance; no clipped white but the sun; day one shows no fire, smoke, ash or rust sky.
+6. No untextured primitive, gray box or stretched texture in frame; no frame over a third one flat untextured face; no frame that is all wall.
+7. No bare flat ground over the whole lower half of a frame.
+
+Per stage (each stage also keeps every earlier stage's lines):
+- **Terrain and road (8.14):** floor textured, rock on slopes over 35 degrees, no untextured bank, climb or crest; crests broken, not smooth facets; the road runs on past the gate in the lot frame. Missing trees and places are not graded; missing textures are.
+- **Paths and stops (8.15):** the trail reads apart from ground at a glance, in greyscale, in every trail frame; ground cover to 0.4 m of the trail; a stone, root or log every 3 to 5 m on one edge; every stop frame shows a boulder, log, brush or fence, never a cube.
+- **Forest (8.16):** 4 of 5 trail frames have trees within 30 m on both sides; top-down, no open ground over 30 m except named clearings, lake and lot; giants stand in groves with a mid layer (5.8), not as lone pines or nursery rows; bark not smeared within 5 m; the north grove wall and crest tree lines show.
+- **Places (8.17):** every place C or better on section 5 (silhouette at 20 m, three height bands, trim, grounded, one object mid-task, props in clusters); office and store differ at 20 m; lot lights and windows modest warm practicals; interiors darker than outside, window brightest, lamp and stove pools, corners dark, desk readable.
 
 Vesper
