@@ -20,8 +20,6 @@ public class PlayerTuning : ScriptableObject
     [Header("Steep ground")]
     [Tooltip("Speed in m/s the player slides down ground steeper than the controller's slope limit, where no jump is allowed.")]
     public float steepSlideSpeed = 5f;
-    [Tooltip("How far under the capsule, in metres, the ground probe looks for the surface the player stands on.")]
-    public float groundProbeDistance = 0.3f;
 
     [Header("Crouch")]
     public float standHeight = 1.8f;

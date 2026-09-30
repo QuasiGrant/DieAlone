@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Main3 review capture: contact sheets of Main3 as a player sees it (trails, climb, warps, trail ends, invisible stops,
-# day one and night pairs, top-down map) for Marlow, Pim and Vesper. Rerun before every Grant walk.
+# Main3 review capture: contact sheets of Main3 as a player sees it (trails, climb, warps, trail ends, invisible stops, compass views,
+# hand-walk views, grayscale trails with grey means, day one and night pairs, top-down map, InvisibleColliders.md) for Marlow, Pim and
+# Vesper, then the scripted Play checks (main3_8_14_climb_check.cs and main3_hand_walk_check.cs) into Checks.md. Rerun before every
+# Grant walk.
 # Usage: bash Tools/Recipes/main3_review_capture.sh [outDir]   (from the project root, Editor open on Main3, NOT in Play mode)
 # Default outDir: Docs/Captures/Main3Review (git-ignored; only verdicts are committed). Enters Play mode, runs main3_review_capture.cs step "day" then
-# step "night" as detached Editor jobs, leaves Play mode, sets runInBackground back to false and shows ProjectSettings changes.
+# step "night" and the two checks as detached Editor jobs, leaves Play mode, sets runInBackground back to false and shows ProjectSettings changes.
 # It never stops a Play session it did not start: if the Editor is already playing it fails.
 set -u
 cd "$(dirname "$0")/../.." || exit 1
@@ -29,9 +31,18 @@ for step in day night; do
     case "$res" in *"run again"*) sleep 3; continue;; esac
     break
   done
-  echo "$step: $(printf '%s' "$res" | sed 's/\\n/ | /g')"
+  echo "$step: $(printf '%s' "$res" | sed 's/\n/ | /g')"
   case "$res" in *"$step done"*) ;; *) rc=1; break;; esac
 done
+if [ $rc -eq 0 ]; then
+  { echo "# Main3 scripted Play checks"; echo; echo "From Tools/Recipes/main3_review_capture.sh, $(date '+%Y-%m-%d %H:%M'). Every move is PlayerController.Step; see each recipe's header for the method."; }  > "$OUT/Checks.md"
+  for check in main3_8_14_climb_check.cs main3_hand_walk_check.cs; do
+    res=$(job "$R/$check")
+    { echo; echo "## $check"; echo; printf '%s\n' "$res" | sed 's/\n/\n/g' | sed 's/^/    /'; } >> "$OUT/Checks.md"
+    echo "$check: $(printf '%s' "$res" | sed 's/\n/ | /g')"
+    case "$res" in *"ALL PASS"*) ;; *) rc=1;; esac
+  done
+fi
 unity command editor_stop >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "stopped"' && break; sleep 2; done
 unity command eval --code 'UnityEngine.Application.runInBackground = false; return "runInBackground " + UnityEngine.Application.runInBackground;' --result-only 2>/dev/null

@@ -1,0 +1,196 @@
+// Main3 hand-walk check (Play mode; 8.14a, Marlow's hand-walk list, Gate_8_14_Marlow.md section 13). Run in Main3 after the runner,
+// by Tools/Recipes/main3_review_capture.sh after the sheets; never saves the scene. Every move is PlayerController.Step (the game's own
+// rules: walk, sprint, jump, the slide off ground over the slope limit), dt 0.02, as in main3_8_14_climb_check.cs, which covers the
+// lip, the end walls, the ring rims (sideways pushes from every climb point) and the band arms (IW2). This one adds:
+// 1. TRAILS (13.7): every trail, both ways, steered at walk speed point to point with the day gates off (CairnGate, the cave's
+//    DayOneBoard), from its first to its last point not inside a solid (a trail may end at a camp's pole); FAIL if the walker stalls.
+// 2. W FOOT POCKET (13.3): from a 6 m grid over x 46 to 80, z 165 to 200, a 25 m walk west and 2.2 s sprint-jumps in 12 directions;
+//    FAIL if one ends more than pocketGain metres over its start and steeper from it than the slope limit (up the W face, not up a
+//    walkable slope).
+// 3. PUMP TRENCH (13.4): from the last 30 m of Camp to pump, 20 m walks and sprint-jumps to both sides, and from the pump a walk and
+//    sprint-jumps west at the sheer face. Reported, not judged: how many pushes climb out (end over trenchOut metres to the side and
+//    more than trenchUp metres over the trail) and the most height gained west of the pump.
+// 4. SPIKES (13.5): round each of the three despiked zones (8.1), walks and sprint-jumps in from 16 points just outside; FAIL if one ends
+//    within spikeTopDrop metres of the zone's highest ground and within spikeTopReach metres of it (standing on a top). A zone whose
+//    top stands less than spikeRise over the highest ground on the ring spikeOut outside it has no spike left and passes as it is.
+// 5. FENCE (13.6): a walk north along the inside of the fence (x fenceWalkX, z 160 to 300), reported with where it stalls; and walks and
+//    sprint-jumps east every 5 m; FAIL if one ends east of the fence (IW1 and the panels hold).
+// Bounded loops only. Restores CairnGate and runInBackground (false) before it returns.
+if (!UnityEngine.Application.isPlaying) return "enter play mode first";
+UnityEngine.Application.runInBackground = true;
+UnityEngine.GameObject Root(string name) { foreach (var r in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects()) if (r.name == name) return r; return null; }
+var pc = UnityEngine.Object.FindFirstObjectByType<PlayerController>(); var cc = pc.GetComponent<UnityEngine.CharacterController>(); pc.enabled = false;
+var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Settings/PlayerTuning.asset");
+var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(new UnityEngine.Vector3(x, 0f, z)) + ter.transform.position.y;
+const float dt = 0.02f, pushWalk = 25f, sideWalk = 20f, hopTime = 2.2f, pocketGain = 3f, pocketStep = 6f, trenchBack = 30f, trenchStep = 5f, trenchOut = 4f, trenchUp = 1.5f;
+const float spikeRise = 2f, spikeTopDrop = 1.5f, spikeTopReach = 3f, spikeOut = 4f, fenceX = 396f, fenceWalkX = 393f, fenceZ0 = 160f, fenceZ1 = 300f, fenceStep = 5f, fencePast = 0.5f;
+const int hopDirs = 12, spikeStarts = 16, stallSteps = 600, walkSteps = 8000;
+var pocketX = new UnityEngine.Vector2(46f, 80f); var pocketZ = new UnityEngine.Vector2(165f, 200f);
+var spikes = new (UnityEngine.Vector2 c, float r)[] { (new UnityEngine.Vector2(90f, 146f), 12f), (new UnityEngine.Vector2(62f, 48f), 14f), (new UnityEngine.Vector2(118f, 66f), 10f) };   // 8.1 despike zones
+var pumpAt = new UnityEngine.Vector2(190f, 97f);
+float walkSpeed = tuning.walkSpeed;
+void Put(UnityEngine.Vector3 p) { cc.enabled = false; pc.transform.position = p + UnityEngine.Vector3.up * 0.3f; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (int k = 0; k < 20; k++) pc.Step(UnityEngine.Vector3.zero, false, false, dt); }
+void Walk(UnityEngine.Vector3 dir, float dist)
+{
+    float moved = 0f, lastBest = 0f; int since = 0;
+    for (int s = 0; s < 20000 && moved < dist; s++)
+    {
+        var before = pc.transform.position; pc.Step(dir, false, false, dt); var after = pc.transform.position;
+        moved += new UnityEngine.Vector2(after.x - before.x, after.z - before.z).magnitude;
+        if (moved > lastBest + 0.05f) { lastBest = moved; since = 0; } else if (++since > stallSteps) break;
+    }
+}
+void Hop(UnityEngine.Vector3 dir, float seconds)   // sprint with the jump held: a hop on every landing, then land
+{
+    for (float t = 0f; t < seconds; t += dt) pc.Step(dir, true, true, dt);
+    for (int k = 0; k < 60; k++) pc.Step(UnityEngine.Vector3.zero, false, false, dt);
+}
+bool Steer(float x, float z)
+{
+    var t = new UnityEngine.Vector2(x, z); int since = 0; float best = float.MaxValue;
+    for (int s = 0; s < walkSteps; s++)
+    {
+        var p = pc.transform.position; var d = t - new UnityEngine.Vector2(p.x, p.z); if (d.magnitude < 0.3f) return true;
+        if (d.magnitude < best - 0.02f) { best = d.magnitude; since = 0; } else if (++since > stallSteps) return false;
+        float frac = UnityEngine.Mathf.Min(1f, d.magnitude / (walkSpeed * dt));
+        pc.Step(new UnityEngine.Vector3(d.x, 0f, d.y).normalized * frac, false, false, dt);
+    }
+    return false;
+}
+UnityEngine.Vector3 Dir(int k) => UnityEngine.Quaternion.Euler(0f, k * 360f / hopDirs, 0f) * UnityEngine.Vector3.forward;
+UnityEngine.Vector3 Ground(float x, float z) => new UnityEngine.Vector3(x, H(x, z), z);
+var gate = Root("Ward").transform.Find("CairnGate"); bool gateWas = gate.gameObject.activeSelf;
+var board = Root("Cave").transform.Find("Mouth/DayOneBoard"); bool boardWas = board.gameObject.activeSelf;
+bool Occupied(UnityEngine.Vector3 at) { foreach (var c in UnityEngine.Physics.OverlapCapsule(at + UnityEngine.Vector3.up * 0.5f, at + UnityEngine.Vector3.up * 1.5f, cc.radius, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) if (!(c is UnityEngine.TerrainCollider) && c != cc) return true; return false; }
+var sb = new System.Text.StringBuilder(); bool allPass = true;
+try
+{
+    // ---- 1. every trail, both ways
+    gate.gameObject.SetActive(false); board.gameObject.SetActive(false); UnityEngine.Physics.SyncTransforms();
+    int legsOk = 0, legsAll = 0; var stuck = new System.Collections.Generic.List<string>();
+    foreach (UnityEngine.Transform leg in Root("Trails").transform)
+    {
+        var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform p in leg) pts.Add(p.position);
+        if (pts.Count < 2) continue;
+        foreach (var back in new[] { false, true })
+        {
+            var l = new System.Collections.Generic.List<UnityEngine.Vector3>(pts); if (back) l.Reverse();
+            int first = 0, last = l.Count - 1; while (first < last && Occupied(l[first])) first++; while (last > first && Occupied(l[last])) last--;
+            Put(l[first]); bool ok = true; for (int i = first + 1; i <= last && ok; i++) ok = Steer(l[i].x, l[i].z);
+            legsAll++; if (ok) legsOk++; else stuck.Add(leg.name + (back ? " back" : " forward") + " stalls at " + pc.transform.position.ToString("F1"));
+        }
+    }
+    if (stuck.Count > 0) allPass = false;
+    sb.Append("TRAILS: " + legsOk + " of " + legsAll + " walked end to end (both ways): " + (stuck.Count == 0 ? "PASS" : "FAIL " + string.Join("; ", stuck)) + "\n");
+    gate.gameObject.SetActive(gateWas); board.gameObject.SetActive(boardWas); UnityEngine.Physics.SyncTransforms();
+
+    // ---- 2. the W foot pocket
+    int pt = 0, pf = 0; float pBest = float.MinValue; string pFirst = "";
+    for (float x = pocketX.x; x <= pocketX.y; x += pocketStep)
+        for (float z = pocketZ.x; z <= pocketZ.y; z += pocketStep)
+        {
+            var o = Ground(x, z);
+            var tries = new System.Collections.Generic.List<(string mode, UnityEngine.Vector3 dir)> { ("walk", UnityEngine.Vector3.left) };
+            for (int k = 0; k < hopDirs; k++) tries.Add(("jump", Dir(k)));
+            foreach (var t in tries)
+            {
+                Put(o); var start = pc.transform.position;
+                if (t.mode == "walk") Walk(t.dir, pushWalk); else Hop(t.dir, hopTime);
+                var e = pc.transform.position; pt++; float gain = e.y - start.y; pBest = UnityEngine.Mathf.Max(pBest, gain);
+                float across = new UnityEngine.Vector2(e.x - start.x, e.z - start.z).magnitude;
+                if (gain > pocketGain && gain > across * UnityEngine.Mathf.Tan(cc.slopeLimit * UnityEngine.Mathf.Deg2Rad)) { pf++; if (pFirst == "") pFirst = " first: " + t.mode + " from " + o.ToString("F1") + " toward " + t.dir.ToString("F2") + " ended " + e.ToString("F1"); }
+            }
+        }
+    if (pf > 0) allPass = false;
+    sb.Append("W FOOT POCKET: " + pt + " pushes, most height gained " + pBest.ToString("F1") + " m, " + pf + " over " + pocketGain + " m and steeper than the slope limit: " + (pf == 0 ? "PASS" : "FAIL") + pFirst + "\n");
+
+    // ---- 3. the pump trench (reported)
+    UnityEngine.Transform pumpLeg = Root("Trails").transform.Find("Camp to pump");
+    if (pumpLeg == null) return "no trail Camp to pump";
+    var pp = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform p in pumpLeg) pp.Add(p.position);
+    float Len(System.Collections.Generic.List<UnityEngine.Vector3> l) { float s = 0f; for (int i = 1; i < l.Count; i++) s += UnityEngine.Vector3.Distance(l[i - 1], l[i]); return s; }
+    UnityEngine.Vector3 At(System.Collections.Generic.List<UnityEngine.Vector3> l, float s)
+    {
+        if (s <= 0f) return l[0];
+        for (int i = 1; i < l.Count; i++) { float d = UnityEngine.Vector3.Distance(l[i - 1], l[i]); if (s <= d) return UnityEngine.Vector3.Lerp(l[i - 1], l[i], d > 0f ? s / d : 0f); s -= d; }
+        return l[l.Count - 1];
+    }
+    float pLen = Len(pp); int tt = 0, tOut = 0; string tFirst = "";
+    for (float back = trenchBack; back >= 0f; back -= trenchStep)
+    {
+        var a = At(pp, pLen - back); var b = At(pp, UnityEngine.Mathf.Min(pLen, pLen - back + 1f)); if (back < 1f) { b = a; a = At(pp, pLen - 1f); }
+        var along = new UnityEngine.Vector3(b.x - a.x, 0f, b.z - a.z).normalized; var side = new UnityEngine.Vector3(along.z, 0f, -along.x);
+        var o = Ground(At(pp, pLen - back).x, At(pp, pLen - back).z);
+        foreach (var d in new[] { side, -side })
+            foreach (var mode in new[] { "walk", "jump" })
+            {
+                Put(o); if (mode == "walk") Walk(d, sideWalk); else Hop(d, hopTime);
+                var e = pc.transform.position; tt++;
+                float across = UnityEngine.Mathf.Abs(UnityEngine.Vector3.Dot(new UnityEngine.Vector3(e.x - o.x, 0f, e.z - o.z), side));
+                if (across > trenchOut && e.y > o.y + trenchUp) { tOut++; if (tFirst == "") tFirst = " e.g. " + mode + " " + back.ToString("F0") + " m from the pump ended " + e.ToString("F1"); }
+            }
+    }
+    float westGain = float.MinValue; string westAt = "";
+    {
+        var o = Ground(pumpAt.x, pumpAt.y);
+        var tries = new System.Collections.Generic.List<(string mode, UnityEngine.Vector3 dir)> { ("walk", UnityEngine.Vector3.left) };
+        for (int k = 0; k < hopDirs; k++) { var d = Dir(k); if (d.x < 0f) tries.Add(("jump", d)); }
+        foreach (var t in tries)
+        {
+            Put(o); if (t.mode == "walk") Walk(t.dir, pushWalk); else Hop(t.dir, hopTime);
+            var e = pc.transform.position; if (e.y - o.y > westGain) { westGain = e.y - o.y; westAt = e.ToString("F1"); }
+        }
+    }
+    sb.Append("PUMP TRENCH (report): " + tt + " side pushes from the last " + trenchBack + " m, " + tOut + " climb out" + tFirst + "; west of the pump the most height gained is " + westGain.ToString("F1") + " m (at " + westAt + ")\n");
+
+    // ---- 4. the three spikes
+    int st = 0, sf = 0; string sFirst = ""; var tops = new System.Collections.Generic.List<string>();
+    foreach (var s in spikes)
+    {
+        float top = float.MinValue; var topAt = UnityEngine.Vector2.zero;
+        for (float x = s.c.x - s.r; x <= s.c.x + s.r; x += 1f) for (float z = s.c.y - s.r; z <= s.c.y + s.r; z += 1f)
+            if ((new UnityEngine.Vector2(x, z) - s.c).magnitude <= s.r) { float h = H(x, z); if (h > top) { top = h; topAt = new UnityEngine.Vector2(x, z); } }
+        float ring = float.MinValue;
+        for (int k = 0; k < spikeStarts; k++) { float ang = k * 360f / spikeStarts * UnityEngine.Mathf.Deg2Rad; var p = s.c + new UnityEngine.Vector2(UnityEngine.Mathf.Sin(ang), UnityEngine.Mathf.Cos(ang)) * (s.r + spikeOut); ring = UnityEngine.Mathf.Max(ring, H(p.x, p.y)); }
+        bool spike = top - ring >= spikeRise;
+        tops.Add("(" + s.c.x.ToString("F0") + ", " + s.c.y.ToString("F0") + ") top " + top.ToString("F1") + ", " + (top - ring).ToString("F1") + " m over its ring" + (spike ? "" : ", no spike"));
+        if (!spike) continue;
+        for (int k = 0; k < spikeStarts; k++)
+        {
+            float ang = k * 360f / spikeStarts * UnityEngine.Mathf.Deg2Rad; var p = s.c + new UnityEngine.Vector2(UnityEngine.Mathf.Sin(ang), UnityEngine.Mathf.Cos(ang)) * (s.r + spikeOut);
+            var inward = new UnityEngine.Vector3(topAt.x - p.x, 0f, topAt.y - p.y).normalized;
+            foreach (var mode in new[] { "walk", "jump" })
+            {
+                Put(Ground(p.x, p.y)); if (mode == "walk") Walk(inward, s.r + spikeOut); else Hop(inward, hopTime);
+                var e = pc.transform.position; st++;
+                if (e.y > top - spikeTopDrop && new UnityEngine.Vector2(e.x - topAt.x, e.z - topAt.y).magnitude <= spikeTopReach) { sf++; if (sFirst == "") sFirst = " first: " + mode + " from " + p.ToString("F1") + " ended " + e.ToString("F1"); }
+            }
+        }
+    }
+    if (sf > 0) allPass = false;
+    sb.Append("SPIKES: " + string.Join("; ", tops) + "; " + st + " pushes in, " + sf + " on a top: " + (sf == 0 ? "PASS" : "FAIL") + sFirst + "\n");
+
+    // ---- 5. the fence line
+    Put(Ground(fenceWalkX, fenceZ0)); var stalls = new System.Collections.Generic.List<string>();
+    for (float z = fenceZ0 + fenceStep; z <= fenceZ1; z += fenceStep)
+        if (!Steer(fenceWalkX, z)) { var at = pc.transform.position; stalls.Add("z " + at.z.ToString("F0") + " (" + at.x.ToString("F1") + ")"); Put(Ground(fenceWalkX, z)); }
+    int ft = 0, ff = 0; string fFirst = "";
+    var east = new[] { new UnityEngine.Vector3(1f, 0f, 0f), new UnityEngine.Vector3(0.7f, 0f, 0.7f), new UnityEngine.Vector3(0.7f, 0f, -0.7f) };
+    for (float z = fenceZ0; z <= fenceZ1; z += fenceStep)
+        foreach (var d in east)
+            foreach (var mode in new[] { "walk", "jump" })
+            {
+                Put(Ground(fenceWalkX, z)); if (mode == "walk") Walk(d.normalized, sideWalk); else Hop(d.normalized, hopTime);
+                var e = pc.transform.position; ft++;
+                if (e.x > fenceX + fencePast) { ff++; if (fFirst == "") fFirst = " first: " + mode + " from z " + z.ToString("F0") + " toward " + d.ToString("F2") + " ended " + e.ToString("F1"); }
+            }
+    if (ff > 0) allPass = false;
+    sb.Append("FENCE: walk north along x " + fenceWalkX + " from z " + fenceZ0 + " to " + fenceZ1 + ": " + (stalls.Count == 0 ? "no stall" : "stalls at " + string.Join(", ", stalls)) + " (report); " + ft + " pushes east, " + ff + " past the fence: " + (ff == 0 ? "PASS" : "FAIL") + fFirst + "\n");
+}
+finally
+{
+    gate.gameObject.SetActive(gateWas); board.gameObject.SetActive(boardWas); UnityEngine.Physics.SyncTransforms();
+    pc.enabled = true; UnityEngine.Application.runInBackground = false;
+}
+sb.Append("ALL " + (allPass ? "PASS" : "FAIL"));
+return sb.ToString();

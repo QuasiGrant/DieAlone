@@ -24,6 +24,9 @@ public class PlayerController : MonoBehaviour
     private float verticalVelocity;
     private bool lockedLastFrame;
     private int lockSettleFrames;
+    private bool footSeen, moveFootSeen;   // foot contact of the last Move, and the one being gathered during a Move
+    private Vector3 footNormal = Vector3.up, footAway, moveFootNormal, moveFootAway;
+    private float moveFootUp;
 
     private void Awake()
     {
@@ -150,11 +153,11 @@ public class PlayerController : MonoBehaviour
         if (planar.sqrMagnitude > 1f) planar.Normalize();
 
         bool steep = false; Vector3 downhill = Vector3.zero;
-        if (controller.isGrounded && SteepGround(out Vector3 normal, out Vector3 away))
+        if (controller.isGrounded && footSeen && Vector3.Angle(footNormal, Vector3.up) > controller.slopeLimit)
         {
             steep = true;
             // down the face, and out over the drop: on a near-vertical face edge the down-the-face part alone points into the edge
-            downhill = (Vector3.ProjectOnPlane(Vector3.down, normal).normalized + away).normalized;
+            downhill = (Vector3.ProjectOnPlane(Vector3.down, footNormal).normalized + footAway).normalized;
             Vector3 uphill = new Vector3(-downhill.x, 0f, -downhill.z).normalized;
             float into = Vector3.Dot(planar, uphill);
             if (into > 0f) planar -= uphill * into;   // no walking up it either
@@ -177,30 +180,27 @@ public class PlayerController : MonoBehaviour
 
         float speed = isCrouching ? tuning.crouchSpeed : (sprint ? tuning.sprintSpeed : tuning.walkSpeed);
         Vector3 velocity = planar * speed + Vector3.up * verticalVelocity + downhill * tuning.steepSlideSpeed;
+        moveFootSeen = false; moveFootUp = -2f;
         controller.Move(velocity * dt);
+        footSeen = moveFootSeen; footNormal = moveFootNormal; footAway = moveFootAway;
     }
 
-    // The surface under the capsule's foot, found by a sphere cast from the foot sphere's centre; true when it is steeper than
-    // the controller's slope limit. An edge under the foot gives a tilted normal, so the player also slides off rims and walls.
-    // away: level direction from the contact point to the foot's centre, so a player perched on a steep face's edge slides off it.
-    private bool SteepGround(out Vector3 normal, out Vector3 away)
+    // The ground the capsule stands on is the flattest of the contacts on its lower half during the last Move, as the controller
+    // itself reports them. Standing only on contacts over the slope limit (a face, or the edge of a face beside the foot) means
+    // steep: no jump, and a slide down the face and out over the drop (footAway, level, from the contact to the foot's centre).
+    private void TrackFoot(ControllerColliderHit hit)
     {
-        float r = controller.radius * 0.9f;
-        Vector3 origin = transform.position + Vector3.up * (controller.radius + controller.skinWidth);
-        if (Physics.SphereCast(origin, r, Vector3.down, out RaycastHit hit, tuning.groundProbeDistance + controller.skinWidth, ~0, QueryTriggerInteraction.Ignore))
-        {
-            normal = hit.normal;
-            Vector3 centre = origin + Vector3.down * hit.distance;
-            away = hit.distance > 0f ? Vector3.ProjectOnPlane(centre - hit.point, Vector3.up).normalized : Vector3.zero;
-            return Vector3.Angle(normal, Vector3.up) > controller.slopeLimit;
-        }
-        normal = Vector3.up; away = Vector3.zero;
-        return false;
+        if (hit.point.y > transform.position.y + controller.radius) return;   // a side or head contact, not under the foot
+        if (hit.normal.y <= moveFootUp) return;
+        moveFootUp = hit.normal.y; moveFootNormal = hit.normal; moveFootSeen = true;
+        Vector3 footCentre = transform.position + Vector3.up * controller.radius;
+        moveFootAway = Vector3.ProjectOnPlane(footCentre - hit.point, Vector3.up).normalized;
     }
 
-    // Shove loose physics objects aside instead of being blocked by them.
+    // Tracks the foot contact, and shoves loose physics objects aside instead of being blocked by them.
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
+        TrackFoot(hit);
         Rigidbody body = hit.rigidbody;
         if (body == null || body.isKinematic) return;
         if (hit.moveDirection.y < -0.3f) return;   // standing on it, not walking into it

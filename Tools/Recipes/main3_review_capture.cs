@@ -6,9 +6,14 @@
 // step "day" (day one look): one sheet per trail (both directions, a frame every 10 m, looking along the trail), the climb
 // (J to Ward, up, every 10 m), warps (N, E, S, W), trail ends (facing out), stops (every invisible collider that faces a
 // walker within 5 m of a trail centre line, one frame per 8 m cluster, facing it), the top-down map with trails, warps and
-// stops marked, and the day halves of the six day and night pairs (kept in Temp/ReviewCapture).
-// step "night" (Night look): the night halves and the pairs sheet. If the look is wrong the step selects it and returns
-// "run again" (the look applies on the next frame).
+// stops marked, and the day halves of the ten day and night pairs (kept in Temp/ReviewCapture).
+// 8.14a (Gate.md 2.7, 2.8 and 4; Marlow's hand-walk views): four compass views from the tower deck; the walk views (P4 looking
+// east, the path from the slot exit round the fin with the flame tops in sight per frame, the pump trench to both sides, the lot,
+// store, booth and office facing east); every collider without a renderer in the scene, active or not, listed in
+// InvisibleColliders.md; and, in both steps, a grayscale trail sheet (a frame every 20 m along each trail, looking along it) with
+// the mean grey (0 to 255, filter on) of the trail and of the floor 3 m to either side, 5 m and 20 m ahead, in index.md.
+// step "night" (Night look): the night halves, the pairs sheet and the night grayscale sheet. If the look is wrong the step
+// selects it and returns "run again" (the look applies on the next frame).
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -20,6 +25,11 @@ const int shotW = 1920, shotH = 988, jpgQuality = 85;
 const float eye = 1.6f, trailStep = 10f, stopReach = 5f, stopCluster = 8f, stopFacing = 0.7f, stopProbeStep = 1f, stopProbeHeight = 1f;
 const int stopRays = 24, trailDiv = 3, trailCols = 5, warpDiv = 3, listDiv = 3, listCols = 5, pairDiv = 2, stopsPerSheet = 60;
 const int mapTiles = 5, mapPx = 512; const float mapTileM = 100f, mapX0 = -50f, mapZ0 = -75f;
+// 8.14a walk views: compass views dip 15 m over 100 m; P4 pitched 10 degrees down; the slot exit (Valley.md rev 10 8.3) and a frame
+// every 2 m round the fin, facing the far front (x -230, y 40) and, at the path end, down to the valley fires (y -40); the pump
+// trench 30, 15 and 5 m short of the pump; the front views face x 440, past the fence and the highway
+const float compassDip = 15f, p4Dip = 10f, finStep = 2f, fireLookX = -230f, fireLookY = 40f, valleyLookY = -40f, eastLookX = 440f;
+var slotExit = new UnityEngine.Vector2(4f, 257.3f); var pumpBack = new[] { 30f, 15f, 5f };
 var inv = System.Globalization.CultureInfo.InvariantCulture;
 
 // ---- look
@@ -67,11 +77,16 @@ void Pose(UnityEngine.Vector3 camPos, UnityEngine.Vector3 look)
     cc.enabled = false; pc.transform.rotation = UnityEngine.Quaternion.LookRotation(flat.normalized); pc.transform.position = camPos - pc.transform.rotation * camLocal;
     cam.transform.localRotation = UnityEngine.Quaternion.Euler(-UnityEngine.Mathf.Atan2(dir.y, flat.magnitude) * UnityEngine.Mathf.Rad2Deg, 0f, 0f);
 }
-UnityEngine.Color32[] Render(int div)
+UnityEngine.Color32[] Capture()   // full size, bottom row first
 {
     cam.targetTexture = rt; cam.Render(); cam.targetTexture = null;
     UnityEngine.RenderTexture.active = rt; shot.ReadPixels(new UnityEngine.Rect(0, 0, shotW, shotH), 0, 0); shot.Apply(); UnityEngine.RenderTexture.active = null;
-    var src = shot.GetPixels32(); int w = shotW / div, h = shotH / div; var dst = new UnityEngine.Color32[w * h]; int n = div * div;
+    return shot.GetPixels32();
+}
+UnityEngine.Color32[] Render(int div) => Shrink(Capture(), div);
+UnityEngine.Color32[] Shrink(UnityEngine.Color32[] src, int div)
+{
+    int w = shotW / div, h = shotH / div; var dst = new UnityEngine.Color32[w * h]; int n = div * div;
     for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
     {
         int r = 0, g = 0, b = 0;
@@ -134,8 +149,12 @@ void Sheet(string file, string title, System.Collections.Generic.List<(UnityEngi
 string Safe(string n) => n.Replace(' ', '_');
 UnityEngine.Vector3 Eye(UnityEngine.Vector3 p) => new UnityEngine.Vector3(p.x, Ground(p.x, p.z, p.y) + eye, p.z);
 UnityEngine.Vector3 Toward(UnityEngine.Vector3 camPos, float yaw, float dist) => camPos + UnityEngine.Quaternion.Euler(0f, yaw, 0f) * UnityEngine.Vector3.forward * dist;
-// six day and night spots: (name, stand x, z, look-at x, y, z); NaN look y means level
+// ten day and night spots (Gate.md 2.8): (name, stand x, z, look-at x, y, z); NaN look y means level
 var pairs = new (string n, float x, float z, float lx, float ly, float lz)[] {
+    ("Lake pump (Lake Pump warp)", 190f, 99f, 190f, float.NaN, 60f),
+    ("Camp 1 (Camp 1 warp)", 268f, 226f, 282f, float.NaN, 238f),
+    ("Camp 3 (Camp 3 warp)", 74f, 142f, 90f, float.NaN, 158f),
+    ("Lot facing the highway (Lot Highway warp)", 360f, 172f, 440f, float.NaN, 172f),
     ("Camp (Keepers Camp warp)", 172f, 150f, 172f + 40f * UnityEngine.Mathf.Sin(333f * UnityEngine.Mathf.Deg2Rad), float.NaN, 150f + 40f * UnityEngine.Mathf.Cos(333f * UnityEngine.Mathf.Deg2Rad)),
     ("S1 camp from the edge (LookSlice 6)", 156f, 148f, 178f, float.NaN, 168f),
     ("Office (Office warp)", 340f, 196f, 340f + 40f * UnityEngine.Mathf.Sin(68f * UnityEngine.Mathf.Deg2Rad), float.NaN, 196f + 40f * UnityEngine.Mathf.Cos(68f * UnityEngine.Mathf.Deg2Rad)),
@@ -147,6 +166,75 @@ System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, strin
     var f = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
     foreach (var p in pairs) { var c = Eye(new UnityEngine.Vector3(p.x, 200f, p.z)); var lk = new UnityEngine.Vector3(p.lx, float.IsNaN(p.ly) ? c.y : p.ly, p.lz); f.Add((c, lk, p.n + " " + half)); }
     return f;
+}
+// ---- grayscale trail frames and mean grey (Gate.md 4: trail at least 20 above or below the floor beside it, 5 m and 20 m ahead)
+const float greyStep = 20f, greyNear = 5f, greyFar = 20f, greySide = 3f, greyPatch = 0.3f, greyNeed = 20f; const int greyDiv = 4, greyCols = 6;
+float Grey(UnityEngine.Color32 c) => 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
+// mean grey of the pixels within greyPatch metres of p on the full frame, or -1 when p is off screen, behind or hidden
+float PatchGrey(UnityEngine.Color32[] src, UnityEngine.Vector3 p)
+{
+    cam.targetTexture = rt; var vp = cam.WorldToViewportPoint(p); float fov = cam.fieldOfView; cam.targetTexture = null;
+    if (vp.z <= 0.5f || vp.x < 0f || vp.x > 1f || vp.y < 0f || vp.y > 1f) return -1f;
+    var from = cam.transform.position; var to = p + UnityEngine.Vector3.up * 0.1f;
+    if (UnityEngine.Physics.Linecast(from, to, out var block, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) && block.distance < UnityEngine.Vector3.Distance(from, to) - 0.5f) return -1f;
+    int cx = (int)(vp.x * shotW), cy = (int)(vp.y * shotH);
+    int r = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(greyPatch / (vp.z * UnityEngine.Mathf.Tan(fov * 0.5f * UnityEngine.Mathf.Deg2Rad)) * shotH * 0.5f));
+    float sum = 0f; int n = 0;
+    for (int y = cy - r; y <= cy + r; y++) for (int x = cx - r; x <= cx + r; x++)
+        if (x >= 0 && x < shotW && y >= 0 && y < shotH && (x - cx) * (x - cx) + (y - cy) * (y - cy) <= r * r) { sum += Grey(src[y * shotW + x]); n++; }
+    return n > 0 ? sum / n : -1f;
+}
+var greyMd = new System.Text.StringBuilder();
+string GreyTrails(string lookName)
+{
+    var frames = new System.Collections.Generic.List<(UnityEngine.Color32[] px, string label)>();
+    string file = "Grey_Trails_" + lookName.Replace(' ', '_') + ".jpg";
+    greyMd.Append("\n## Trail grey, " + lookName + "\n\nSheet [" + file + "](" + file + "). Mean grey (0 to 255, filter on) of the trail centre and of the floor " + greySide.ToString("F0", inv) + " m to either side, " + greyNear.ToString("F0", inv) + " m and " + greyFar.ToString("F0", inv) + " m ahead, over frames every " + greyStep.ToString("F0", inv) + " m looking along the trail. Hidden or off-screen points are left out. Pass: the difference is " + greyNeed.ToString("F0", inv) + " or more either way.\n\n");
+    greyMd.Append("| Trail | Frames | Trail 5 m | Floor 5 m | Diff 5 m | Trail 20 m | Floor 20 m | Diff 20 m | Pass |\n|---|---|---|---|---|---|---|---|---|\n");
+    int passN = 0;
+    foreach (var leg in legs)
+    {
+        float len = Length(leg.pts); float[] tSum = new float[2], fSum = new float[2]; int[] tN = new int[2], fN = new int[2]; int nFrames = 0;
+        for (float s = 0f; s <= len + 0.01f; s += greyStep)
+        {
+            var p = At(leg.pts, s); var c = p + UnityEngine.Vector3.up * eye; var ahead = At(leg.pts, s + 3f); var far = At(leg.pts, s + trailStep);
+            var yawDir = new UnityEngine.Vector3(ahead.x - p.x, 0f, ahead.z - p.z).normalized;
+            Pose(c, c + yawDir * 10f + UnityEngine.Vector3.up * (far.y - p.y)); var src = Capture(); nFrames++;
+            string label = leg.name + " " + s.ToString("F0", inv) + " M";
+            var marks = new System.Collections.Generic.List<(float x, float y, bool trail)>();
+            for (int k = 0; k < 2; k++)
+            {
+                float ds = k == 0 ? greyNear : greyFar; var q = At(leg.pts, s + ds); var q2 = At(leg.pts, s + ds + 1f);
+                var t = new UnityEngine.Vector3(q2.x - q.x, 0f, q2.z - q.z).normalized; var side = new UnityEngine.Vector3(t.z, 0f, -t.x);
+                var tp = new UnityEngine.Vector3(q.x, Ground(q.x, q.z, q.y), q.z); float tg = PatchGrey(src, tp);
+                float fg = 0f; int fn = 0;
+                foreach (var sgn in new[] { -1f, 1f })
+                {
+                    var fx = q + side * greySide * sgn; var fp = new UnityEngine.Vector3(fx.x, Ground(fx.x, fx.z, q.y), fx.z); float g = PatchGrey(src, fp);
+                    if (g >= 0f) { fg += g; fn++; }
+                }
+                if (tg >= 0f) { tSum[k] += tg; tN[k]++; }
+                if (fn > 0) { fSum[k] += fg / fn; fN[k]++; }
+                label += " " + ds.ToString("F0", inv) + ": " + (tg >= 0f ? tg.ToString("F0", inv) : "-") + "/" + (fn > 0 ? (fg / fn).ToString("F0", inv) : "-");
+            }
+            var small = Shrink(src, greyDiv); for (int i = 0; i < small.Length; i++) { byte g = (byte)UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(Grey(small[i])), 0, 255); small[i] = new UnityEngine.Color32(g, g, g, 255); }
+            frames.Add((small, label));
+        }
+        string Cell(float sum, int n) => n > 0 ? (sum / n).ToString("F0", inv) : "-";
+        float d5 = tN[0] > 0 && fN[0] > 0 ? tSum[0] / tN[0] - fSum[0] / fN[0] : 0f, d20 = tN[1] > 0 && fN[1] > 0 ? tSum[1] / tN[1] - fSum[1] / fN[1] : 0f;
+        bool pass = UnityEngine.Mathf.Abs(d5) >= greyNeed && UnityEngine.Mathf.Abs(d20) >= greyNeed; if (pass) passN++;
+        greyMd.Append("| " + leg.name + " | " + nFrames + " | " + Cell(tSum[0], tN[0]) + " | " + Cell(fSum[0], fN[0]) + " | " + d5.ToString("F0", inv) + " | " + Cell(tSum[1], tN[1]) + " | " + Cell(fSum[1], fN[1]) + " | " + d20.ToString("F0", inv) + " | " + (pass ? "PASS" : "FAIL") + " |\n");
+    }
+    int tw = shotW / greyDiv, th = shotH / greyDiv, rows = (frames.Count + greyCols - 1) / greyCols;
+    NewCanvas(greyCols * (tw + gap) + gap, headH + rows * (labelH + th + gap) + gap);
+    Text(gap + 4, 12, "Grayscale trails, " + lookName + ": every 20 m, trail/floor grey at 5 m and 20 m", 3, gold);
+    for (int i = 0; i < frames.Count; i++)
+    {
+        int x = gap + (i % greyCols) * (tw + gap), y = headH + (i / greyCols) * (labelH + th + gap);
+        Blit(frames[i].px, tw, th, x, y + labelH); Text(x + 2, y + 4, frames[i].label, 1, white);
+    }
+    SaveCanvas(file, "Grayscale trails, " + lookName + ", a frame every 20 m with trail and floor grey (index.md, Trail grey)", frames.Count);
+    return "grey " + lookName + ": " + passN + " of " + legs.Count + " trails differ by " + greyNeed.ToString("F0", inv) + " or more at 5 m and 20 m";
 }
 var sb = new System.Text.StringBuilder();
 System.IO.Directory.CreateDirectory(outDir); System.IO.Directory.CreateDirectory(tempDir);
@@ -172,8 +260,12 @@ try
         }
         UnityEngine.Object.DestroyImmediate(tmp);
         SaveCanvas("Pairs_DayOne_Night.jpg", "Day one and Night pairs", pairs.Length * 2);
+        string greyNight = GreyTrails("Night");
+        string indexPath = System.IO.Path.Combine(outDir, "index.md");
+        if (!System.IO.File.Exists(indexPath)) return "missing " + indexPath + ": run step day first";
+        System.IO.File.AppendAllText(indexPath, greyMd.ToString().Replace("\r", ""));
         System.IO.Directory.Delete(tempDir, true);
-        return "night done: wrote Pairs_DayOne_Night.jpg (" + pairs.Length + " pairs) in " + clock.Elapsed.TotalSeconds.ToString("F0") + " s";
+        return "night done: wrote Pairs_DayOne_Night.jpg (" + pairs.Length + " pairs), Grey_Trails_Night.jpg in " + clock.Elapsed.TotalSeconds.ToString("F0") + " s | " + greyNight;
     }
 
     // 1. trails, both directions
@@ -274,6 +366,94 @@ try
             stopFrames.GetRange(part * stopsPerSheet, UnityEngine.Mathf.Min(stopsPerSheet, stopFrames.Count - part * stopsPerSheet)), listDiv, listCols);
     sb.Append("stops " + stops.Count + " from " + hits.Count + " hits\n");
 
+    // 3c. four compass views from the tower deck (Gate.md 2.7)
+    var towerT = UnityEngine.GameObject.Find("Camp/Tower"); if (towerT == null) return "no Camp/Tower";
+    var cabT = towerT.transform.Find("Cab"); if (cabT == null) return "no Camp/Tower/Cab";
+    {
+        var deckEye = new UnityEngine.Vector3(towerT.transform.position.x, cabT.position.y + eye, towerT.transform.position.z);
+        var frames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
+        foreach (var d in new[] { ("NORTH", 0f), ("EAST", 90f), ("SOUTH", 180f), ("WEST", 270f) })
+            frames.Add((deckEye, Toward(deckEye, d.Item2, 100f) + UnityEngine.Vector3.down * compassDip, "TOWER DECK FACING " + d.Item1));
+        Sheet("Compass_Views.jpg", "Compass views from the tower deck: north, east, south, west", frames, pairDiv, 2);
+    }
+
+    // 3d. Marlow's hand-walk views (Gate_8_14_Marlow.md 13): P4 east, round the fin with flame tops in sight, the pump trench, east from the front
+    var flameCardShader = UnityEngine.Shader.Find("DieAlone/FlameCard");
+    var flameTops = new System.Collections.Generic.List<(UnityEngine.Vector3 top, string group)>();
+    foreach (var mf in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshFilter>(UnityEngine.FindObjectsSortMode.None))
+    {
+        var mr = mf.GetComponent<UnityEngine.MeshRenderer>(); if (mr == null || !mr.enabled || mr.sharedMaterial == null || mr.sharedMaterial.shader != flameCardShader || mf.sharedMesh == null) continue;
+        var vs = mf.sharedMesh.vertices; for (int i = 0; i + 3 < vs.Length; i += 4) flameTops.Add((mf.transform.TransformPoint((vs[i + 2] + vs[i + 3]) * 0.5f), mf.name));
+    }
+    string InSight(UnityEngine.Vector3 from)   // flame tops in sight by group: a line with no collider on it
+    {
+        var seen = new System.Collections.Generic.SortedDictionary<string, int>();
+        foreach (var f in flameTops) if (!UnityEngine.Physics.Linecast(from, f.top, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) seen[f.group] = seen.TryGetValue(f.group, out var k) ? k + 1 : 1;
+        if (seen.Count == 0) return "NO FLAME";
+        var parts = new System.Collections.Generic.List<string>(); foreach (var kv in seen) parts.Add(kv.Key + " " + kv.Value); return string.Join(", ", parts);
+    }
+    var walkNotes = new System.Text.StringBuilder();
+    {
+        var frames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
+        var p4 = warpsRoot.transform.Find("Ward_P4"); if (p4 == null) return "no warp Ward_P4";
+        var p4Eye = Eye(p4.position); frames.Add((p4Eye, p4Eye + p4.forward * 40f + UnityEngine.Vector3.down * 40f * UnityEngine.Mathf.Tan(p4Dip * UnityEngine.Mathf.Deg2Rad), "P4 LOOK EAST (WARD P4 WARP)"));
+        // round the fin: from the J to Ward point nearest the slot exit to the path end, every finStep m, facing the fire
+        float climbLen = Length(climb.pts), sExit = 0f, best = float.MaxValue;
+        for (float s = 0f; s <= climbLen; s += 0.5f) { var q = At(climb.pts, s); float d = new UnityEngine.Vector2(q.x - slotExit.x, q.z - slotExit.y).magnitude; if (d < best) { best = d; sExit = s; } }
+        string firstFlame = "none";
+        for (float s = sExit; s <= climbLen + 0.01f; s += finStep)
+        {
+            var c = At(climb.pts, s) + UnityEngine.Vector3.up * eye; string seen = InSight(c);
+            if (firstFlame == "none" && seen != "NO FLAME") firstFlame = (s - sExit).ToString("F0", inv) + " m past the slot exit (" + seen + ")";
+            frames.Add((c, new UnityEngine.Vector3(fireLookX, fireLookY, c.z), "FIN +" + (s - sExit).ToString("F0", inv) + " M: " + seen));
+        }
+        var end = At(climb.pts, climbLen) + UnityEngine.Vector3.up * eye;
+        frames.Add((end, new UnityEngine.Vector3(fireLookX, valleyLookY, end.z), "PATH END, DOWN TO THE VALLEY FIRES: " + InSight(end)));
+        walkNotes.Append("- Round the fin: first flame in sight " + firstFlame + "; from the path end: " + InSight(end) + ".\n");
+        // the pump trench: the last metres of Camp to pump, facing each side
+        var pumpLeg = legs.Find(q => q.name == "Camp to pump"); if (pumpLeg.pts == null) return "no leg Camp to pump";
+        float pumpLen = Length(pumpLeg.pts);
+        foreach (var back in pumpBack)
+        {
+            var q = At(pumpLeg.pts, pumpLen - back); var q2 = At(pumpLeg.pts, pumpLen - back + 1f); var t = new UnityEngine.Vector3(q2.x - q.x, 0f, q2.z - q.z).normalized; var c = q + UnityEngine.Vector3.up * eye;
+            frames.Add((c, c + new UnityEngine.Vector3(t.z, 0f, -t.x) * 10f, "PUMP TRENCH " + back.ToString("F0", inv) + " M FROM THE PUMP, RIGHT"));
+            frames.Add((c, c - new UnityEngine.Vector3(t.z, 0f, -t.x) * 10f, "PUMP TRENCH " + back.ToString("F0", inv) + " M FROM THE PUMP, LEFT"));
+        }
+        // east from the front: the road, the T and the reflector posts past the chain-link
+        foreach (var w in new[] { "Lot_Highway", "Store", "Gate_Booth", "Office" })
+        {
+            var wt = warpsRoot.transform.Find(w); if (wt == null) return "no warp " + w;
+            var c = Eye(wt.position); frames.Add((c, new UnityEngine.Vector3(eastLookX, c.y, c.z), w.Replace('_', ' ').ToUpperInvariant() + " FACING EAST"));
+        }
+        Sheet("Walk_Views.jpg", "Hand-walk views: P4 east, round the fin (flame tops in sight), the pump trench, east from the front", frames, listDiv, listCols);
+    }
+
+    // 3e. every collider without a renderer, scene-wide, active or not (Pim, Gate_8_14_Pim.md: only IW1 to IW3 may be invisible walls)
+    int invisibleCount = 0; var invGroups = new System.Collections.Generic.SortedDictionary<string, (int n, int active, UnityEngine.Bounds b)>();
+    {
+        var list = new System.Text.StringBuilder("# Main3 colliders without a renderer\n\nEvery Collider in Main3 (active or not) whose GameObject has no Renderer, terrain and the player left out, from Tools/Recipes/main3_review_capture.cs. Each sits inside a visible mesh, is a stair or step ramp under visible steps, or is an invisible wall; the reviewers judge which. Positions are the collider's bounds centre and size in metres (x east, z north).\n\n");
+        list.Append("| Collider | Kind | Active | Trigger | Layer | Centre x, y, z | Size x, y, z |\n|---|---|---|---|---|---|---|\n");
+        var all = new System.Collections.Generic.List<UnityEngine.Collider>(UnityEngine.Object.FindObjectsByType<UnityEngine.Collider>(UnityEngine.FindObjectsInactive.Include, UnityEngine.FindObjectsSortMode.None));
+        string PathOf(UnityEngine.Transform t) { var s = t.name; for (var p = t.parent; p != null; p = p.parent) s = p.name + "/" + s; return s; }
+        all.Sort((a, b) => string.CompareOrdinal(PathOf(a.transform), PathOf(b.transform)));
+        foreach (var col in all)
+        {
+            if (col is UnityEngine.TerrainCollider || col.GetComponent<UnityEngine.Renderer>() != null || col.transform.IsChildOf(pc.transform) || col.gameObject.scene != scene) continue;
+            bool active = col.enabled && col.gameObject.activeInHierarchy;
+            var b = col.bounds;   // bounds of an inactive collider read zero: from its transform instead
+            if (!active) b = new UnityEngine.Bounds(col.transform.position, col.transform.lossyScale);
+            string path = PathOf(col.transform); invisibleCount++;
+            list.Append("| " + path + " | " + col.GetType().Name + " | " + (active ? "yes" : "no") + " | " + (col.isTrigger ? "yes" : "no") + " | " + UnityEngine.LayerMask.LayerToName(col.gameObject.layer) + " | " + b.center.x.ToString("F1", inv) + ", " + b.center.y.ToString("F1", inv) + ", " + b.center.z.ToString("F1", inv) + " | " + b.size.x.ToString("F1", inv) + ", " + b.size.y.ToString("F1", inv) + ", " + b.size.z.ToString("F1", inv) + " |\n");
+            var parts = path.Split('/'); string group = parts.Length > 2 ? parts[0] + "/" + parts[1] : parts[0];
+            if (invGroups.TryGetValue(group, out var g)) { g.b.Encapsulate(b); invGroups[group] = (g.n + 1, g.active + (active ? 1 : 0), g.b); } else invGroups[group] = (1, active ? 1 : 0, b);
+        }
+        System.IO.File.WriteAllText(System.IO.Path.Combine(outDir, "InvisibleColliders.md"), list.ToString().Replace("\r", ""));
+    }
+    sb.Append("invisible colliders " + invisibleCount + " in " + invGroups.Count + " groups (InvisibleColliders.md)\n");
+
+    // 3f. grayscale trail frames, day one
+    sb.Append(GreyTrails("Day one") + "\n");
+
     // 5. day halves of the pairs, kept for step night
     {
         var day = PairFrames("DAY ONE");
@@ -331,7 +511,11 @@ try
     md.Append("Day one look except the Night halves of the pairs. Trail frames look along the trail, pitched with its grade over the next 10 m. Positions are metres, x east, z north.\n\n");
     md.Append("| Sheet | What | Frames |\n|---|---|---|\n");
     foreach (var w in written) md.Append("| [" + w.file + "](" + w.file + ") | " + w.what + " | " + w.frames + " |\n");
-    md.Append("| [Pairs_DayOne_Night.jpg](Pairs_DayOne_Night.jpg) | Day one (left) and Night (right) from camp, S1, the office, the lot, J and the Ward path end | " + (pairs.Length * 2) + " |\n");
+    md.Append("| [Pairs_DayOne_Night.jpg](Pairs_DayOne_Night.jpg) | Day one (left) and Night (right) at the " + pairs.Length + " pair spots below | " + (pairs.Length * 2) + " |\n");
+    md.Append("| [Grey_Trails_Night.jpg](Grey_Trails_Night.jpg) | Grayscale trails, Night (step night; its table is at the end) | |\n");
+    md.Append("| [InvisibleColliders.md](InvisibleColliders.md) | Every collider without a renderer, scene-wide, active or not (" + invisibleCount + ") | |\n");
+    md.Append("\n## Hand-walk views\n\n" + walkNotes + "\n## Colliders without a renderer, by group\n\n| Group | Colliders | Active | Bounds x | Bounds y | Bounds z |\n|---|---|---|---|---|---|\n");
+    foreach (var kv in invGroups) md.Append("| " + kv.Key + " | " + kv.Value.n + " | " + kv.Value.active + " | " + kv.Value.b.min.x.ToString("F0", inv) + " to " + kv.Value.b.max.x.ToString("F0", inv) + " | " + kv.Value.b.min.y.ToString("F0", inv) + " to " + kv.Value.b.max.y.ToString("F0", inv) + " | " + kv.Value.b.min.z.ToString("F0", inv) + " to " + kv.Value.b.max.z.ToString("F0", inv) + " |\n");
     md.Append("\n## Warps\n\n");
     for (int i = 0; i < warpList.Count; i++) md.Append("- W" + (i + 1) + " " + warpList[i].name + " (" + warpList[i].position.x.ToString("F0", inv) + ", " + warpList[i].position.z.ToString("F0", inv) + ")\n");
     md.Append("\n## Stops\n\nAn invisible collider (no renderer, not terrain) within 5 m of a trail centre line whose face turns toward the walker (more than 45 degrees off the trail's side). Walls running along the trail sides are left out; the trail frames show those. One frame per 8 m cluster, taken from the trail centre facing the stop.\n\n");
@@ -339,6 +523,7 @@ try
     for (int i = 0; i < stops.Count; i++) md.Append("| S" + (i + 1) + " | " + stops[i].leg + " | " + stops[i].s.ToString("F0", inv) + " | " + stops[i].hit.x.ToString("F0", inv) + ", " + stops[i].hit.z.ToString("F0", inv) + " | " + stops[i].d.ToString("F1", inv) + " | " + stops[i].what + " |\n");
     md.Append("\n## Pair spots\n\n");
     foreach (var p in pairs) md.Append("- " + p.n + ": stand (" + p.x.ToString("F0", inv) + ", " + p.z.ToString("F0", inv) + "), facing (" + p.lx.ToString("F0", inv) + ", " + p.lz.ToString("F0", inv) + ")\n");
+    md.Append(greyMd);
     System.IO.File.WriteAllText(System.IO.Path.Combine(outDir, "index.md"), md.ToString().Replace("\r", ""));
 }
 finally { cam.targetTexture = null; rt.Release(); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(shot); }

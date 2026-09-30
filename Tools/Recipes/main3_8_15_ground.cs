@@ -250,6 +250,13 @@ UnityEngine.Vector2 LegToward(string leg, UnityEngine.Vector2 from, float along)
     var l = legs.Find(x => x.name == leg).pts; if (l == null) return from; bool rev = UnityEngine.Vector2.Distance(P(l[0].x, l[0].z), from) > UnityEngine.Vector2.Distance(P(l[l.Count - 1].x, l[l.Count - 1].z), from);
     int idx = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(along / 2f), 0, l.Count - 1); var q = rev ? l[l.Count - 1 - idx] : l[idx]; return P(q.x, q.z);
 }
+// a point beside the named leg: 'along' metres from its end nearest 'from', then 'side' metres square to it (right when positive), so a
+// marker stands off the tread (8.14a: the W1 blaze offset in x stood on the trail and stopped a walker)
+const float blazeSide = 1.8f;
+UnityEngine.Vector2 LegBeside(string leg, UnityEngine.Vector2 from, float along, float side)
+{
+    var a = LegToward(leg, from, along); var b = LegToward(leg, from, along + 2f); var t = (b - a).normalized; return a + new UnityEngine.Vector2(t.y, -t.x) * side;
+}
 const float postH = 2.4f, armLen = 1.1f, armH = 0.22f, armT = 0.05f, signAlong = 8f;
 void Signpost(string name, UnityEngine.Vector2 at, (string text, UnityEngine.Vector2 toward)[] arms)
 {
@@ -281,7 +288,7 @@ Signpost("Sign_J", P(107f, 203f), new[] { ("CAMP", LegToward("Camp to J", P(104f
     var board = Box("Board", tb, V(at.x, gy + 1.5f, at.y), V(1.9f, 1.1f, 0.06f), UnityEngine.Quaternion.Euler(0f, 90f, 0f), plank, false);
     Label(board.transform, "VALLEY TRAILS");
 }
-Blaze("Blaze_W1_Camp3", LegToward("W1 to Camp 3", P(128f, 70f), 6f) + P(1.8f, 0f), false);
+Blaze("Blaze_W1_Camp3", LegBeside("W1 to Camp 3", P(128f, 70f), 6f, blazeSide), false);
 Blaze("Blaze_Camp1_Stump", P(272f, 246f), true);
 
 // ---------- 5. stops ----------
