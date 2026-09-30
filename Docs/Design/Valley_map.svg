@@ -21,7 +21,7 @@
 
   <rect x="0" y="0" width="1340" height="1200" fill="#f6f3ec"/>
   <text x="60" y="26" font-size="16" font-weight="bold" fill="#222">Valley map. DRAFT revision 10, 2026-09-30, Sable (PLAN 8.13). Rev 10 fixes Marlow's four rev 9 blocks only.</text>
-  <text x="60" y="44" font-size="11" fill="#444">Plan 1.5 px per m, north up. Origin south-west, x east, z north, heights absolute. Numbers and the leg-by-leg walk: Docs/Design/Valley.md rev 9. Places not drawn stay as Main3.md rev 16.</text>
+  <text x="60" y="44" font-size="11" fill="#444">Plan 1.5 px per m, north up. Origin south-west, x east, z north, heights absolute. Numbers and the leg-by-leg walk: Docs/Design/Valley.md rev 11 (its section 4 climb points win over this drawing). Places not drawn stay as Main3.md rev 16.</text>
 
   <!-- ===================== PLAN ===================== -->
   <rect x="60" y="60" width="780" height="630" fill="#e6e9d4" stroke="#999" stroke-width="1"/>

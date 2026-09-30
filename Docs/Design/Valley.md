@@ -1,8 +1,8 @@
 # Valley: Main3 in a horseshoe
 
-**DRAFT revision 10, 2026-09-30, Sable. PLAN 8.13.** Revision 10 fixes only Marlow's four rev 9 blocks (Review_Valley8_Marlow.md, "Revision 9"): the far front and day-1 sheet trimmed to z -60 to 400 and the N arm's east half raised, with both open-east corners added to section 7 (5.1, 5.3, 2, 7); IW2 in the band gap with rock both sides (8); rock across both ledge ends (8); IW3 moved to the spur gap and the brush lane closed (8). Everything else is rev 9. Revision 9 folds in the five reviews of rev 8 (Docs/Review/2026-09-30-ValleyReview/Review_Valley8_Marlow, _Vesper, _Pim, _Hollis; Quill's in Docs/Private), Rook's Docs/Process/TreeCover.md, and Wren's three calls (Status.md): **land hides the fire, not trees**, so the W crest rises to 80 where any daytime line to the fire crosses it and the knob to 84; **boundaries come from the land**, with only IW1, IW2 and the decided shift wall left invisible; **four different legs** on the climb, leg 4 blind to the fire, and the cleft dogleg moved into the slot with a fin at the mouth. Binding: DECISIONS 2026-09-30. Nothing here is decided until it is a dated line in DECISIONS.md and Grant confirms. Marlow rechecks next.
+**DRAFT revision 11, 2026-09-30, Sable. PLAN 8.13.** Revision 11 matches the doc to Rook's 8.14 build (commit 3b61464; deviations accepted by Wren): cleft exit (4, 257.3) so the fin covers the slot mouth; leg 3 bends at (34, 300); P2 41.5, P3 51.5; leg 2 a 61 m straight; far front z -60 to 650 (Marlow); the climb ringed with rock walls because the controller jump-climbs any terrain face, lip 1.1 m; timed walks; 4.7's ledge ends as section 8 (1.6, 2, 4, 5.1, 7, 8). Everything else is rev 10. Revision 10 fixes only Marlow's four rev 9 blocks (Review_Valley8_Marlow.md, "Revision 9"): the far front and day-1 sheet trimmed to z -60 to 400 and the N arm's east half raised, with both open-east corners added to section 7 (5.1, 5.3, 2, 7); IW2 in the band gap with rock both sides (8); rock across both ledge ends (8); IW3 moved to the spur gap and the brush lane closed (8). Everything else is rev 9. Revision 9 folds in the five reviews of rev 8 (Docs/Review/2026-09-30-ValleyReview/Review_Valley8_Marlow, _Vesper, _Pim, _Hollis; Quill's in Docs/Private), Rook's Docs/Process/TreeCover.md, and Wren's three calls (Status.md): **land hides the fire, not trees**, so the W crest rises to 80 where any daytime line to the fire crosses it and the knob to 84; **boundaries come from the land**, with only IW1, IW2 and the decided shift wall left invisible; **four different legs** on the climb, leg 4 blind to the fire, and the cleft dogleg moved into the slot with a fin at the mouth. Binding: DECISIONS 2026-09-30. Nothing here is decided until it is a dated line in DECISIONS.md and Grant confirms. Marlow rechecks next.
 
-Drawing: Valley_map.svg revision 9 (wins for shapes; this file wins for heights). Coordinates as Main3.md: metres, origin south-west, x east, z north, heights absolute. Walk speed 2.5 m/s. Controller: slopeLimit 45, stepOffset 0.1, jump 0.6 m (Marlow, from Player.prefab and PlayerTuning.cs). Places and legs not named here stay as Main3.md rev 16 sections 3 and 4, except the Wall, pass and plateau (gone).
+Drawing: Valley_map.svg revision 10 (wins for shapes; this file wins for heights and for the rev 11 climb points in section 4, which the drawing does not show). Coordinates as Main3.md: metres, origin south-west, x east, z north, heights absolute. Walk speed 2.5 m/s. Controller: slopeLimit 45, stepOffset 0.1, jump 0.6 m (Marlow, from Player.prefab and PlayerTuning.cs). Places and legs not named here stay as Main3.md rev 16 sections 3 and 4, except the Wall, pass and plateau (gone).
 
 What this map optimizes, in order: every trip has a reason; paths and stops read at eye height; a forest of giants; no two legs alike and a nightly walk short enough to repeat; then the hard checks, run once each.
 
@@ -61,9 +61,9 @@ Each leg: what you do, see and feel. Every stop is something you can see (sectio
 | Rim to the ravine floor, 74 m | winding down between rock bands | coloured bulbs on a dead branch at 68 (not day 1); the grey mouth, boarded on day 1 | grey rock, nothing to see |
 | Mouth to chamber, 73 m inside | three ramps down | chant thinning into bass, colour leaking up the rock; the rave chamber; a side room off it, one table under one light | the one warm colour burst on a grey map |
 
-### 1.6 The Ward climb (every night; camp to the path end 345 m, 138 s)
+### 1.6 The Ward climb (every night; camp to the path end 348 m, 128.6 s timed)
 
-By day the chain hangs across the chute mouth 20 m past J and the chute is the only break in the rock band. At night the chain is down and the cairn lamp at J is lit. Four legs, four bearings (west, north, north-west, south), four grounds, one landmark each; every platform has a hiding place (N1). The face between legs is rock you cannot climb.
+By day the chain hangs across the chute mouth 20 m past J and the chute is the only break in the rock band. At night the chain is down and the cairn lamp at J is lit. Four legs, four bearings (west, north, north-west, south), four grounds, one landmark each; every platform has a hiding place (N1). Rock walls ring the climb (4.4); you cannot leave it or skip a leg.
 
 | Piece | Do | See | Feel |
 |---|---|---|---|
@@ -71,14 +71,14 @@ By day the chain hangs across the chute mouth 20 m past J and the chute is the o
 | Approach, 20 m | from the cairn to the chute mouth, chain down | the rock band at the ridge foot, one gap in it | the gate is open for you |
 | Leg 1, the boulder chute, 34 m, west | three flights of cut rock steps between ramps, up a gully | boulders shoulder-high both sides; at the head, **the seep**: water down the rock, a tin cup on a nail | close, wet, your footsteps loud |
 | P1 | a level stop | a boulder overhang to hide under | a breath |
-| Leg 2, the exposed shelf, 60 m, north | along a scree shelf on a rock rib, the drop on your right | the whole valley on your right, the tower still above you; **the rune post** halfway, on the outer edge | wind picks up; you are on show |
+| Leg 2, the exposed shelf, 61 m, north | along a scree shelf on a rock rib, the drop on your right | the whole valley on your right, the tower still above you; **the rune post** halfway, on the outer edge | wind picks up; you are on show |
 | P2 | a level stop at the rib's end | a rock roof to hide under | |
-| Leg 3, the burned cwm, 45 m, north-west | up into a bowl where the north arm meets the west ridge | grey dead snags in ash, rock rims all round; **the split snag**: the trail passes through a dead giant split to the ground | wind drops; creaks; the first wrong-looking place, still ordinary |
+| Leg 3, the burned cwm, 46 m, north-west | up into a bowl where the north arm meets the west ridge | grey dead snags in ash, rock rims all round; **the split snag**: the trail passes through a dead giant split to the ground | wind drops; creaks; the first wrong-looking place, still ordinary |
 | P3 | a level stop at the cwm's head | the root plate of a fallen giant to hide behind | |
 | Leg 4, under the wall, 43 m, south | on needles along the foot of the crest wall, the rock on your right, a screen of firs on your left | nothing of the valley yet; **the bent fir**, grown flat at knee height; ahead, the bare knob | quiet; the wall leans over you |
 | P4, the look-back, 6 m | the firs end; the path turns you east | the tower cab level with you, the cabin window, the lake, the lot lights, the highway; on night 1 one car passes and never turns in (N3 and the headlight beat) | the ordinary world, once more |
-| The cleft, 24.5 m | a rock slot west through the crest; a dogleg 6 m in; a fin at the mouth turns you south | walls close, a strip of sky; insects cut just past the dogleg | silence |
-| The ledge, 21 m | round the fin onto the ledge, south to the path end 1.5 m from the lip | the fire all at once: the burning valley below, the far front across the frame, smoke columns rising; the stones ahead and to the left | the job was never the fire lookout |
+| The cleft, 29.5 m | a rock slot west through the crest; a dogleg 6 m in; a fin at the mouth turns you south | walls close, a strip of sky; insects cut just past the dogleg | silence |
+| The ledge, 17 m | round the fin onto the ledge, south to the path end 1.5 m from the lip | the fire all at once: the burning valley below, the far front across the frame, smoke columns rising; the stones ahead and to the left | the job was never the fire lookout |
 
 The climb changes as WARD falls, one thing at a time (Exit 8's spot the difference): the cup gone, the seep dry, the rune post missing or doubled, an ember inside the split snag, the bent fir standing upright, the cabin window lit when you left it dark. Which and when is mine, set by playtest.
 
@@ -96,8 +96,8 @@ The climb changes as WARD falls, one thing at a time (Exit 8's spot the differen
 | S hook | 90 to 95 | 66 to 70 | 76 at the SW corner, 72 at x 40 to 60, 66 at x 80 |
 | S arm east | 50 to 58 | 50 x 110, saddle 32 x 170, knob 45 x 240 | same; 30 x 320, 16 x 380 |
 | E ridge | 45 to 60 | removed | removed |
-| Climb, J to path end | 88 m rise, 489 m, 196 s | 52 m, 292 m, 117 s | **52 m, 265 m, 106 s** |
-| Camp to the path end | 585 m, 234 s | 372 m, 149 s | **345 m, 138 s** |
+| Climb, J to path end | 88 m rise, 489 m, 196 s | 52 m, 292 m, 117 s | **rev 11:** 52 m, 268 m, 98.5 s timed |
+| Camp to the path end | 585 m, 234 s | 372 m, 149 s | **rev 11:** 348 m, 128.6 s timed |
 
 1. **Land hides every flame and the day-1 smoke from every daytime eye, with eyes and targets raised 3 m** (section 7). Trees are for the look.
 2. **Crest belt, for the look only** (Vesper): firs 18 to 24 m and giants 30 to 38 m in 3 or 4 knots on the W crest and hooks; tops ragged, 96 to 106; gaps only above 82; the knob the one bare break. Not a hedge (Style 8.5); not cover; exempt from the 50 m cap.
@@ -126,27 +126,27 @@ The climb changes as WARD falls, one thing at a time (Exit 8's spot the differen
 | Approach | J | chute mouth (86, 213), 12 | 20 | 2 | 10 % | 290 | dirt | cairn at J (2); chain and IW2 at the chute mouth (20) | |
 | Leg 1, boulder chute | (86, 213) | P1 (52, 216), 30 | 34 | 18 | three flights of 18 cut steps, 0.25 rise, 0.3 run (4.5 m rise, 5.4 m run each; STAIRS RULE), ramps between at 25 % or less | 275 | stone steps | the seep and cup at the head (54) | loud dry footsteps, trickle |
 | P1 | | | 4 | 0 | level, 4 x 4 m | | | boulder overhang (hide) | |
-| Leg 2, exposed shelf | P1 | P2 (57, 276), 41 | 60 | 11 | 18 % | 5 | scree | rune post (88) | wind rises |
+| Leg 2, exposed shelf | P1 | P2 (57, 276), 41.5 | 61, straight | 11.5 | 19 % | 5 | scree | rune post (88) | wind rises |
 | P2 | | | 4 | 0 | level | | | rock roof (hide) | |
-| Leg 3, burned cwm | P2, via (44, 278) | P3 (26, 304), 52 | 45 | 11 | 24 % | 312 | ash, char | the split snag (144) | wind drops, creak |
+| Leg 3, burned cwm | P2, via (44, 278) and (34, 300) | P3 (26, 304), 51.5 | 46 | 10 | 22 % | 312 | ash, char | the split snag (145) | wind drops, creak |
 | P3 | | | 4 | 0 | level | | | root plate (hide) | |
-| Leg 4, under the wall | P3, via (30, 284) | P4 (26, 262), 60 | 43 | 8 | 19 % | 170 | needles | the bent fir (191) | quiet |
-| P4 look-back | | | 6 | 0 | level, faces east | | | tower cab, cabin window, highway (214 to 220) | wind |
-| Cleft | slot entry (24, 262); dogleg (18, 262) to (14.5, 265.5); west to (4, 265.5); fin turns south to the exit (4, 262.5), 61 | | 24.5 | 1 | level | 270, 315, 270, 180 | bare stone | slot entry (220), dogleg and insect cut (226) | close echo from the entry |
-| Ledge | exit (4, 262.5) | path end (-8.5, 246), 62, facing west | 21 | 1 | | 225 | bare stone | the fire (245); stones at (-4, 226), (1, 223), (-7, 221), 3.6 x 4 m, 8 m tall | the fire |
+| Leg 4, under the wall | P3, via (30, 284) | P4 (26, 262), 60 | 43 | 8.5 | 20 % | 170 | needles | the bent fir (193) | quiet |
+| P4 look-back | | | 6 | 0 | level, faces east | | | tower cab, cabin window, highway (216 to 222) | wind |
+| Cleft | slot entry (24, 262); dogleg (18, 262) to (14.5, 265.5); west to (4, 265.5); fin turns south to the exit (4, 257.3), 61 | | 29.5 | 1 | level | 270, 315, 270, 180 | bare stone | slot entry (222), dogleg and insect cut (228) | close echo from the entry |
+| Ledge | exit (4, 257.3) | path end (-8.5, 246), 62, facing west | 17 | 1 | | 225 | bare stone | the fire (252); stones at (-4, 226), (1, 223), (-7, 221), 3.6 x 4 m, 8 m tall | the fire |
 
-1. J to the path end: **265 m, 106 s.** Camp to the path end: **345 m, 138 s.** Marlow expects the stairs to slow the capsule a little (unverified); the 150 s ceiling leaves 12 s.
-2. Points of interest (chainage corrected; Hollis 5, Marlow 16): cairn 2, chain 20, seep 54, rune post 88, P2 118, split snag 144, P3 167, bent fir 191, P4 214, dogleg 226, the fire 245, path end 265. Largest gap 58 m (23 s), under 30 s.
+1. J to the path end: **268 m, 98.5 s timed.** Camp to the path end: **348 m, 128.6 s timed** (Rook, 8.14 climb check with the real mover). The 150 s ceiling leaves 21.4 s.
+2. Points of interest (chainage corrected; Hollis 5, Marlow 16): cairn 2, chain 20, seep 54, rune post 88, P2 119, split snag 145, P3 169, bent fir 193, P4 216, dogleg 228, the fire 252, path end 268. Largest gap 57 m (23 s), under 30 s.
 3. **Four bearings:** west (the chute), north (the shelf), north-west (the cwm), south (under the wall). No hairpin under 90 degrees; P2 to P3 turns 50 degrees, P3 to P4 turns 140 degrees in a bowl, not on a face.
-4. **No leg can be skipped:** every bench has a rock step 2 m or taller on its uphill side, and the face between benches is rock at 50 degrees or steeper (Marlow 9). Legs 2 and 4 are 30 m apart in plan.
+4. **No leg can be skipped (rev 11):** the controller jump-climbs any terrain face (measured in 8.14: a sprint-hop climbs 63 to 88 degrees), so slope does not close the climb. The climb is ringed with vertical rock walls standing 3.5 m above the highest walkable ground within 12 m, with rock rims 1.3 m high by 1.2 m on drops. Legs 2 and 4 are 30 m apart in plan.
 5. **Leg 4 sees nothing of the fire:** the crest wall (80) stands 4 to 14 m west of it, 19 m or more over the eye. Firs on its east side screen the valley until P4, so the look-back is a beat, not a slow fade.
-6. **The cleft:** the dogleg sits 6 m in and the last straight is 10.5 m (Hollis 6). A rock fin at the mouth, top 78, turns the exit south, so no flame top shows from inside the slot. First sight is on stepping round the fin. Marlow tests it with the camera, not the collider.
-7. **The ledge:** the lip is a rock rim 0.8 m high along x -10, taller than the 0.6 m jump, its collider inside the rock. The path end is 1.5 m from the lip, so rays to about 28 degrees down clear it and the valley fires show (Quill 12). N end: the shoulder's rock wall; S end: the knob's west face. Stones to the left of the path end, off to one side of the approach (DECISIONS 2026-09-25).
+6. **The cleft:** the dogleg sits 6 m in and the last straight is 10.5 m (Hollis 6). A rock fin at the mouth, top 78, turns the exit south to (4, 257.3), so the fin covers the slot mouth and no flame top shows from inside the slot. First sight is on stepping round the fin. Marlow tests it with the camera, not the collider.
+7. **The ledge:** the lip is a rock rim 1.1 m high along x -10 (a 0.8 m rim was sprint-jumped in 8.14), its collider inside the rock. The path end is 1.5 m from the lip, so rays to about 28 degrees down clear it and the valley fires show (Quill 12). N end: a rock wall across the ledge at z 285, joined to the shoulder; S end: a rock wall across it at z 215, joined to the knob's west face; both top 66 or higher (section 8). Stones to the left of the path end, off to one side of the approach (DECISIONS 2026-09-25).
 8. Stones 20 to 25 m south of the path end. W-1: section 7.
 
 ## 5. The fire
 
-1. **Far front** on the far ridge (crest 30), x -240 to -400, **z -60 to 400** (rev 10: trimmed so no line from the open-east corners passes over the arms to its ends), burning giants, flame tops 105. **Valley fires** on the floor at -40, x -110 to -220, z 0 to 500, flame tops 20. The far ridge rises from the floor at x -200 to its crest at x -240.
+1. **Far front** on the far ridge (crest 30), x -240 to -400, **z -60 to 650** (rev 11, as built, Marlow), burning giants, flame tops 105. **Valley fires** on the floor at -40, x -110 to -220, z 0 to 500, flame tops 20. The far ridge rises from the floor at x -200 to its crest at x -240.
 2. From the path end (eye 63.6, x -8.5): far flame tops 6 to 10 degrees above level; valley fire tops 12 to 24 degrees below, their bases 25 to 45 degrees below; the far front spans about 87 degrees and, with the valley fires, the fire spans about 135 degrees. Vesper's figures (29 to 59 degrees) were for fires at x -50 to -150; they moved out. Vesper checks against Style 6.3; if the frame still reads small, the Ward screen's camera looks about 10 degrees down (Pim).
 3. **Day 1:** one low smoke sheet streams west (east wind), top 60 at x -110 rising to 110 at x -500, z -60 to 400 (rev 10), fading out west of x -900. Every daytime line passes over the W crest at least 10 m above it (section 7). No glow, no ash east of the crest (Edges 1.7).
 4. **From nightfall of night 1** (Vesper 16): the wind drops; 3 to 5 columns stand over the far front to 250 m. They are lit from below only up to 130; above that they stay unlit against a black sky, so nothing lit shows over the crest from the valley on night 1. From the ledge they carry the scale.
@@ -217,7 +217,7 @@ Places keep their Main3.md rev 16 positions. Resident IDs as Check1 (R1 Camp 1, 
 | **NE and SE:** day-1 sheet | (385, 295) to (-500, 110) at z 400 | NW corner, x 6 | | 52.6 | 80 | 24 |
 | **NE and SE:** valley fire tops | (393, 300) to (-110, 500), tops 20 | N arm, x 292 | | 11.7 | 36.4 | 21.7 |
 
-Rev 10 figures are for jump height with eye and target raised 3 m; the NE and SE rows are the open-east corners Marlow found (rev 9 block 1). The trimmed front's ends no longer lie behind the arms from any daytime eye, so no line from the east crosses the arms' low saddles to a flame; the N arm's east half is raised (section 2) for the one line that still crosses it, from the fence corner. The stack's line through the W crest south of z 40 keeps the saddle at 74 or higher (Marlow R8-5).
+Rev 11: the far front now runs to z 650 (5.1); the rows naming its north end (-240, 400) were figured for rev 10 and are not refigured here. The built F-1 ray test is the check. Rev 10 figures are for jump height with eye and target raised 3 m; the NE and SE rows are the open-east corners Marlow found (rev 9 block 1). The trimmed front's ends no longer lie behind the arms from any daytime eye, so no line from the east crosses the arms' low saddles to a flame; the N arm's east half is raised (section 2) for the one line that still crosses it, from the fence corner. The stack's line through the W crest south of z 40 keeps the saddle at 74 or higher (Marlow R8-5).
 
 1. The deck is the tightest eye (1.5 m at jump with +3). Rook runs F-1 on the built crest; any point under 80 in z 40 to 345 is a failure, not a tuning.
 2. No other daytime eye is high: the Ward face, the cwm and the ledge are closed by day (section 8).
@@ -248,14 +248,14 @@ Rev 10 figures are for jump height with eye and target raised 3 m; the NE and SE
 | Place | Closed by |
 |---|---|
 | W ridge foot, S hook to N hook | a continuous rock band 4 m or taller, owned rock meshes with colliders; the face above at 50 degrees or steeper; broken only by the 3 m chute gap at x 86, where the band steps out in two rock arms (IW2) |
-| Between climb benches | a rock step 2 m or taller on each bench's uphill side; face 50 degrees or steeper |
+| Between climb benches | rev 11: vertical rock walls ringing the climb, 3.5 m above the highest walkable ground within 12 m; rims 1.3 m by 1.2 m on drops (4.4) |
 | Cwm rims | rock faces 50 degrees or steeper, rims 76 to 80 |
 | N arm foot, x 80 to 396 | a rock band 3 m or taller behind the north fir wall; deadfall and brush at the wall's foot |
 | S arm foot, x 38 to 396 | a granite band 3 m or taller; between x 140 and 250 the lake's south belt runs brush down to the water, so the south shore is not walked |
 | Arm east ends | the fence at x 396, tied into both rock bands by a rock outcrop at each end |
 | Ledge N end | **rev 10: a rock wall across the end at z 285, from x -12 (past the lip, into the west face) to x 6, joined to the shoulder; top 66 or higher (4 m over the ledge)** |
 | Ledge S end | **rev 10: a rock wall across the end at z 215, from x -12 to x 8, joined to the knob's west face; top 66 or higher** |
-| Ledge W edge | the lip, 0.8 m rock |
+| Ledge W edge | the lip, 1.1 m rock |
 | Knoll flanks between the switchbacks | deadfall lines and brush 1 m or taller, collider inside the brush |
 | Old burn regrowth | dense firs with brush 1 m or taller filling the gaps, collider inside the brush |
 | Ravine rim above the cave spur | a rock band on the lip, boulders |
