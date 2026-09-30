@@ -5,6 +5,7 @@ using UnityEngine;
 /// SCENES every scene in the build list (picking one loads it),
 /// WARPS the open scene's warp points (children of a "DevWarps" object, shown with readable names),
 /// LOOK the looks listed on LookPreview (Current, Day one, Day two).
+/// Text scales with the screen height from a 720 reference, never below 1 reference pixel per screen pixel.
 /// Mouse clicks, arrow keys or WASD with Enter, and stick or d-pad with A all work.
 /// Exists only in the Editor and development builds. In a release build this class
 /// compiles to an empty component: no panel, no keys, nothing to find.
@@ -28,6 +29,7 @@ public class DevMenu : MonoBehaviour
     private const int SubRowSize = 15;
     private const int MinTextSize = 10;           // best-fit floor when a label is wider than a narrow column
     private const float ReferenceHeight = 720f;   // the canvas scales with screen height
+    private const float MinScale = 1f;            // never smaller than 1 reference pixel per screen pixel, so short wide windows stay readable (8.9h)
     private const float ScrollSensitivity = 30f;
     private const int SortingOrder = 100;
 
@@ -35,8 +37,12 @@ public class DevMenu : MonoBehaviour
     private Behaviour[] gameplay;
     private bool open;
 
+    /// True while the panel is on screen, so other dev overlays (the LookPreview corner label) can stay out of its way.
+    public static bool IsShowing { get; private set; }
+
     // Layout that follows the screen: the panel sits inside the safe area, the column never gets wider than it,
     // and the list scrolls (mouse wheel, or following the keyboard and gamepad selection) when it is taller.
+    private UnityEngine.UI.CanvasScaler scaler;
     private RectTransform safeRect;
     private RectTransform columnRect;
     private RectTransform viewportRect;
@@ -74,6 +80,7 @@ public class DevMenu : MonoBehaviour
     {
         Rebuild();
         open = true;
+        IsShowing = true;
         gameplay = FindGameplay();
         foreach (var b in gameplay) if (b != null) b.enabled = false;
         Cursor.lockState = CursorLockMode.None;
@@ -85,6 +92,7 @@ public class DevMenu : MonoBehaviour
         if (panel != null) Destroy(panel);
         panel = null;
         open = false;
+        IsShowing = false;
         var events = UnityEngine.EventSystems.EventSystem.current;
         if (events != null) events.SetSelectedGameObject(null);
         if (gameplay != null) foreach (var b in gameplay) if (b != null) b.enabled = true;
@@ -177,10 +185,8 @@ public class DevMenu : MonoBehaviour
         var canvas = panel.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = SortingOrder;
-        var scaler = panel.AddComponent<UnityEngine.UI.CanvasScaler>();
-        scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(ReferenceHeight * 16f / 9f, ReferenceHeight);
-        scaler.matchWidthOrHeight = 1f;
+        scaler = panel.AddComponent<UnityEngine.UI.CanvasScaler>();
+        scaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ConstantPixelSize;   // FitToScreen sets the factor
         panel.AddComponent<UnityEngine.UI.GraphicRaycaster>();
 
         // Safe area: everything sits inside Screen.safeArea (FitToScreen sets the anchors).
@@ -278,6 +284,9 @@ public class DevMenu : MonoBehaviour
         if (events != null && first != null) events.SetSelectedGameObject(first.gameObject);
     }
 
+    /// Canvas scale: follows the screen height from the 720 reference, but never below MinScale.
+    private static float CanvasScale(int screenHeight) => Mathf.Max(screenHeight / ReferenceHeight, MinScale);
+
     /// Keeps the panel inside the safe area and the column no wider than it, whenever the Game view or window changes size.
     private void FitToScreen()
     {
@@ -289,7 +298,8 @@ public class DevMenu : MonoBehaviour
         if (screen.x <= 0 || screen.y <= 0) return;
         safeRect.anchorMin = new Vector2(area.xMin / screen.x, area.yMin / screen.y);
         safeRect.anchorMax = new Vector2(area.xMax / screen.x, area.yMax / screen.y);
-        float scale = screen.y / ReferenceHeight;   // the CanvasScaler's factor when it matches height
+        float scale = CanvasScale(screen.y);
+        scaler.scaleFactor = scale;
         float safeWidth = area.width / scale;
         columnRect.sizeDelta = new Vector2(Mathf.Min(ColumnWidth, safeWidth), 0f);
     }
