@@ -57,3 +57,7 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: Rook starts 8.14 on Valley rev 10 while Marlow rechecks the four fixed items on paper; the built-mesh checks (F-1, walk, push) are the final word.
 - 2026-09-30: Frame-rate floor for the forest: 1% low at 60 fps or better, thinned in Vesper's order if it drops.
 - 2026-09-30: The far fire's north end stays at z 650 so it never visibly stops in the ledge reveal; the raised N arm hides it (Marlow).
+- 2026-09-30: A Tri becomes the day-one look now (Vesper's pick); Grant sees it on his walk and can overturn.
+- 2026-09-30: The player may no longer jump-climb slopes steeper than the slope limit; with that, the climb's ring walls drop to low rims except where needed.
+- 2026-09-30: Leg 2's 61 m straight is exempt from the 60 m straight-view cap.
+- 2026-09-30: Junction markers (Valley.md section 11) and the north loop trail go into 8.14a; the ruin stays in 8.17.
