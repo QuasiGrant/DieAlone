@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 /// "-perfspots <output file>", it loads Main3, poses the player's camera at the same three spots (Camp, S1, the office), skips the
 /// warm-up frames, records the frame times, writes the average and the 1% low per spot to the file and quits; it goes round the spots
 /// twice, so the second pass shows each view once its shaders and data are loaded. Without the flag it
-/// does nothing.
+/// does nothing. With "-perfdetail" it also logs profiler counters for the slowest frames (see Detail).
 public class PerfSpots : MonoBehaviour
 {
     private const string Flag = "-perfspots", SceneName = "Main3";
@@ -19,6 +19,24 @@ public class PerfSpots : MonoBehaviour
     private const float Eye = 1.6f, LookAhead = 40f;
 
     private string outPath;
+    // "-perfdetail": per frame, the profiler counters below (the previous frame's value, as the frame time is); for the slowest 1% of
+    // frames each counter's mean against the median frame's, and where the slow frames fall, so the cause of the 1% low shows
+    private const string DetailFlag = "-perfdetail";
+    private static readonly string[] Counters = { "Main Thread", "Render Thread", "PlayerLoop", "GC Allocated In Frame", "GC.Collect", "Gfx.WaitForPresentOnGfxThread", "Gfx.WaitForGfxCommandsFromMainThread", "Gfx.PresentFrame", "Physics.Simulate", "Camera.Render", "Shader.CreateGPUProgram", "Loading.ReadObject" };
+    private bool detail;
+    private readonly List<Unity.Profiling.ProfilerRecorder> recorders = new List<Unity.Profiling.ProfilerRecorder>();
+    private readonly List<string> recorderNames = new List<string>();
+
+    private void StartRecorders()
+    {
+        var all = new List<Unity.Profiling.LowLevel.Unsafe.ProfilerRecorderHandle>(); Unity.Profiling.LowLevel.Unsafe.ProfilerRecorderHandle.GetAvailable(all);
+        foreach (var name in Counters)
+            foreach (var h in all)
+                if (Unity.Profiling.LowLevel.Unsafe.ProfilerRecorderHandle.GetDescription(h).Name == name)
+                { var r = new Unity.Profiling.ProfilerRecorder(h, 1, Unity.Profiling.ProfilerRecorderOptions.Default); r.Start(); recorders.Add(r); recorderNames.Add(name); break; }
+    }
+
+    private void OnDestroy() { foreach (var r in recorders) r.Dispose(); }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Boot()
@@ -30,8 +48,26 @@ public class PerfSpots : MonoBehaviour
                 var go = new GameObject("PerfSpots"); DontDestroyOnLoad(go);
                 var ps = go.AddComponent<PerfSpots>(); ps.outPath = args[i + 1];
                 for (int j = 0; j < args.Length - 1; j++) if (args[j] == FramesFlag && int.TryParse(args[j + 1], out int n) && n > 0) ps.frames = n;
+                foreach (var a in args) if (a == DetailFlag) ps.detail = true;
                 return;
             }
+    }
+
+    private string Detail(List<(float dt, long[] v, int index)> rows, int worst)
+    {
+        var sorted = new List<(float dt, long[] v, int index)>(rows); sorted.Sort((a, b) => a.dt.CompareTo(b.dt));
+        var median = sorted[sorted.Count / 2]; var slow = sorted.GetRange(sorted.Count - worst, worst);
+        var sb = new StringBuilder("  slow frames (worst " + worst + ") at frame: ");
+        var idx = new List<int>(); foreach (var r in slow) idx.Add(r.index); idx.Sort(); sb.Append(string.Join(",", idx)).Append("\n  frame ms slow mean ");
+        float dts = 0f; foreach (var r in slow) dts += r.dt; sb.Append((dts / worst * 1000f).ToString("F1")).Append(", median ").Append((median.dt * 1000f).ToString("F1")).Append("\n");
+        for (int k = 0; k < recorderNames.Count; k++)
+        {
+            double s = 0; foreach (var r in slow) s += r.v[k]; s /= worst;
+            bool bytes = recorderNames[k].StartsWith("GC Allocated");
+            string F(double x) => bytes ? (x / 1024.0).ToString("F0") + " KB" : (x / 1e6).ToString("F2") + " ms";
+            sb.Append("  ").Append(recorderNames[k]).Append(": slow ").Append(F(s)).Append(", median ").Append(F(median.v[k])).Append("\n");
+        }
+        return sb.ToString();
     }
 
     private IEnumerator Start()
@@ -47,7 +83,8 @@ public class PerfSpots : MonoBehaviour
             ("S1", At(156f, 148f), new Vector3(178f, At(156f, 148f).y, 168f)),
             ("Office", At(340f, 196f), Ahead(At(340f, 196f), 68f)) };
         var log = new StringBuilder("player " + Application.version + ", screen " + Screen.width + " x " + Screen.height + ", " + frames + " frames per spot after " + WarmFrames + " warm-up, vSync " + QualitySettings.vSyncCount + "\n");
-        var times = new List<float>();
+        var times = new List<float>(); var rows = new List<(float dt, long[] v, int index)>();
+        if (detail) StartRecorders();
         for (int pass = 1; pass <= Passes; pass++)
         foreach (var s in spots)
         {
@@ -56,10 +93,12 @@ public class PerfSpots : MonoBehaviour
             cam.transform.localRotation = Quaternion.Euler(-Mathf.Atan2(dir.y, flat.magnitude) * Mathf.Rad2Deg, 0f, 0f);
             for (int i = 0; i < WarmFrames; i++) yield return null;
             times.Clear();
-            for (int i = 0; i < frames; i++) { yield return null; times.Add(Time.unscaledDeltaTime); }
+            rows.Clear();
+            for (int i = 0; i < frames; i++) { yield return null; times.Add(Time.unscaledDeltaTime); if (detail) { var v = new long[recorders.Count]; for (int k = 0; k < v.Length; k++) v[k] = recorders[k].LastValue; rows.Add((Time.unscaledDeltaTime, v, i)); } }
             times.Sort(); int worst = Mathf.Max(1, times.Count / 100); float sum = 0f, worstSum = 0f;
             foreach (var t in times) sum += t; for (int i = times.Count - worst; i < times.Count; i++) worstSum += times[i];
             log.Append("pass " + pass + " " + s.name + ": average " + (times.Count / sum).ToString("F1") + " fps, 1% low " + (worst / worstSum).ToString("F1") + " fps\n");
+            if (detail && rows.Count > 0) log.Append(Detail(rows, worst));
         }
         log.Append("done\n");
         System.IO.File.WriteAllText(outPath, log.ToString());

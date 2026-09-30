@@ -1,1 +1,2 @@
 - [Build rewrites need Grant](feedback_build_rewrites.md) — build dirties settings; git checkout and deletes blocked; runtime list cannot match HEAD via Editor
+- [Player build perf](project_player_build_perf.md) — 8.16 floor judged in a dev player via PerfSpots; first BRG build ~60 min; what builds dirty
