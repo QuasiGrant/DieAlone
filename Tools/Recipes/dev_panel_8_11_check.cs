@@ -24,6 +24,13 @@ int dayOne = -1, night = -1;
 for (int i = 0; i < preview.Count; i++) { if (preview.Label(i) == "Day one") dayOne = i; if (preview.Label(i) == "Night") night = i; }
 if (GamePause.Instance != null && GamePause.Instance.IsPaused) GamePause.Instance.Resume();
 
+// 8.16a (Marlow, Gate_816_Marlow.md 14: every keyboard step failed twice while pad steps passed): by default the Input System (1.20,
+// InputManager.ShouldDeferEventBetweenEditorAndPlayerUpdates) holds keyboard and pointer events back from the game while the Game view
+// lacks focus and lets gamepads through, so the virtual keyboard only works with the Game view focused. For the run the game gets all
+// input whatever has focus (both settings are needed, InputManager.gameShouldGetInputRegardlessOfFocus); restored when it finishes. The
+// project has no Input System settings asset, so nothing is saved.
+var inSet = UnityEngine.InputSystem.InputSystem.settings; var editorWas = inSet.editorInputBehaviorInPlayMode; var backWas = inSet.backgroundBehavior;
+inSet.editorInputBehaviorInPlayMode = UnityEngine.InputSystem.InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView; inSet.backgroundBehavior = UnityEngine.InputSystem.InputSettings.BackgroundBehavior.IgnoreFocus;
 var kb = UnityEngine.InputSystem.InputSystem.AddDevice<UnityEngine.InputSystem.Keyboard>("KeyCheck811");
 var pad = UnityEngine.InputSystem.InputSystem.AddDevice<UnityEngine.InputSystem.Gamepad>("PadCheck811");
 var mouse = UnityEngine.InputSystem.InputSystem.AddDevice<UnityEngine.InputSystem.Mouse>("MouseCheck811");
@@ -163,6 +170,7 @@ tick = () =>
     {
         UnityEditor.EditorApplication.update -= tick;
         foreach (var d in new UnityEngine.InputSystem.InputDevice[] { kb, pad, mouse }) if (d != null && d.added) UnityEngine.InputSystem.InputSystem.RemoveDevice(d);
+        inSet.editorInputBehaviorInPlayMode = editorWas; inSet.backgroundBehavior = backWas;
         log.AppendLine("done: " + failures + " failures, screen " + UnityEngine.Screen.width + " x " + UnityEngine.Screen.height);
         System.IO.File.WriteAllText(logPath, log.ToString());
     }
