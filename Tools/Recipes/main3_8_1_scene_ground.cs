@@ -585,7 +585,9 @@ FlatWall("Outcrop_S", bands, new[] { P(403f, -5.5f), P(391.5f, -5.5f) }, H(fence
 // the lip is 1.1 m, not table 4.7's 0.8: in 8.14's Play check a sprint-jump rode the capsule over a 0.8 m rim (the capsule's round foot at the
 // top of a 0.6 m hop meets the rim's edge below its centre and slides up); 1.1 clears the hop plus the 0.35 m radius
 const float rimHeight = 1.1f;
-// the ring's rims are thinner than the lip and stand over the highest ground beside them; 1.3 m (8.14 push check)
+// the ring's rims stand 1.3 m over the highest ground beside them and are as thick as the lip (8.14 push check: a 0.5 m thick 1.2 m
+// rim was sprint-jumped); its walls stand 3.5 m over the highest walkable ground within 12 m (2.6 was reached from the heightmap's
+// slope at the foot of the slot wall)
 const float ringRimHeight = 1.3f;
 var ledgeRock = new UnityEngine.GameObject("Ledge").transform; ledgeRock.SetParent(rockRoot.transform, false);
 const float lipH = rimHeight, lipThick = 1.2f, endWallTop = 66.5f, endWallThick = 2f, backWallH = 3f, backWallThick = 1.5f, finTop = 78f;
@@ -612,7 +614,7 @@ FlatWall("FinCap", ledgeRock, new[] { P(3f, slotEnd.y + slotHalf + 0.05f), P(led
 // drops, a rim rimH high (over the 0.6 m jump and the capsule riding over an edge). Every bench, platform, the chute, the cwm,
 // the cleft and the ledge are closed this way; the lip, fin and end walls above are the named pieces of the same ring.
 var ring = new UnityEngine.GameObject("ClimbRing").transform; ring.SetParent(rockRoot.transform, false);
-const float ringCell = 0.5f, ringX0 = -14f, ringX1 = 92f, ringZ0 = 190f, ringZ1 = 335f, walkStep = 0.45f, riseMin = 0.3f, wallH = 2.6f, wallReach = 12f, rimH = ringRimHeight, wallThick = 0.8f, rimThick = 0.5f;
+const float ringCell = 0.5f, ringX0 = -14f, ringX1 = 92f, ringZ0 = 190f, ringZ1 = 335f, walkStep = 0.45f, riseMin = 0.3f, wallH = 3.5f, wallReach = 12f, rimH = ringRimHeight, wallThick = 0.8f, rimThick = 1.2f;
 int RW = UnityEngine.Mathf.RoundToInt((ringX1 - ringX0) / ringCell), RH = UnityEngine.Mathf.RoundToInt((ringZ1 - ringZ0) / ringCell);
 var rh = new float[RW, RH]; var valleyCell = new bool[RW, RH]; var flooded = new bool[RW, RH];
 float CX(int i) => ringX0 + (i + 0.5f) * ringCell; float CZ(int j) => ringZ0 + (j + 0.5f) * ringCell;

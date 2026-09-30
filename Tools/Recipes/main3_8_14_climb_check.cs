@@ -5,8 +5,9 @@
 // 2. Push checks with the real CharacterController (WalkChecks.md mover: dt 0.02, gravity and jump from PlayerTuning, sprint-jumps
 //    hop on every landing), "no way round":
 //    a. the climb: from every J to Ward trail point past the chute mouth, a 25 m walk to each side and a 2.2 s sprint-jump in 12
-//       directions. Fails if it ends nearer a trail point more than 40 m of walking further on (a skipped leg) or more than 2.5 m
-//       above the nearest trail point (up a face), except on the ledge.
+//       directions. Fails if it ends on the trail more than 40 m of walking further on (within 2 m across and 1.5 m in height of a
+//       trail point: a skipped leg), or more than 2.5 m above every trail point within 40 m either way (up a face, above the local
+//       climb), except on the ledge. Ending lower, off the trail, is a fall, reported, not a way round.
 //    b. the ledge: pushes west at the lip, south at the S end wall, north at the N end wall and out of all four corners; each must
 //       stay on the ledge (x -10 to 6, z 215 to 285, ground 61 or more).
 //    c. IW2 by day (CairnGate on): from the valley side along the rock arms and the gap, walks west and sprint-jumps in 12
@@ -20,7 +21,7 @@ UnityEngine.GameObject Root(string name) { foreach (var r in UnityEngine.SceneMa
 var pc = UnityEngine.Object.FindFirstObjectByType<PlayerController>(); var cc = pc.GetComponent<UnityEngine.CharacterController>(); pc.enabled = false;
 var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Settings/PlayerTuning.asset");
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(new UnityEngine.Vector3(x, 0f, z)) + ter.transform.position.y;
-const float dt = 0.02f, pushWalk = 25f, hopTime = 2.2f, skipWindow = 40f, climbGain = 2.5f, nearMouthX = 86f;
+const float dt = 0.02f, pushWalk = 25f, hopTime = 2.2f, skipWindow = 40f, climbGain = 2.5f, nearMouthX = 86f, onTrailAcross = 2f, onTrailUp = 1.5f;
 const int hopDirs = 12, stallSteps = 600, walkSteps = 8000;
 float g = tuning.gravity, vJump = UnityEngine.Mathf.Sqrt(2f * g * tuning.jumpHeight), walkSpeed = tuning.walkSpeed, sprint = tuning.sprintSpeed;
 void Put(UnityEngine.Vector3 p) { cc.enabled = false; pc.transform.position = p + UnityEngine.Vector3.up * 0.3f; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (int k = 0; k < 20; k++) cc.Move(UnityEngine.Vector3.down * 0.1f); }
@@ -93,12 +94,17 @@ try
             Put(a); maxFall = 0f; airTop = pc.transform.position.y; wasGrounded = true;
             if (t.mode == "walk") Walk(t.dir, pushWalk); else Hop(t.dir, sprint, hopTime);
             var e = pc.transform.position; pushes++; worstFall = UnityEngine.Mathf.Max(worstFall, maxFall);
-            int ci = 0; float cd = float.MaxValue; for (int k = 0; k < climb.Count; k++) { float d3 = UnityEngine.Vector3.Distance(e, climb[k]); if (d3 < cd) { cd = d3; ci = k; } }
-            bool skipped = cs[ci] > cs[i] + skipWindow, up = e.y > climb[ci].y + climbGain && !OnLedge(e);
+            bool skipped = false; float localTop = float.MinValue;
+            for (int k = 0; k < climb.Count; k++)
+            {
+                if (UnityEngine.Mathf.Abs(cs[k] - cs[i]) <= skipWindow) localTop = UnityEngine.Mathf.Max(localTop, climb[k].y);
+                else if (cs[k] > cs[i] + skipWindow && UnityEngine.Vector2.Distance(new UnityEngine.Vector2(e.x, e.z), new UnityEngine.Vector2(climb[k].x, climb[k].z)) <= onTrailAcross && UnityEngine.Mathf.Abs(e.y - climb[k].y) <= onTrailUp) skipped = true;
+            }
+            bool up = e.y > localTop + climbGain && !OnLedge(e);
             if (skipped || up)
             {
                 fails++;
-                if (failList.Count < 20) failList.Add(t.mode + " from " + a.ToString("F1") + " (" + cs[i].ToString("F0") + " m) toward " + t.dir.ToString("F2") + ": ended " + e.ToString("F1") + (skipped ? ", " + (cs[ci] - cs[i]).ToString("F0") + " m further on" : "") + (up ? ", " + (e.y - climb[ci].y).ToString("F1") + " m over the trail" : ""));
+                if (failList.Count < 20) failList.Add(t.mode + " from " + a.ToString("F1") + " (" + cs[i].ToString("F0") + " m) toward " + t.dir.ToString("F2") + ": ended " + e.ToString("F1") + (skipped ? ", on the trail more than 40 m further on" : "") + (up ? ", " + (e.y - localTop).ToString("F1") + " m over the climb within 40 m" : ""));
             }
         }
     }
