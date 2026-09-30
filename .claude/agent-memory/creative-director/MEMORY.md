@@ -3,4 +3,6 @@
 - [Store and office look](project_store_office_look.md) — 2026-09-29 private boards: store loop cold-is-out, office light-led clues
 - [Look slice and layers](project_look_slice.md) — 2026-09-29 Ward to plateau, layers first, camp-tower slice spec LookSlice.md
 - [8.9f slice review](project_slice_review_89f.md) — 2026-09-29 FAIL then recheck PASS (51549e0); open look-pass notes
+- [Valley and brightness](project_valley_and_brightness.md) — 2026-09-29 valley read, fire hidden by west ridge, day one too dark causes
+- [Map edges](project_edges.md) — 2026-09-29 Edges.md rev 2; valley sun 200/32, night-1 calls, rev 2 back-slope fail, gray-walk minimum
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions

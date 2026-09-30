@@ -13,6 +13,8 @@ When Grant says he is taking a break (or similar: stepping away, done for now, h
 
 **Why:** On 2026-09-29 Grant chose this over Google Drive for desktop. Docs/Private (story bible, minigames, all dialogue and event text) is git-ignored and exists nowhere else.
 
+**Known limit (2026-09-29, first attempt):** the Drive connector works (folder created, id 1MnE2VsV17m2X4X7Ow9nazq2yqr2xgHaC), but the zip is 181 KB (242 KB as base64). create_file needs the whole content inline in one call, which is impractical and risks corruption. The small-business Drive plugin failed auth; the working one is the 44f2326d connector. Chrome was not connected. Fallback used: a copy in C:\Users\grant\Documents\DieAlone Private Backups (same disk, not off-machine). Proposed fix to Grant: Google Drive for desktop syncing that Documents folder.
+
 **How to apply:** Do it every time, without asking. If the Drive connector is unavailable, say so and give him the zip path. Also run the usual end-of-session status update.
 
 Related: [[user-grant]].

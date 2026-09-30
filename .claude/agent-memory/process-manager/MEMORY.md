@@ -1,2 +1,3 @@
 - [Parallel work is Tully's job](feedback_parallel_work.md) — at every planning point or idle agent, tell Wren what starts now vs truly waits; Grant sees only his decisions
 - [Player path gaps are Tully's to flag](feedback_player_path_gaps.md) — walk every design flow end to end; name unwalked steps (gate paper check miss, 2026-09-29)
+- [Runner overwrites standalone recipes](feedback_runner_overwrites_standalone.md) — standalone asset-writing recipes get reverted by main3_rebuild.sh; check at commit review
