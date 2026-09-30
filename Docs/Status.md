@@ -45,3 +45,7 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: Process lessons live where Tully's Docs/Process/Improvements.md says; agent habits applied to .claude/agents.
 - 2026-09-30: Grant's "other than the other camp" for invisible walls is unclear; Sable states a reading in Valley.md rev 8 and the team goes with it.
 - 2026-09-30: Vesper's eye-height bar (Style.md 10) and groves rule (5.8) adopted as the gate standard.
+- 2026-09-30: Valley rev 8 (Sable) goes to review as drawn: ridges 64 to 70 with a crest tree belt as cover, the ledge at 62 (still above the deck at 56), the highway at x 428, and a climb of 117 s from J.
+- 2026-09-30: Grant's "other camp" read as the closed campground: one shift-only wall at its spur mouth stays (DECISIONS 2026-09-29).
+- 2026-09-30: Off-trail walking in open forest: yes. Each dawn, two of the three forage patches bear: yes, to be playtested.
+- 2026-09-30: Camp knoll trees are 35 m (tops 50), not 42, so they don't block the deck's view.
