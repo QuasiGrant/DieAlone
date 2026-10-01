@@ -9,3 +9,4 @@ Tully reviews at each commit review. A line whose fix now lives in an agent file
 - 2026-10-01 Rook: recipe fixes reported done did not show in the rebuilt scene / verify each fix in the scene after a rebuild before reporting / pending: diagnosis
 - 2026-10-01 Rook, Vesper, Pim: the VHS noise band sat on the eye line in every capture frame and hid built objects, so reviews failed real work / capture with the band off, noted on each sheet / pending: main3_review_capture.cs
 - 2026-10-01 Rook, Wren: the capture checked the ledge fire only in the day-one look, where it is hidden, so a smoke sheet covering it at night went unseen / every look-dependent check runs in each look it matters in / pending: main3_review_capture.cs
+- 2026-10-01 Wren, Rook, Marlow: several warps dropped Grant through the map; captures framed warps but nothing dropped a player there in Play / a warp landing check in the capture / pending: main3_review_capture.cs

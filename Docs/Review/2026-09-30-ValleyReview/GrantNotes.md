@@ -19,3 +19,12 @@ I need my notes reviewed, a full team meeting on how to improve here, and then a
 (2) recheck of the map for usability and playability
 (3) A quality check from our Creative Director
 Please report back after. I'd like a document with the results of the meeting and checks before we proceed.
+
+# Grant's look-around, 2026-10-01 (verbatim)
+
+Ok, yeah this map needs a ton of work
+Forest is far too sparse
+Several warps have you fall through the map
+Its very ugly in spots
+The ward scene and walk up the ward path is the wost
+If Milestone 8 is a walkable working layout we're a ways off.
