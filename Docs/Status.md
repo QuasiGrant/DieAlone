@@ -82,3 +82,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-01: Changes that need the reset are batched with 8.18 into one rebuild Grant runs once.
 - 2026-10-01: Climb bars: the cwm bowl frames (FWD 50, FWD 120 to 160, BACK 176 and 186) pass at rock 40 percent or less with open not counted, Vesper grading the top half by eye; elsewhere rock 30 or less with open 15 or more, or rock 40 or less with open 25 or more.
 - 2026-10-01: Lamp at intensity 16, range 10 (Vesper); trail stretches that still fail N2 get a trail material fix.
+- 2026-10-01: Vesper's forest density (ForestPlan section 8) replaces the old open-ground rule in Style.md 10 (Wren's call, after Grant: the forest is far too sparse).
