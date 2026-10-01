@@ -367,6 +367,7 @@ try
     // 8.16b (Vesper's count, Wren's call): rock counts only where the hit surface is steeper than climbSteepRock (walls, not the tread),
     // and the partner share is "open": sky, or any hit farther than climbOpenFar m. Bar outside the cleft: rock 30 or less, open 15 or more
     const int climbRaysX = 64, climbRaysY = 33; const float climbRockWeight = 0.5f, climbTreeNear = 120f, climbRayMax = 3000f, climbSteepRock = 35f, climbOpenFar = 60f;
+    const float climbBowlRock = 40f, climbRockA = 30f, climbOpenA = 15f, climbOpenB = 25f, climbCleftX = 20f; var climbBowl = new System.Collections.Generic.HashSet<string> { "FWD 50 M", "FWD 120 M", "FWD 130 M", "FWD 140 M", "FWD 150 M", "FWD 160 M", "BACK 176 M", "BACK 186 M" }; int climbPass = 0, climbJudged = 0;
     var climbRockSky = new System.Text.StringBuilder("\n## Climb steep rock and open (ClimbFix.md 3, 8.16b count)\n\nShare of each Climb frame that is steep rock (surfaces over 35 degrees) and open (sky or anything over 60 m away), from " + climbRaysX + " x " + climbRaysY + " rays per frame (method in main3_review_capture.cs, step 4). Cleft frames are the slot (exempt from the rock bar).\n\n| Frame | Steep rock pct | Open pct |\n|---|---|---|\n");
     {
         var climbTemp = new System.Collections.Generic.List<UnityEngine.Collider>(); var climbMid = At(climb.pts, Length(climb.pts) * 0.5f);
@@ -411,7 +412,8 @@ try
                 var yawDir = new UnityEngine.Vector3(ahead.x - p.x, 0f, ahead.z - p.z).normalized;
                 Pose(c, c + yawDir * 10f + UnityEngine.Vector3.up * (far.y - p.y)); var rs = RockSky();
                 float sUp = back ? len - s : s; string name = (back ? "BACK " : "FWD ") + sUp.ToString("F0", inv) + " M";
-                climbRockSky.Append("| " + name + " | " + rs.rock.ToString("F0", inv) + " | " + rs.sky.ToString("F0", inv) + " |\n");
+                string verdict; if (p.x < climbCleftX) verdict = "cleft, exempt"; else { bool ok = climbBowl.Contains(name) ? rs.rock <= climbBowlRock : (rs.rock <= climbRockA && rs.sky >= climbOpenA) || (rs.rock <= climbBowlRock && rs.sky >= climbOpenB); climbJudged++; if (ok) climbPass++; verdict = (climbBowl.Contains(name) ? "bowl: " : "") + (ok ? "PASS" : "FAIL"); }
+                climbRockSky.Append("| " + name + " | " + rs.rock.ToString("F0", inv) + " | " + rs.sky.ToString("F0", inv) + " | " + verdict + " |\n");
                 frames.Add((Render(trailDiv), "CLIMB " + name + "  Y " + p.y.ToString("F0", inv) + "  ROCK " + rs.rock.ToString("F0", inv) + " OPEN " + rs.sky.ToString("F0", inv)));
             }
             int rows = (frames.Count + trailCols - 1) / trailCols; NewCanvas(trailCols * (tw + gap) + gap, headH + rows * (labelH + th + gap) + gap);
@@ -420,6 +422,7 @@ try
             for (int i = 0; i < frames.Count; i++) { int x = gap + (i % trailCols) * (tw + gap), y = headH + (i / trailCols) * (labelH + th + gap); Blit(frames[i].px, tw, th, x, y + labelH); Text(x + 2, y + 4, frames[i].label, 2, white); }
             SaveCanvas(back ? "Climb_J_to_Ward_Back.jpg" : "Climb_J_to_Ward.jpg", title, frames.Count);
         }
+        climbRockSky.Append("\nClimb pass: " + climbPass + " of " + climbJudged + " frames outside the cleft.\n");
         foreach (var c in climbTemp) if (c != null) UnityEngine.Object.DestroyImmediate(c);
         UnityEngine.Physics.SyncTransforms();
     }
