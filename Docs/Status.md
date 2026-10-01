@@ -80,3 +80,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: Giants keep the 50 m cap; one emergent giant per grove near the cap, the rest 12 to 18 m lower, no fir within 10 m of it (Vesper).
 - 2026-09-30: W3 exempts the cleft frames (climb 210 to 230); the ledge is hidden there on purpose.
 - 2026-10-01: Changes that need the reset are batched with 8.18 into one rebuild Grant runs once.
+- 2026-10-01: Climb bars: the cwm bowl frames (FWD 50, FWD 120 to 160, BACK 176 and 186) pass at rock 40 percent or less with open not counted, Vesper grading the top half by eye; elsewhere rock 30 or less with open 15 or more, or rock 40 or less with open 25 or more.
