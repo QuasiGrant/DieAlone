@@ -39,13 +39,18 @@ MonoBehaviour:
   nightAmbient: {r: 0.027, g: 0.031, b: 0.039, a: 1}
   fireFillColor: {r: 0.353, g: 0.141, b: 0.071, a: 1}
   fireFillIntensity: 0.25
-  skyTop: {r: 0.22, g: 0.11, b: 0.1, a: 1}
-  skyHorizon: {r: 0.85, g: 0.4, b: 0.18, a: 1}
-  skyBandHeight: 0
+  skyTop: {r: 0.019607844, g: 0.03137255, b: 0.050980393, a: 1}
+  skyHorizon: {r: 0.047058824, g: 0.0627451, b: 0.08627451, a: 1}
+  skyBandHeight: 8
   skyBlendRate: 1.8
-  skyGround: {r: 0.3, g: 0.16, b: 0.1, a: 1}
-  sunGlowColor: {r: 1, g: 0.55, b: 0.25, a: 1}
+  skyGround: {r: 0.019607844, g: 0.03137255, b: 0.050980393, a: 1}
+  sunGlowColor: {r: 0, g: 0, b: 0, a: 1}
   sunGlowSize: 24
+  nightGradientSky: 1
+  gradientSky: {fileID: 2100000, guid: 721ffb968b88cd94d96a758bcbbabb0b, type: 2}
+  westGlowColor: {r: 0.3529412, g: 0.14117648, b: 0.07058824, a: 1}
+  westGlowSpread: 77
+  westGlowTop: 30
   sunColor: {r: 1, g: 0.55, b: 0.25, a: 1}
   sunElevation: 6
   sunBearing: 270
@@ -56,10 +61,16 @@ MonoBehaviour:
   fireEmbers: 1
   fireFlicker: 0.3
   fireFlickerSpeed: 0.8
+  fireCardDim: 0
+  flameBaseColor: {r: 1, g: 0.91, b: 0.753, a: 1}
+  flameBodyColor: {r: 1, g: 0.42, b: 0.102, a: 1}
+  flameTipColor: {r: 0.722, g: 0.282, b: 0.11, a: 1}
+  floorGlowColor: {r: 0.541, g: 0.227, b: 0.078, a: 1}
   smokeBodyColor: {r: 0.16941176, g: 0.13686275, b: 0.11921569, a: 1}
-  smokeFireColor: {r: 0.42, g: 0.165, b: 0.071, a: 1}
+  smokeFireColor: {r: 0.41960785, g: 0.16470589, b: 0.07058824, a: 1}
   smokeShadowFloor: 0.45
   smokeFireStrength: 1.6
+  backdropFireStrength: 1.3
   practicalColor: {r: 1, g: 0.659, b: 0.376, a: 1}
   firePitIntensity: 3
   stoveIntensity: 1.2
@@ -68,6 +79,13 @@ MonoBehaviour:
   practicalDayScale: 0.4
   interiorFillIntensity: 0
   interiorFillColor: {r: 0.6, g: 0.541, b: 0.451, a: 1}
+  caveCrackColor: {r: 0.604, g: 0.639, b: 0.678, a: 1}
+  caveCrackIntensity: 3
+  caveCrackRange: 14
+  caveCrackAngle: 25
+  caveFillColor: {r: 0.29, g: 0.314, b: 0.345, a: 1}
+  caveFillIntensity: 0.4
+  caveFillRange: 12
   cabLampBulbIntensity: 3
   cabWindowGlowIntensity: 0.6
   lotLightColor: {r: 0.941, g: 0.541, b: 0.165, a: 1}
@@ -76,6 +94,6 @@ MonoBehaviour:
   backdropForestColor: {r: 0.31, g: 0.29, b: 0.173, a: 1}
   backdropRangeColor: {r: 0.431, g: 0.4, b: 0.376, a: 1}
   backdropGroundColor: {r: 0.29, g: 0.271, b: 0.18, a: 1}
-  backdropNearHaze: 0.55
+  backdropNearHaze: 0.62
   backdropFarHaze: 0.8
   backdropGroundHaze: 0.2

@@ -20,8 +20,8 @@ MonoBehaviour:
   coyoteTime: 0.1
   steepSlideSpeed: 5
   lampColor: {r: 1, g: 0.659, b: 0.376, a: 1}
-  lampRange: 8
-  lampIntensity: 20
+  lampRange: 9
+  lampIntensity: 6
   lampHeight: 1.1
   standHeight: 1.8
   crouchHeight: 1

@@ -83,6 +83,16 @@ public class LookTuning : ScriptableObject
     public Color sunGlowColor = new Color(1.0f, 0.55f, 0.25f);
     [Tooltip("Higher is a tighter glow around the sun.")]
     [Range(2f, 200f)] public float sunGlowSize = 24f;
+    [Tooltip("Night looks: draw the gradient sky (skyHorizon band up to skyBandHeight, then skyTop) instead of the flat fog colour, so crests read against it (RebuildSpecs 4.6).")]
+    public bool nightGradientSky = false;
+    [Tooltip("The DieAlone/SkyGradient material a night look copies when nightGradientSky is on.")]
+    public Material gradientSky;
+    [Tooltip("Fire glow on the western horizon (RebuildSpecs 4.4): its colour at the horizon; black is none.")]
+    public Color westGlowColor = Color.black;
+    [Tooltip("Half the width of the western glow, in degrees of bearing either side of due west.")]
+    [Range(0f, 90f)] public float westGlowSpread = 77f;
+    [Tooltip("Degrees above the horizon where the western glow has faded to nothing.")]
+    [Range(1f, 90f)] public float westGlowTop = 30f;
 
     [Header("Sun (day looks; read by the dev look preview, scenes keep their own light)")]
     [Tooltip("Colour of the fixed sun.")]
@@ -106,6 +116,14 @@ public class LookTuning : ScriptableObject
     [Range(0f, 1f)] public float fireFlicker = 0.3f;
     [Tooltip("Speed of that breathing. Low is a slow smoulder.")]
     [Range(0.1f, 5f)] public float fireFlickerSpeed = 0.8f;
+    [Tooltip("Share the flame cards dim by in this look (RebuildSpecs 4.2: day two at half the night). 0 is full.")]
+    [Range(0f, 1f)] public float fireCardDim = 0f;
+    [Tooltip("Flame card colours by brightness (RebuildSpecs 4.1): the core, the body, the fading tips.")]
+    public Color flameBaseColor = new Color(1.0f, 0.910f, 0.753f);
+    public Color flameBodyColor = new Color(1.0f, 0.420f, 0.102f);
+    public Color flameTipColor = new Color(0.722f, 0.282f, 0.110f);
+    [Tooltip("Soft glow under each flame cluster on the burning valley floor (RebuildSpecs 4.5).")]
+    public Color floorGlowColor = new Color(0.541f, 0.227f, 0.078f);
 
     [Header("Smoke (DieAlone/Smoke shader)")]
     [Tooltip("Colour of the smoke body where the sun reaches it. Style.md #4A3A32.")]
@@ -116,6 +134,8 @@ public class LookTuning : ScriptableObject
     [Range(0f, 1f)] public float smokeShadowFloor = 0.45f;
     [Tooltip("Strength of the fire light on the smoke underside. 0 turns it off.")]
     [Range(0f, 4f)] public float smokeFireStrength = 1.0f;
+    [Tooltip("Strength of the fire light on the low smoke sheet and the day-two columns (DieAlone/Backdrop, RebuildSpecs 4.3), in smokeFireColor. 0 by day one.")]
+    [Range(0f, 4f)] public float backdropFireStrength = 0f;
 
     [Header("Practical lights (lamps, lanterns, stove, fire pit; LookSlice.md 4)")]
     [Tooltip("Colour of every practical light, the warmest light on the map. LookSlice #FFA860.")]
@@ -134,6 +154,15 @@ public class LookTuning : ScriptableObject
     [Range(0f, 8f)] public float interiorFillIntensity = 0f;
     [Tooltip("Colour of the cabin interior fill: daylight bounced off the floor and walls.")]
     public Color interiorFillColor = new Color(0.6f, 0.541f, 0.451f);
+    [Tooltip("Cave chamber roof crack (RebuildSpecs 3.1): colour of the cold shaft, a no-shadow spot light set by main3_8_17_cave.cs.")]
+    public Color caveCrackColor = new Color(0.604f, 0.639f, 0.678f);
+    [Range(0f, 20f)] public float caveCrackIntensity = 3f;
+    [Range(1f, 40f)] public float caveCrackRange = 14f;
+    [Range(5f, 90f)] public float caveCrackAngle = 25f;
+    [Tooltip("Cave fill (RebuildSpecs 3.1): one no-shadow point light in the chamber and one in the side room, short enough to stay under the ground.")]
+    public Color caveFillColor = new Color(0.290f, 0.314f, 0.345f);
+    [Range(0f, 4f)] public float caveFillIntensity = 0.4f;
+    [Range(1f, 40f)] public float caveFillRange = 12f;
     [Tooltip("Brightness of the cab lamp bulb, drawn without fog so it marks the tower at night.")]
     [Range(0f, 10f)] public float cabLampBulbIntensity = 3.0f;
     [Tooltip("Brightness of the cab's lit windows at night, drawn without fog so the tower reads from the Ward pass.")]

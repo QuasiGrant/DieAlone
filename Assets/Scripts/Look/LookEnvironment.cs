@@ -24,6 +24,12 @@ public class LookEnvironment : MonoBehaviour
     private static readonly int SunGlowId = Shader.PropertyToID("_SunGlowColor");
     private static readonly int SunSizeId = Shader.PropertyToID("_SunGlowSize");
     private static readonly int SunDirId = Shader.PropertyToID("_SunDir");
+    private static readonly int WestGlowId = Shader.PropertyToID("_WestGlowColor");
+    private static readonly int WestCosId = Shader.PropertyToID("_WestGlowCos");
+    private static readonly int WestTopId = Shader.PropertyToID("_WestGlowTopSin");
+    private static readonly int FireCardDimId = Shader.PropertyToID("_DA_FireCardDim");
+    private static readonly int BackdropFireId = Shader.PropertyToID("_DA_BackdropFireStrength");
+    private Material nightSkyCopy;   // a night look's own copy of its gradient sky, so the asset is never written
     private static readonly int SmokeBodyId = Shader.PropertyToID("_DA_SmokeBodyColor");
     private static readonly int SmokeFireId = Shader.PropertyToID("_DA_SmokeFireColor");
     private static readonly int SmokeShadowFloorId = Shader.PropertyToID("_DA_SmokeShadowFloor");
@@ -36,6 +42,8 @@ public class LookEnvironment : MonoBehaviour
         Shader.SetGlobalColor(SmokeFireId, tuning.smokeFireColor);
         Shader.SetGlobalFloat(SmokeShadowFloorId, tuning.smokeShadowFloor);
         Shader.SetGlobalFloat(SmokeFireStrengthId, tuning.smokeFireStrength);
+        Shader.SetGlobalFloat(FireCardDimId, tuning.fireCardDim);
+        Shader.SetGlobalFloat(BackdropFireId, tuning.backdropFireStrength);
     }
 
     private void OnEnable() => Apply();
@@ -80,8 +88,17 @@ public class LookEnvironment : MonoBehaviour
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             RenderSettings.ambientLight = tuning.sunsetAmbient;
         }
-        if (sunset && skyMaterial != null)
+        bool gradient = sunset || tuning.nightGradientSky;
+        if (!sunset && tuning.nightGradientSky && tuning.gradientSky != null)
         {
+            if (nightSkyCopy == null || nightSkyCopy.shader != tuning.gradientSky.shader) nightSkyCopy = new Material(tuning.gradientSky);
+            skyMaterial = nightSkyCopy;
+        }
+        if (gradient && skyMaterial != null)
+        {
+            skyMaterial.SetColor(WestGlowId, tuning.westGlowColor);
+            skyMaterial.SetFloat(WestCosId, Mathf.Cos(tuning.westGlowSpread * Mathf.Deg2Rad));
+            skyMaterial.SetFloat(WestTopId, Mathf.Sin(tuning.westGlowTop * Mathf.Deg2Rad));
             skyMaterial.SetColor(TopId, tuning.skyTop);
             skyMaterial.SetColor(HorizonId, tuning.skyHorizon);
             skyMaterial.SetColor(GroundId, tuning.skyGround);
