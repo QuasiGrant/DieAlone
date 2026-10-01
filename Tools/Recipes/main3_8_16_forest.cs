@@ -222,7 +222,7 @@ foreach (var gv in groves)
     }
     GroveFoot(g, gv.c, gv.r);
 }
-// 1b. 8.17 gate (Marlow 4; Valley.md E11: the ruin is not seen from the deck): a screen of firs across the deck-to-ruin line, ruinScreen
+// 1b. (Replaced on every build by main3_8_17_ruin.cs's screen, which removes this group; kept so the random stream after it holds.) 8.17 gate (Marlow 4; Valley.md E11: the ruin is not seen from the deck): a screen of firs across the deck-to-ruin line, ruinScreen
 // m south of the ruin in three rows (between the ruin and the north loop, which runs 10 m south), 2 m apart (ruinScreenSpace), south of
 // the side path's view from the loop to the south-west doorway, so the ruin stays seen from the loop
 const float ruinScreenSpace = 2f;

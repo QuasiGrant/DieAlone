@@ -264,6 +264,29 @@ public sealed class PlaceKit
         var cap = mf.gameObject.AddComponent<CapsuleCollider>(); cap.direction = 1; cap.radius = d[d.Count / 2]; cap.height = h * share; cap.center = new Vector3(cx, y0 + h * share * 0.5f, cz);
     }
 
+    /// One capsule on a BK pack tree's trunk (8.16a TrunkCollider, for the place recipes): the median reach of the LOD 0 bark vertices
+    /// (sub-meshes not named Leaves or Branches) between bandLow and bandHigh of the bark's height about their centre, the band widened
+    /// upward to at most bandMax until it holds minVerts vertices, up share of the height, its round end below the base. The pack's own
+    /// colliders go.
+    public static void PackTrunkCapsule(GameObject g, float bandLow, float bandHigh, float bandMax, int minVerts, float share)
+    {
+        if (g == null) return;
+        foreach (var c in g.GetComponentsInChildren<Collider>()) Object.DestroyImmediate(c);
+        var lod = g.GetComponent<LODGroup>(); var r0 = lod != null ? lod.GetLODs()[0].renderers[0] : g.GetComponentInChildren<MeshRenderer>(); if (r0 == null) return;
+        var mf = r0.GetComponent<MeshFilter>(); if (mf == null || mf.sharedMesh == null) return; var m = mf.sharedMesh;
+        var mats = r0.sharedMaterials; var vs = m.vertices; var bark = new HashSet<int>();
+        for (int s = 0; s < m.subMeshCount && s < mats.Length; s++) { var n = mats[s] != null ? mats[s].name : ""; if (n.Contains("Leaves") || n.Contains("Branches")) continue; foreach (var ix in m.GetTriangles(s)) bark.Add(ix); }
+        float y0 = float.MaxValue, y1 = float.MinValue; foreach (var ix in bark) { y0 = Mathf.Min(y0, vs[ix].y); y1 = Mathf.Max(y1, vs[ix].y); }
+        float h = y1 - y0, lo = y0 + h * bandLow, hi = y0 + h * bandHigh, cx = 0f, cz = 0f; int n0 = 0;
+        for (float band = bandHigh; band <= bandMax; band *= 2f) { int k = 0; hi = y0 + h * band; foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) k++; if (k >= minVerts) break; }
+        foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) { cx += vs[ix].x; cz += vs[ix].z; n0++; }
+        if (n0 == 0) return; cx /= n0; cz /= n0;
+        var d = new List<float>(); foreach (var ix in bark) if (vs[ix].y >= lo && vs[ix].y <= hi) d.Add(Mathf.Sqrt((vs[ix].x - cx) * (vs[ix].x - cx) + (vs[ix].z - cz) * (vs[ix].z - cz))); d.Sort();
+        float r = d[d.Count / 2];
+        var cap = mf.gameObject.AddComponent<CapsuleCollider>(); cap.direction = 1; cap.radius = r; cap.height = h * share + r * 2f;
+        cap.center = new Vector3(cx, y0 - r + cap.height * 0.5f, cz);
+    }
+
     /// Clears the terrain's detail layers (grass, ferns) within radius m of a world point, so a camp's ground reads trampled and
     /// props are not buried; returns the cells cleared.
     public int ClearDetail(Vector3 centre, float radius)

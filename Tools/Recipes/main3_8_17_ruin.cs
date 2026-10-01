@@ -63,5 +63,50 @@ var warps = kit.Root("DevWarps").transform; PlaceKit.Remove(warps.Find("North_Lo
 var w = new UnityEngine.GameObject("North_Loop_Ruin").transform; w.SetParent(warps, false); w.position = near + V(0f, 0.2f, 0f);
 w.rotation = UnityEngine.Quaternion.LookRotation(V(rx - near.x, 0f, rz - near.z).normalized);
 
+// R-1 screen (Valley.md E11: the ruin is not seen from the deck). Replaces 8.16's Forest/RuinScreen, which got 3 of its 21 firs in among
+// grove N1's giants and left the ruin's west corners open once Style 5.8 lowered them. Rows of firs across the deck-to-ruin line south of
+// the north loop, screenFrom to screenTo m from the ruin centre toward the deck, screenRows rows, screenHalf m either side of the line
+// every screenStep m (staggered), screenLow to screenHigh m tall: there the deck's lines to the ruin run 14 to 18 m up. Each keeps
+// trailGap m off every trail point, warpGap m off every warp, firKeep m off every emergent giant (Style 5.8), colliderClear m off any
+// collider but the ground, and stands on ground under slopeMax. Own random stream, so a rerun builds the same screen.
+const float screenFrom = 23f, screenTo = 29f, screenHalf = 8f, screenStep = 2f, screenJitter = 0.4f, screenLow = 22f, screenHigh = 28f, trailGap = 3.5f, warpGap = 8f, firKeep = 10f, colliderClear = 1.2f, slopeMax = 38f, treeSink = 0.3f;
+const int screenRows = 3, screenSeed = 8172;
+string[] screenFirs = { "RedFir5", "RedFir6", "RedFir7", "RedFir8", "RedPine1", "RedPine2", "RedPine3" };
+int screenN = 0;
+{
+    var forest = kit.Root("Forest").transform; PlaceKit.Remove(forest.Find("RuinScreen"));
+    var screen = kit.Group("RuinScreen", forest, V(rx, 0f, rz), 0f);
+    var rng = new System.Random(screenSeed);
+    var tw = kit.Root("Camp").transform.Find("Tower"); var deck = new UnityEngine.Vector2(tw.position.x, tw.position.z); var rc = new UnityEngine.Vector2(rx, rz);
+    var along = (deck - rc).normalized; var side = new UnityEngine.Vector2(along.y, -along.x);
+    var trailPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform leg in trails) foreach (UnityEngine.Transform p in leg) trailPts.Add(new UnityEngine.Vector2(p.position.x, p.position.z));
+    var keepOff = new System.Collections.Generic.List<(UnityEngine.Vector2 p, float r)>();
+    foreach (UnityEngine.Transform wp in warps) keepOff.Add((new UnityEngine.Vector2(wp.position.x, wp.position.z), warpGap));
+    foreach (var t in forest.GetComponentsInChildren<UnityEngine.Transform>()) if (t.name == "BrokenTop") keepOff.Add((new UnityEngine.Vector2(t.parent.position.x, t.parent.position.z), firKeep));
+    var slice = kit.Root("SliceLook"); if (slice != null) foreach (var t in slice.GetComponentsInChildren<UnityEngine.Transform>()) if (t.name == "BrokenTop") keepOff.Add((new UnityEngine.Vector2(t.parent.position.x, t.parent.position.z), firKeep));
+    var td = kit.Terrain.terrainData; var to = kit.Terrain.transform.position;
+    for (int row = 0; row < screenRows; row++)
+    {
+        float s = screenFrom + (screenTo - screenFrom) * row / UnityEngine.Mathf.Max(1, screenRows - 1);
+        for (float off = -screenHalf + (row % 2) * screenStep * 0.5f; off <= screenHalf; off += screenStep)
+        {
+            var p = rc + along * s + side * off + new UnityEngine.Vector2((float)rng.NextDouble() * 2f - 1f, (float)rng.NextDouble() * 2f - 1f) * screenJitter;
+            float tall = screenLow + (float)rng.NextDouble() * (screenHigh - screenLow); string kind = screenFirs[rng.Next(screenFirs.Length)]; float yaw = (float)rng.NextDouble() * 360f;
+            bool ok = true; foreach (var q in trailPts) if ((q - p).sqrMagnitude < trailGap * trailGap) { ok = false; break; }
+            foreach (var k in keepOff) if ((k.p - p).sqrMagnitude < k.r * k.r) ok = false;
+            if (!ok || td.GetSteepness((p.x - to.x) / td.size.x, (p.y - to.z) / td.size.z) > slopeMax) continue;
+            float gy = kit.H(p.x, p.y);
+            foreach (var c in UnityEngine.Physics.OverlapCapsule(V(p.x, gy + 0.6f, p.y), V(p.x, gy + 3f, p.y), colliderClear, UnityEngine.Physics.AllLayers, UnityEngine.QueryTriggerInteraction.Ignore)) if (!(c is UnityEngine.TerrainCollider)) ok = false;
+            if (!ok) continue;
+            var g = kit.Spawn(PlaceKit.BK + "Trees/" + kind, screen); if (g == null) continue;
+            g.transform.SetPositionAndRotation(V(p.x, 0f, p.y), UnityEngine.Quaternion.Euler(0f, yaw, 0f));
+            var b = PlaceKit.MeshBounds(g); float k0 = tall / UnityEngine.Mathf.Max(0.5f, b.size.y); g.transform.localScale = UnityEngine.Vector3.one * k0;
+            b = PlaceKit.MeshBounds(g); g.transform.position += V(0f, gy - b.min.y - treeSink, 0f);
+            PlaceKit.PackTrunkCapsule(g, 0.01f, 0.06f, 0.4f, 8, 0.3f);   // 8.16a's trunk numbers
+            UnityEngine.Physics.SyncTransforms(); screenN++;
+        }
+    }
+}
+
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
-return "saved=" + saved + " ruin at (" + rx + ", " + rz + ") ground " + ruin.position.y.ToString("F1") + ", loop point " + best.ToString("F1") + " m from the door, stones " + stones + ", warp at " + w.position.ToString("F1") + " | " + kit.Report();
+return "saved=" + saved + " ruin at (" + rx + ", " + rz + "), screen firs " + screenN + ", ground " + ruin.position.y.ToString("F1") + ", loop point " + best.ToString("F1") + " m from the door, stones " + stones + ", warp at " + w.position.ToString("F1") + " | " + kit.Report();
