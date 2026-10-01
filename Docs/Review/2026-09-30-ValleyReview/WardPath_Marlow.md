@@ -84,3 +84,53 @@
     - Rook's rerun should include the menhirs (bounds sit under the mesh on rotated pack meshes; use the lowest vertex).
 
 Marlow
+
+## Draft 2
+
+2026-10-01. WardPath.md and .svg at a771976. Not remeasured: the Editor was in Play (Rook), so ground heights along the new lines are interpolated from my draft 1 grid. That grid is 3 m by 2 m, read-only, on 3345b2e; no scene commit since. Treat cut and post heights as plus or minus 3 m on the 60 degree face.
+
+**Result: FAIL.** Draft 1 blocks 1 to 3 are cleared or reduced to hurts. 1 new block.
+
+14. **New block: the prow's sides are open.**
+    - Where: SVG plan prow, x -10 to -12, z 243.4 to 248.6. The rail is drawn only on the west edge (x -12). The lip rim stops at z 243 and z 249 to let the prow in. The prow's N and S sides, about 2.2 m each, have no rail or rim, and the prow is "2 m past the lip, west face sheer".
+    - A player at the reveal can walk off either side to the floor at -40.
+    - Repro, once built: stand at (-11, 246) and walk north, or south.
+    - Fix in the doc: the rail (collider 1.1 m) runs round all three open sides and joins the lip rim at both ends.
+15. **Draft 1 block 1 (stair): cleared in plan; posts not as stated. Hurts.**
+    - The flights now climb the face (x 29 to 41).
+    - Ground along the lines (interpolated):
+      - Landing 1 (35, 262) at 44 sits under ground at 50.
+      - Landing 2 (32.5, 247) at 49 sits under ground at 55. Both are 6 m cuts with the face standing higher behind.
+      - Flights 1 and 2 cross the gully at z 250 to 256, 2.6 to 4.5 m over ground.
+      - Flight 3 at z 251.5 to 256 is 4.2 to 5.9 m over ground. That is not "posts of 1.5 m or less".
+    - Flights 2 and 3 overlap in plan at z 248 to 252: centre lines 1.3 to 2 m apart, 2.5 m treads, 3.4 to 4 m apart in height. That suits the landing 2 hollow, but flight 3's posts then stand on flight 2 or in the gully.
+    - A fall from any of them lands on flight 2 or slides to the open bench, so no soft lock.
+    - Rook measures each line every 1 m before cutting. Sable's open question 2 stands.
+16. **Draft 1 block 2 (bench gap): cleared, with one condition.**
+    - The z 272 giant crosses the bench (x 35 to 56, ground 41) and ends at x 59 on ClimbRim_Collider (top 42, present z 264 to 280).
+    - Condition: one straight trunk from the root plate (ground 69 at x 22) down to the bench (41) runs about 7 m over leg 4's tread (58 at x 25 to 28), and a player walks under it.
+    - The collider must be two runs, each 1.3 m over ground: leg 4 (x 22 to 29) and the bench (x 35 to 59). The face between (x 29 to 35, 67 to 73 degrees) slides.
+17. **Draft 1 block 3 (stair over the closed side): cleared, with one condition.**
+    - All structure is at z 264 or less. Falls off the lookout's north side and leg 4's east side slide to the bench at z 262 to 271, south of the giant.
+    - Condition: "no collider within 3 m of the face foot" is contradicted twice. The giant itself meets the face foot at about (35 to 37, 271), which is the slide-pocket pattern. Flight 1 also runs along the face foot.
+    - Push grid at the giant corner after the build. Hurts until it is run.
+18. **Shot B: PASS on paper.**
+    - Eye 63.6, 0.45 m from the rail. Rays clear from 0 to about 72 degrees down, except where the top bar sits: about 48 to 57 degrees for a 0.1 m bar 1.0 m up.
+    - Floor fire bases at 25 to 45 degrees down show. Cosmetic: "0 to about 70 clear" ignores the bar.
+    - Unmeasured: whether the west face under the prow is steeper than the rays. Where it leans out, it hides the bases.
+19. **Shot A at heading 225: PASS.**
+    - The frame spans bearings 179.25 to 270.75. The far front spans 217.6 onward, so it fills 53 of the 91.5 degrees (58 percent).
+    - The stones at bearings 185 to 197 sit in the left fifth.
+    - Distances 32.3, 34.4 and 37.9 m.
+20. **Walk time: PASS.**
+    - The doc's coordinates sum to 203.6 m from J to the prow (lookout 5 + throat 34.65 + ledge 19.6); the doc says 199.
+    - Camp to prow is about 284 m: about 114 s at walk plus about 5 m of slope length on the flights. Under 150.
+21. **Steps: PASS.** Grades 17, 18 and 36 degrees, all under 45 with StairRamps; flight 3 has 9 degrees of margin. Every join over 0.1 m gets a StairRamp.
+22. **Draw fill: cosmetic.**
+    - Banks 3 to 5 m over the tread near x 76 to 86 put the filled ground over Band_S_W and the IW2 arm tops (17). From inside, the band becomes a step down to the valley at 12: a night exit, not a trap.
+    - By day, from 12, the arms still stand 5 m and IW2 holds.
+    - Keep the fill under 17 within 3 m of the band if that exit is unwanted.
+23. **Night one: PASS on paper.** Baseline row, car trigger, three lanterns and two hides are in. Cabin window, lot lights and highway from the lookout: still unverified.
+24. **F-1, W-1, hop item: PASS.** The wording now matches the work (terrain at x 20 or less unchanged; ledge work at x -12 to 6 under the crest). The stale mover question is gone.
+
+Marlow
