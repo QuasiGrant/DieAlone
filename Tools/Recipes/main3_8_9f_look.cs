@@ -250,8 +250,8 @@ if (office != null && glowWin != null)
 int trailLayers = 0;
 int markerN = 0;   // 8.14: the thicket and its markers are gone (Valley.md rev 10 section 8)
 // the old burn: dense young regrowth 4 to 6 m (4 m in the last 40 m before the front zone), off the trails (Main3.md 2.10)
-var burnPoly = new[] { new UnityEngine.Vector2(185f, 181f), new UnityEngine.Vector2(340f, 213f), new UnityEngine.Vector2(340f, 143f), new UnityEngine.Vector2(185f, 151f) };
-bool InBurn(UnityEngine.Vector2 p) { bool c = false; for (int i = 0, j = burnPoly.Length - 1; i < burnPoly.Length; j = i++) if (((burnPoly[i].y > p.y) != (burnPoly[j].y > p.y)) && (p.x < (burnPoly[j].x - burnPoly[i].x) * (p.y - burnPoly[i].y) / (burnPoly[j].y - burnPoly[i].y) + burnPoly[i].x)) c = !c; return c; }
+// RebuildSpecs 1.7: the ragged outline shared with 8.1, 8.3, 8.15 and 8.16; regrowth thins to half at the outline and none burnFade m inside it out
+bool InBurn(UnityEngine.Vector2 p) => ValleyShapes.InBurn(p); const float burnFade = 10f;
 // 8.16a (Marlow: players walked through trunks): a BK tree gets one capsule on its trunk, measured from its first LOD's bark: the
 // median reach of the bark vertices between trunkBandLow and trunkBandHigh of the bark's height, about their centre, up trunkShare of
 // that height (the pack's own colliders are removed: on the giants they are 0.7 m thick inside a 1.7 m trunk). Hollow logs keep the
@@ -285,10 +285,10 @@ const float regrowthStep = 5f, regrowthJitter = 2.5f, regrowthTrailGap = 4.5f, r
 const float s2LaneHalf = 6f; var s2Cam = new UnityEngine.Vector2(235f, 168f); var s2Tower = new UnityEngine.Vector2(164f, 166f);
 bool InS2Lane(UnityEngine.Vector2 p, float extra = 0f) { var ab = s2Tower - s2Cam; float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(p - s2Cam, ab) / ab.sqrMagnitude); return UnityEngine.Vector2.Distance(p, s2Cam + ab * t) < s2LaneHalf + extra; }
 var regrowth = new UnityEngine.GameObject("BurnRegrowth").transform; regrowth.SetParent(root, false); int regrowthN = 0;
-for (float x = 186f; x < 340f; x += regrowthStep) for (float z = 143f; z < 213f; z += regrowthStep)
+for (float x = 176f; x < 350f; x += regrowthStep) for (float z = 133f; z < 223f; z += regrowthStep)
 {
     var p = new UnityEngine.Vector2(x + R(-regrowthJitter, regrowthJitter), z + R(-regrowthJitter, regrowthJitter));
-    if (!InBurn(p) || InS2Lane(p)) continue; bool clear = true; foreach (var t in trailPts) if (UnityEngine.Vector2.Distance(p, t) < regrowthTrailGap) { clear = false; break; } if (!clear) continue;
+    if (!InBurn(p) || InS2Lane(p) || R(0f, 1f) > UnityEngine.Mathf.Clamp01(0.5f + ValleyShapes.BurnDepth(p) / (2f * burnFade))) continue; bool clear = true; foreach (var t in trailPts) if (UnityEngine.Vector2.Distance(p, t) < regrowthTrailGap) { clear = false; break; } if (!clear) continue;
     foreach (UnityEngine.Transform w in Root("DevWarps").transform) if (UnityEngine.Vector2.Distance(p, new UnityEngine.Vector2(w.position.x, w.position.z)) < regrowthTrailGap) { clear = false; break; } if (!clear) continue;   // 8.14a: no warp lands in a tree
     var tree = Spawn(BK + "Trees/" + (rng.NextDouble() < 0.6 ? "RedFir" + (1 + rng.Next(8)) : "RedPine" + (1 + rng.Next(5))), regrowth); if (tree == null) continue;
     tree.transform.position = V(p.x, 0f, p.y); tree.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
@@ -332,7 +332,7 @@ void SnagTrunk(UnityEngine.GameObject g)
 // standing dead snags 8 to 16 m and fallen branches through the burn, so it reads as burnt forest from the tower, not a plane
 const float snagStep = 14f, snagJitter = 5f, snagLow = 8f, snagHigh = 16f, snagSpread = 6f, branchStep = 6f;   // snagSpread: their limbs reach about this far, kept out of the S2 lane
 var deadPrefab = "Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Decoration_Out/Tree_Dead"; int snagN = 0, branchN = 0;
-for (float x = 186f; x < 340f; x += snagStep) for (float z = 143f; z < 213f; z += snagStep)
+for (float x = 176f; x < 350f; x += snagStep) for (float z = 133f; z < 223f; z += snagStep)
 {
     var p = new UnityEngine.Vector2(x + R(-snagJitter, snagJitter), z + R(-snagJitter, snagJitter));
     if (!InBurn(p) || InS2Lane(p, snagSpread)) continue; bool clear = true; foreach (var t in trailPts) if (UnityEngine.Vector2.Distance(p, t) < regrowthTrailGap) { clear = false; break; } if (!clear) continue;
@@ -341,7 +341,7 @@ for (float x = 186f; x < 340f; x += snagStep) for (float z = 143f; z < 213f; z +
     float top = 0f; foreach (var rr in d.GetComponentsInChildren<UnityEngine.Renderer>()) top = UnityEngine.Mathf.Max(top, rr.bounds.max.y);
     float sc = R(snagLow, snagHigh) / UnityEngine.Mathf.Max(0.5f, top); d.transform.localScale = V(sc, sc, sc); d.transform.position = V(p.x, H(p.x, p.y) - 0.2f, p.y); SnagTrunk(d); snagN++;
 }
-for (float x = 186f; x < 340f; x += branchStep) for (float z = 143f; z < 213f; z += branchStep)
+for (float x = 176f; x < 350f; x += branchStep) for (float z = 133f; z < 223f; z += branchStep)
 {
     var p = new UnityEngine.Vector2(x + R(-2.5f, 2.5f), z + R(-2.5f, 2.5f));
     if (!InBurn(p)) continue; bool clear = true; foreach (var t in trailPts) if (UnityEngine.Vector2.Distance(p, t) < regrowthTrailGap) { clear = false; break; } if (!clear) continue;

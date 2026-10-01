@@ -423,7 +423,7 @@ var cones = new[] {
     new[] { P(164,166), P(226.7f,43.1f), P(253.3f,60.9f) }, new[] { P(164,166), P(297.6f,212.4f), P(266.4f,263.6f) },
     new[] { P(164,166), P(283.8f,89.8f), P(300.2f,126.2f) }, new[] { P(164,166), P(88.8f,150.6f), P(91.2f,141.4f) },
     new[] { P(164,166), P(382.8f,208f), P(382.8f,148f) } };
-var burn = new[] { P(185,181), P(340,213), P(340,143), P(185,151) };
+// the old burn: ValleyShapes.BurnOutline (ragged, RebuildSpecs 1.7); BurnDepth is positive inside it
 var ravine = new[] { P(20,20), P(80,25.2f), P(94.8f,50), P(74,60), P(70,62), P(30,55.2f) };
 bool Inside(UnityEngine.Vector2 p, UnityEngine.Vector2[] poly)
 {
@@ -456,7 +456,7 @@ float Fits(UnityEngine.Vector2 p, float trunkD)
     foreach (var c in clearings) if (UnityEngine.Vector2.Distance(p, c.c) < c.r + crownR) return -1f;
     foreach (var cone in cones) if (PolyDist(p, cone) < crownR + 3f) return -1f;
     foreach (var s in sights) if (SegD(p, s.Item1, s.Item2) < crownR + 3f) return -1f;
-    if (PolyDist(p, burn) < crownR || PolyDist(p, ravine) < clear || LakeRe(p) < 1.35f) return -1f;
+    if (-ValleyShapes.BurnDepth(p) < crownR || PolyDist(p, ravine) < clear || LakeRe(p) < 1.35f) return -1f;
     foreach (var t in trailPts) if (UnityEngine.Vector2.Distance(p, t) < clear + 1.5f) return -1f;
     foreach (var q in poiPlaced) if (UnityEngine.Vector2.Distance(p, q.obj) < clear + 4f) return -1f;
     return tall;

@@ -145,11 +145,14 @@ foreach (var chk in new[] { ("W-1", stoneCorners), ("C-1", mouthCorners) })
 const float FlameVisibleShare = 0.93f, EyeHeight = 1.6f, JumpHeight = 2.2f, Raise = 3f, TrailStep = 10f, F1Sample = 1f, F1Near = 15f, F1NearSample = 0.25f;
 const float CrestNeed = 80f, CrestZ0 = 40f, CrestZ1 = 345f, CrestX0 = 5f, CrestX1 = 20f, CleftZ0 = 261f, CleftZ1 = 268f;
 var flameCardShader = UnityEngine.Shader.Find("DieAlone/FlameCard");
+// 8.18 (F-1 failed on 2 cards seen from every origin: the J cairn lamp's flame, also on FlameCard): only cards of the fire count, those under
+// Ward/StandInFire
+var fireRootF1 = wardRoot.Find("StandInFire"); if (fireRootF1 == null) return "no Ward/StandInFire";
 var flameTops = new System.Collections.Generic.List<(UnityEngine.Vector3 card, UnityEngine.Vector3 visible, string group)>();
 foreach (var mf in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshFilter>(UnityEngine.FindObjectsInactive.Include, UnityEngine.FindObjectsSortMode.None))
 {
     var mr = mf.GetComponent<UnityEngine.MeshRenderer>();
-    if (mr == null || mr.sharedMaterial == null || mr.sharedMaterial.shader != flameCardShader || mf.sharedMesh == null) continue;
+    if (mr == null || mr.sharedMaterial == null || mr.sharedMaterial.shader != flameCardShader || mf.sharedMesh == null || !mf.transform.IsChildOf(fireRootF1)) continue;
     var vs = mf.sharedMesh.vertices;
     for (int i = 0; i + 3 < vs.Length; i += 4)
     {

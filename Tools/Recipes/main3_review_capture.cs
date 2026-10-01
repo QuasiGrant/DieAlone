@@ -41,7 +41,7 @@ var inv = System.Globalization.CultureInfo.InvariantCulture;
 // ---- look
 var preview = UnityEngine.Object.FindFirstObjectByType<LookPreview>();
 if (preview == null) return "no LookPreview";
-string wantLook = step == "day" ? "Day one" : "Night";
+string wantLook = step == "day" ? "Day one" : step == "daytwo" ? "Day two" : "Night";
 if (preview.CurrentLabel != wantLook)
 {
     for (int i = 0; i < preview.Count; i++) if (preview.Label(i) == wantLook) { preview.Select(i); return "selected " + wantLook + "; run again"; }
@@ -177,6 +177,24 @@ System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, strin
 const float greyStep = 20f, greyNear = 5f, greyFar = 20f, greySide = 3f, greyPatch = 0.3f, greyNeed = 20f, greyHidden = 8f;   // greyHidden: mean grey change when the grass is hidden, over which the trail patch counts as covered const int greyDiv = 4, greyCols = 6;
 const int greyDiv = 4, greyCols = 6;
 float Grey(UnityEngine.Color32 c) => 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
+// 8.18 (RebuildSpecs 4.11 and its A/B rule: each lighting item graded on a before and after pair): the same frames in every look, on
+// Look_<look>.jpg, so a capture before a change and one after it pair frame by frame: the ledge west, level and lookDown degrees down,
+// from the path end; the compass from the deck; the cave chamber to the side room; the lot fence; the J cairn lamp from cairnBack m
+const float lookDown = 10f, cairnBack = 6f;
+void LookSheet(string lookName)
+{
+    var fr = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
+    var pe = Eye(new UnityEngine.Vector3(-8.5f, 70f, 246f)); var west = new UnityEngine.Vector3(-1f, 0f, 0f);
+    fr.Add((pe, pe + west * 100f, "LEDGE WEST LEVEL"));
+    fr.Add((pe, pe + west * 100f + UnityEngine.Vector3.down * 100f * UnityEngine.Mathf.Tan(lookDown * UnityEngine.Mathf.Deg2Rad), "LEDGE WEST " + lookDown.ToString("F0", inv) + " DOWN"));
+    var tower = UnityEngine.GameObject.Find("Camp/Tower").transform; var deckEye = new UnityEngine.Vector3(tower.position.x, tower.Find("Cab").position.y + eye, tower.position.z);
+    foreach (var d in new[] { ("N", 0f), ("E", 90f), ("S", 180f), ("W", 270f) }) fr.Add((deckEye, deckEye + UnityEngine.Quaternion.Euler(0f, d.Item2, 0f) * UnityEngine.Vector3.forward * 100f, "COMPASS " + d.Item1));
+    fr.Add((new UnityEngine.Vector3(80f, Ground(80f, 12f, -18f) + eye, 12f), new UnityEngine.Vector3(94f, -17f, 12f), "CAVE CHAMBER TO THE SIDE ROOM"));
+    var lotEye = Eye(new UnityEngine.Vector3(375f, 10f, 172f)); fr.Add((lotEye, lotEye + new UnityEngine.Vector3(1f, 0f, 0f) * 30f, "LOT FENCE EAST"));
+    var cairn = UnityEngine.GameObject.Find("Ward/CairnLamp"); if (cairn == null) foreach (var g in UnityEngine.Object.FindObjectsByType<UnityEngine.Transform>(UnityEngine.FindObjectsSortMode.None)) if (g.name == "CairnLamp") { cairn = g.gameObject; break; }
+    if (cairn != null) { var cp = cairn.transform.position; var ce = Eye(cp + new UnityEngine.Vector3(cairnBack, 0f, 0f)); fr.Add((ce, cp, "J CAIRN LAMP " + cairnBack.ToString("F0", inv) + " M")); }
+    Sheet("Look_" + lookName.Replace(' ', '_') + ".jpg", "Lighting frames, " + lookName + " (RebuildSpecs 4.11): pair them with the same sheet from another capture", fr, pairDiv, 4);
+}
 // mean grey of the pixels within greyPatch metres of p on the full frame, or -1 when p is off screen, behind or hidden
 float PatchGrey(UnityEngine.Color32[] src, UnityEngine.Vector3 p, UnityEngine.Color32[] bare)   // bare: the same frame without terrain grass; when given, a patch the grass changes is hidden
 {
@@ -252,6 +270,7 @@ System.IO.Directory.CreateDirectory(outDir); System.IO.Directory.CreateDirectory
 var clock = System.Diagnostics.Stopwatch.StartNew();
 try
 {
+    if (step == "daytwo") { LookSheet("Day two"); return "daytwo done: wrote Look_Day_two.jpg in " + clock.Elapsed.TotalSeconds.ToString("F0") + " s"; }
     if (step == "night")
     {
         var night = PairFrames("NIGHT"); var nights = new System.Collections.Generic.List<UnityEngine.Color32[]>();
@@ -281,7 +300,7 @@ try
             foreach (var l in UnityEngine.Object.FindObjectsByType<UnityEngine.Light>(UnityEngine.FindObjectsSortMode.None)) if (l.enabled && l.type != UnityEngine.LightType.Directional && !l.transform.IsChildOf(pc.transform)) lights.Add(l.transform.position);
             var standIn = UnityEngine.Shader.Find("DieAlone/FireStandIn");
             foreach (var r in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshRenderer>(UnityEngine.FindObjectsSortMode.None)) if (r.enabled && r.sharedMaterial != null && r.sharedMaterial.shader == standIn && r.bounds.size.magnitude < nightMarkerMax) lights.Add(r.bounds.center);
-            bool allPass = true;
+            bool allPass = true; const float blowFrom = 200f, blowTo = 240f, blowGrey = 230f; var blowMd = new System.Text.StringBuilder();   // blowouts under the lamp: pixels over blowGrey (the lamp glass is off frame)
             var ruleFrames = new System.Collections.Generic.List<(UnityEngine.Color32[] px, string label)>();   // 8.16a (Pim): every night-rule frame on a sheet
             foreach (var ln in new[] { "Camp to J", "J to Ward" })
             {
@@ -291,6 +310,7 @@ try
                     var p = At(leg.pts, s); var c = p + UnityEngine.Vector3.up * eye; var ahead = At(leg.pts, s + 3f); var far = At(leg.pts, s + trailStep);
                     var yawDir = new UnityEngine.Vector3(ahead.x - p.x, 0f, ahead.z - p.z).normalized;
                     Pose(c, c + yawDir * 10f + UnityEngine.Vector3.up * (far.y - p.y)); var src = Capture(); frames++;
+                    if (ln == "J to Ward" && s >= blowFrom && s <= blowTo) { int over = 0; foreach (var px in src) if (Grey(px) > blowGrey) over++; blowMd.Append(" " + s.ToString("F0", inv) + " m: " + over + " px;"); }   // RebuildSpecs 4.8
                     float mean = 0f; for (int i = 0; i < src.Length; i += 7) mean += Grey(src[i]); mean /= (src.Length + 6) / 7;
                     bool lit = false; foreach (var lp in lights) { float g = PatchGrey(src, lp, null); if (g >= 0f && g >= mean + nightLightOver) { lit = true; break; } }
                     // the fire glow over the crest counts too (Gate_8_15_Pim.md 3): any nightBlock-pixel block above the lower third (where the
@@ -313,11 +333,13 @@ try
                 Text(gap + 4, 12, "Night rule frames, Camp to J and J to Ward: every " + trailStep.ToString("F0", inv) + " m, N1 light in frame, N2 trail minus floor at " + greyNear.ToString("F0", inv) + " m", 3, gold);
                 for (int i = 0; i < ruleFrames.Count; i++) { int x = gap + (i % greyCols) * (ntw + gap), y = headH + (i / greyCols) * (labelH + nth + gap); Blit(ruleFrames[i].px, ntw, nth, x, y + labelH); Text(x + 2, y + 4, ruleFrames[i].label, 1, white); }
                 SaveCanvas("Night_Rule_Frames.jpg", "Night rule frames", ruleFrames.Count);
+                nm.Append("\nBlowouts (RebuildSpecs 4.8, pixels over " + blowGrey.ToString("F0", inv) + " grey, J to Ward " + blowFrom.ToString("F0", inv) + " to " + blowTo.ToString("F0", inv) + " m, night, lamp on):" + blowMd + "\n");
                 nm.Append("\nSheet [Night_Rule_Frames.jpg](Night_Rule_Frames.jpg): every frame above, labelled N1 OK or NO and the N2 difference.\n");
             }
             System.IO.File.AppendAllText(System.IO.Path.Combine(outDir, "index.md"), nm.ToString().Replace("\r", ""));
             nightRule = "night rule " + (allPass ? "PASS" : "FAIL") + nm.ToString().Substring(nm.ToString().IndexOf("|---|---|---|---|---|---|") + 26).Replace("\n", " ");
         }
+        LookSheet("Night");
         string greyNight = GreyTrails("Night");
         string indexPath = System.IO.Path.Combine(outDir, "index.md");
         if (!System.IO.File.Exists(indexPath)) return "missing " + indexPath + ": run step day first";
@@ -556,11 +578,11 @@ try
     }
 
     // 3d. Marlow's hand-walk views (Gate_8_14_Marlow.md 13): P4 east, round the fin with flame tops in sight, the pump trench, east from the front
-    var flameCardShader = UnityEngine.Shader.Find("DieAlone/FlameCard");
+    var flameCardShader = UnityEngine.Shader.Find("DieAlone/FlameCard"); var fireRootC = UnityEngine.GameObject.Find("Ward/StandInFire")?.transform;
     var flameTops = new System.Collections.Generic.List<(UnityEngine.Vector3 top, string group)>();
     foreach (var mf in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshFilter>(UnityEngine.FindObjectsSortMode.None))
     {
-        var mr = mf.GetComponent<UnityEngine.MeshRenderer>(); if (mr == null || !mr.enabled || mr.sharedMaterial == null || mr.sharedMaterial.shader != flameCardShader || mf.sharedMesh == null) continue;
+        var mr = mf.GetComponent<UnityEngine.MeshRenderer>(); if (mr == null || !mr.enabled || mr.sharedMaterial == null || mr.sharedMaterial.shader != flameCardShader || mf.sharedMesh == null || fireRootC == null || !mf.transform.IsChildOf(fireRootC)) continue;   // the fire's cards only (8.18: the cairn lamp flame is a FlameCard too)
         var vs = mf.sharedMesh.vertices; for (int i = 0; i + 3 < vs.Length; i += 4) flameTops.Add((mf.transform.TransformPoint((vs[i + 2] + vs[i + 3]) * 0.5f), mf.name));
     }
     // a line is clear when nothing drawn stands on it: colliders without a renderer (rim colliders inside boulders, IW walls) do not hide
@@ -801,6 +823,7 @@ try
     foreach (var p in pairs) md.Append("- " + p.n + ": stand (" + p.x.ToString("F0", inv) + ", " + p.z.ToString("F0", inv) + "), facing (" + p.lx.ToString("F0", inv) + ", " + p.lz.ToString("F0", inv) + ")\n");
     md.Append(greyMd);
     md.Append(climbRockSky.ToString());
+    LookSheet("Day one"); md.Append("\n## Lighting frames\n\nLook_Day_one.jpg, Look_Night.jpg and Look_Day_two.jpg: the same frames in each look (RebuildSpecs 4.11); pair each with the same sheet from the capture before a change.\n");
     System.IO.File.WriteAllText(System.IO.Path.Combine(outDir, "index.md"), md.ToString().Replace("\r", ""));
 }
 finally { cam.targetTexture = null; rt.Release(); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(shot); }

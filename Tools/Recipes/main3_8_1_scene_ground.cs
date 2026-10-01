@@ -37,7 +37,8 @@ const int res = 1025, ares = 1024;   // 0.62 x 0.68 m cells, finer than rev 16's
 var ravPoly = new[] { P(20,20), P(80,25.2f), P(94.8f,50), P(74,60), P(70,62), P(30,55.2f) };
 var ravEdges = new[] { P(30,55.2f), P(20,20), P(80,25.2f), P(94.8f,50) };                           // west, south and east sides
 var rim = new[] { P(30,55.2f), P(70,62), P(74,60), P(94.8f,50) };
-var burnPoly = new[] { P(185,181), P(340,213), P(340,143), P(185,151) };
+// the old burn: ValleyShapes.BurnOutline (ragged, RebuildSpecs 1.7); its floor blends into the ground over burnBlend m across the outline
+const float burnBlend = 10f;
 var creek = new[] { P(104,215.2f), P(104.8f,203.2f), P(100,175.2f), P(84,150), P(78,146), P(84,128), P(100,110), P(128,78), P(136.5f,66) };   // through the hollow centre, 11 m clear of the Snag
 var creekBed = new[] { 9.5f, 8f, 3.5f, -4.1f, -4.1f, -4.3f, -4.8f, -5.3f, -5.8f };
 var lakeC = P(190, 60); const float lakeA = 54.8f, lakeB = 27.6f;
@@ -440,6 +441,71 @@ float KnobSummits(float x, float z, float h)
     float add = 0f; foreach (var s in knobSummits) { float d2 = (P(x, z) - s.c).sqrMagnitude; add = UnityEngine.Mathf.Max(add, s.h * UnityEngine.Mathf.Exp(-d2 / (s.r * s.r))); }
     return h + add;
 }
+// ClimbFix.md section 4 (draft 3, Sable, 2026-10-01; Wren's batched rebuild): the climb's terrain pass. Lower only, east of the locked
+// x 20 and south of the N crest band (z 333), never within climbFixKeep m of the tread (the 8.16a aprons hold there):
+// 4.5 chute sides: beyond each side rib (x chuteSideX0 to chuteSideX1) the ground lays back at layBackDeg for layBackRun m, then rises as
+//     terraces: risers terraceRiser m at riserDeg, treads terraceTread m.
+// 4.5 chute head face (x 20 to headX1 round P1, above P1): the flat planes become terraces of terraceRiser by terraceTread (height steps:
+//     each terraceRiser band keeps its lower terraceTreadShare level and rises in the rest).
+// 4.3 the N face (x 20 to 60, z 305 to 333, above leg 3): terraces of nFaceRiser by nFaceTreadShare.
+// 4.4 leg 4's west face where it is leg4FaceMinW m wide or more (x 20 to its apron): terraces as the head face.
+// 4.2 the cwm east cut: inside x cutX0 to cutX1 and south of P3's bearing-cutRayDeg ray, nothing stands over the line cutDownDeg under
+//     level from P3's eye or any leg 3 eye (every cutEyeStep m), within cutReach m, on bearings cutB0 to cutB1.
+const float climbFixKeep = 6f, chuteSideX0 = 56f, chuteSideX1 = 80f, layBackDeg = 30f, layBackRun = 8f, terraceRiser = 4.25f, riserDeg = 80f, terraceTread = 2f, terraceTreadShare = 0.7f;
+const float headX1 = 52f, headZ0 = 198f, headZ1 = 234f, nFaceX0 = 20f, nFaceX1 = 60f, nFaceZ0 = 305f, nFaceZ1 = 333f, nFaceRiser = 3f, nFaceTreadShare = 0.6f, leg4FaceMinW = 6f;
+const float cutX0 = 40f, cutX1 = 66f, cutRayDeg = 100f, cutDownDeg = 2f, cutReach = 60f, cutB0 = 100f, cutB1 = 145f, cutEyeStep = 4f, eyeUp = 1.6f;
+float climbLockX = legApronMinX;   // x 20, the locked W crest (F-1 and W-1)
+var cutEyes = new System.Collections.Generic.List<UnityEngine.Vector3>();   // (x, eye height, z)
+cutEyes.Add(V(pP3.x, p3H + eyeUp, pP3.y));
+foreach (var seg in new[] { (p2Out, p2H, pL3, hL3), (pL3, hL3, pL3b, hL3b), (pL3b, hL3b, p3In, p3H) })
+{
+    float sl = UnityEngine.Vector2.Distance(seg.Item1, seg.Item3);
+    for (float s = 0f; s <= sl; s += cutEyeStep) { var q = UnityEngine.Vector2.Lerp(seg.Item1, seg.Item3, s / sl); cutEyes.Add(V(q.x, L(seg.Item2, seg.Item4, s / sl) + eyeUp, q.y)); }
+}
+float cutRayK = UnityEngine.Mathf.Cos(cutRayDeg * UnityEngine.Mathf.Deg2Rad) / UnityEngine.Mathf.Sin(cutRayDeg * UnityEngine.Mathf.Deg2Rad);   // dz per dx along the ray
+float RiserRun(float riser) => riser / UnityEngine.Mathf.Tan(riserDeg * UnityEngine.Mathf.Deg2Rad);
+float TerraceUp(float baseH, float v)   // a staircase rising from baseH at v = 0: treads terraceTread, risers terraceRiser at riserDeg
+{
+    float run = terraceTread + RiserRun(terraceRiser); int i = UnityEngine.Mathf.FloorToInt(v / run); float w = v - i * run;
+    return baseH + i * terraceRiser + (w > terraceTread ? terraceRiser * (w - terraceTread) / RiserRun(terraceRiser) : 0f);
+}
+float Quant(float h, float riser, float treadShare)   // height steps: each band keeps its lower treadShare level, rises in the rest (never raises)
+{
+    float b = UnityEngine.Mathf.Floor(h / riser) * riser, f = h / riser - UnityEngine.Mathf.Floor(h / riser);
+    return UnityEngine.Mathf.Min(h, b + (f <= treadShare ? 0f : riser * (f - treadShare) / (1f - treadShare)));
+}
+float ClimbFix4(float x, float z, float h)
+{
+    if (x < climbLockX || z >= nFaceZ1) return h;
+    var p = P(x, z); float dTread = float.MaxValue;
+    for (int k = legApronFirst; k <= legApronLast; k++) dTread = UnityEngine.Mathf.Min(dTread, SegDist(p, climb[k].p, climb[k + 1].p, out _));
+    // 4.5 chute sides
+    if (x >= chuteSideX0 && x <= chuteSideX1)
+    {
+        float d = SegDist2(p, pMouth, p1In, out float t);
+        if (t > 0f && t < 1f && d > ribHalf)
+        {
+            float top = Leg1H(t * leg1Len) + chuteWall, u = d - ribHalf, lay = top + UnityEngine.Mathf.Tan(layBackDeg * UnityEngine.Mathf.Deg2Rad) * UnityEngine.Mathf.Min(u, layBackRun);
+            h = UnityEngine.Mathf.Min(h, u <= layBackRun ? lay : TerraceUp(lay, u - layBackRun));
+        }
+    }
+    if (dTread < legHalf + climbFixKeep) return h;
+    // 4.5 the chute head face, round and above P1
+    if (x < headX1 && z > headZ0 && z < headZ1 && h > p1H + 0.5f) h = Quant(h, terraceRiser, terraceTreadShare);
+    // 4.3 the N face, above leg 3
+    if (x >= nFaceX0 && x <= nFaceX1 && z >= nFaceZ0 && z < nFaceZ1 && h > p3H + 0.5f) h = Quant(h, nFaceRiser, nFaceTreadShare);
+    // 4.4 leg 4's west face where it is wide enough
+    if (z >= p4In.y && z <= p3Out.y) { float apronX = X4(z) - leg4Half - legApronW; if (x < apronX && apronX - climbLockX >= leg4FaceMinW && h > H4(z) + 0.5f) h = Quant(h, terraceRiser, terraceTreadShare); }
+    // 4.2 the cwm east cut
+    if (x >= cutX0 && x <= cutX1 && z < pP3.y + cutRayK * (x - pP3.x))
+        foreach (var e in cutEyes)
+        {
+            float dx = x - e.x, dz = z - e.z, d = UnityEngine.Mathf.Sqrt(dx * dx + dz * dz); if (d > cutReach || d < 0.5f) continue;
+            float b = UnityEngine.Mathf.Atan2(dx, dz) * UnityEngine.Mathf.Rad2Deg; if (b < 0f) b += 360f; if (b < cutB0 || b > cutB1) continue;
+            h = UnityEngine.Mathf.Min(h, e.y - d * UnityEngine.Mathf.Tan(cutDownDeg * UnityEngine.Mathf.Deg2Rad));
+        }
+    return h;
+}
 const float roadEastX = 440f, roadEastRamp = 120f;
 float Height(float x, float z, float footWG, float footNG, float footSG)
 {
@@ -460,6 +526,7 @@ float Height(float x, float z, float footWG, float footNG, float footSG)
         // the chute: ribs, then the trench cut into them and into the knob's face
         if (x < armX + 1f && x > 40f && z > 195f && z < 232f) { h = UnityEngine.Mathf.Max(h, ChuteRib(x, z)); h = UnityEngine.Mathf.Min(h, ChuteCut(x, z)); }
         if (InClimbZone(x, z)) h = UnityEngine.Mathf.Min(h, ApronCap(x, z));   // 8.16a ClimbFix aprons
+        if (InClimbZone(x, z)) h = ClimbFix4(x, z, h);   // ClimbFix 4: chute sides, terraces, the cwm east cut
         // west of the top the W face falls to the -40 floor at x -40; past the ridge's ends it folds onto the outer ground
         float zc = UnityEngine.Mathf.Clamp(z, -45f, 350f), xw = CrestW(zc), th = TopH(zc);
         if (x < xw)
@@ -560,7 +627,8 @@ for (int zi = 0; zi < ares; zi++)
         float x = originX + (xi + 0.5f) * sizeX / ares, z = originZ + (zi + 0.5f) * sizeZ / ares;
         float steep = data.GetSteepness((xi + 0.5f) / ares, (zi + 0.5f) / ares);
         var q = P(x, z) - lakeC; float re = UnityEngine.Mathf.Sqrt((q.x / lakeA) * (q.x / lakeA) + (q.y / lakeB) * (q.y / lakeB));
-        int k = steep > 35f ? 1 : re < 1.03f ? 4 : Inside(P(x, z), burnPoly) ? 2 : 0;
+        int k = steep > 35f ? 1 : re < 1.03f ? 4 : -1;
+        if (k < 0) { float wb = UnityEngine.Mathf.Clamp01(0.5f + ValleyShapes.BurnDepth(P(x, z)) / burnBlend); alpha[zi, xi, 2] = wb; alpha[zi, xi, 0] = 1f - wb; continue; }
         alpha[zi, xi, k] = 1f;
     }
 data.SetAlphamaps(0, 0, alpha);

@@ -15,7 +15,7 @@ OUT="${1:-Docs/Captures/Main3Review}"
 unity status 2>/dev/null | grep -q "ready" || { echo "FAIL no Editor in state ready (unity status)"; exit 1; }
 unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "stopped"' || { echo "FAIL Editor is in Play mode or busy; wait for it to stop"; exit 1; }
 mkdir -p Temp
-for step in day night; do
+for step in day night daytwo; do
   sed -e "s|string step = \"day\";|string step = \"$step\";|" -e "s|\"Docs/Captures/Main3Review\"|\"$OUT\"|" "$R/main3_review_capture.cs" > "Temp/main3_review_capture_$step.cs"
 done
 job() {   # $1 = file; prints the result text
@@ -32,7 +32,7 @@ unity command eval --code "$TUNE.noiseBandStrength = 0f; return \"band off\";" -
 unity command editor_play >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "playing"' && break; sleep 2; done
 rc=0
-for step in day night; do
+for step in day night daytwo; do
   for try in 1 2 3; do
     res=$(job "$(pwd)/Temp/main3_review_capture_$step.cs")
     case "$res" in *"run again"*) sleep 3; continue;; esac
@@ -54,6 +54,6 @@ unity command editor_stop >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "stopped"' && break; sleep 2; done
 unity command eval --code 'UnityEngine.Application.runInBackground = false; return "runInBackground " + UnityEngine.Application.runInBackground;' --result-only 2>/dev/null
 unity command eval --code "$TUNE.noiseBandStrength = ${BAND}f; return \"noise band restored to \" + $TUNE.noiseBandStrength;" --result-only 2>/dev/null
-rm -f Temp/main3_review_capture_day.cs Temp/main3_review_capture_night.cs
+rm -f Temp/main3_review_capture_day.cs Temp/main3_review_capture_night.cs Temp/main3_review_capture_daytwo.cs
 echo "ProjectSettings changes (should be none): $(git status --porcelain ProjectSettings | tr '\n' ' ')"
 exit $rc

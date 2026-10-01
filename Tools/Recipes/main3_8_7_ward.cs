@@ -54,7 +54,31 @@ var lanternPf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject
 var glowMatL = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_LanternGlow.mat");
 if (glowMatL == null) { glowMatL = new UnityEngine.Material(UnityEngine.Shader.Find("DieAlone/FireStandIn")); UnityEditor.AssetDatabase.CreateAsset(glowMatL, "Assets/Materials/Blockout/Blockout_LanternGlow.mat"); }
 glowMatL.shader = UnityEngine.Shader.Find("DieAlone/FireStandIn"); glowMatL.SetColor("_Color", lookCairn.practicalColor); glowMatL.SetFloat("_Intensity", lookCairn.farMarkerIntensity); UnityEditor.EditorUtility.SetDirty(glowMatL);
-void NightLantern(string name, UnityEngine.Transform parent, UnityEngine.Vector3 at)
+// RebuildSpecs 4.10 (Vesper: the J cairn lamp read as a flat yellow disc): the cairn lamp's glow is a small flame in its glass, two
+// crossed flame cards (lampFlameW by lampFlameH m, flipbook frame lampFlameFrame) on DieAlone/FlameCard with the flame colours; the
+// other lanterns keep the glow ball the night rule (N1) reads from the lantern before
+const float lampFlameW = 0.14f, lampFlameH = 0.24f; const int lampFlameFrame = 30, lampFlameTiles = 8;
+var lampFlameTex = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>("Assets/NatureManufacture Assets/Fire and Smoke Particles/Textures/T_fire_flipbook_big_01.png"); if (lampFlameTex == null) return "flame flipbook missing";
+var lampFlameMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_LanternFlame.mat");
+if (lampFlameMat == null) { lampFlameMat = new UnityEngine.Material(UnityEngine.Shader.Find("DieAlone/FlameCard")); UnityEditor.AssetDatabase.CreateAsset(lampFlameMat, "Assets/Materials/Blockout/Blockout_LanternFlame.mat"); }
+lampFlameMat.shader = UnityEngine.Shader.Find("DieAlone/FlameCard"); lampFlameMat.SetTexture("_BaseMap", lampFlameTex); lampFlameMat.SetFloat("_Intensity", lookCairn.farMarkerIntensity); lampFlameMat.SetFloat("_Ramp", 1f);
+lampFlameMat.SetColor("_RampBase", lookCairn.flameBaseColor); lampFlameMat.SetColor("_RampBody", lookCairn.flameBodyColor); lampFlameMat.SetColor("_RampTip", lookCairn.flameTipColor); UnityEditor.EditorUtility.SetDirty(lampFlameMat);
+UnityEngine.Mesh lampFlameMesh;
+{
+    float s = 1f / lampFlameTiles, u0 = (lampFlameFrame % lampFlameTiles) * s, v0 = (lampFlameTiles - 1 - lampFlameFrame / lampFlameTiles) * s;
+    var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var uvs = new System.Collections.Generic.List<UnityEngine.Vector2>(); var tris = new System.Collections.Generic.List<int>();
+    foreach (var a in new[] { V(1f, 0f, 0f), V(0f, 0f, 1f) })
+    {
+        int i0 = vs.Count; var h = a * (lampFlameW * 0.5f);
+        vs.Add(-h); vs.Add(h); vs.Add(-h + V(0f, lampFlameH, 0f)); vs.Add(h + V(0f, lampFlameH, 0f));
+        uvs.Add(new UnityEngine.Vector2(u0, v0)); uvs.Add(new UnityEngine.Vector2(u0 + s, v0)); uvs.Add(new UnityEngine.Vector2(u0, v0 + s)); uvs.Add(new UnityEngine.Vector2(u0 + s, v0 + s));
+        tris.AddRange(new[] { i0, i0 + 2, i0 + 1, i0 + 1, i0 + 2, i0 + 3 });
+    }
+    lampFlameMesh = new UnityEngine.Mesh { name = "LanternFlame" }; lampFlameMesh.SetVertices(vs); lampFlameMesh.SetUVs(0, uvs); lampFlameMesh.SetTriangles(tris, 0); lampFlameMesh.RecalculateBounds();
+    lampFlameMesh.SetColors(new System.Collections.Generic.List<UnityEngine.Color>(System.Linq.Enumerable.Repeat(UnityEngine.Color.white, vs.Count)));
+    const string lampFlamePath = "Assets/Terrain/Main3/LanternFlame.asset"; UnityEditor.AssetDatabase.DeleteAsset(lampFlamePath); UnityEditor.AssetDatabase.CreateAsset(lampFlameMesh, lampFlamePath);
+}
+void NightLantern(string name, UnityEngine.Transform parent, UnityEngine.Vector3 at, bool flame = false)
 {
     var lantern = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(lanternPf, parent); lantern.name = name;
     foreach (var c in lantern.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
@@ -63,11 +87,18 @@ void NightLantern(string name, UnityEngine.Transform parent, UnityEngine.Vector3
     var l = lg.AddComponent<UnityEngine.Light>(); l.type = UnityEngine.LightType.Point; l.range = lanternRange; l.intensity = lookCairn.firePitIntensity; l.shadows = UnityEngine.LightShadows.None; l.color = lookCairn.practicalColor;
     var pl = lg.AddComponent<PracticalLight>(); var so = new UnityEditor.SerializedObject(pl);
     so.FindProperty("tuning").objectReferenceValue = lookCairn; so.FindProperty("kind").enumValueIndex = (int)PracticalLight.Kind.Lantern; so.FindProperty("byDay").enumValueIndex = (int)PracticalLight.ByDay.Off; so.ApplyModifiedPropertiesWithoutUndo();
+    if (flame)
+    {
+        var fl = new UnityEngine.GameObject(name + "Flame"); fl.transform.SetParent(lantern.transform, false); fl.transform.localPosition = V(0f, glowUp, 0f) - V(0f, lampFlameH * 0.5f, 0f) / UnityEngine.Mathf.Max(0.01f, lantern.transform.lossyScale.x);
+        fl.transform.localScale = UnityEngine.Vector3.one / UnityEngine.Mathf.Max(0.01f, lantern.transform.lossyScale.x);
+        fl.AddComponent<UnityEngine.MeshFilter>().sharedMesh = lampFlameMesh; var fr = fl.AddComponent<UnityEngine.MeshRenderer>(); fr.sharedMaterial = lampFlameMat; fr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; nightGlows.Add(fl);
+        return;
+    }
     var glow = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere); glow.name = name + "Glow"; UnityEngine.Object.DestroyImmediate(glow.GetComponent<UnityEngine.Collider>());
     glow.transform.SetParent(lantern.transform, false); glow.transform.localPosition = V(0f, glowUp, 0f); glow.transform.localScale = V(glowSize, glowSize, glowSize) / UnityEngine.Mathf.Max(0.01f, lantern.transform.lossyScale.x);
     var gr = glow.GetComponent<UnityEngine.MeshRenderer>(); gr.sharedMaterial = glowMatL; gr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; nightGlows.Add(glow);
 }
-NightLantern("CairnLamp", cairnGate.parent, V(cairnPos.x, cy, cairnPos.z));
+NightLantern("CairnLamp", cairnGate.parent, V(cairnPos.x, cy, cairnPos.z), true);
 const float gapX = 86f, gapZ0 = 211.5f, gapZ1 = 214.5f, chainH = 0.9f, iw2Over = 3f, iw2Thick = 0.5f;
 float gapG = H(gapX + 0.5f, (gapZ0 + gapZ1) * 0.5f);
 var chainA = V(gapX, gapG + chainH, gapZ0); var chainB = V(gapX, gapG + chainH, gapZ1);
@@ -285,127 +316,199 @@ UnityEngine.GameObject Cards(string name, UnityEngine.Transform parent, System.C
     g.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; var mr = g.AddComponent<UnityEngine.MeshRenderer>(); mr.sharedMaterial = mat;
     mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false; return g;
 }
-// 8.14a: flame heights from flameLow to the full stated top, so the front is a ragged burn, not a picket row (tops never pass the stated top)
-const float flameLow = 0.5f;
+// ---- 8.18 (RebuildSpecs 4, Vesper 2026-10-01; Edges.md 6, Style.md 6.3): the flame cards colour by brightness (core flameBaseColor,
+// body flameBodyColor, fading tips flameTipColor, LookTuning) and stand in clusters, not a picket row: clusterMin to clusterMax cards,
+// each cluster clusterWLow to clusterWHigh m along the front with gaps clusterGapLow to clusterGapHigh m; a cluster's mean flame
+// height is clusterMeanLow to 1 of the room under the stated top, each card that times 1 plus or minus cardVary, never over the top
+// (F-1 is checked against the stated tops). Night shows every card; day two shows only whole clusters covering dayShare of the front's
+// length or less (the RidgeFlamesDay and ValleyFlamesDay meshes) and LookTuning dims every card by fireCardDim in that look.
+flameMat.SetFloat("_Ramp", 1f); flameMat.SetColor("_RampBase", lookT.flameBaseColor); flameMat.SetColor("_RampBody", lookT.flameBodyColor); flameMat.SetColor("_RampTip", lookT.flameTipColor); UnityEditor.EditorUtility.SetDirty(flameMat);
+const int clusterMin = 3, clusterMax = 9; const float clusterWLow = 15f, clusterWHigh = 60f, clusterGapLow = 10f, clusterGapHigh = 50f, clusterMeanLow = 0.75f, cardVary = 0.4f, dayShare = 1f / 3f;
 int FlameFrame() => 16 + rng.Next(32);   // the middle rows: full flames, not the first flicker or the dying tail
 float CardH(float baseY, float top) => (top - baseY) / flameShare;
-// the far front: burning giants on the far ridge (the pack's dead tree stretched to a giant), a near and a far row, flame tops 105
+var dayTwoVis = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayTwo.asset"); if (dayTwoVis == null) return "no LookTuning_DayTwo";
+void ShowIn(UnityEngine.GameObject host, LookVisibility.Show show, params UnityEngine.GameObject[] targets)
+{
+    var vis = host.AddComponent<LookVisibility>(); var so = new UnityEditor.SerializedObject(vis);
+    so.FindProperty("show").enumValueIndex = (int)show; so.FindProperty("dayTwo").objectReferenceValue = dayTwoVis;
+    var tp = so.FindProperty("targets"); tp.arraySize = targets.Length; for (int i = 0; i < targets.Length; i++) tp.GetArrayElementAtIndex(i).objectReferenceValue = targets[i]; so.ApplyModifiedPropertiesWithoutUndo();
+}
+// clusters along one line (z from z0 to z1): (centre z, width, card count)
+System.Collections.Generic.List<(float z, float w, int n)> Clusters(float z0, float z1)
+{
+    var list = new System.Collections.Generic.List<(float, float, int)>();
+    for (float z = z0 + R(0f, clusterGapLow); z < z1; ) { float w = R(clusterWLow, clusterWHigh); if (z + w > z1) w = z1 - z; if (w > 2f) list.Add((z + w * 0.5f, w, clusterMin + rng.Next(clusterMax - clusterMin + 1))); z += w + R(clusterGapLow, clusterGapHigh); }
+    return list;
+}
+// day two: whole clusters, taken in a random order, while their summed width stays dayShare of the front's length or less
+System.Collections.Generic.HashSet<int> DayPick(System.Collections.Generic.List<(float z, float w, int n)> cl, float length)
+{
+    var order = new System.Collections.Generic.List<int>(); for (int i = 0; i < cl.Count; i++) order.Add(i);
+    for (int i = order.Count - 1; i > 0; i--) { int j = rng.Next(i + 1); (order[i], order[j]) = (order[j], order[i]); }
+    var pick = new System.Collections.Generic.HashSet<int>(); float sum = 0f; foreach (var i in order) if (sum + cl[i].w <= length * dayShare) { pick.Add(i); sum += cl[i].w; }
+    return pick;
+}
+// the far front: burning giants on the far ridge (the pack's dead tree stretched to a giant), a near and a far row, flame tops at most 105
 const string deadTreePath = "Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Decoration_Out/Tree_Dead.prefab";
 var deadTree = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(deadTreePath); if (deadTree == null) return "dead tree prefab missing";
 const float deadTreeGirth = 0.6f, giantGirth = 6f;   // the pack tree's trunk is about 0.6 m across; a giant's about 6 m
-const float frontZ0 = -60f, frontZ1 = 650f, frontTop = 105f, frontStep = 30f, flameSink = 8f, frontJitterZ = 8f, giantLow = 40f, giantHigh = 50f;
+const float frontZ0 = -60f, frontZ1 = 650f, frontTop = 105f, flameSink = 8f, giantLow = 40f, giantHigh = 50f;
 var frontRows = new[] { (-240f, -300f), (-330f, -400f) };
 float deadTreeTall = 0f; foreach (var rr in deadTree.GetComponentsInChildren<UnityEngine.Renderer>()) deadTreeTall = UnityEngine.Mathf.Max(deadTreeTall, rr.bounds.max.y);
 var giants = new UnityEngine.GameObject("BurningGiants").transform; giants.SetParent(fire.transform, false);
-var flameCards = new System.Collections.Generic.List<(UnityEngine.Vector3, float, float, int, float, float)>();
+var flameCards = new System.Collections.Generic.List<(UnityEngine.Vector3, float, float, int, float, float)>(); var flameDay = new System.Collections.Generic.List<(UnityEngine.Vector3, float, float, int, float, float)>();
+int frontClusters = 0;
 foreach (var row in frontRows)
-    for (float z = frontZ0; z <= frontZ1; z += frontStep)
+{
+    var cl = Clusters(frontZ0, frontZ1); var day = DayPick(cl, frontZ1 - frontZ0); frontClusters += cl.Count;
+    for (int ci = 0; ci < cl.Count; ci++)
     {
-        float x = R(row.Item2, row.Item1), baseY = RidgeY(x, z), tall = R(giantLow, giantHigh);
+        var c = cl[ci]; float mean = R(clusterMeanLow, 1f);
+        float tx = R(row.Item2, row.Item1), tBase = RidgeY(tx, c.z);   // one burning giant per cluster
         var t = (UnityEngine.GameObject)UnityEditor.PrefabUtility.InstantiatePrefab(deadTree, giants); t.name = "Trunk";
-        t.transform.position = V(x, baseY, z); t.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
-        float sxz = giantGirth / deadTreeGirth, sy = tall / UnityEngine.Mathf.Max(0.5f, deadTreeTall); t.transform.localScale = V(sxz, sy, sxz);
-        foreach (var c in t.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
+        t.transform.position = V(tx, tBase, c.z); t.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f);
+        float sxz = giantGirth / deadTreeGirth, sy = R(giantLow, giantHigh) / UnityEngine.Mathf.Max(0.5f, deadTreeTall); t.transform.localScale = V(sxz, sy, sxz);
+        foreach (var cc in t.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(cc);
         foreach (var rr in t.GetComponentsInChildren<UnityEngine.Renderer>()) rr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-        for (int k = 0; k < 3; k++)
+        for (int k = 0; k < c.n; k++)
         {
-            float fb = baseY - flameSink, cz = UnityEngine.Mathf.Clamp(z + R(-frontJitterZ, frontJitterZ), frontZ0, frontZ1);
-            flameCards.Add((V(UnityEngine.Mathf.Clamp(x + R(-6f, 6f), row.Item2, row.Item1), fb, cz), R(40f, 56f), CardH(fb, frontTop) * R(flameLow, 1f), FlameFrame(), R(-4f, 4f), 1f));
+            float cz = UnityEngine.Mathf.Clamp(c.z + R(-c.w * 0.5f, c.w * 0.5f), frontZ0, frontZ1), x = R(row.Item2, row.Item1), fb = RidgeY(x, cz) - flameSink;
+            float top = UnityEngine.Mathf.Min(frontTop, fb + (frontTop - fb) * mean * (1f + R(-cardVary, cardVary)));
+            var card = (V(x, fb, cz), R(20f, 40f), CardH(fb, top), FlameFrame(), R(-4f, 4f), 1f);
+            flameCards.Add(card); if (day.Contains(ci)) flameDay.Add(card);
         }
     }
-Cards("RidgeFlames", giants, flameCards, flameMat, sheetTiles);
-// the valley fires on the -40 floor, x -110 to -220, z 0 to 500; 8.14a (Vesper, Wren): flame tops 35 to 45 (were 20: 60 m flames, under
-// the 1.5 to 2 times a giant of Style.md 6.3.2), each card its own top so the tops never make a row
-const float valleyX0 = -220f, valleyX1 = -110f, valleyZ0 = 0f, valleyZ1 = 500f, valleyTopLow = 35f, valleyTop = 45f, valleyStepX = 20f, valleyStepZ = 26f, valleyJitter = 8f;
-var valley = new UnityEngine.GameObject("ValleyFires").transform; valley.SetParent(fire.transform, false);
-var valleyCards = new System.Collections.Generic.List<(UnityEngine.Vector3, float, float, int, float, float)>();
-for (float z = valleyZ0; z <= valleyZ1; z += valleyStepZ)
-    for (float x = valleyX1; x >= valleyX0; x -= valleyStepX)
-    {
-        float fx = UnityEngine.Mathf.Clamp(x + R(-valleyJitter, valleyJitter), valleyX0, valleyX1), fz = UnityEngine.Mathf.Clamp(z + R(-valleyJitter, valleyJitter), valleyZ0, valleyZ1), fb = RidgeY(fx, fz) - 2f;
-        valleyCards.Add((V(fx, fb, fz), R(40f, 56f), CardH(fb, R(valleyTopLow, valleyTop)), FlameFrame(), 0f, 1f));
-    }
-Cards("ValleyFlames", valley, valleyCards, flameMat, sheetTiles);
-// 8.14a (Vesper): the floor under the valley fires lit #6B2A12, so the burning valley reads as a sea with the flame bases hidden in it;
-// a sheet glowLift over the floor on DieAlone/FireStandIn, shown with the smoke columns (night and day two)
-const float glowLift = 0.5f, glowPad = 10f, glowStep = 10f, glowIntensity = 0.35f;
-UnityEngine.ColorUtility.TryParseHtmlString("#6B2A12", out var valleyGlowC);
-var valleyGlow = Grid("ValleyGlow", valleyX0 - glowPad, valleyX1 + glowPad, valleyZ0 - glowPad, valleyZ1 + glowPad, glowStep, (x, z) => RidgeY(x, z) + glowLift);
-valleyGlow.transform.SetParent(valley, true);
-// night smoke columns (Valley.md 5.4, 8.14a stand-ins): from nightfall of night 1, columnCount columns stand over the far front to
-// columnTop, lit from below up to columnLit; stacked cylinders widening upward on DieAlone/Backdrop in the smoke colour, the lit part a
-// warm glow on DieAlone/FireStandIn. Shown at night and on day two (LookVisibility); no colliders, no shadows
-const float columnX = -300f, columnTop = 250f, columnLit = 130f, columnGlow = 0.35f; float[] columnZ = { 40f, 170f, 300f, 430f };
-var fireStand = UnityEngine.Shader.Find("DieAlone/FireStandIn"); if (fireStand == null) return "DieAlone/FireStandIn shader not found";
-UnityEngine.Material ColumnMat(string path, UnityEngine.Shader sh, System.Action<UnityEngine.Material> set) { var m = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(path); if (m == null) { m = new UnityEngine.Material(sh); UnityEditor.AssetDatabase.CreateAsset(m, path); } m.shader = sh; set(m); UnityEditor.EditorUtility.SetDirty(m); return m; }
-var smokeMat = ColumnMat("Assets/Materials/Blockout/Blockout_SmokeColumn.mat", backSh, m => { m.SetColor("_Color", lookT.smokeBodyColor); m.SetFloat("_HazeBlend", 0.3f); });
-UnityEngine.ColorUtility.TryParseHtmlString("#5A2412", out var litUnder);   // Style.md 2.3 lit underside
-var glowMat = ColumnMat("Assets/Materials/Blockout/Blockout_SmokeColumnLit.mat", fireStand, m => { m.SetColor("_Color", litUnder); m.SetFloat("_Intensity", columnGlow); });
-var columns = new UnityEngine.GameObject("SmokeColumns"); columns.transform.SetParent(fire.transform, false); var columnParts = new System.Collections.Generic.List<UnityEngine.GameObject>();
-{   // the valley glow (above) on its own FireStandIn material, shown with the columns
-    var valleyGlowMat = ColumnMat("Assets/Materials/Blockout/Blockout_ValleyGlow.mat", fireStand, m => { m.SetColor("_Color", valleyGlowC); m.SetFloat("_Intensity", glowIntensity); });
-    var vgr = valleyGlow.GetComponent<UnityEngine.MeshRenderer>(); vgr.sharedMaterial = valleyGlowMat; columnParts.Add(valleyGlow);
 }
+var ridgeNight = Cards("RidgeFlames", giants, flameCards, flameMat, sheetTiles); var ridgeDay = Cards("RidgeFlamesDay", giants, flameDay, flameMat, sheetTiles);
+// the valley fires on the -40 floor, x -110 to -220, z 0 to 500, in clusters along north-south lines valleyLineStep m apart; flame tops at
+// most valleyTop (1.5 to 2 times a giant, Style.md 6.3.2). Under each cluster a soft glow card on the floor (RebuildSpecs 4.5): floorGlowWide
+// times the cluster's width, LookTuning floorGlowColor, fading to nothing at its edge, so the floor reads as a burning sea between
+// clusters, never a flat field (it replaces 8.14a's opaque lit floor sheet)
+const float valleyX0 = -220f, valleyX1 = -110f, valleyZ0 = 0f, valleyZ1 = 500f, valleyTop = 45f, valleyLineStep = 22f, valleyJitter = 6f, floorGlowWide = 2.5f, glowLift = 0.5f, floorGlowIntensity = 1f;
+var valley = new UnityEngine.GameObject("ValleyFires").transform; valley.SetParent(fire.transform, false);
+var valleyCards = new System.Collections.Generic.List<(UnityEngine.Vector3, float, float, int, float, float)>(); var valleyDay = new System.Collections.Generic.List<(UnityEngine.Vector3, float, float, int, float, float)>();
+var glowCards = new System.Collections.Generic.List<(UnityEngine.Vector3 c, float r)>(); int valleyClusters = 0;
+for (float lx = valleyX1; lx >= valleyX0; lx -= valleyLineStep)
+{
+    var cl = Clusters(valleyZ0, valleyZ1); var day = DayPick(cl, valleyZ1 - valleyZ0); valleyClusters += cl.Count;
+    for (int ci = 0; ci < cl.Count; ci++)
+    {
+        var c = cl[ci]; float mean = R(clusterMeanLow, 1f), cx = UnityEngine.Mathf.Clamp(lx + R(-valleyJitter, valleyJitter), valleyX0, valleyX1);
+        for (int k = 0; k < c.n; k++)
+        {
+            float fx = UnityEngine.Mathf.Clamp(cx + R(-valleyJitter, valleyJitter), valleyX0, valleyX1), fz = UnityEngine.Mathf.Clamp(c.z + R(-c.w * 0.5f, c.w * 0.5f), valleyZ0, valleyZ1), fb = RidgeY(fx, fz) - 2f;
+            float top = UnityEngine.Mathf.Min(valleyTop, fb + (valleyTop - fb) * mean * (1f + R(-cardVary, cardVary)));
+            var card = (V(fx, fb, fz), R(20f, 40f), CardH(fb, top), FlameFrame(), 0f, 1f); valleyCards.Add(card); if (day.Contains(ci)) valleyDay.Add(card);
+        }
+        glowCards.Add((V(cx, RidgeY(cx, c.z) + glowLift, c.z), c.w * floorGlowWide * 0.5f));
+    }
+}
+var valleyNight = Cards("ValleyFlames", valley, valleyCards, flameMat, sheetTiles); var valleyDayG = Cards("ValleyFlamesDay", valley, valleyDay, flameMat, sheetTiles);
+// the floor glow: flat round cards on the FlameCard shader (additive, unfogged) over a radial falloff texture made here
+const int glowTexSize = 64; const string glowTexPath = fireDir + "/FloorGlowFalloff.asset";
+var glowTex = new UnityEngine.Texture2D(glowTexSize, glowTexSize, UnityEngine.TextureFormat.RGBA32, false) { name = "FloorGlowFalloff", wrapMode = UnityEngine.TextureWrapMode.Clamp };
+for (int y = 0; y < glowTexSize; y++) for (int x = 0; x < glowTexSize; x++) { float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(x + 0.5f, y + 0.5f), new UnityEngine.Vector2(glowTexSize * 0.5f, glowTexSize * 0.5f)) / (glowTexSize * 0.5f); float a = UnityEngine.Mathf.SmoothStep(1f, 0f, d); glowTex.SetPixel(x, y, new UnityEngine.Color(1f, 1f, 1f, a * a)); }
+glowTex.Apply(); UnityEditor.AssetDatabase.DeleteAsset(glowTexPath); UnityEditor.AssetDatabase.CreateAsset(glowTex, glowTexPath);
+var floorGlowMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_FloorGlow.mat");
+if (floorGlowMat == null) { floorGlowMat = new UnityEngine.Material(cardSh); UnityEditor.AssetDatabase.CreateAsset(floorGlowMat, "Assets/Materials/Blockout/Blockout_FloorGlow.mat"); }
+floorGlowMat.shader = cardSh; floorGlowMat.SetTexture("_BaseMap", glowTex); floorGlowMat.SetColor("_Color", lookT.floorGlowColor); floorGlowMat.SetFloat("_Intensity", floorGlowIntensity); floorGlowMat.SetFloat("_Ramp", 0f); UnityEditor.EditorUtility.SetDirty(floorGlowMat);
+UnityEngine.GameObject floorGlow;
+{
+    var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var uvs = new System.Collections.Generic.List<UnityEngine.Vector2>(); var cols = new System.Collections.Generic.List<UnityEngine.Color>(); var tris = new System.Collections.Generic.List<int>();
+    foreach (var g in glowCards)
+    {
+        int i0 = vs.Count; vs.Add(g.c + V(-g.r, 0f, -g.r)); vs.Add(g.c + V(g.r, 0f, -g.r)); vs.Add(g.c + V(-g.r, 0f, g.r)); vs.Add(g.c + V(g.r, 0f, g.r));
+        uvs.Add(new UnityEngine.Vector2(0f, 0f)); uvs.Add(new UnityEngine.Vector2(1f, 0f)); uvs.Add(new UnityEngine.Vector2(0f, 1f)); uvs.Add(new UnityEngine.Vector2(1f, 1f));
+        for (int k = 0; k < 4; k++) cols.Add(UnityEngine.Color.white); tris.AddRange(new[] { i0, i0 + 2, i0 + 1, i0 + 1, i0 + 2, i0 + 3 });
+    }
+    var mesh = new UnityEngine.Mesh { name = "FloorGlow", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 }; mesh.SetVertices(vs); mesh.SetUVs(0, uvs); mesh.SetColors(cols); mesh.SetTriangles(tris, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+    UnityEditor.AssetDatabase.CreateAsset(mesh, fireDir + "/FloorGlow.asset");
+    floorGlow = new UnityEngine.GameObject("FloorGlow"); floorGlow.transform.SetParent(valley, false); floorGlow.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh;
+    var mr = floorGlow.AddComponent<UnityEngine.MeshRenderer>(); mr.sharedMaterial = floorGlowMat; mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false;
+}
+// night shows every card; day two the day clusters (LookVisibility); the floor glow at night and on day two
+var fireVis = new UnityEngine.GameObject("FireVisibility"); fireVis.transform.SetParent(fire.transform, false);
+ShowIn(fireVis, LookVisibility.Show.Night, ridgeNight, valleyNight);
+var fireVisDay = new UnityEngine.GameObject("FireVisibilityDayTwo"); fireVisDay.transform.SetParent(fire.transform, false);
+ShowIn(fireVisDay, LookVisibility.Show.DayTwo, ridgeDay, valleyDayG);
+var fireVisGlow = new UnityEngine.GameObject("FireVisibilityGlow"); fireVisGlow.transform.SetParent(fire.transform, false);
+ShowIn(fireVisGlow, LookVisibility.Show.NightAndDayTwo, floorGlow);
+// smoke columns (RebuildSpecs 4.3: night one shows only the low sheet; the columns are day two on, the red rectangles the night saw are
+// gone): columnCount columns from the far front up to columnTop, widening upward, merging into a smoke roof (LookTuning smokeBodyColor,
+// Style.md #4A3A32) over the front at roofY to roofY + roofRoll; each lit from below by the fire to columnLit (vertex red on the
+// DieAlone/Backdrop fire term, LookTuning smokeFireColor and backdropFireStrength), not by an opaque lit cylinder.
+const float columnX = -300f, columnTop = 250f, columnLit = 130f, roofY = 235f, roofRoll = 25f, roofX0 = -520f, roofX1 = -180f, roofZ0 = -60f, roofZ1 = 560f, roofStep = 20f, roofLitUnder = 0.35f; float[] columnZ = { 40f, 170f, 300f, 430f };
+UnityEngine.Material ColumnMat(string path, UnityEngine.Shader sh, System.Action<UnityEngine.Material> set) { var m = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(path); if (m == null) { m = new UnityEngine.Material(sh); UnityEditor.AssetDatabase.CreateAsset(m, path); } m.shader = sh; set(m); UnityEditor.EditorUtility.SetDirty(m); return m; }
+var smokeMat = ColumnMat("Assets/Materials/Blockout/Blockout_SmokeColumn.mat", backSh, m => { m.SetColor("_Color", dayTwoVis.smokeBodyColor); m.SetFloat("_HazeBlend", 0.3f); m.SetFloat("_FireLit", 1f); });
+var columns = new UnityEngine.GameObject("SmokeColumns"); columns.transform.SetParent(fire.transform, false); var columnParts = new System.Collections.Generic.List<UnityEngine.GameObject>();
+UnityEngine.Mesh cylMesh; { var tmpCyl = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cylinder); cylMesh = tmpCyl.GetComponent<UnityEngine.MeshFilter>().sharedMesh; UnityEngine.Object.DestroyImmediate(tmpCyl); }
 var colSteps = new[] { (0f, 0.4f, 18f), (0.4f, 0.72f, 28f), (0.72f, 1f, 40f) };   // share of the height from, to, radius
 foreach (var cz in columnZ)
 {
-    float baseY = RidgeY(columnX, cz), hgt = columnTop - baseY;
+    float baseY = RidgeY(columnX, cz), hgt = columnTop - baseY; float cx0 = columnX + R(-10f, 10f);
     foreach (var st in colSteps)
     {
         float y0 = baseY + hgt * st.Item1, y1 = baseY + hgt * st.Item2;
-        var c = Prim(Cyl, "Column", columns.transform, V(columnX + R(-10f, 10f), (y0 + y1) * 0.5f, cz), V(st.Item3 * 2f, (y1 - y0) * 0.5f, st.Item3 * 2f), R(0f, 360f), false);
-        var cr = c.GetComponent<UnityEngine.MeshRenderer>(); cr.sharedMaterial = smokeMat; cr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; columnParts.Add(c);
+        var vs = cylMesh.vertices; var cs = new UnityEngine.Color[vs.Length];   // the unit cylinder spans y -1 to 1
+        var wv = new UnityEngine.Vector3[vs.Length]; for (int i = 0; i < vs.Length; i++) { float wy = UnityEngine.Mathf.Lerp(y0, y1, (vs[i].y + 1f) * 0.5f); wv[i] = V(vs[i].x * st.Item3 * 2f, wy - (y0 + y1) * 0.5f, vs[i].z * st.Item3 * 2f); cs[i] = new UnityEngine.Color(UnityEngine.Mathf.Clamp01(1f - (wy - baseY) / (columnLit - baseY)), 0f, 0f, 1f); }
+        var mesh = new UnityEngine.Mesh { name = "Column" }; mesh.vertices = wv; mesh.triangles = cylMesh.triangles; mesh.colors = cs; mesh.RecalculateNormals(); mesh.RecalculateBounds();
+        UnityEditor.AssetDatabase.CreateAsset(mesh, fireDir + "/Column_" + cz.ToString("F0") + "_" + st.Item1.ToString("F2") + ".asset");
+        var c = new UnityEngine.GameObject("Column"); c.transform.SetParent(columns.transform, false); c.transform.position = V(cx0, (y0 + y1) * 0.5f, cz);
+        c.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; var cr = c.AddComponent<UnityEngine.MeshRenderer>(); cr.sharedMaterial = smokeMat; cr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; columnParts.Add(c);
     }
-    var lit = Prim(Cyl, "ColumnLit", columns.transform, V(columnX, (baseY + columnLit) * 0.5f, cz), V(colSteps[0].Item3 * 2.1f, (columnLit - baseY) * 0.5f, colSteps[0].Item3 * 2.1f), 0f, false);
-    var lr = lit.GetComponent<UnityEngine.MeshRenderer>(); lr.sharedMaterial = glowMat; lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; columnParts.Add(lit);
 }
-{
-    var dayTwoL = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayTwo.asset"); if (dayTwoL == null) return "no LookTuning_DayTwo";
-    var vis = columns.AddComponent<LookVisibility>(); var so = new UnityEditor.SerializedObject(vis);
-    so.FindProperty("show").enumValueIndex = (int)LookVisibility.Show.NightAndDayTwo; so.FindProperty("dayTwo").objectReferenceValue = dayTwoL;
-    var tp = so.FindProperty("targets"); tp.arraySize = columnParts.Count; for (int i = 0; i < columnParts.Count; i++) tp.GetArrayElementAtIndex(i).objectReferenceValue = columnParts[i]; so.ApplyModifiedPropertiesWithoutUndo();
+{   // the roof the columns merge into, its underside faintly lit
+    var roof = Grid("SmokeRoof", roofX0, roofX1, roofZ0, roofZ1, roofStep, (x, z) => roofY + roofRoll * UnityEngine.Mathf.PerlinNoise(x / 90f + 1.7f, z / 90f + 5.2f));
+    roof.transform.SetParent(columns.transform, true); var rm = roof.GetComponent<UnityEngine.MeshFilter>().sharedMesh; var rc = new UnityEngine.Color[rm.vertexCount]; for (int i = 0; i < rc.Length; i++) rc[i] = new UnityEngine.Color(roofLitUnder, 0f, 0f, 1f); rm.colors = rc;
+    roof.GetComponent<UnityEngine.MeshRenderer>().sharedMaterial = smokeMat; columnParts.Add(roof);
 }
-// the day-one smoke sheet (5.3): one low sheet streaming west on the east wind: its top 60 over x -110 rising to 110 at x -500, level
-// past it to x -900; z -60 to 400; a front face down to the floor at x -110 and side faces at both ends. Drawn on DieAlone/Backdrop in
-// the day-one smoke colour, hazed toward the fog; shown in the day-one look only (LookVisibility). Its top edge points are marked
-// (SheetTop_*) for F-1.
-const float sheetX0 = -110f, sheetX1 = -500f, sheetXEnd = -900f, sheetZ0 = -60f, sheetZ1 = 400f, sheetTop0 = 60f, sheetTop1 = 110f, sheetStepX = 40f, sheetStepZ = 20f, sheetHaze = 0.6f;
+ShowIn(columns, LookVisibility.Show.DayTwo, columnParts.ToArray());
+// the low smoke sheet (5.3): one sheet streaming west on the east wind: its top 60 over x -110 rising to 110 at x -500, level past it to
+// x -900; z -60 to 400; a front face down to the floor at x -110 and side faces at both ends. On DieAlone/Backdrop in the day-one smoke
+// colour, hazed toward the fog; RebuildSpecs 4.3: shown on day one and night one (LookVisibility DayOneAndNight), its faces lit from
+// below by the fire along their whole length (vertex red, 1 at the floor to 0 at the top, on the Backdrop fire term: LookTuning
+// smokeFireColor and backdropFireStrength, so the night look lights it and day one, at strength 0, does not). Its top edge points are
+// marked (SheetTop_*) for F-1.
+const float sheetX0 = -110f, sheetX1 = -500f, sheetXEnd = -900f, sheetZ0 = -60f, sheetZ1 = 400f, sheetTop0 = 60f, sheetTop1 = 110f, sheetStepX = 40f, sheetStepZ = 20f, sheetHaze = 0.6f, sheetUnderTop = 0.15f;
 var dayOneLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayOne.asset"); if (dayOneLook == null) return "no LookTuning_DayOne";
-var dayTwoLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayTwo.asset"); if (dayTwoLook == null) return "no LookTuning_DayTwo";
 var sheetMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_SmokeSheet.mat");
 if (sheetMat == null) { sheetMat = new UnityEngine.Material(backSh); UnityEditor.AssetDatabase.CreateAsset(sheetMat, "Assets/Materials/Blockout/Blockout_SmokeSheet.mat"); }
-sheetMat.shader = backSh; sheetMat.SetColor("_Color", dayOneLook.smokeBodyColor); sheetMat.SetFloat("_HazeBlend", sheetHaze); UnityEditor.EditorUtility.SetDirty(sheetMat);
+sheetMat.shader = backSh; sheetMat.SetColor("_Color", dayOneLook.smokeBodyColor); sheetMat.SetFloat("_HazeBlend", sheetHaze); sheetMat.SetFloat("_FireLit", 1f); UnityEditor.EditorUtility.SetDirty(sheetMat);
 float SheetTop(float x) => x >= sheetX1 ? L2(sheetTop0, sheetTop1, (sheetX0 - x) / (sheetX0 - sheetX1)) : sheetTop1;
 var sheet = new UnityEngine.GameObject("SmokeSheet"); sheet.transform.SetParent(ward, false);
 {
-    var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var tris = new System.Collections.Generic.List<int>();
+    var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var tris = new System.Collections.Generic.List<int>(); var cs = new System.Collections.Generic.List<UnityEngine.Color>();
     var xs = new System.Collections.Generic.List<float>(); for (float x = sheetX0; x >= sheetXEnd - 0.1f; x -= sheetStepX) xs.Add(x);
     var zs = new System.Collections.Generic.List<float>(); for (float z = sheetZ0; z <= sheetZ1 + 0.1f; z += sheetStepZ) zs.Add(z);
     int cols = xs.Count, rows = zs.Count;
+    UnityEngine.Color Fire(float v) => new UnityEngine.Color(v, 0f, 0f, 1f);
     // one winding here; the back faces are a second copy of the vertices below, so each side keeps its own normals (a shared
     // vertex under both windings sums its normals to zero and the Backdrop shader draws it black)
-    for (int r = 0; r < rows; r++) for (int c = 0; c < cols; c++) vs.Add(V(xs[c], SheetTop(xs[c]), zs[r]));   // the top
+    for (int r = 0; r < rows; r++) for (int c = 0; c < cols; c++) { vs.Add(V(xs[c], SheetTop(xs[c]), zs[r])); cs.Add(Fire(sheetUnderTop)); }   // the top, its underside a little lit
     for (int r = 0; r < rows - 1; r++) for (int c = 0; c < cols - 1; c++) { int a = r * cols + c, b = a + 1, d = a + cols, e = d + 1; tris.AddRange(new[] { a, d, b, b, d, e }); }
-    int f0 = vs.Count; foreach (var z in zs) { vs.Add(V(sheetX0, SheetTop(sheetX0), z)); vs.Add(V(sheetX0, floorY, z)); }   // the front face, down to the floor
+    int f0 = vs.Count; foreach (var z in zs) { vs.Add(V(sheetX0, SheetTop(sheetX0), z)); cs.Add(Fire(sheetUnderTop)); vs.Add(V(sheetX0, floorY, z)); cs.Add(Fire(1f)); }   // the front face, down to the floor
     for (int r = 0; r < rows - 1; r++) { int a = f0 + r * 2, b = a + 1, d = a + 2, e = a + 3; tris.AddRange(new[] { a, b, d, d, b, e }); }
     foreach (var ez in new[] { sheetZ0, sheetZ1 })
     {
-        int s0 = vs.Count; foreach (var x in xs) { vs.Add(V(x, SheetTop(x), ez)); vs.Add(V(x, floorY, ez)); }
+        int s0 = vs.Count; foreach (var x in xs) { vs.Add(V(x, SheetTop(x), ez)); cs.Add(Fire(sheetUnderTop)); vs.Add(V(x, floorY, ez)); cs.Add(Fire(1f)); }
         for (int c = 0; c < cols - 1; c++) { int a = s0 + c * 2, b = a + 1, d = a + 2, e = a + 3; tris.AddRange(new[] { a, b, d, d, b, e }); }
     }
-    { int nv = vs.Count, nt = tris.Count; vs.AddRange(vs.GetRange(0, nv)); for (int i = 0; i < nt; i += 3) tris.AddRange(new[] { tris[i] + nv, tris[i + 2] + nv, tris[i + 1] + nv }); }   // the back faces
+    { int nv = vs.Count, nt = tris.Count; vs.AddRange(vs.GetRange(0, nv)); cs.AddRange(cs.GetRange(0, nv)); for (int i = 0; i < nt; i += 3) tris.AddRange(new[] { tris[i] + nv, tris[i + 2] + nv, tris[i + 1] + nv }); }   // the back faces
     var mesh = new UnityEngine.Mesh { name = "SmokeSheet", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
-    mesh.SetVertices(vs); mesh.SetTriangles(tris, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+    mesh.SetVertices(vs); mesh.SetColors(cs); mesh.SetTriangles(tris, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
     UnityEditor.AssetDatabase.CreateAsset(mesh, fireDir + "/SmokeSheet.asset");
     var body = new UnityEngine.GameObject("Body"); body.transform.SetParent(sheet.transform, false);
     body.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; var mr = body.AddComponent<UnityEngine.MeshRenderer>(); mr.sharedMaterial = sheetMat;
     mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false;
     foreach (var x in new[] { sheetX0, (sheetX0 + sheetX1) * 0.5f, sheetX1 })
         foreach (var z in zs) { var mk = new UnityEngine.GameObject("SheetTop_" + x.ToString("F0") + "_" + z.ToString("F0")); mk.transform.SetParent(sheet.transform, false); mk.transform.position = V(x, SheetTop(x), z); }
-    var vis = sheet.AddComponent<LookVisibility>(); var so = new UnityEditor.SerializedObject(vis);
-    so.FindProperty("show").enumValueIndex = (int)LookVisibility.Show.DayOne; so.FindProperty("dayTwo").objectReferenceValue = dayTwoLook;
-    var tp = so.FindProperty("targets"); tp.arraySize = 1; tp.GetArrayElementAtIndex(0).objectReferenceValue = body; so.ApplyModifiedPropertiesWithoutUndo();
+    ShowIn(sheet, LookVisibility.Show.DayOneAndNight, body);
 }
+// the front's width as the path end sees it (RebuildSpecs 4.1 asks 154 degrees; Valley.md rev 11 keeps the far front at z -60 to 650):
+// the bearings from the path end eye to the front's two ends
+var pathEnd = V(faceTo.x, H(faceTo.x, faceTo.y), faceTo.y);
+float Bearing(float x, float z) => UnityEngine.Mathf.Atan2(x - pathEnd.x, z - pathEnd.z) * UnityEngine.Mathf.Rad2Deg;
+float frontSpan = UnityEngine.Mathf.Abs(UnityEngine.Mathf.DeltaAngle(Bearing(frontRows[0].Item1, frontZ0), Bearing(frontRows[0].Item1, frontZ1)));
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " cairn at " + cairnPos.ToString("F1") + " | chain and IW2 across the chute gap, IW2 " + iwBot.ToString("F1") + " to " + iwTop.ToString("F1") + " | steps " + steps.childCount + ", climb pieces " + climbRoot.childCount
-    + " | stones ground " + H(-4f, 226f).ToString("F1") + " tops " + stoneTop + " | stand-in fire: floor " + floorY + ", far ridge crest " + ridgeCrest + ", " + flameCards.Count + " front cards to " + frontTop + " (z " + frontZ0 + " to " + frontZ1 + "), " + valleyCards.Count + " valley cards to " + valleyTop + " | day-one sheet " + sheet.transform.childCount + " parts";
+    + " | stones ground " + H(-4f, 226f).ToString("F1") + " tops " + stoneTop + " | stand-in fire: floor " + floorY + ", far ridge crest " + ridgeCrest + ", " + flameCards.Count + " front cards to " + frontTop + " (z " + frontZ0 + " to " + frontZ1 + "), " + valleyCards.Count + " valley cards to " + valleyTop + " | clusters: front " + frontClusters + ", valley " + valleyClusters + "; day two " + flameDay.Count + " front and " + valleyDay.Count + " valley cards; floor glows " + glowCards.Count + "; front span from the path end " + frontSpan.ToString("F0") + " degrees | sheet " + sheet.transform.childCount + " parts";

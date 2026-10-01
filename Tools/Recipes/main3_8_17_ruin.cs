@@ -62,6 +62,19 @@ for (float s = 1.5f; s < len - 0.5f; s += stoneStep) { var q = new UnityEngine.V
 var warps = kit.Root("DevWarps").transform; PlaceKit.Remove(warps.Find("North_Loop_Ruin"));
 var w = new UnityEngine.GameObject("North_Loop_Ruin").transform; w.SetParent(warps, false); w.position = near + V(0f, 0.2f, 0f);
 w.rotation = UnityEngine.Quaternion.LookRotation(V(rx - near.x, 0f, rz - near.z).normalized);
+// batch capture 2026-10-01 (warp foliage: an N1 foot bush 1.1 m from this warp's N and W views): Forest bushes and ferns whose drawn
+// bounds come within warpViewClear m of a point 1 m ahead of the warp's eye (N, E, S, W; the capture's test point) go
+const float warpViewClear = 1.8f, warpEye = 1.6f; int warpCleared = 0;
+{
+    var forestR = kit.Root("Forest").transform; var eyeW = w.position + V(0f, warpEye, 0f); var views = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (var yaw in new[] { 0f, 90f, 180f, 270f }) views.Add(eyeW + UnityEngine.Quaternion.Euler(0f, yaw, 0f) * UnityEngine.Vector3.forward);
+    var doomed = new System.Collections.Generic.HashSet<UnityEngine.GameObject>();
+    foreach (var r in forestR.GetComponentsInChildren<UnityEngine.Renderer>())
+    {
+        if (!(r.name.StartsWith("Bush") || r.name.StartsWith("ThinFern"))) continue; var top = r.transform; while (top.parent != null && top.parent.parent != forestR) top = top.parent;
+        foreach (var v in views) if (r.bounds.SqrDistance(v) < warpViewClear * warpViewClear) { doomed.Add(top.gameObject); break; }
+    }
+    foreach (var g in doomed) { UnityEngine.Object.DestroyImmediate(g); warpCleared++; }
+}
 
 // R-1 screen (Valley.md E11: the ruin is not seen from the deck). Replaces 8.16's Forest/RuinScreen, which got 3 of its 21 firs in among
 // grove N1's giants and left the ruin's west corners open once Style 5.8 lowered them. Rows of firs across the deck-to-ruin line south of
@@ -109,4 +122,4 @@ int screenN = 0;
 }
 
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
-return "saved=" + saved + " ruin at (" + rx + ", " + rz + "), screen firs " + screenN + ", ground " + ruin.position.y.ToString("F1") + ", loop point " + best.ToString("F1") + " m from the door, stones " + stones + ", warp at " + w.position.ToString("F1") + " | " + kit.Report();
+return "saved=" + saved + " ruin at (" + rx + ", " + rz + "), screen firs " + screenN + ", ground " + ruin.position.y.ToString("F1") + ", loop point " + best.ToString("F1") + " m from the door, stones " + stones + ", warp at " + w.position.ToString("F1") + " (" + warpCleared + " plants cleared off its views) | " + kit.Report();

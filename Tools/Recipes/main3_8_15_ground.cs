@@ -89,7 +89,7 @@ var pois = new System.Collections.Generic.List<UnityEngine.Vector2>(); if (Root(
 var lakeC = P(190f, 60f); const float lakeA = 54.8f, lakeB = 27.6f;
 float LakeRe(UnityEngine.Vector2 p) { var q = p - lakeC; return UnityEngine.Mathf.Sqrt((q.x / lakeA) * (q.x / lakeA) + (q.y / lakeB) * (q.y / lakeB)); }
 var campC = P(170f, 160f); const float campR = 18f;
-var burnPoly = new[] { P(185f, 181f), P(340f, 213f), P(340f, 143f), P(185f, 151f) };
+// the old burn: ValleyShapes.BurnOutline (ragged, RebuildSpecs 1.7)
 
 // ---------- 1. ground layers ----------
 UnityEngine.Texture2D Tex(string path) { var t = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Texture2D>(path); if (t == null) missing.Add(path); return t; }
@@ -138,6 +138,38 @@ const float soilBlend = 4f, wallX0 = 90f, wallX1 = 300f, wallZ0 = 285f, wallZ1 =
     data.SetAlphamaps(0, 0, alpha);
 }
 
+// RebuildSpecs 2 (Vesper 2026-10-01: GrassPine's red and green blotches checkered the open lot and the ground across the road): over the
+// lot side (x lotX0 and east, z lotZ0 to lotZ1, blended over lotBlend m) the floor is SoilPine at a lotTile m tile on its own layer,
+// tinted so the texture's mean comes to lotTarget (the albedo mean; what the screen shows after light and the filter is graded by eye),
+// with GrassPine left only in irregular patches (Perlin blobs about lotPatchScale m across) of at most lotGrassMax weight. Checked: URP's
+// Terrain/Lit multiplies each layer's albedo by its diffuse remap (TerrainLitPasses.hlsl, _DiffuseRemapScale0 to 3), so the tint applies.
+const string lotPath = "Assets/Terrain/Main3/Layer_LotSoil.terrainlayer", lotTarget = "#5E5440";
+const float lotTile = 6f, lotX0 = 330f, lotZ0 = 120f, lotZ1 = 240f, lotBlend = 10f, lotPatchScale = 30f, lotPatchFrom = 0.55f, lotPatchSpan = 0.15f, lotGrassMax = 0.3f;
+UnityEngine.Color MeanLinear(UnityEngine.Texture tex)   // alpha-weighted mean of a texture in linear colour (as 8.9f's retints)
+{
+    var rt = UnityEngine.RenderTexture.GetTemporary(64, 64, 0, UnityEngine.RenderTextureFormat.ARGBFloat, UnityEngine.RenderTextureReadWrite.Linear);
+    UnityEngine.Graphics.Blit(tex, rt); var prev = UnityEngine.RenderTexture.active; UnityEngine.RenderTexture.active = rt;
+    var t2 = new UnityEngine.Texture2D(64, 64, UnityEngine.TextureFormat.RGBAFloat, false, true); t2.ReadPixels(new UnityEngine.Rect(0, 0, 64, 64), 0, 0); t2.Apply();
+    UnityEngine.RenderTexture.active = prev; UnityEngine.RenderTexture.ReleaseTemporary(rt);
+    float w = 0f; var sum = UnityEngine.Color.black; foreach (var px in t2.GetPixels()) { sum += px * px.a; w += px.a; } UnityEngine.Object.DestroyImmediate(t2);
+    return w > 0f ? sum / w : UnityEngine.Color.gray;
+}
+var soilTex = Tex(surf + "SoilPine_a.png"); UnityEngine.ColorUtility.TryParseHtmlString(lotTarget, out var lotC); var lotLin = lotC.linear; var soilMean = soilTex != null ? MeanLinear(soilTex) : UnityEngine.Color.gray;
+var lLot = new UnityEngine.TerrainLayer { name = "Layer_LotSoil" }; UnityEditor.AssetDatabase.CreateAsset(lLot, lotPath);
+SetLayer(lLot, soilTex, Tex(surf + "SoilPine_n.png"), lotTile, new UnityEngine.Color(lotLin.r / UnityEngine.Mathf.Max(0.01f, soilMean.r), lotLin.g / UnityEngine.Mathf.Max(0.01f, soilMean.g), lotLin.b / UnityEngine.Mathf.Max(0.01f, soilMean.b)));
+layerList.Add(lLot); data.terrainLayers = layerList.ToArray(); int iLot = layerList.IndexOf(lLot);
+{
+    int ares = data.alphamapResolution; var alpha = data.GetAlphamaps(0, 0, ares, ares); float aX = size.x / ares, aZ = size.z / ares;
+    for (int zi = 0; zi < ares; zi++) for (int xi = 0; xi < ares; xi++)
+    {
+        var p = P(tOrg.x + (xi + 0.5f) * aX, tOrg.z + (zi + 0.5f) * aZ); float g = alpha[zi, xi, iGround]; if (g <= 0f) continue;
+        float outside = UnityEngine.Mathf.Max(lotX0 - p.x, UnityEngine.Mathf.Max(lotZ0 - p.y, p.y - lotZ1)); float w = 1f - SS(outside / lotBlend); if (w <= 0f) continue;
+        float grass = lotGrassMax * UnityEngine.Mathf.Clamp01((UnityEngine.Mathf.PerlinNoise(p.x / lotPatchScale + 7.7f, p.y / lotPatchScale + 3.1f) - lotPatchFrom) / lotPatchSpan);
+        float take = g * w * (1f - grass); alpha[zi, xi, iGround] = g - take; alpha[zi, xi, iLot] += take;
+    }
+    data.SetAlphamaps(0, 0, alpha);
+}
+
 // 8.15 gate (Pim W1: beside Jg to Camp 1 the pale clearing grass read as light as the dirt; 8.16: edge 1.3 and duff from 1.5 with the
 // 1.8 m band): a strip of darker duff (SoilPine dimmed to
 // duffDim) from duffIn to duffOut off every trail's centre points (2 m apart), taken duffShare from the floor layers
@@ -158,7 +190,7 @@ layerList.Add(lDuff); data.terrainLayers = layerList.ToArray(); int iDuff = laye
     {
         float d = near[zi, xi]; if (d < duffIn || d > duffOut + duffBlend) continue;
         float w = duffShare * (1f - SS((d - duffOut) / duffBlend));
-        foreach (int l in new[] { iGround, iBurn, iSoil }) { float take = alpha[zi, xi, l] * w; alpha[zi, xi, l] -= take; alpha[zi, xi, iDuff] += take; }
+        foreach (int l in new[] { iGround, iBurn, iSoil, iLot }) { float take = alpha[zi, xi, l] * w; alpha[zi, xi, l] -= take; alpha[zi, xi, iDuff] += take; }
     }
     data.SetAlphamaps(0, 0, alpha);
 }
@@ -275,6 +307,40 @@ for (float s = sP1 + 2f; s < sP4 - 2f; s += knotStep)   // not in the chute: sap
             g.transform.rotation = UnityEngine.Quaternion.Euler(0f, KR(0f, 360f), 0f); float tall = KR(knotLow, knotHigh);
             float sc = tall / UnityEngine.Mathf.Max(0.2f, Top(g) - Bottom(g)); g.transform.localScale = V(sc, sc, sc); SitOn(g, q.x, q.y, 0.2f); knotN++;
         }
+}
+
+// ClimbFix.md 4.1, 4.3 and 4.4 (draft 3, Sable; counts from Rook's temporary-fir test, 2026-10-01: the bowl frames went to rock 8 to 32
+// with these): trees in front of the faces, each on ground no steeper than climbTreeSlope, climbTreeClear m or more off every climb point,
+// on its own random stream. Chute head: RedFir1-4 every headStep m over x 38 to 52 round P1, 8 to 12 m, tops under the deck's line to
+// the knob foot (78 at x 30 to 76 at x 45) so the knob stays the one bare break. Leg 4 screen: RedFir5-8 and RedPine1-5 in two staggered
+// rows at x 31.5 and 35.5, z 265 to 300, every screenStep m, 12 to 18 m. Leg 3 to leg 4 treads: two RedFir1-4. N face knot: five
+// RedFir1-4 at x 22 to 36, z 305 to 313, tops under the line from BACK 196 to the crest (66 at z 305 to 69 at z 313), and two more at x
+// 36 to 44. The dip's foot: one RedFir1-4 at x 22, z 305. Leg 4's west treads: a hollow log and a RedFir1-4 every leg4TreadStep m.
+const float climbTreeSlope = 38f, climbTreeClear = 2.5f, headStep = 3.5f, screenStep = 4f, leg4TreadStep = 4f, sinkTree = 0.3f; int climbTreeN = 0;
+{
+    var ctRng = new System.Random(81640); float CR(float a, float b) => a + (float)ctRng.NextDouble() * (b - a);
+    var ct = new UnityEngine.GameObject("ClimbTrees").transform; ct.SetParent(climbDress, false);
+    string Small() => BK + "Prefabs/Trees/RedFir" + (1 + ctRng.Next(4));
+    string Big() => ctRng.NextDouble() < 0.5 ? BK + "Prefabs/Trees/RedFir" + (5 + ctRng.Next(4)) : BK + "Prefabs/Trees/RedPine" + (1 + ctRng.Next(5));
+    bool Tree(string path, float x, float z, float tall, float clear)
+    {
+        if (tall < 3f || data.GetSteepness((x - tOrg.x) / size.x, (z - tOrg.z) / size.z) > climbTreeSlope) return false;
+        foreach (var cp in climbPts) if ((P(cp.x, cp.z) - P(x, z)).sqrMagnitude < clear * clear) return false;
+        var g = Spawn(path, ct); if (g == null) return false;
+        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, CR(0f, 360f), 0f); float sc = tall / UnityEngine.Mathf.Max(0.2f, Top(g) - Bottom(g)); g.transform.localScale = V(sc, sc, sc); SitOn(g, x, z, sinkTree); climbTreeN++; return true;
+    }
+    float KnobLine(float x) => UnityEngine.Mathf.LerpUnclamped(78f, 76f, (x - 30f) / 15f);
+    for (float x = 38f; x <= 52f; x += headStep) for (float z = 205f; z <= 228f; z += headStep) { float qx = x + CR(-0.5f, 0.5f), qz = z + CR(-0.5f, 0.5f); Tree(Small(), qx, qz, UnityEngine.Mathf.Min(CR(8f, 12f), KnobLine(qx) - H(qx, qz)), climbTreeClear); }
+    foreach (var rx in new[] { 31.5f, 35.5f }) for (float z = 265f + (rx > 33f ? screenStep * 0.5f : 0f); z <= 300f; z += screenStep) Tree(Big(), rx + CR(-0.5f, 0.5f), z, CR(12f, 18f), climbTreeClear);
+    Tree(Small(), 39f, 273f, CR(10f, 12f), 2f); Tree(Small(), 41f, 282f, CR(10f, 12f), 2f);
+    for (int i = 0, n = 0; i < 60 && n < 5; i++) { float x = CR(22f, 36f), z = CR(305f, 313f); if (Tree(Small(), x, z, (66f + (z - 305f) / 8f * 3f) - H(x, z), 2f)) n++; }
+    for (int i = 0, n = 0; i < 30 && n < 2; i++) { float x = CR(36f, 44f), z = CR(305f, 313f); if (Tree(Small(), x, z, CR(10f, 12f), 2f)) n++; }
+    Tree(Small(), 22f, 305f, CR(10f, 12f), 2f);
+    for (float z = 266f; z <= 300f; z += leg4TreadStep)
+    {
+        float x = CR(21f, 24f); if (Tree(Small(), x, z, CR(6f, 10f), 2f))
+        { var lg = Spawn(BK + "Prefabs/HollowLogs/RedwoodHollowLog_" + ctRng.Next(3), ct); if (lg != null) { foreach (var c in lg.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c); lg.transform.rotation = UnityEngine.Quaternion.Euler(0f, CR(0f, 360f), 0f); SitOn(lg, x + 1.5f, z + 1.5f, 0.2f); } }   // the log on a tread under a riser: looks only
+    }
 }
 
 // ---------- 2. ground cover: grass and fern details, the tufts reaching the trail edge ----------
@@ -467,13 +533,13 @@ System.Collections.Generic.List<UnityEngine.Vector2> Line(params UnityEngine.Vec
 // (a) the old burn and the knoll switchbacks: closed ground traced round the trail corridors (marching squares on a 0.5 m grid, as
 // the rev 7 thicket traced its walls), so the hedge follows each trail and junctions and side pieces stay open
 var knollHull = new[] { P(152f, 145f), P(170f, 160f), P(188f, 133f), P(190f, 96f), P(176f, 105f) };
-const float corridorHW = 3.5f, gridCell = 0.5f, gx0 = 145f, gx1 = 345f, gz0 = 90f, gz1 = 220f, poiPad = 2.5f;   // corridorHW 3.5 (was 2.5, 8.15 gate: hedges 1 m further from the band so it takes sun)
+const float corridorHW = 3.5f, gridCell = 0.5f, gx0 = 145f, gx1 = 345f, gz0 = 90f, gz1 = 230f, poiPad = 2.5f;   // corridorHW 3.5 (was 2.5, 8.15 gate: hedges 1 m further from the band so it takes sun)
 int GW = UnityEngine.Mathf.RoundToInt((gx1 - gx0) / gridCell), GH = UnityEngine.Mathf.RoundToInt((gz1 - gz0) / gridCell);
 var fld = new float[GW + 1, GH + 1];   // > 0 walkable, < 0 closed
 for (int i = 0; i <= GW; i++) for (int j = 0; j <= GH; j++)
 {
     var p = P(gx0 + i * gridCell, gz0 + j * gridCell);
-    bool closed = Inside(p, burnPoly) || Inside(p, knollHull);
+    bool closed = ValleyShapes.InBurn(p) || Inside(p, knollHull);
     fld[i, j] = closed ? -1f : 1f;
 }
 void Stamp(UnityEngine.Vector2 c, float r)
@@ -618,6 +684,19 @@ void Rim(UnityEngine.Vector2[] poly, float outSide)   // outSide +1: the high (o
 // the ravine round the cave mouth (8.1's ravine polygon), east of the W band (x 38); the Camp 3 hollow's edge at r 12.5
 Rim(new[] { P(38f, 21.6f), P(80f, 25.2f), P(94.8f, 50f), P(74f, 60f), P(70f, 62f), P(38f, 56.6f) }, -1f);
 { var hol = new UnityEngine.Vector2[33]; for (int i = 0; i <= 32; i++) { float a = -i * UnityEngine.Mathf.PI * 2f / 32f; hol[i] = P(78f + UnityEngine.Mathf.Cos(a) * 12.5f, 146f + UnityEngine.Mathf.Sin(a) * 12.5f); } Rim(hol, 1f); }
+// ClimbFix 4.2 b (Sable draft 3): along the cwm cut's east edge (x cutRimX, z cutRimZ0 to cutRimZ1), wherever the land east of it
+// (at cutRimEastX) stands within cutRimNear m of the cut floor, a rim on the cut side, so nothing walks between the cut and the valley
+// there (4.2 a and c are faces)
+const float cutRimX = 65.4f, cutRimZ0 = 276f, cutRimZ1 = 297f, cutRimNear = 4f, cutRimEastX = 67.5f, cutRimStep = 0.5f; int cutRimRuns = 0;
+{
+    var pts = new System.Collections.Generic.List<UnityEngine.Vector2>();
+    for (float z = cutRimZ0; z <= cutRimZ1 + 0.01f; z += cutRimStep)
+    {
+        bool near = UnityEngine.Mathf.Abs(H(cutRimX, z) - H(cutRimEastX, z)) < cutRimNear; if (near) pts.Add(P(cutRimX, z));
+        if ((!near || z + cutRimStep > cutRimZ1 + 0.01f) && pts.Count > 1) { Rim(pts.ToArray(), 1f); cutRimRuns++; }
+        if (!near) pts.Clear();
+    }
+}
 {
     var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var uv = new System.Collections.Generic.List<UnityEngine.Vector2>(); var tris = new System.Collections.Generic.List<int>();
     void Quad(UnityEngine.Vector3 p0, UnityEngine.Vector3 p1, UnityEngine.Vector3 p2, UnityEngine.Vector3 p3, UnityEngine.Vector3 outward)
@@ -684,29 +763,33 @@ foreach (var r in root.GetComponentsInChildren<UnityEngine.Renderer>(true))
 // 16.5 m and faceReach 14 m, bigger rocks, each squashed or stretched a little in plan (faceStretch) so no two read alike
 const float faceMin = 35f, faceHold = 45f, faceSpace = 2.5f, faceReach = 14f, faceShow = 0.4f, faceRockLow = 3.5f, faceRockHigh = 7f, hollowRays = 48f, faceStretch = 0.25f, faceClimbNear = 25f;
 var faceHeights = new[] { 0.6f, 2.5f, 4.5f, 6.5f, 8.5f, 10.5f, 12.5f, 14.5f, 16.5f }; const int faceEvery = 1;
+// 8.17 gate (Marlow 3, 2026-10-01: the trench's smooth wall still filled Camp to pump FWD 40 and BACK 40 above the rocks): on Camp to pump
+// the rays go on up to trenchFaceTop m every 2 m, and reach trenchFaceReach m
+const float trenchFaceTop = 26.5f, trenchFaceReach = 20f; var trenchHeights = new System.Collections.Generic.List<float>(faceHeights); for (float h = faceHeights[faceHeights.Length - 1] + 2f; h <= trenchFaceTop; h += 2f) trenchHeights.Add(h);
 // 8.16b (Marlow 6, Vesper: the cwm head wall, leg 4 coming down and the cleft read as a streaked curtain): the J to Ward stretch from the
 // cwm to the cleft too; there the rocks are looks only (no foothold on the climb, whatever the slope)
-var faceLegs = new (string leg, int from, int to)[] { ("Camp to pump", 10, 48), ("W1 to Camp 3", 30, 46), ("J to Ward", 60, 127) }; var hollowC = V(78f, 0f, 146f);
+var faceLegs = new (string leg, int from, int to)[] { ("Camp to pump", 10, 48), ("W1 to Camp 3", 30, 46), ("J to Ward", -1, 127) }; var hollowC = V(78f, 0f, 146f);   // ClimbFix 4.4 (Sable draft 3): on the climb only from P4 to the ledge (from -1: the point nearest P4); the legs take trees
 string[] faceRocks = { BK + "Prefabs/Rocks/BigBoulders_0", BK + "Prefabs/Rocks/BigBoulders_1", BK + "Prefabs/Rocks/BigBoulders_2", BK + "Prefabs/Rocks/BigBoulders_3", BK + "Prefabs/Rocks/BigBoulders_4", BK + "Prefabs/Rocks/BigBoulders_5", BK + "Prefabs/Rocks/Boulder_0", BK + "Prefabs/Rocks/Boulder_1", BK + "Prefabs/Rocks/Boulder_2" };
 var faceRoot = new UnityEngine.GameObject("FaceRock").transform; faceRoot.SetParent(stops, false); int faceN = 0;
 {
     UnityEngine.Physics.SyncTransforms();   // the physics scene holds the terrain as this recipe left it
-    var rays = new System.Collections.Generic.List<(UnityEngine.Vector3 o, UnityEngine.Vector3 d)>();
+    var rays = new System.Collections.Generic.List<(UnityEngine.Vector3 o, UnityEngine.Vector3 d, float r)>();
     foreach (var fl in faceLegs)
     {
         var lg = legs.Find(q => q.name == fl.leg); if (lg.pts == null) return "no trail " + fl.leg;
-        for (int i = UnityEngine.Mathf.Max(1, fl.from); i < UnityEngine.Mathf.Min(fl.to, lg.pts.Count); i += faceEvery)
+        int from = fl.from; if (from < 0) { float bd = float.MaxValue; for (int j = 0; j < lg.pts.Count; j++) { float dj = (P(lg.pts[j].x, lg.pts[j].z) - P(26f, 262f)).sqrMagnitude; if (dj < bd) { bd = dj; from = j; } } }
+        for (int i = UnityEngine.Mathf.Max(1, from); i < UnityEngine.Mathf.Min(fl.to, lg.pts.Count); i += faceEvery)
         {
             var a = lg.pts[i - 1]; var b = lg.pts[i]; var t = V(b.x - a.x, 0f, b.z - a.z).normalized; var side = V(t.z, 0f, -t.x);
-            foreach (var h in faceHeights) { rays.Add((b + UnityEngine.Vector3.up * h, side)); rays.Add((b + UnityEngine.Vector3.up * h, -side)); }
+            foreach (var h in fl.leg == "Camp to pump" ? trenchHeights.ToArray() : faceHeights) { { float rr = fl.leg == "Camp to pump" ? trenchFaceReach : faceReach; rays.Add((b + UnityEngine.Vector3.up * h, side, rr)); rays.Add((b + UnityEngine.Vector3.up * h, -side, rr)); } }
         }
     }
     var hc = V(hollowC.x, H(hollowC.x, hollowC.z), hollowC.z);
-    for (int k = 0; k < hollowRays; k++) { var d = UnityEngine.Quaternion.Euler(0f, k * 360f / hollowRays, 0f) * UnityEngine.Vector3.forward; foreach (var h in faceHeights) rays.Add((hc + UnityEngine.Vector3.up * h, d)); }
+    for (int k = 0; k < hollowRays; k++) { var d = UnityEngine.Quaternion.Euler(0f, k * 360f / hollowRays, 0f) * UnityEngine.Vector3.forward; foreach (var h in faceHeights) rays.Add((hc + UnityEngine.Vector3.up * h, d, faceReach)); }
     var placedF = new System.Collections.Generic.List<UnityEngine.Vector3>();
     foreach (var ray in rays)
     {
-        if (!UnityEngine.Physics.Raycast(ray.o, ray.d, out var hit, faceReach, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) || !(hit.collider is UnityEngine.TerrainCollider)) continue;
+        if (!UnityEngine.Physics.Raycast(ray.o, ray.d, out var hit, ray.r, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) || !(hit.collider is UnityEngine.TerrainCollider)) continue;
         if (UnityEngine.Vector3.Angle(hit.normal, UnityEngine.Vector3.up) < faceMin) continue;
         bool skip = false; foreach (var q in placedF) if ((q - hit.point).sqrMagnitude < faceSpace * faceSpace) { skip = true; break; } if (skip) continue;
         var g = Spawn(faceRocks[rng.Next(faceRocks.Length)], faceRoot); if (g == null) break;
@@ -721,11 +804,51 @@ var faceRoot = new UnityEngine.GameObject("FaceRock").transform; faceRoot.SetPar
     }
 }
 
+// ClimbFix 4.6 (Sable draft 3; Vesper: the curtain, pillar and hanging boulders at BACK 256 and 246). Named by rays from those frames
+// (Rook, 2026-10-01): the curtain is the steep terrain of the shoulder and N end faces (18 to 23 percent of each frame), the pillar the
+// Rock/Ledge/Fin box (11 to 29 percent), the hanging boulders this recipe's face rocks over the ledge. Any face rock west of
+// ledgeRockX1 between ledgeRockZ0 and ledgeRockZ1 whose bottom stands more than faceAirMax m over the ground at its centre goes. The
+// curtain: from the BACK 256 and 246 eyes (the path end and curtainBack m back along the climb, looking back down it), rays over a
+// curtainRaysX by curtainRaysY grid of the frame; on every steep (over curtainSteep) terrain hit within curtainReach m, CS_Rock pieces
+// curtainLow to curtainHigh m, curtainSpace m apart, each sunk until its bottom is curtainSink m under the lowest ground under it (no air),
+// looks only.
+const float ledgeRockX1 = 30f, ledgeRockZ0 = 230f, ledgeRockZ1 = 300f, faceAirMax = 0.1f, curtainBack = 10f, curtainSteep = 50f, curtainReach = 40f, curtainLow = 3f, curtainHigh = 6f, curtainSpace = 2.5f, curtainSink = 0.3f, curtainPathKeep = 2f, curtainFovY = 60f, curtainAspect = 1920f / 988f;
+const int curtainRaysX = 32, curtainRaysY = 16; int faceAirGone = 0, curtainN = 0;
+{
+    foreach (var t in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(faceRoot)))
+    {
+        var b = PlaceKit.MeshBounds(t.gameObject); if (b.center.x > ledgeRockX1 || b.center.z < ledgeRockZ0 || b.center.z > ledgeRockZ1) continue;
+        if (b.min.y - H(b.center.x, b.center.z) > faceAirMax) { UnityEngine.Object.DestroyImmediate(t.gameObject); faceAirGone++; }
+    }
+    float len = climbS[climbS.Length - 1]; var curtainRoot = new UnityEngine.GameObject("Curtain").transform; curtainRoot.SetParent(faceRoot, false); var placedC = new System.Collections.Generic.List<UnityEngine.Vector3>();
+    foreach (var back in new[] { 0f, curtainBack })
+    {
+        var e = ClimbAt(len - back, out var tanE); var eye = e + UnityEngine.Vector3.up * 1.6f; var ahead = ClimbAt(len - back - 3f, out _); var fwd = V(ahead.x - e.x, 0f, ahead.z - e.z).normalized; var right = V(fwd.z, 0f, -fwd.x);
+        float tanY = UnityEngine.Mathf.Tan(curtainFovY * 0.5f * UnityEngine.Mathf.Deg2Rad), tanX = tanY * curtainAspect;
+        for (int gy = 0; gy < curtainRaysY; gy++) for (int gx = 0; gx < curtainRaysX; gx++)
+        {
+            float u = ((gx + 0.5f) / curtainRaysX * 2f - 1f) * tanX, v = ((gy + 0.5f) / curtainRaysY * 2f - 1f) * tanY; var dir = (fwd + right * u + UnityEngine.Vector3.up * v).normalized;
+            if (!UnityEngine.Physics.Raycast(eye, dir, out var hit, curtainReach, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) || !(hit.collider is UnityEngine.TerrainCollider)) continue;
+            if (UnityEngine.Vector3.Angle(hit.normal, UnityEngine.Vector3.up) < curtainSteep) continue;
+            bool near = false; foreach (var q in placedC) if ((q - hit.point).sqrMagnitude < curtainSpace * curtainSpace) { near = true; break; } if (near) continue;
+            var g = Spawn(CS + "Rocks and Stones/CS_Rock_" + (1 + rng.Next(8)), curtainRoot); if (g == null) break; PlaceKit.StripColliders(g);
+            g.transform.rotation = UnityEngine.Quaternion.Euler(R(-10f, 10f), R(0f, 360f), R(-10f, 10f)); g.transform.position = UnityEngine.Vector3.zero; g.transform.localScale = UnityEngine.Vector3.one;
+            var b0 = PlaceKit.MeshBounds(g); float sc = R(curtainLow, curtainHigh) / UnityEngine.Mathf.Max(0.2f, UnityEngine.Mathf.Max(b0.size.x, UnityEngine.Mathf.Max(b0.size.y, b0.size.z))); g.transform.localScale = V(sc, sc, sc);
+            var b1 = PlaceKit.MeshBounds(g); g.transform.position += hit.point - b1.center;
+            var b2 = PlaceKit.MeshBounds(g); float low = float.MaxValue; foreach (var cx in new[] { b2.min.x, b2.center.x, b2.max.x }) foreach (var cz in new[] { b2.min.z, b2.center.z, b2.max.z }) low = UnityEngine.Mathf.Min(low, H(cx, cz));
+            g.transform.position += V(0f, low - curtainSink - b2.min.y, 0f);
+            var b3 = PlaceKit.MeshBounds(g); bool onPath = false; foreach (var cp in climbPts) { float dx = UnityEngine.Mathf.Max(b3.min.x - cp.x, 0f, cp.x - b3.max.x), dz = UnityEngine.Mathf.Max(b3.min.z - cp.z, 0f, cp.z - b3.max.z); if (dx * dx + dz * dz < curtainPathKeep * curtainPathKeep) { onPath = true; break; } }
+            if (onPath) { UnityEngine.Object.DestroyImmediate(g); continue; }   // sunk onto the tread or the ledge: none there
+            placedC.Add(hit.point); curtainN++;
+        }
+    }
+}
+
 // (g) 8.16b (Vesper: the cleft's stacked box slabs, the box pillar): 8.1's ledge boxes (Rock/Ledge: lips, end walls, back walls, fin)
 // take the owned BK rock texture tiled about once per ledgeTile m on their faces (one material per size step, in Assets/Materials/Places);
 // the fin cap pillar stops drawing behind owned boulders stacked to its height (its collider stays: the fin hides the slot, F-1)
-const float ledgeTile = 4f, capStack = 2.4f;
-int ledgeRetex = 0, capRocks = 0;
+const float ledgeTile = 4f, capStack = 2.4f, finCell = 3f, finOverlap = 1f;   // finOverlap 1: each boulder fits its cell, so none passes the envelope
+int ledgeRetex = 0, capRocks = 0, finRocks = 0;
 {
     var kit = new PlaceKit(scene); UnityEngine.GameObject rockR = null; foreach (var r0 in scene.GetRootGameObjects()) if (r0.name == "Rock") rockR = r0;
     var ledge = rockR != null ? rockR.transform.Find("Ledge") : null;
@@ -733,6 +856,21 @@ int ledgeRetex = 0, capRocks = 0;
     if (ledge != null) foreach (UnityEngine.Transform t in ledge)
     {
         var r = t.GetComponent<UnityEngine.MeshRenderer>(); if (r == null) continue;
+        // ClimbFix 4.6 (Sable draft 3): the fin is the box pillar BACK 256 and 246 see; it stops drawing (its collider stays for F-1) and
+        // owned boulders fill its envelope, one per finCell m cell, each held inside the box (footprint and top unchanged)
+        if (t.name == "Fin")
+        {
+            r.enabled = false; var b = r.bounds;
+            for (float y = b.min.y; y < b.max.y - 0.5f; y += finCell) for (float x = b.min.x; x < b.max.x - 0.2f; x += finCell) for (float z = b.min.z; z < b.max.z - 0.2f; z += finCell)
+            {
+                var cell = new UnityEngine.Bounds(); cell.SetMinMax(V(x, y, z), V(UnityEngine.Mathf.Min(x + finCell, b.max.x), UnityEngine.Mathf.Min(y + finCell, b.max.y), UnityEngine.Mathf.Min(z + finCell, b.max.z)));
+                var g = Spawn(BK + "Prefabs/Rocks/" + (finRocks % 2 == 0 ? "Boulder_" + (finRocks % 6) : "BigBoulders_" + (finRocks % 6)), faceRoot); if (g == null) break; PlaceKit.StripColliders(g);
+                g.transform.rotation = UnityEngine.Quaternion.Euler(R(-20f, 20f), R(0f, 360f), R(-20f, 20f)); g.transform.position = UnityEngine.Vector3.zero; g.transform.localScale = UnityEngine.Vector3.one;
+                var gb = PlaceKit.MeshBounds(g); float sc = finOverlap * UnityEngine.Mathf.Min(cell.size.x / gb.size.x, UnityEngine.Mathf.Min(cell.size.y / gb.size.y, cell.size.z / gb.size.z)); g.transform.localScale = V(sc, sc, sc);
+                g.transform.position += cell.center - PlaceKit.MeshBounds(g).center; finRocks++;
+            }
+            continue;
+        }
         if (t.name == "FinCap")
         {
             r.enabled = false; var b = r.bounds;
@@ -746,6 +884,19 @@ int ledgeRetex = 0, capRocks = 0;
         }
         var d = new[] { t.lossyScale.x, t.lossyScale.y, t.lossyScale.z }; System.Array.Sort(d); int u = StepT(d[1]), v = StepT(d[2]);
         r.sharedMaterial = kit.Tinted("Places_LedgeRock_" + u + "x" + v, "Assets/BK/PureNature_Redwood/Models/Rocks/Textures/Materials/Rocks.mat", new UnityEngine.Color(0.55f, 0.53f, 0.5f), new UnityEngine.Vector2(u, v)); ledgeRetex++;
+    }
+}
+
+// RebuildSpecs 2 and Style 4.7 (no bare flat dirt in a dressed shot): grass tufts and stones on both verges of the highway beside the
+// lot, every vergeStep m from z vergeZ0 to vergeZ1, vergeIn to vergeOut m off the road's centre line, vergePieces each time
+const float vergeRoadX = 428f, vergeIn = 5.5f, vergeOut = 15f, vergeStep = 3f, vergeZ0 = 110f, vergeZ1 = 260f; const int vergePieces = 2; int vergeN = 0;
+{
+    var verge = new UnityEngine.GameObject("RoadVerge").transform; verge.SetParent(root, false);
+    for (float z = vergeZ0; z <= vergeZ1; z += vergeStep) foreach (var side in new[] { -1f, 1f }) for (int i = 0; i < vergePieces; i++)
+    {
+        float x = vergeRoadX + side * R(vergeIn, vergeOut), zz = z + R(-vergeStep * 0.5f, vergeStep * 0.5f); if (x > tOrg.x + size.x - 1f) continue;
+        bool stone = rng.NextDouble() < 0.35; var g = Spawn(stone ? CS + "Rocks and Stones/CS_Stone_" + (1 + rng.Next(8)) : BK + "Prefabs/Plants/Grass" + (1 + rng.Next(3)), verge); if (g == null) continue;
+        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f); float s = stone ? R(0.4f, 0.9f) : R(0.8f, 1.4f); g.transform.localScale = V(s, s, s); SitOn(g, x, zz, stone ? 0.08f : 0.02f); vergeN++;
     }
 }
 
@@ -798,4 +949,4 @@ foreach (var tl in data.terrainLayers) if (tl == null || tl.diffuseTexture == nu
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " | ledge boxes textured " + ledgeRetex + ", fin cap rocks " + capRocks + " | layers: floor GrassPine, SoilPine added, shore and burn GrassMud, trail Ground054, rock Rocks_a | cover " + detailNames.Length + " detail kinds | trail edges " + edgeN
-    + " | markers " + markers.childCount + " | climb fir knots " + knotN + " | brush eased off warp views " + warpShrunk + " | face rocks " + faceN + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes, " + oliveN + " bush renderers olive, rock on " + rockCells + " slope cells, " + warpCleared + " plants cleared at warps, " + coverAdded + " bushes added over bare hedge boxes | rims " + rimSegs + " pieces | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));
+    + " | markers " + markers.childCount + " | climb fir knots " + knotN + ", ClimbFix 4 trees " + climbTreeN + " | brush eased off warp views " + warpShrunk + " | face rocks " + faceN + " (" + faceAirGone + " hanging over the ledge gone), curtain rocks " + curtainN + ", fin rocks " + finRocks + " | hedges: " + loopN + " traced round the burn and knoll, " + hedgeCols + " collider pieces, " + hedgeLen.ToString("F0") + " m, " + bushN + " brush and logs, " + bandsDressed + " front bands dressed, " + shoreBush + " shore bushes, " + oliveN + " bush renderers olive, rock on " + rockCells + " slope cells, " + warpCleared + " plants cleared at warps, " + coverAdded + " bushes added over bare hedge boxes | rims " + rimSegs + " pieces (cwm cut edge runs " + cutRimRuns + ") | lot soil SoilPine " + lotTile + " m, verge tufts and stones " + vergeN + " | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));
