@@ -8,7 +8,7 @@
 // from the terrain's west edge out past the far ridge; the far ridge rising from the floor at x -200 to its crest (30) at x -240;
 // the far front on it, x -240 to -400, z -60 to 650 (rev 10 trims the south end; Wren 2026-09-30 keeps the north end at 650), burning
 // giants and flame tops at 105; valley fires on the floor at x -110 to -220, z 0 to 500, flame tops 20; the day-one smoke sheet
-// streaming west, top 60 at x -110 rising to 110 at x -500, z -60 to 400, shown in the day-one look only. No colliders.
+// streaming west is main3_8_18a_smoke.cs. No colliders.
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 UnityEngine.GameObject Root(string name) { foreach (var r in scene.GetRootGameObjects()) if (r.name == name) return r; return null; }
@@ -433,77 +433,7 @@ var fireVisDay = new UnityEngine.GameObject("FireVisibilityDayTwo"); fireVisDay.
 ShowIn(fireVisDay, LookVisibility.Show.DayTwo, ridgeDay, valleyDayG);
 var fireVisGlow = new UnityEngine.GameObject("FireVisibilityGlow"); fireVisGlow.transform.SetParent(fire.transform, false);
 ShowIn(fireVisGlow, LookVisibility.Show.NightAndDayTwo, floorGlow);
-// smoke columns (RebuildSpecs 4.3: night one shows only the low sheet; the columns are day two on, the red rectangles the night saw are
-// gone): columnCount columns from the far front up to columnTop, widening upward, merging into a smoke roof (LookTuning smokeBodyColor,
-// Style.md #4A3A32) over the front at roofY to roofY + roofRoll; each lit from below by the fire to columnLit (vertex red on the
-// DieAlone/Backdrop fire term, LookTuning smokeFireColor and backdropFireStrength), not by an opaque lit cylinder.
-const float columnX = -300f, columnTop = 250f, columnLit = 130f, roofY = 235f, roofRoll = 25f, roofX0 = -520f, roofX1 = -180f, roofZ0 = -60f, roofZ1 = 560f, roofStep = 20f, roofLitUnder = 0.35f; float[] columnZ = { 40f, 170f, 300f, 430f };
-UnityEngine.Material ColumnMat(string path, UnityEngine.Shader sh, System.Action<UnityEngine.Material> set) { var m = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(path); if (m == null) { m = new UnityEngine.Material(sh); UnityEditor.AssetDatabase.CreateAsset(m, path); } m.shader = sh; set(m); UnityEditor.EditorUtility.SetDirty(m); return m; }
-var smokeMat = ColumnMat("Assets/Materials/Blockout/Blockout_SmokeColumn.mat", backSh, m => { m.SetColor("_Color", dayTwoVis.smokeBodyColor); m.SetFloat("_HazeBlend", 0.3f); m.SetFloat("_FireLit", 1f); });
-var columns = new UnityEngine.GameObject("SmokeColumns"); columns.transform.SetParent(fire.transform, false); var columnParts = new System.Collections.Generic.List<UnityEngine.GameObject>();
-UnityEngine.Mesh cylMesh; { var tmpCyl = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cylinder); cylMesh = tmpCyl.GetComponent<UnityEngine.MeshFilter>().sharedMesh; UnityEngine.Object.DestroyImmediate(tmpCyl); }
-var colSteps = new[] { (0f, 0.4f, 18f), (0.4f, 0.72f, 28f), (0.72f, 1f, 40f) };   // share of the height from, to, radius
-foreach (var cz in columnZ)
-{
-    float baseY = RidgeY(columnX, cz), hgt = columnTop - baseY; float cx0 = columnX + R(-10f, 10f);
-    foreach (var st in colSteps)
-    {
-        float y0 = baseY + hgt * st.Item1, y1 = baseY + hgt * st.Item2;
-        var vs = cylMesh.vertices; var cs = new UnityEngine.Color[vs.Length];   // the unit cylinder spans y -1 to 1
-        var wv = new UnityEngine.Vector3[vs.Length]; for (int i = 0; i < vs.Length; i++) { float wy = UnityEngine.Mathf.Lerp(y0, y1, (vs[i].y + 1f) * 0.5f); wv[i] = V(vs[i].x * st.Item3 * 2f, wy - (y0 + y1) * 0.5f, vs[i].z * st.Item3 * 2f); cs[i] = new UnityEngine.Color(UnityEngine.Mathf.Clamp01(1f - (wy - baseY) / (columnLit - baseY)), 0f, 0f, 1f); }
-        var mesh = new UnityEngine.Mesh { name = "Column" }; mesh.vertices = wv; mesh.triangles = cylMesh.triangles; mesh.colors = cs; mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        UnityEditor.AssetDatabase.CreateAsset(mesh, fireDir + "/Column_" + cz.ToString("F0") + "_" + st.Item1.ToString("F2") + ".asset");
-        var c = new UnityEngine.GameObject("Column"); c.transform.SetParent(columns.transform, false); c.transform.position = V(cx0, (y0 + y1) * 0.5f, cz);
-        c.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; var cr = c.AddComponent<UnityEngine.MeshRenderer>(); cr.sharedMaterial = smokeMat; cr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; columnParts.Add(c);
-    }
-}
-{   // the roof the columns merge into, its underside faintly lit
-    var roof = Grid("SmokeRoof", roofX0, roofX1, roofZ0, roofZ1, roofStep, (x, z) => roofY + roofRoll * UnityEngine.Mathf.PerlinNoise(x / 90f + 1.7f, z / 90f + 5.2f));
-    roof.transform.SetParent(columns.transform, true); var rm = roof.GetComponent<UnityEngine.MeshFilter>().sharedMesh; var rc = new UnityEngine.Color[rm.vertexCount]; for (int i = 0; i < rc.Length; i++) rc[i] = new UnityEngine.Color(roofLitUnder, 0f, 0f, 1f); rm.colors = rc;
-    roof.GetComponent<UnityEngine.MeshRenderer>().sharedMaterial = smokeMat; columnParts.Add(roof);
-}
-ShowIn(columns, LookVisibility.Show.DayTwo, columnParts.ToArray());
-// the low smoke sheet (5.3): one sheet streaming west on the east wind: its top 60 over x -110 rising to 110 at x -500, level past it to
-// x -900; z -60 to 400; a front face down to the floor at x -110 and side faces at both ends. On DieAlone/Backdrop in the day-one smoke
-// colour, hazed toward the fog; RebuildSpecs 4.3: shown on day one and night one (LookVisibility DayOneAndNight), its faces lit from
-// below by the fire along their whole length (vertex red, 1 at the floor to 0 at the top, on the Backdrop fire term: LookTuning
-// smokeFireColor and backdropFireStrength, so the night look lights it and day one, at strength 0, does not). Its top edge points are
-// marked (SheetTop_*) for F-1.
-const float sheetX0 = -110f, sheetX1 = -500f, sheetXEnd = -900f, sheetZ0 = -60f, sheetZ1 = 400f, sheetTop0 = 60f, sheetTop1 = 110f, sheetStepX = 40f, sheetStepZ = 20f, sheetHaze = 0.6f, sheetUnderTop = 0.15f;
-var dayOneLook = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayOne.asset"); if (dayOneLook == null) return "no LookTuning_DayOne";
-var sheetMat = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_SmokeSheet.mat");
-if (sheetMat == null) { sheetMat = new UnityEngine.Material(backSh); UnityEditor.AssetDatabase.CreateAsset(sheetMat, "Assets/Materials/Blockout/Blockout_SmokeSheet.mat"); }
-sheetMat.shader = backSh; sheetMat.SetColor("_Color", dayOneLook.smokeBodyColor); sheetMat.SetFloat("_HazeBlend", sheetHaze); sheetMat.SetFloat("_FireLit", 1f); UnityEditor.EditorUtility.SetDirty(sheetMat);
-float SheetTop(float x) => x >= sheetX1 ? L2(sheetTop0, sheetTop1, (sheetX0 - x) / (sheetX0 - sheetX1)) : sheetTop1;
-var sheet = new UnityEngine.GameObject("SmokeSheet"); sheet.transform.SetParent(ward, false);
-{
-    var vs = new System.Collections.Generic.List<UnityEngine.Vector3>(); var tris = new System.Collections.Generic.List<int>(); var cs = new System.Collections.Generic.List<UnityEngine.Color>();
-    var xs = new System.Collections.Generic.List<float>(); for (float x = sheetX0; x >= sheetXEnd - 0.1f; x -= sheetStepX) xs.Add(x);
-    var zs = new System.Collections.Generic.List<float>(); for (float z = sheetZ0; z <= sheetZ1 + 0.1f; z += sheetStepZ) zs.Add(z);
-    int cols = xs.Count, rows = zs.Count;
-    UnityEngine.Color Fire(float v) => new UnityEngine.Color(v, 0f, 0f, 1f);
-    // one winding here; the back faces are a second copy of the vertices below, so each side keeps its own normals (a shared
-    // vertex under both windings sums its normals to zero and the Backdrop shader draws it black)
-    for (int r = 0; r < rows; r++) for (int c = 0; c < cols; c++) { vs.Add(V(xs[c], SheetTop(xs[c]), zs[r])); cs.Add(Fire(sheetUnderTop)); }   // the top, its underside a little lit
-    for (int r = 0; r < rows - 1; r++) for (int c = 0; c < cols - 1; c++) { int a = r * cols + c, b = a + 1, d = a + cols, e = d + 1; tris.AddRange(new[] { a, d, b, b, d, e }); }
-    int f0 = vs.Count; foreach (var z in zs) { vs.Add(V(sheetX0, SheetTop(sheetX0), z)); cs.Add(Fire(sheetUnderTop)); vs.Add(V(sheetX0, floorY, z)); cs.Add(Fire(1f)); }   // the front face, down to the floor
-    for (int r = 0; r < rows - 1; r++) { int a = f0 + r * 2, b = a + 1, d = a + 2, e = a + 3; tris.AddRange(new[] { a, b, d, d, b, e }); }
-    foreach (var ez in new[] { sheetZ0, sheetZ1 })
-    {
-        int s0 = vs.Count; foreach (var x in xs) { vs.Add(V(x, SheetTop(x), ez)); cs.Add(Fire(sheetUnderTop)); vs.Add(V(x, floorY, ez)); cs.Add(Fire(1f)); }
-        for (int c = 0; c < cols - 1; c++) { int a = s0 + c * 2, b = a + 1, d = a + 2, e = a + 3; tris.AddRange(new[] { a, b, d, d, b, e }); }
-    }
-    { int nv = vs.Count, nt = tris.Count; vs.AddRange(vs.GetRange(0, nv)); cs.AddRange(cs.GetRange(0, nv)); for (int i = 0; i < nt; i += 3) tris.AddRange(new[] { tris[i] + nv, tris[i + 2] + nv, tris[i + 1] + nv }); }   // the back faces
-    var mesh = new UnityEngine.Mesh { name = "SmokeSheet", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
-    mesh.SetVertices(vs); mesh.SetColors(cs); mesh.SetTriangles(tris, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
-    UnityEditor.AssetDatabase.CreateAsset(mesh, fireDir + "/SmokeSheet.asset");
-    var body = new UnityEngine.GameObject("Body"); body.transform.SetParent(sheet.transform, false);
-    body.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; var mr = body.AddComponent<UnityEngine.MeshRenderer>(); mr.sharedMaterial = sheetMat;
-    mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; mr.receiveShadows = false;
-    foreach (var x in new[] { sheetX0, (sheetX0 + sheetX1) * 0.5f, sheetX1 })
-        foreach (var z in zs) { var mk = new UnityEngine.GameObject("SheetTop_" + x.ToString("F0") + "_" + z.ToString("F0")); mk.transform.SetParent(sheet.transform, false); mk.transform.position = V(x, SheetTop(x), z); }
-    ShowIn(sheet, LookVisibility.Show.DayOneAndNight, body);
-}
+// the smoke (the day-one and night sheet, the day-two columns and roof) is built by main3_8_18a_smoke.cs, run after main3_8_18_look.cs
 // the front's width as the path end sees it (RebuildSpecs 4.1 asks 154 degrees; Valley.md rev 11 keeps the far front at z -60 to 650):
 // the bearings from the path end eye to the front's two ends
 var pathEnd = V(faceTo.x, H(faceTo.x, faceTo.y), faceTo.y);
@@ -511,4 +441,4 @@ float Bearing(float x, float z) => UnityEngine.Mathf.Atan2(x - pathEnd.x, z - pa
 float frontSpan = UnityEngine.Mathf.Abs(UnityEngine.Mathf.DeltaAngle(Bearing(frontRows[0].Item1, frontZ0), Bearing(frontRows[0].Item1, frontZ1)));
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 return "saved=" + saved + " cairn at " + cairnPos.ToString("F1") + " | chain and IW2 across the chute gap, IW2 " + iwBot.ToString("F1") + " to " + iwTop.ToString("F1") + " | steps " + steps.childCount + ", climb pieces " + climbRoot.childCount
-    + " | stones ground " + H(-4f, 226f).ToString("F1") + " tops " + stoneTop + " | stand-in fire: floor " + floorY + ", far ridge crest " + ridgeCrest + ", " + flameCards.Count + " front cards to " + frontTop + " (z " + frontZ0 + " to " + frontZ1 + "), " + valleyCards.Count + " valley cards to " + valleyTop + " | clusters: front " + frontClusters + ", valley " + valleyClusters + "; day two " + flameDay.Count + " front and " + valleyDay.Count + " valley cards; floor glows " + glowCards.Count + "; front span from the path end " + frontSpan.ToString("F0") + " degrees | sheet " + sheet.transform.childCount + " parts";
+    + " | stones ground " + H(-4f, 226f).ToString("F1") + " tops " + stoneTop + " | stand-in fire: floor " + floorY + ", far ridge crest " + ridgeCrest + ", " + flameCards.Count + " front cards to " + frontTop + " (z " + frontZ0 + " to " + frontZ1 + "), " + valleyCards.Count + " valley cards to " + valleyTop + " | clusters: front " + frontClusters + ", valley " + valleyClusters + "; day two " + flameDay.Count + " front and " + valleyDay.Count + " valley cards; floor glows " + glowCards.Count + "; front span from the path end " + frontSpan.ToString("F0") + " degrees";
