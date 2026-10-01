@@ -156,7 +156,7 @@ public class LookTuning : ScriptableObject
     public Color interiorFillColor = new Color(0.6f, 0.541f, 0.451f);
     [Tooltip("Cave chamber roof crack (RebuildSpecs 3.1): colour of the cold shaft, a no-shadow spot light set by main3_8_17_cave.cs.")]
     public Color caveCrackColor = new Color(0.604f, 0.639f, 0.678f);
-    [Range(0f, 20f)] public float caveCrackIntensity = 3f;
+    [Range(0f, 80f)] public float caveCrackIntensity = 60f;
     [Range(1f, 40f)] public float caveCrackRange = 14f;
     [Range(5f, 90f)] public float caveCrackAngle = 25f;
     [Tooltip("Cave fill (RebuildSpecs 3.1): one no-shadow point light in the chamber and one in the side room, short enough to stay under the ground.")]

@@ -80,7 +80,7 @@ MonoBehaviour:
   interiorFillIntensity: 0
   interiorFillColor: {r: 0.6, g: 0.541, b: 0.451, a: 1}
   caveCrackColor: {r: 0.604, g: 0.639, b: 0.678, a: 1}
-  caveCrackIntensity: 3
+  caveCrackIntensity: 60
   caveCrackRange: 14
   caveCrackAngle: 25
   caveFillColor: {r: 0.29, g: 0.314, b: 0.345, a: 1}

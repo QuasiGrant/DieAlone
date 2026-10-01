@@ -1,0 +1,19 @@
+# 8.18a proof frames (Wren's fix list 2026-10-01): name|look|eye x,y,z|target x,y,z[|fov]
+LedgeWestLevel_Night|Night|-8.5,63.6,246|-108.5,63.6,246
+LedgeWest10Down_Night|Night|-8.5,63.6,246|-108.5,46,246
+LedgeWestLevel_DayTwo|Day two|-8.5,63.6,246|-108.5,63.6,246
+LedgeWest10Down_DayTwo|Day two|-8.5,63.6,246|-108.5,46,246
+LedgeWestLevel_DayOne|Day one|-8.5,63.6,246|-108.5,63.6,246
+LedgeWest10Down_DayOne|Day one|-8.5,63.6,246|-108.5,46,246
+CaveSideRoom_FromDoor|Night|88.6,-16.4,12|96,-17.2,12
+CaveSideRoom_FromEast|Night|97,-16.4,10|89.5,-17,13
+CaveSideRoom_NorthWall|Night|92,-16.4,9|94,-17,15.5
+CaveCrack_Up|Night|90.5,-16.6,10|91.8,-15,11.5
+CaveChamber_Low|Night|76,-17.55,12|80,-17.2,21
+CaveChamber_West|Night|86,-16.4,12|70,-17,8
+Camp3_Tent_FromWarp|Day one|74,-2.2,142|80.5,-3.3,153
+Camp3_Tent_Close|Day one|77,-2.4,148|80.5,-3.3,153
+Camp3_Tent_FromWarp_Night|Night|74,-2.2,142|80.5,-3.3,153
+NorthRuin_FromLoopWarp|Day one|165.8,5.1,267.7|172,4.5,281
+NorthRuin_Close|Day one|168,5.1,274|172,4.5,281
+CaveCrack_FloorPatch|Night|88.8,-16.4,11.5|91.8,-18,11.5

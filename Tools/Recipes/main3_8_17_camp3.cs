@@ -26,7 +26,22 @@ if (paint != null && clouds != null) { paint.SetTexture("_BaseMap", clouds); Uni
 // ---- the tent, the fire, the seat log, the lantern on the Snag (8.5's places)
 // 8.17 gate (Vesper, Camp 3 D: no tent or fire in any frame): tent and fire on the flat 8 to 13 m in front of the Camp 3 warp (74, 142, facing
 // north-east), clear of the trail end
-kit.Ground(PlaceKit.CS + "CS_Tent_Old_2", d, 80.5f, 153f, 215f, 1f, true);
+// 8.18a (Vesper, Pim: no tent in any frame; proof frame 2026-10-01: it stood there, but the pack canvas on Particles/Lit drew as a pale
+// grey see-through sheet against the grey boulders, with open and closed flaps both shown): the canvas on an opaque two-sided URP Lit copy
+// tinted tentCanvasHex, the open flaps hidden, the tent tentScale times the pack size
+const string tentCanvasHex = "#7E6A44"; const float tentScale = 1.25f;
+var tent = kit.Ground(PlaceKit.CS + "CS_Tent_Old_2", d, 80.5f, 153f, 215f, tentScale, true);
+if (tent != null)
+{
+    var canvas = kit.Tinted("Places_TentCanvas", "Assets/Revolving Pizza Games/Campsite/Materials/Tents/CS_Tent_Old.mat", Hex(tentCanvasHex), UnityEngine.Vector2.one);
+    var lit = UnityEngine.Shader.Find("Universal Render Pipeline/Lit");
+    if (canvas != null && lit != null) { canvas.shader = lit; canvas.SetFloat("_Surface", 0f); canvas.SetFloat("_Cull", 0f); canvas.SetColor("_BaseColor", Hex(tentCanvasHex)); UnityEditor.EditorUtility.SetDirty(canvas); }
+    foreach (var r in tent.GetComponentsInChildren<UnityEngine.Renderer>(true))
+    {
+        if (r.name.EndsWith("_Open")) { r.gameObject.SetActive(false); continue; }
+        var ms = r.sharedMaterials; for (int i = 0; i < ms.Length; i++) if (ms[i] != null && ms[i].name == "CS_Tent_Old") ms[i] = canvas; r.sharedMaterials = ms;
+    }
+}
 var fire = kit.Group("Fire", d, V(76.5f, kit.H(76.5f, 149.5f), 149.5f), 0f);
 kit.On(PlaceKit.CS + "CS_Campfire_2", fire, V(0f, 0f, 0f), 0f, 1f, false, null, true);
 kit.On(PlaceKit.CS + "Wood/CS_Firewood_Logs_Burnt", fire, V(0f, 0.05f, 0f), 80f, 1f, false, null, true);

@@ -115,7 +115,18 @@ for (int i = 1; i <= roomBulbs; i++) { float u = i / (roomBulbs + 1f); var p = U
 // a loose rock goes to the nearest cave wall (rays on wallRays bearings within wallReach m), its centre on the wall face, and down onto the
 // floor under it, sunk rockSink: rockfall at the wall's foot (8.17 gate, Marlow 10: Boulder_1 hung 2.8 m over the chamber floor;
 // RebuildSpecs 3.4: in the side room boulders sit on the floor or the walls, the ceiling is the rock resting on the walls)
-const float wallReach = 8f, rockSink = 0.3f; const int wallRays = 16; int seated = 0; float airMax = 0f;
+// a rock's true lowest and highest points (its LOD0 mesh vertices in world space): MeshBounds is the renderers' box, which for a turned
+// boulder reaches below its lowest vertex, so a rock seated on it floated (8.18a, Marlow: side room rocks 0.6 to 1 m over the floor)
+(float lo, float hi) VertY(UnityEngine.GameObject g)
+{
+    float lo = float.MaxValue, hi = float.MinValue; var lod = g.GetComponentInChildren<UnityEngine.LODGroup>();
+    var rs = lod != null && lod.GetLODs().Length > 0 ? lod.GetLODs()[0].renderers : g.GetComponentsInChildren<UnityEngine.Renderer>();
+    foreach (var r in rs) { var mf = r != null ? r.GetComponent<UnityEngine.MeshFilter>() : null; if (mf == null || mf.sharedMesh == null) continue; foreach (var v in mf.sharedMesh.vertices) { float y = mf.transform.TransformPoint(v).y; lo = UnityEngine.Mathf.Min(lo, y); hi = UnityEngine.Mathf.Max(hi, y); } }
+    return (lo, hi);
+}
+// a rock scaled so it stands tall m high (true vertex height)
+void Tall(UnityEngine.GameObject g, float tall) { var (lo, hi) = VertY(g); if (hi > lo) g.transform.localScale *= tall / (hi - lo); }
+const float wallReach = 8f, rockSink = 0.3f, roomRockGap = 0.6f; const int wallRays = 16; int seated = 0; float airMax = 0f, roomTop = float.MinValue;
 void Seat(UnityEngine.GameObject g, UnityEngine.Vector3 at)
 {
     UnityEngine.Physics.SyncTransforms(); float bestD = wallReach; UnityEngine.Vector3 wallAt = at;
@@ -123,14 +134,14 @@ void Seat(UnityEngine.GameObject g, UnityEngine.Vector3 at)
     var gb = PlaceKit.MeshBounds(g); g.transform.position += V(wallAt.x - gb.center.x, 0f, wallAt.z - gb.center.z);
     var from = V(wallAt.x, at.y, wallAt.z) - V(wallAt.x - at.x, 0f, wallAt.z - at.z).normalized * 0.3f;
     if (UnityEngine.Physics.Raycast(from, UnityEngine.Vector3.down, out var fh, 20f, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore))
-    { gb = PlaceKit.MeshBounds(g); g.transform.position += V(0f, fh.point.y - rockSink - gb.min.y, 0f); seated++; airMax = UnityEngine.Mathf.Max(airMax, PlaceKit.MeshBounds(g).min.y - fh.point.y); }
+    { g.transform.position += V(0f, fh.point.y - rockSink - VertY(g).lo, 0f); seated++; airMax = UnityEngine.Mathf.Max(airMax, VertY(g).lo - fh.point.y); }
 }
 // 8.17 gate (Vesper): rock broken in along the room's north and east walls, a timber prop under a ceiling beam
 foreach (var rb in new[] { (V(92f, floorY + 1.2f, rz1 - 0.6f), 1.6f, "BigBoulders_1"), (V(95.5f, floorY + 0.8f, rz1 - 0.5f), 1.3f, "Boulder_3"), (V(rx1 - 0.6f, floorY + 1.4f, 9.5f), 1.7f, "BigBoulders_3"), (V(rx1 - 0.5f, floorY + 1.8f, 13.8f), 1.2f, "Boulder_0"), (V(91f, floorY + 1.5f, 9.5f), 2f, "BigBoulders_0"), (V(95f, floorY + 1.5f, 14f), 1.8f, "BigBoulders_5") })
 {
     var g = kit.Spawn(PlaceKit.BK + "Rocks/" + rb.Item3, room); if (g == null) continue; PlaceKit.StripColliders(g);
-    g.transform.localScale = UnityEngine.Vector3.one * (rb.Item2 / 3f); g.transform.rotation = UnityEngine.Quaternion.Euler(rb.Item1.x * 13f, rb.Item1.z * 29f, 20f); g.transform.position += rb.Item1 - PlaceKit.MeshBounds(g).center;
-    Seat(g, rb.Item1);
+    g.transform.rotation = UnityEngine.Quaternion.Euler(rb.Item1.x * 13f, rb.Item1.z * 29f, 20f); Tall(g, UnityEngine.Mathf.Min(rb.Item2, roomH - roomRockGap)); g.transform.position += rb.Item1 - PlaceKit.MeshBounds(g).center;   // under the ceiling by roomRockGap (8.18a: 4.6 to 5.6 m rocks ran through it)
+    Seat(g, rb.Item1); roomTop = UnityEngine.Mathf.Max(roomTop, VertY(g).hi);
 }
 kit.Fill(PlaceKit.CI + "Building/CITW_Wood_Pillar", room, room.InverseTransformPoint(V(96.2f, floorY, 8.4f)), V(0.25f, roomH, 0.25f));
 var beam = kit.Spawn(PlaceKit.CS + "Wood/CS_Log_Large_Long", room); if (beam != null) { PlaceKit.StripColliders(beam); beam.transform.rotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f); beam.transform.localScale = V(3.6f, 0.8f, 0.8f); beam.transform.position += V(96.2f, floorY + roomH - 0.15f, 11.5f) - PlaceKit.MeshBounds(beam).center; }
@@ -149,17 +160,17 @@ foreach (var lp in new[] { (V(71.6f, floorY + 2.5f, 5f), "BigBoulders_2"), (V(80
 // no-shadow spot light (LookTuning caveCrack*) from just under it aimed at the floor crackOff m west of the table, toward the door the
 // chamber looks through; the crack a pale sliver in the ceiling rock. Fill: a no-shadow point light (LookTuning caveFill*) low in the
 // chamber and one in the side room, their range short of the ground above. Grey targets are graded on the capture.
-const float crackOff = 2f, crackLen = 2.2f, crackWidth = 0.25f, fillUp = 1.5f;
+const float crackOff = 2f, crackLen = 2.2f, crackWidth = 0.25f, fillUp = 1.5f, crackDrop = 0.02f, crackGlow = 1f, crackSoft = 0.3f;   // crackSoft: the inner cone share, so the lit patch fades out (a hard disc at 1)
 var look = kit.Look; var aim = V(93.8f - crackOff, floorY, 11.5f);
-var crackMat = kit.Tinted("Places_CaveCrack", rocks, Hex("#9AA3AD"), UnityEngine.Vector2.one);
-kit.Slab("RoofCrack", room, room.InverseTransformPoint(V(aim.x, floorY + roomH + 0.02f, aim.z)), V(crackWidth, 0.06f, crackLen), crackMat, V(0f, 25f, 0f));
+var crackMat = kit.Glow("Places_CaveCrack", Hex("#9AA3AD"), crackGlow);   // 8.18a: the sky through the crack, a pale sliver (it was rock-textured and sat 1 cm out of the ceiling, unseen)
+kit.Slab("RoofCrack", room, room.InverseTransformPoint(V(aim.x, floorY + roomH - crackDrop, aim.z)), V(crackWidth, 0.06f, crackLen), crackMat, V(0f, 25f, 0f));
 UnityEngine.Light NewLight(string name, UnityEngine.Transform parent, UnityEngine.Vector3 at, UnityEngine.LightType type, UnityEngine.Color c, float intensity, float range)
 {
     var go = new UnityEngine.GameObject(name); go.transform.SetParent(parent, false); go.transform.position = at;
     var l = go.AddComponent<UnityEngine.Light>(); l.type = type; l.color = c; l.intensity = intensity; l.range = range; l.shadows = UnityEngine.LightShadows.None; return l;
 }
 var crack = NewLight("CrackShaft", room, V(aim.x, floorY + roomH - 0.1f, aim.z), UnityEngine.LightType.Spot, look.caveCrackColor, look.caveCrackIntensity, look.caveCrackRange);
-crack.spotAngle = look.caveCrackAngle; crack.transform.rotation = UnityEngine.Quaternion.LookRotation(UnityEngine.Vector3.down);
+crack.spotAngle = look.caveCrackAngle; crack.innerSpotAngle = look.caveCrackAngle * crackSoft; crack.transform.rotation = UnityEngine.Quaternion.LookRotation(UnityEngine.Vector3.down);
 NewLight("CaveFill", ch, V(80f, floorY + fillUp, 12f), UnityEngine.LightType.Point, look.caveFillColor, look.caveFillIntensity, look.caveFillRange);
 NewLight("CaveFill", room, V((rx0 + rx1) * 0.5f, floorY + fillUp, (rz0 + rz1) * 0.5f), UnityEngine.LightType.Point, look.caveFillColor, look.caveFillIntensity, look.caveFillRange);
 PlaceKit.MarkerOnly(cave.transform.Find("Resident_Cave_Spot"));
@@ -170,4 +181,4 @@ float lowest = float.MaxValue; for (float x = rx0; x <= rx1; x += 1f) for (float
 // their convex hulls, so the pack meshes' creases cannot wedge the capsule
 foreach (var mc in md.GetComponentsInChildren<UnityEngine.MeshCollider>()) mc.convex = true;
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
-return "saved=" + saved + " cave: rock boxes " + retex + ", cave rocks seated " + seated + " of 10 (most air under one " + airMax.ToString("F1") + " m), side room ground over it lowest " + lowest.ToString("F1") + " (ceiling rock top " + (floorY + roomH + T).ToString("F1") + "), clear " + (lowest > floorY + roomH + T) + " | " + kit.Report();
+return "saved=" + saved + " cave: rock boxes " + retex + ", cave rocks seated " + seated + " of 10 (most air under one " + airMax.ToString("F2") + " m, highest side room rock top " + roomTop.ToString("F2") + " under the ceiling at " + (floorY + roomH).ToString("F1") + "), side room ground over it lowest " + lowest.ToString("F1") + " (ceiling rock top " + (floorY + roomH + T).ToString("F1") + "), clear " + (lowest > floorY + roomH + T) + " | " + kit.Report();
