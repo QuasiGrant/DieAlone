@@ -133,7 +133,7 @@ A structure passes a dressing review when all are true:
 5. It shows use: at least one object mid-task (an axe in the block, a pot on a cold fire, a door ajar).
 6. A clearing holds 15 or more props **P**, grouped in two or three clusters, not scattered evenly.
 7. No untextured primitive in a dressed location. Primitives are for blockout only.
-8. Trees never on a grid. Giants in groves of 4 to 8, 8 to 15 m apart, 40 to 60 m between groves **P**. Each grove has 10 to 15 firs or pines at 8 to 20 m for scale, and brush, fern, fallen logs and leaves at its foot. Small trees in clumps, never evenly sprinkled. (Replaces the 30 m spacing rule, withdrawn 2026-09-30: it made islands; Check3_Quality.md 2.) Giant tops at most 50 m absolute, 35 m tall on the knoll (ground 15; Valley.md rev 8, 9.2). The W crest belt is exempt (Valley.md 9).
+8. Trees never on a grid. Giants in groves of 4 to 8, 8 to 15 m apart, 40 to 60 m between groves **P**. Each grove has 10 to 15 firs or pines at 8 to 20 m for scale, and brush, fern, fallen logs and leaves at its foot. Small trees in clumps, never evenly sprinkled. (Replaces the 30 m spacing rule, withdrawn 2026-09-30: it made islands; Check3_Quality.md 2.) Giant tops at most 50 m absolute, 35 m tall on the knoll (ground 15; Valley.md rev 8, 9.2). The W crest belt is exempt (Valley.md 9). No giant breaks the cap; it keeps the tower eye (57.6 m) above every crown and the flames at 1.5 to 2 times giant height. Emergent read inside the cap (2026-09-30 **P**): in each grove one giant tops out within 2 m of the cap, broken or flat-topped crown; the rest top out 12 to 18 m below it, crowns varied; no fir within 10 m of the emergent's trunk.
 
 ## 6. Lighting
 

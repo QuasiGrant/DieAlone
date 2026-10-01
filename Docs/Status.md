@@ -77,3 +77,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-09-30: Climb rock count excludes walkable ground: count rock steeper than 35 degrees, and count as open any sky or hit over 60 m. Bar outside the cleft: rock 30 percent or less, open 15 percent or more (Vesper).
 - 2026-09-30: Front-zone roads count as paths for the 50 m rule.
 - 2026-09-30: The boathouse step (cat feeding) and the payphone booth must be reachable; the north ruin stays hidden from the tower.
+- 2026-09-30: Giants keep the 50 m cap; one emergent giant per grove near the cap, the rest 12 to 18 m lower, no fir within 10 m of it (Vesper).
