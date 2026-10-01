@@ -778,7 +778,7 @@ try
     // index
     var md = new System.Text.StringBuilder();
     md.Append("# Main3 review sheets\n\nMade by Tools/Recipes/main3_review_capture.sh (recipe main3_review_capture.cs), " + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm", inv) + ". ");
-    md.Append("Each frame is 1920 x 988 with the look filter on, eye 1.6 m over the ground, shrunk onto the sheet (trails, climb, warps, ends, stops at 1/3, pairs at 1/2). ");
+    md.Append("Each frame is 1920 x 988 with the look filter on (its rolling noise band off: every frame renders at one instant, so the band sat in one row across every sheet), eye 1.6 m over the ground, shrunk onto the sheet (trails, climb, warps, ends, stops at 1/3, pairs at 1/2). ");
     md.Append("Day one look except the Night halves of the pairs. Trail frames look along the trail, pitched with its grade over the next 10 m. Positions are metres, x east, z north.\n\n");
     md.Append("| Sheet | What | Frames |\n|---|---|---|\n");
     foreach (var w in written) md.Append("| [" + w.file + "](" + w.file + ") | " + w.what + " | " + w.frames + " |\n");

@@ -111,14 +111,25 @@ var ch = kit.Fresh("ChamberDressing", cave.transform, V(80f, floorY, 12f), 0f);
 kit.On(PlaceKit.CS + "CS_Lantern_Old", ch, ch.InverseTransformPoint(V(87.8f, floorY, 13.6f)), 0f, 1f, false, null, true);
 kit.Practical("ChamberLantern", ch, ch.InverseTransformPoint(V(87.8f, floorY + 0.5f, 13.6f)), 9f, PracticalLight.Kind.Lantern, PracticalLight.ByDay.Full);
 foreach (var rp in new[] { V(76f, floorY, 6f), V(83f, floorY, 19f), V(74f, floorY, 18f) }) kit.On(PlaceKit.BK + "Rocks/RubbleSparse_2", ch, ch.InverseTransformPoint(rp), rp.x * 11f, 0.6f, false, null, true);
+const float wallReach = 8f, rockSink = 0.3f; const int wallRays = 16; int seated = 0; float airMax = 0f;
 foreach (var lp in new[] { (V(71.6f, floorY + 2.5f, 5f), "BigBoulders_2"), (V(80f, floorY + 3f, 20.9f), "BigBoulders_4"), (V(88.6f, floorY + 4.5f, 5.5f), "Boulder_1"), (V(79f, floorY + 1.2f, 3.4f), "Boulder_5") })
 {
     var g = kit.Spawn(PlaceKit.BK + "Rocks/" + lp.Item2, ch); if (g == null) continue; PlaceKit.StripColliders(g);
     g.transform.localScale = UnityEngine.Vector3.one * 0.6f; g.transform.rotation = UnityEngine.Quaternion.Euler(10f, lp.Item1.x * 17f, -12f); g.transform.position += lp.Item1 - PlaceKit.MeshBounds(g).center;
+    // 8.17 gate (Marlow 10: Boulder_1 hung 2.8 m over the floor): each rock goes to the nearest chamber wall (rays on wallRays bearings
+    // within wallReach m), its centre on the wall face, and down onto the floor under it, sunk rockSink: rockfall at the wall's foot
+    UnityEngine.Physics.SyncTransforms(); float bestD = wallReach; UnityEngine.Vector3 wallAt = lp.Item1;
+    for (int k = 0; k < wallRays; k++) { var dir = UnityEngine.Quaternion.Euler(0f, k * 360f / wallRays, 0f) * UnityEngine.Vector3.forward; if (UnityEngine.Physics.Raycast(lp.Item1, dir, out var wh, bestD, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) && wh.collider.transform.IsChildOf(cave.transform)) { bestD = wh.distance; wallAt = wh.point; } }
+    var gb = PlaceKit.MeshBounds(g); g.transform.position += V(wallAt.x - gb.center.x, 0f, wallAt.z - gb.center.z);
+    if (UnityEngine.Physics.Raycast(V(wallAt.x, lp.Item1.y, wallAt.z) - (wallAt - lp.Item1).normalized * 0.3f, UnityEngine.Vector3.down, out var fh, 20f, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore))
+    { gb = PlaceKit.MeshBounds(g); g.transform.position += V(0f, fh.point.y - rockSink - gb.min.y, 0f); seated++; airMax = UnityEngine.Mathf.Max(airMax, PlaceKit.MeshBounds(g).min.y - fh.point.y); }
 }
 PlaceKit.MarkerOnly(cave.transform.Find("Resident_Cave_Spot"));
 // check: the terrain over the room stays above its ceiling rock (0 over it, Valley M10)
 float lowest = float.MaxValue; for (float x = rx0; x <= rx1; x += 1f) for (float z = rz0; z <= rz1; z += 1f) lowest = UnityEngine.Mathf.Min(lowest, kit.H(x, z));
 
+// 8.17 gate (hand-walk BOULDER POCKETS 2026-10-01: a pocket by the east flank at (54.4, 37) held the player): the mouth rocks collide as
+// their convex hulls, so the pack meshes' creases cannot wedge the capsule
+foreach (var mc in md.GetComponentsInChildren<UnityEngine.MeshCollider>()) mc.convex = true;
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
-return "saved=" + saved + " cave: rock boxes " + retex + ", side room ground over it lowest " + lowest.ToString("F1") + " (ceiling rock top " + (floorY + roomH + T).ToString("F1") + "), clear " + (lowest > floorY + roomH + T) + " | " + kit.Report();
+return "saved=" + saved + " cave: rock boxes " + retex + ", chamber rocks seated " + seated + " of 4 (most air under one " + airMax.ToString("F1") + " m), side room ground over it lowest " + lowest.ToString("F1") + " (ceiling rock top " + (floorY + roomH + T).ToString("F1") + "), clear " + (lowest > floorY + roomH + T) + " | " + kit.Report();

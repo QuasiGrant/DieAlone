@@ -14,11 +14,13 @@
 //    within spikeTopDrop metres of the zone's highest ground and within spikeTopReach metres of it (standing on a top). A zone whose
 //    top stands less than spikeRise over the highest ground on the ring spikeOut outside it has no spike left and passes as it is.
 // 5. FENCE (13.6): a walk north along the inside of the fence (x fenceWalkX, z 160 to 300), reported with where it stalls; and walks and
-// 6. CAMP 2 POCKET (8.17 gate, Marlow 1): the sprint into the talus pocket by the stack and 16 sprint-jumps out of wherever it stops.
 //    sprint-jumps east every 5 m; FAIL if one ends east of the fence (IW1 and the panels hold).
 // 6. TRAPS (8.15, Wren: nobody trapped however they got there): the player is dropped on every trapStep grid point over the climb zone
 //    (x -12 to 92, z 190 to 335; not inside rock), left trapSettle seconds to slide, and from each distinct place it settles (trapStep grid) tries 8 walks
-//    and 8 sprint-jumps of trapTry metres; FAIL if none ends trapOut metres or more from where it settled.
+//    and 8 sprint-jumps of trapTry metres; FAIL if none ends trapOut metres or more from where it settled. A drop needs no approach, so
+//    any trap it lands in fails however it is reached.
+// 7. BOULDER POCKETS (8.17 gate, Marlow 1): every boulder cluster, dropped on at 0.5 m and approached from a ring on 16 bearings at
+//    walk, sprint and sprint-jump; FAIL if any place the player ends has no way out (see the section).
 // Bounded loops only. Restores CairnGate and runInBackground (false) before it returns.
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 UnityEngine.Application.runInBackground = true;
@@ -218,23 +220,74 @@ try
             }
     if (ff > 0) allPass = false;
     sb.Append("FENCE: walk north along x " + fenceWalkX + " from z " + fenceZ0 + " to " + fenceZ1 + ": " + (stalls.Count == 0 ? "no stall" : "stalls at " + string.Join(", ", stalls)) + " (report); " + ft + " pushes east, " + ff + " past the fence: " + (ff == 0 ? "PASS" : "FAIL") + fFirst + "\n");
-    // 6. 8.17 gate (Marlow 1): Marlow's Camp 2 trap: sprint from (287, 107) toward (290.2, 113.5) for pocketRunSeconds, then try to
-    // leave by sprint-jumping on 16 headings for pocketRunSeconds each; a FAIL when no heading gets pocketOut m from where it stopped
+    // 6. BOULDER POCKETS (8.17 gate, Marlow 1 and 2026-10-01: one line from (287, 107) missed the Camp 2 pocket a 1 m grid of approaches
+    // found). Every cluster of boulders (colliders named Boulder*, BigBoulders* and the Camp 2 GraniteStack, joined when their bounds come
+    // within pocketJoin m) gets (a) a drop on every pocketCell m point over its bounds (on the highest surface, left pocketSettle s), and
+    // (b) approaches from a ring pocketRing1 and pocketRing2 m outside its bounds on pocketBearings bearings, aimed at its centre, at each
+    // rock and at each settled drop point, at walk, sprint and sprint-jump, for the run there plus pocketOver s. From every distinct place
+    // either ends (pocketCell grid), the way out: pocketBearings headings at walk and sprint-jump for pocketTry s each; FAIL when none gets
+    // trapOut m away. Marlow's two lines, (287, 107) and (288, 110) toward (290.2, 113.5), run as approaches too.
     {
-        const float pocketRunSeconds = 3f, pocketOut = 2f; var from2 = new UnityEngine.Vector3(287f, 0f, 107f); var to2 = new UnityEngine.Vector2(290.2f, 113.5f);
-        from2.y = ter.SampleHeight(from2) + ter.transform.position.y; Put(from2);
-        var dir2 = new UnityEngine.Vector3(to2.x - from2.x, 0f, to2.y - from2.z).normalized;
-        for (float t = 0f; t < pocketRunSeconds; t += dt) pc.Step(dir2, false, true, dt);
-        for (int k = 0; k < 20; k++) pc.Step(UnityEngine.Vector3.zero, false, false, dt);
-        var stop = pc.transform.position; int outs = 0;
-        for (int h = 0; h < 16; h++)
+        const float pocketJoin = 1.5f, pocketCell = 0.5f, pocketSettle = 1f, pocketRing1 = 2f, pocketRing2 = 5f, pocketOver = 1f, pocketTry = 1.5f, pocketDrop = 30f; const int pocketBearings = 16;
+        var rockCols = new System.Collections.Generic.List<UnityEngine.Collider>();
+        foreach (var c in UnityEngine.Object.FindObjectsByType<UnityEngine.Collider>(UnityEngine.FindObjectsSortMode.None))
+            if (c.enabled && !c.isTrigger && (c.name.StartsWith("Boulder") || c.name.StartsWith("BigBoulders") || c.name == "GraniteStack")) rockCols.Add(c);
+        var clusters = new System.Collections.Generic.List<System.Collections.Generic.List<UnityEngine.Collider>>(); var leftR = new System.Collections.Generic.List<UnityEngine.Collider>(rockCols);
+        while (leftR.Count > 0)
         {
-            Put(stop - UnityEngine.Vector3.up * 0.3f); var d2 = UnityEngine.Quaternion.Euler(0f, h * 22.5f, 0f) * UnityEngine.Vector3.forward;
-            for (float t = 0f; t < pocketRunSeconds; t += dt) pc.Step(d2, true, true, dt);
-            if (new UnityEngine.Vector2(pc.transform.position.x - stop.x, pc.transform.position.z - stop.z).magnitude > pocketOut) outs++;
+            var g = new System.Collections.Generic.List<UnityEngine.Collider> { leftR[0] }; leftR.RemoveAt(0);
+            for (bool grew = true; grew;) { grew = false; for (int i = leftR.Count - 1; i >= 0; i--) foreach (var q in g) { var a = q.bounds; a.Expand(pocketJoin * 2f); if (a.Intersects(leftR[i].bounds)) { g.Add(leftR[i]); leftR.RemoveAt(i); grew = true; break; } } }
+            if (g.Count >= 2) clusters.Add(g);
         }
-        bool ok2 = outs > 0; if (!ok2) allPass = false;
-        sb.Append("CAMP 2 POCKET: sprint from (287, 107) toward (290.2, 113.5) stopped at " + stop.ToString("F1") + "; " + outs + " of 16 sprint-jumps leave it: " + (ok2 ? "PASS" : "FAIL") + "\n");
+        var known = new System.Collections.Generic.Dictionary<long, bool>();   // settled cell -> has a way out
+        long Key(UnityEngine.Vector3 p) => ((long)UnityEngine.Mathf.FloorToInt(p.x / pocketCell) << 32) ^ (uint)UnityEngine.Mathf.FloorToInt(p.z / pocketCell);
+        void PlaceAt(UnityEngine.Vector3 p) { cc.enabled = false; pc.transform.position = p; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); }
+        bool WayOut(UnityEngine.Vector3 sp)
+        {
+            if (known.TryGetValue(Key(sp), out bool k0)) return k0;
+            bool free = false;
+            for (int k = 0; k < pocketBearings * 2 && !free; k++)
+            {
+                PlaceAt(sp); var d = UnityEngine.Quaternion.Euler(0f, (k % pocketBearings) * 360f / pocketBearings, 0f) * UnityEngine.Vector3.forward; bool hop = k >= pocketBearings;
+                for (float t = 0f; t < pocketTry; t += dt) pc.Step(d, hop, hop, dt);
+                if (new UnityEngine.Vector2(pc.transform.position.x - sp.x, pc.transform.position.z - sp.z).magnitude >= trapOut) free = true;
+            }
+            known[Key(sp)] = free; return free;
+        }
+        UnityEngine.Vector3 Settle(float seconds) { for (float t = 0f; t < seconds; t += dt) pc.Step(UnityEngine.Vector3.zero, false, false, dt); return pc.transform.position; }
+        int drops = 0, runs = 0, badStarts = 0; var fails = new System.Collections.Generic.Dictionary<long, string>();   // the first way into each place with no way out
+        void Approach(UnityEngine.Vector3 from, UnityEngine.Vector2 to, int mode)
+        {
+            // a start with no way out of its own is no place a player comes from
+            if (Occupied(from)) return; Put(from); var start = Settle(pocketSettle); if (!WayOut(start)) { badStarts++; return; } Put(from);
+            var d =new UnityEngine.Vector3(to.x - from.x, 0f, to.y - from.z); float dist = d.magnitude; d.Normalize();
+            float speed = mode == 0 ? tuning.walkSpeed : tuning.sprintSpeed; for (float t = 0f; t < dist / speed + pocketOver; t += dt) pc.Step(d, mode == 2, mode > 0, dt);
+            var e = Settle(pocketSettle); runs++;
+            if (!WayOut(e) && !fails.ContainsKey(Key(e))) fails.Add(Key(e), (mode == 0 ? "walk" : mode == 1 ? "sprint" : "sprint-jump") + " from " + from.ToString("F1") + " toward (" + to.x.ToString("F1") + ", " + to.y.ToString("F1") + ") ends at " + e.ToString("F1"));
+        }
+        foreach (var cl in clusters)
+        {
+            var b = cl[0].bounds; foreach (var c in cl) b.Encapsulate(c.bounds);
+            var aims = new System.Collections.Generic.List<UnityEngine.Vector2> { new UnityEngine.Vector2(b.center.x, b.center.z) }; foreach (var c in cl) aims.Add(new UnityEngine.Vector2(c.bounds.center.x, c.bounds.center.z));
+            for (float x = b.min.x - pocketCell; x <= b.max.x + pocketCell; x += pocketCell) for (float z = b.min.z - pocketCell; z <= b.max.z + pocketCell; z += pocketCell)
+            {
+                if (!UnityEngine.Physics.Raycast(new UnityEngine.Vector3(x, b.max.y + pocketDrop, z), UnityEngine.Vector3.down, out var hit, b.size.y + pocketDrop * 2f, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) continue;
+                Put(hit.point); var e = Settle(pocketSettle); drops++;
+
+                if (!WayOut(e)) { aims.Add(new UnityEngine.Vector2(e.x, e.z)); if (!fails.ContainsKey(Key(e))) fails.Add(Key(e), "dropped at (" + x.ToString("F1") + ", " + z.ToString("F1") + ") settles at " + e.ToString("F1")); }
+            }
+            float half = UnityEngine.Mathf.Max(b.extents.x, b.extents.z);
+            foreach (var ring in new[] { half + pocketRing1, half + pocketRing2 })
+                for (int k = 0; k < pocketBearings; k++)
+                {
+                    float a = k * 2f * UnityEngine.Mathf.PI / pocketBearings; float sx = b.center.x + UnityEngine.Mathf.Sin(a) * ring, sz = b.center.z + UnityEngine.Mathf.Cos(a) * ring;
+                    foreach (var aim in aims) for (int mode = 0; mode < 3; mode++) Approach(Ground(sx, sz), aim, mode);
+                }
+        }
+        foreach (var from in new[] { new UnityEngine.Vector2(287f, 107f), new UnityEngine.Vector2(288f, 110f) }) for (int mode = 0; mode < 3; mode++) Approach(Ground(from.x, from.y), new UnityEngine.Vector2(290.2f, 113.5f), mode);
+        int stuckCells = fails.Count;   // places with no way out that a drop or an approach ends in (a bad ring start is not one)
+        if (stuckCells > 0) allPass = false;
+        sb.Append("BOULDER POCKETS: " + clusters.Count + " clusters, " + drops + " drops, " + runs + " approaches (" + badStarts + " ring starts left out: no way out of their own), " + known.Count + " places tested, " + stuckCells + " with no way out: " + (stuckCells == 0 ? "PASS" : "FAIL " + string.Join("; ", fails.Values)) + "\n");
     }
 }
 finally

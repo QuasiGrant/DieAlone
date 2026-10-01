@@ -14,7 +14,13 @@ UnityEngine.Physics.SyncTransforms();
 var V = new System.Func<float, float, float, UnityEngine.Vector3>((x, y, z) => new UnityEngine.Vector3(x, y, z));
 UnityEngine.Vector2 P(float x, float z) => new UnityEngine.Vector2(x, z);
 UnityEngine.Color Hex(string h) { UnityEngine.ColorUtility.TryParseHtmlString(h, out var c); return c; }
-const float sx = 292f, sz = 108f, stackR = 6f, talusR = 6.6f, talusTop = 1.2f, talusScale = 0.55f, trailKeep = 3.5f, boulderWidth = 6f, boulderSink = 0.3f;
+const float sx = 292f, sz = 108f, stackR = 6f, talusR = 6.6f, talusScale = 0.55f, trailKeep = 3.5f, boulderWidth = 6f, boulderSink = 0.3f;
+// 8.17 gate (Marlow 2026-10-01: a pocket between the stack and four talus rocks held the player; 0 of 48 tries out): talus tops stand at
+// most the jump height less talusJumpMargin over the ground, so any gap among them is one jump deep, and every rock here collides as its
+// convex hull (the pack meshes' own creases wedged the capsule)
+const float talusJumpMargin = 0.15f; var playerTuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Settings/PlayerTuning.asset"); if (playerTuning == null) return "no PlayerTuning.asset";
+float talusTop = playerTuning.jumpHeight - talusJumpMargin;
+void Convex(UnityEngine.Transform t) { foreach (var mc in t.GetComponentsInChildren<UnityEngine.MeshCollider>()) { var r = mc.transform; while (r.parent != null && r.parent != t) r = r.parent; if (r.name.StartsWith("Boulder") || r.name.StartsWith("BigBoulders")) mc.convex = true; } }   // rocks only
 var d = kit.Fresh("Dressing", c2, V(sx, kit.H(sx, sz), sz), 0f);
 var trailPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform leg in kit.Root("Trails").transform) foreach (UnityEngine.Transform p in leg) trailPts.Add(P(p.position.x, p.position.z));
 bool NearTrail(UnityEngine.Vector2 p, float r) { foreach (var t in trailPts) if ((t - p).sqrMagnitude < r * r) return true; return false; }
@@ -48,6 +54,7 @@ for (float a = 100f; a <= 355f; a += 11f)   // bearings from north, clockwise; e
     if (tg != null) { float over = PlaceKit.MeshBounds(tg).max.y - kit.H(p.x, p.y) - talusTop; if (over > 0f) tg.transform.position -= V(0f, over, 0f); }
     talus++;
 }
+Convex(field); Convex(d);
 // ---- the stack itself takes the owned BK rock texture (the flat granite tint read as a brown pillar, Check3_Quality 4)
 // 8.5 bent the ProBuilder cylinder's points, which leaves its UVs flat: a cylinder projection, one texture tile per stackTile m
 const float stackTile = 4f;
