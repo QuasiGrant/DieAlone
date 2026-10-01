@@ -8,7 +8,8 @@
 //   pump trench south pocket by Hedge_Burn_2 and FaceRock BigBoulders_5 (3b): 0.5 m of floor;
 //   south of the camp between Hedge_Burn_1 and CS_Rock_3 (4): 2 to 3 m of floor, level with the ground the player came from;
 //   pump trench north pocket by Hedge_Burn_0 (3a, opened by the solid pass): 0.5 m of floor;
-//   forage patch B on the knoll's west flank among its bushes (5): 0.5 m of floor.
+//   forage patch B on the knoll's west flank among its bushes (5): 0.5 m of floor;
+//   the P1 hide west of P1 under the overhang (7d, ClimbRim): 0.5 m of floor.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -20,15 +21,19 @@ var pockets = new (string n, float x, float z, float sx, float sz, float top, st
     ("CampSouth", 177f, 141.1f, 4f, 3f, 13.6f, "Boulder_3"),
     ("TrenchNorth", 172.3f, 119.8f, 2f, 2f, 5.2f, "Boulder_0"),
     ("ForageB", 140.6f, 167.8f, 2f, 2f, 8.4f, "Boulder_1"),
+    ("P1Hide", 47.6f, 213.4f, 2f, 2f, 29.8f, "Boulder_5"),
 };
 const float depth = 4f, rockSink = 0.15f;   // the box reaches depth m down from its top; the rock's top sits rockSink under the box top
 var root = kit.Root("Ground815"); if (root == null) return "run 8.15 first";
 PlaceKit.Remove(root.transform.Find("Pockets"));
+// the cave pit's fill belongs to the cave (Cave/Pockets): E-1 counts a ray down through the mouth's terrain hole that meets the cave as land
+var caveRoot = kit.Root("Cave"); if (caveRoot == null) return "no Cave"; PlaceKit.Remove(caveRoot.transform.Find("Pockets"));
+var caveGroup = new UnityEngine.GameObject("Pockets").transform; caveGroup.SetParent(caveRoot.transform, false);
 var group = new UnityEngine.GameObject("Pockets").transform; group.SetParent(root.transform, false);
 var made = new System.Collections.Generic.List<string>();
 foreach (var p in pockets)
 {
-    var holder = new UnityEngine.GameObject(p.n); holder.transform.SetParent(group, false); holder.transform.position = new UnityEngine.Vector3(p.x, p.top - depth * 0.5f, p.z);
+    var holder = new UnityEngine.GameObject(p.n); holder.transform.SetParent(p.n.StartsWith("Cave") ? caveGroup : group, false); holder.transform.position = new UnityEngine.Vector3(p.x, p.top - depth * 0.5f, p.z);
     var box = holder.AddComponent<UnityEngine.BoxCollider>(); box.size = new UnityEngine.Vector3(p.sx, depth, p.sz);
     var rock = kit.Spawn(PlaceKit.BK + "Rocks/" + p.rock, holder.transform);
     if (rock != null)

@@ -1,4 +1,4 @@
-// Main3 breaks recheck (8.18a; Marlow's Breaks_2026-10-01.md traps 1 to 6). Play mode; never saves. For each trap: Marlow's repro move
+// Main3 breaks recheck (8.18a; Marlow's Breaks_2026-10-01.md traps 1 to 5, 7c and 7d; 6, 7a and 7b are behind the 8.20 giant). Play mode; never saves. For each trap: Marlow's repro move
 // (from his start, walk, sprint or sprint-jump on his heading for reproTime s), then from where that ends and from each of his trap spots
 // (dropped 0.3 m over the ground there and settled), the 48 escapes (16 headings x walk, sprint and sprint-jump, escapeTime s each).
 // A spot is a trap when no escape ends escapeOut m or more from it. PlayerController.Step, dt 0.02, as in the other checks.
@@ -25,7 +25,9 @@ var traps = new (string n, UnityEngine.Vector3 s, float hd, int mode, UnityEngin
     ("4 south of camp", V(177f, 12.9f, 141.2f), 0f, 0, new[] { V(178f, 11f, 141f), V(175f, 11.5f, 142f) }),
     ("4 south of camp (2)", V(174.7f, 13.6f, 141.1f), 90f, 2, new UnityEngine.Vector3[0]),
     ("5 forage patch B", V(143.2f, 10.8f, 165.8f), 315f, 0, new[] { V(140.7f, 8f, 167.8f) }),
-    ("6 Ward_P3 jump", V(26f, 51.7f, 304f), 315f, 2, new[] { V(23.7f, 51f, 306.1f) }),
+    // 6 (Ward_P3) and climb traps 7a and 7b lie north of the 8.20 fallen giant, closed to the player (main3_8_20_closure_check.cs)
+    ("7c climb rim", V(55.1f, 33f, 232.9f), 180f, 2, new[] { V(55.1f, 32.2f, 229.4f) }),
+    ("7d climb rim", V(47.1f, 30.3f, 212.6f), 45f, 0, new[] { V(47.6f, 29.2f, 213.4f) }),
 };
 var sb = new System.Text.StringBuilder(); int held = 0;
 try
@@ -35,7 +37,7 @@ try
         Put(V(t.s.x, Ground(t.s.x, t.s.y, t.s.z) + 0.3f, t.s.z)); var start = pc.transform.position;
         var end = Move(start, Dir(t.hd), t.mode, reproTime); int e0 = Escapes(end);
         var line = new System.Text.StringBuilder(t.n + ": repro ends " + end.ToString("F1") + ", escapes " + e0 + " of " + headings * 3);
-        bool later = t.n.StartsWith("6");   // Ward_P3 sits on the climb ring PLAN 8.20 rebuilds: listed, not counted
+        bool later = false;
         if (e0 == 0 && !later) held++; if (later) line.Insert(0, "(8.20) ");
         foreach (var sp in t.spots)
         {
@@ -46,4 +48,4 @@ try
     }
 }
 finally { pc.enabled = pcWas; UnityEngine.Application.runInBackground = false; }
-return (held == 0 ? "ALL PASS" : "HELD " + held) + ": Marlow's traps 1 to 6, " + headings * 3 + " escapes each\n" + sb;
+return (held == 0 ? "ALL PASS" : "HELD " + held) + ": Marlow's traps 1 to 5, 7c and 7d, " + headings * 3 + " escapes each\n" + sb;

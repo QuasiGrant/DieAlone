@@ -20,8 +20,8 @@ public static class DevWarpLabels
     {
         // Valley.md 14: the climb group sits directly under the Ward row, so J at night is F1, Left, Down, Down, Enter
         new Row("WARD CLIMB", "Junction_J", "Ward trail start (cairn)"),
-        new Row("WARD CLIMB", "Ward_P3", "Ward climb, burned cwm"),
-        new Row("WARD CLIMB", "Ward_P4", "Ward climb, look-back"),
+        new Row("WARD CLIMB", "Ward_Stair", "Ward path, stair landing"),
+        new Row("WARD CLIMB", "Ward_Lookout", "Ward path, lookout"),
         new Row("TOWER AND CAMP", "Keepers_Camp", "Keeper's camp (tower foot)"),
         new Row("TOWER AND CAMP", "Cabin", "Cabin (wake spot)"),
         new Row("TOWER AND CAMP", "Tower_Deck", "Tower deck"),

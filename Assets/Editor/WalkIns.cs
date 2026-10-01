@@ -13,7 +13,7 @@ public static class WalkIns
 {
     public const float MinTall = 0.5f, StepGrid = 0.5f, EnterDepth = 0.1f;
     const float ProbeOver = 2f, ProbeUnder = 3f, FootLift = 0.05f, SlopeDeg = 45f;
-    const int TempLayer = 31, MaxStandsPerMesh = 400;
+    public const int TempLayer = 31; const int MaxStandsPerMesh = 400;
     static readonly Regex SkipName = new Regex("Fern|Bush|Leaves|Branch|Grass|Moss|Reed|Plant|Flower|Fir|Pine|Sequoia|Tree|Sapling|Foliage|Crown|Spike|Flame|Glow|Smoke|Water|Bulb|Rope|Wire|Line|Cable|Label|Decal|Shadow|Window|Glass", RegexOptions.IgnoreCase);
     static readonly Regex SkipShader = new Regex("DieAlone/(FlameCard|FireStandIn|Smoke|Backdrop|Water|HorizonGlow|SkyGradient)|Particles|Nature/Tree|SpeedTree", RegexOptions.IgnoreCase);
     static readonly HashSet<string> SkipRoots = new HashSet<string> { "Forest", "Backdrop", "Giants" };
@@ -57,6 +57,39 @@ public static class WalkIns
         finally { Object.DestroyImmediate(temp); Physics.SyncTransforms(); }
         found.Sort((p, q) => string.CompareOrdinal(p.Path, q.Path));
         return found;
+    }
+
+    // ---- trail treads (8.20 check, 2026-10-01: hulls of boulders by the chute gap and in the cleft closed the tread): a capsule TreadR
+    // round from TreadLow to TreadHigh over every trail point and every TreadStep m between
+    public const float TreadLow = 0.45f, TreadHigh = 1.5f, TreadR = 0.3f, TreadStep = 0.5f;
+    public static List<(Vector3 a, Vector3 b)> Treads()
+    {
+        var list = new List<(Vector3, Vector3)>(); var trails = GameObject.Find("Trails"); if (trails == null) return list;
+        foreach (Transform leg in trails.transform)
+        {
+            Vector3? prev = null;
+            foreach (Transform pt in leg)
+            {
+                var p = pt.position; int n = prev.HasValue ? Mathf.Max(1, Mathf.CeilToInt(Vector3.Distance(prev.Value, p) / TreadStep)) : 1;
+                for (int i = 1; i <= n; i++) { var q = prev.HasValue ? Vector3.Lerp(prev.Value, p, i / (float)n) : p; list.Add((q + Vector3.up * TreadLow, q + Vector3.up * TreadHigh)); }
+                prev = p;
+            }
+        }
+        return list;
+    }
+    /// Whether a collider enters any tread capsule (tested alone on TempLayer).
+    public static bool InTread(Collider c, List<(Vector3 a, Vector3 b)> treads)
+    {
+        var b = c.bounds; b.Expand(TreadR * 2f); int layer = c.gameObject.layer; c.gameObject.layer = TempLayer; Physics.SyncTransforms(); bool hit = false;
+        foreach (var t in treads) { if (!b.Contains(t.a) && !b.Contains(t.b)) continue; if (Physics.CheckCapsule(t.a, t.b, TreadR, 1 << TempLayer, QueryTriggerInteraction.Ignore)) { hit = true; break; } }
+        c.gameObject.layer = layer; Physics.SyncTransforms(); return hit;
+    }
+    /// Whether a mesh, as drawn, enters any tread (a temporary exact collider).
+    public static bool MeshInTread(MeshRenderer mr, List<(Vector3 a, Vector3 b)> treads)
+    {
+        var mf = mr.GetComponent<MeshFilter>(); if (mf == null || mf.sharedMesh == null) return false;
+        var temp = new GameObject("TreadProbe"); temp.transform.SetPositionAndRotation(mr.transform.position, mr.transform.rotation); temp.transform.localScale = mr.transform.lossyScale;
+        var mc = temp.AddComponent<MeshCollider>(); mc.sharedMesh = mf.sharedMesh; bool hit = InTread(mc, treads); Object.DestroyImmediate(temp); Physics.SyncTransforms(); return hit;
     }
 
     public static string PathOf(Transform t) { var s = t.name; for (var p = t.parent; p != null; p = p.parent) s = p.name + "/" + s; return s; }

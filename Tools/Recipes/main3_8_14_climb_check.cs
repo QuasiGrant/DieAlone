@@ -76,7 +76,7 @@ try
 
     // ---- 2a. climb pushes
     var cs = new float[climb.Count]; for (int i = 1; i < climb.Count; i++) cs[i] = cs[i - 1] + UnityEngine.Vector2.Distance(new UnityEngine.Vector2(climb[i - 1].x, climb[i - 1].z), new UnityEngine.Vector2(climb[i].x, climb[i].z));
-    bool OnLedge(UnityEngine.Vector3 e) => e.x > -10f && e.x < 6f && e.z > 215f && e.z < 285f && e.y > 60.5f;
+    bool OnLedge(UnityEngine.Vector3 e) => (e.x > -10f || (e.x > -12.3f && e.z > 243.3f && e.z < 248.7f)) && e.x < 6f && e.z > 215f && e.z < 285f && e.y > 60.5f;   // 8.20: the prow (x to -12.2, z 243.4 to 248.6) is ledge
     int pushes = 0, fails = 0; float worstFall = 0f; var failList = new System.Collections.Generic.List<string>();
     for (int i = 0; i < climb.Count; i++)
     {

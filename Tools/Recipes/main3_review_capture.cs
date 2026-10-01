@@ -597,7 +597,7 @@ try
     var walkNotes = new System.Text.StringBuilder();
     {
         var frames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
-        var p4 = warpsRoot.transform.Find("Ward_P4"); if (p4 == null) return "no warp Ward_P4";
+        var p4 = warpsRoot.transform.Find("Ward_Lookout"); if (p4 == null) return "no warp Ward_Lookout";   // 8.20: the old P4
         var p4Eye = Eye(p4.position); frames.Add((p4Eye, p4Eye + p4.forward * 40f + UnityEngine.Vector3.down * 40f * UnityEngine.Mathf.Tan(p4Dip * UnityEngine.Mathf.Deg2Rad), "P4 LOOK EAST (WARD P4 WARP)"));
         // round the fin: from the J to Ward point nearest the slot exit to the path end, every finStep m, facing the fire
         float climbLen = Length(climb.pts), sExit = 0f, best = float.MaxValue;

@@ -42,6 +42,7 @@ run main3_8_17_cave.cs "saved=True" "missing: none" "clear True"
 run main3_8_17_lake.cs "saved=True" "missing: none"
 run main3_8_17_ruin.cs "saved=True" "missing: none"
 run main3_8_17_stones.cs "saved=True" "missing: none" "menhirs 3"
+run main3_8_20_ward_path.cs "saved=True" "missing: none"
 run main3_8_18_look.cs "night sky" "chain-link #"
 run main3_8_18a_smoke.cs "saved=True" "SheetTop points 72"
 run look_day_one_8_9g.cs "day one sun 20 bearing 205 crush 0.28 corners 0.4 fill #6E6658" "night crush 0.3 corners 0.45" "open-scene overrides: none"
@@ -57,7 +58,7 @@ run main3_topdown.cs "wrote"
 unity command editor_play >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "playing"' && break; sleep 2; done
 prc=0
-for check in main3_warp_landing_check.cs main3_tower_stairs_check.cs main3_breaks_recheck.cs; do
+for check in main3_warp_landing_check.cs main3_tower_stairs_check.cs main3_breaks_recheck.cs main3_8_20_closure_check.cs main3_8_14_climb_check.cs; do
   wid=$(unity command --detach eval_file --file "$R/$check" --json 2>/dev/null | sed -n 's/.*"jobId": "\([0-9a-f]*\)".*/\1/p')
   wres=$(unity job wait "$wid" --timeout 1200 --json 2>/dev/null | sed -n 's/^ *"result": "\(.*\)",\{0,1\}$/\1/p' | head -1)
   case "$wres" in *"ALL PASS"*) echo "ok   $check: $(printf '%s' "$wres" | cut -c1-160)";; *) echo "FAIL $check"; printf '%s\n' "$wres" | sed 's/\\n/\n/g'; prc=1;; esac

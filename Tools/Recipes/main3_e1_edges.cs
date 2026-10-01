@@ -154,7 +154,7 @@ try
     // Marlow's grazing rays (ValleyNumbers R4.3): from the tower deck centre and P4, aimed at his paper landing points; where each lands
     var deckEye = V(tower.position.x, deckTop + EyeHeight, tower.position.z);
     UnityEngine.Vector3 WarpEye(string n) { var w = warps != null ? warps.transform.Find(n) : null; return w != null ? w.position + V(0f, EyeHeight, 0f) : V(float.NaN, 0f, 0f); }
-    var p4 = WarpEye("Ward_P4");
+    var p4 = WarpEye("Ward_Lookout");   // 8.20: the old P4 look-back is the lookout
     var probes = new (string n, UnityEngine.Vector3 from, UnityEngine.Vector3 aim)[] {
         ("tower over the E crest at z -40, aim (1225, 10, -612)", deckEye, V(1225f, 10f, -612f)), ("tower over the E crest at z -40, aim (1448, 0, -775)", deckEye, V(1448f, 0f, -775f)),
         ("P4 over the S crest end, aim (742, 10, -216)", p4, V(742f, 10f, -216f)), ("P4 over the S crest end, aim (826, 0, -266)", p4, V(826f, 0f, -266f)),
