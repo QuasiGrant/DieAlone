@@ -43,7 +43,7 @@ for step in day night daytwo; do
 done
 if [ $rc -eq 0 ]; then
   { echo "# Main3 scripted Play checks"; echo; echo "From Tools/Recipes/main3_review_capture.sh, $(date '+%Y-%m-%d %H:%M'). Every move is PlayerController.Step; see each recipe's header for the method."; }  > "$OUT/Checks.md"
-  for check in main3_warp_landing_check.cs main3_8_14_climb_check.cs main3_hand_walk_check.cs main3_reach_check_8_16a.cs main3_trunk_check_8_16a.cs; do
+  for check in main3_warp_landing_check.cs main3_walk_into_check.cs main3_tower_stairs_check.cs main3_breaks_recheck.cs main3_8_14_climb_check.cs main3_hand_walk_check.cs main3_reach_check_8_16a.cs main3_trunk_check_8_16a.cs; do
     res=$(job "$R/$check")
     { echo; echo "## $check"; echo; printf '%s\n' "$res" | sed 's/\n/\n/g' | sed 's/^/    /'; } >> "$OUT/Checks.md"
     echo "$check: $(printf '%s' "$res" | sed 's/\n/ | /g')"

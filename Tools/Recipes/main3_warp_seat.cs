@@ -9,7 +9,11 @@ var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 UnityEngine.GameObject warps = null; foreach (var r in scene.GetRootGameObjects()) if (r.name == "DevWarps") warps = r; if (warps == null) return "no DevWarps root";
 const float seatLift = 0.2f, probeUp = 2f, probeDown = 12f, moveNote = 0.05f;
-UnityEngine.Physics.SyncTransforms();
+// warps moved off places later recipes closed (8.1 places them first; 8.15 stamps its hedges clear of them where they stood): name, x, z,
+// and the point it faces. Old_Burn (Marlow 2026-10-01): at (230, 166) the burn hedges sealed it in a 9 x 10 m pocket; now on Camp to Jg.
+var moves = new[] { ("Old_Burn", 239.6f, 157.8f, 230f, 175f) };
+foreach (var mv in moves) { var t = warps.transform.Find(mv.Item1); if (t == null) return "no warp " + mv.Item1; t.position = new UnityEngine.Vector3(mv.Item2, t.position.y, mv.Item3); t.rotation = UnityEngine.Quaternion.LookRotation(new UnityEngine.Vector3(mv.Item4 - mv.Item2, 0f, mv.Item5 - mv.Item3).normalized); }
+UnityEngine.Physics.SyncTransforms();   // after the moves
 var moved = new System.Collections.Generic.List<string>(); var none = new System.Collections.Generic.List<string>(); int n = 0;
 foreach (UnityEngine.Transform w in warps.transform)
 {
@@ -21,4 +25,4 @@ foreach (UnityEngine.Transform w in warps.transform)
 }
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " | " + n + " warps; seated " + moved.Count + (moved.Count > 0 ? " (" + string.Join(", ", moved) + ")" : "") + "; no ground under: " + (none.Count == 0 ? "none" : string.Join(", ", none));
+return "saved=" + saved + " | " + n + " warps; moved " + moves.Length + "; seated " + moved.Count + (moved.Count > 0 ? " (" + string.Join(", ", moved) + ")" : "") + "; no ground under: " + (none.Count == 0 ? "none" : string.Join(", ", none));

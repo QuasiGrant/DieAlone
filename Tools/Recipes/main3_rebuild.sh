@@ -45,16 +45,24 @@ run main3_8_17_stones.cs "saved=True" "missing: none" "menhirs 3"
 run main3_8_18_look.cs "night sky" "chain-link #"
 run main3_8_18a_smoke.cs "saved=True" "SheetTop points 72"
 run look_day_one_8_9g.cs "day one sun 20 bearing 205 crush 0.28 corners 0.4 fill #6E6658" "night crush 0.3 corners 0.45" "open-scene overrides: none"
+run main3_8_18a_pockets.cs "saved=True" "missing: none"
+run main3_8_18a_solid.cs "saved=True" "walk-ins left with no fix 0"
+run main3_walk_into_check.cs "ALL PASS"
 run main3_warp_seat.cs "saved=True" "no ground under: none"
 run main3_8_9_sightlines.cs "all seen: True" "Ward hidden: True, cave hidden: True" "Ruin hidden: True" "ok True | next:" "all True" "ok True | cab from" "F-1 hidden: True"
 run main3_e1_edges.cs "E-1 pass: True" "grazing rays ok True"
 run main3_topdown.cs "wrote"
-# the warp landing check (Grant 2026-10-01: warps that fell through the map) needs Play mode
+# the Play checks: the warp landing check (Grant 2026-10-01: warps that fell through the map), the tower stairs on foot and Marlow's
+# breaks recheck (8.18a)
 unity command editor_play >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "playing"' && break; sleep 2; done
-wid=$(unity command --detach eval_file --file "$R/main3_warp_landing_check.cs" --json 2>/dev/null | sed -n 's/.*"jobId": "\([0-9a-f]*\)".*/\1/p')
-wres=$(unity job wait "$wid" --timeout 1200 --json 2>/dev/null | sed -n 's/^ *"result": "\(.*\)",\{0,1\}$/\1/p' | head -1)
+prc=0
+for check in main3_warp_landing_check.cs main3_tower_stairs_check.cs main3_breaks_recheck.cs; do
+  wid=$(unity command --detach eval_file --file "$R/$check" --json 2>/dev/null | sed -n 's/.*"jobId": "\([0-9a-f]*\)".*/\1/p')
+  wres=$(unity job wait "$wid" --timeout 1200 --json 2>/dev/null | sed -n 's/^ *"result": "\(.*\)",\{0,1\}$/\1/p' | head -1)
+  case "$wres" in *"ALL PASS"*) echo "ok   $check: $(printf '%s' "$wres" | cut -c1-160)";; *) echo "FAIL $check"; printf '%s\n' "$wres" | sed 's/\\n/\n/g'; prc=1;; esac
+done
 unity command editor_stop >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "stopped"' && break; sleep 2; done
-case "$wres" in *"ALL PASS"*) echo "ok   main3_warp_landing_check.cs: $(printf '%s' "$wres" | cut -c1-160)";; *) echo "FAIL main3_warp_landing_check.cs"; printf '%s\n' "$wres" | sed 's/\\n/\n/g'; exit 1;; esac
+[ $prc -eq 0 ] || exit 1
 echo "Main3 rebuilt. Commit Main3.unity.meta with ProjectSettings/EditorBuildSettings.asset (the scene GUID changes on every rebuild)."

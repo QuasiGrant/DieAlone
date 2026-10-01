@@ -1004,7 +1004,7 @@ Warp("Cave_Mouth", 58f, 44f, 52f, 34f);
 Warp("Ward_P3", pP3.x, pP3.y, cwmC.x + 8f, cwmC.y - 8f);     // the burned cwm, looking back down it
 Warp("Ward_P4", pP4.x + 1.5f, pP4.y, 164f, 166f);              // the look-back: tower cab, cabin, highway
 Warp("Ward", pathEnd.x, pathEnd.y, -40f, pathEnd.y);          // the path end on the ledge, facing west (Valley.md 4)
-Warp("Old_Burn", 230f, 166f, 340f, 178f);
+Warp("Old_Burn", 230f, 166f, 340f, 178f);   // moved onto Camp to Jg by main3_warp_seat.cs (8.18a), after the hedges it stamps clear
 
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);

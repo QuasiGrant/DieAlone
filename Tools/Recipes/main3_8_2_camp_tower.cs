@@ -58,7 +58,8 @@ for (float lvl = 8f; lvl < deckTop - 1f; lvl += 8f)
     Box("BeamN", frame, V(0f, lvl, legAt), V(span, 0.3f, 0.3f)); Box("BeamS", frame, V(0f, lvl, -legAt), V(span, 0.3f, 0.3f));
     Box("BeamE", frame, V(legAt, lvl, 0f), V(0.3f, 0.3f, span)); Box("BeamW", frame, V(-legAt, lvl, 0f), V(0.3f, 0.3f, span));
 }
-// X braces between beam levels on every face; the south face's bottom bay stays open as the way in to the stair
+// X braces between beam levels on every face; the south face's bottom bay stays open as the way in to the stair, and (8.18a, Marlow 2026-10-01:
+// walks stalled at the stair foot on the brace ends at shin height) the west face's bottom bay too, in line with the first flight's low end
 float bayH = 8f, diag = UnityEngine.Mathf.Sqrt(span * span + bayH * bayH), ang = UnityEngine.Mathf.Atan2(bayH, span) * UnityEngine.Mathf.Rad2Deg;
 for (float b0 = 0f; b0 < deckTop - 1f; b0 += bayH)
 {
@@ -69,7 +70,7 @@ for (float b0 = 0f; b0 < deckTop - 1f; b0 += bayH)
         Box("BraceN", frame, V(0f, cy, legAt), V(diag, 0.2f, 0.2f), V(0f, 0f, s * ang));
         if (b0 > 0f) Box("BraceS", frame, V(0f, cy, -legAt), V(diag, 0.2f, 0.2f), V(0f, 0f, s * ang));
         Box("BraceE", frame, V(legAt, cy, 0f), V(0.2f, 0.2f, diag), V(s * ang, 0f, 0f));
-        Box("BraceW", frame, V(-legAt, cy, 0f), V(0.2f, 0.2f, diag), V(s * ang, 0f, 0f));
+        if (b0 > 0f) Box("BraceW", frame, V(-legAt, cy, 0f), V(0.2f, 0.2f, diag), V(s * ang, 0f, 0f));
     }
 }
 
