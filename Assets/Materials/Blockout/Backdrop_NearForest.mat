@@ -25,7 +25,8 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _HazeBlend: 0.55
+    - _FireLit: 0
+    - _HazeBlend: 0.62
     m_Colors:
     - _Color: {r: 0.31, g: 0.29, b: 0.173, a: 1}
   m_BuildTextureStacks: []

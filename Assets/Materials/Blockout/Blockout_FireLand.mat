@@ -25,6 +25,7 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _FireLit: 0
     - _HazeBlend: 0.6
     m_Colors:
     - _Color: {r: 0.29, g: 0.271, b: 0.18, a: 1}
