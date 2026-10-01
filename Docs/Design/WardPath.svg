@@ -1,0 +1,201 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1340" height="900" viewBox="0 0 1340 900" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <linearGradient id="fireW" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e2552a" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#f3a54a" stop-opacity="0.25"/>
+    </linearGradient>
+    <linearGradient id="sky" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#5A2412"/>
+      <stop offset="0.45" stop-color="#2a120a"/>
+      <stop offset="1" stop-color="#05080D"/>
+    </linearGradient>
+    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#FFE8C0"/>
+      <stop offset="0.4" stop-color="#FF8A2A"/>
+      <stop offset="1" stop-color="#B8481C" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="smoke" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#6B2A12"/>
+      <stop offset="0.5" stop-color="#2a1a14"/>
+      <stop offset="1" stop-color="#0a0a0c" stop-opacity="0.6"/>
+    </linearGradient>
+    <pattern id="locked" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="#bdb6aa"/>
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#8a8272" stroke-width="2"/>
+    </pattern>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#b01e1e"/></marker>
+    <marker id="arrK" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#222"/></marker>
+  </defs>
+
+  <rect x="0" y="0" width="1340" height="900" fill="#f6f3ec"/>
+  <text x="60" y="30" font-size="16" font-weight="bold" fill="#222">WardPath. DRAFT 1, 2026-10-01, Sable. The Ward walk and ledge, redesigned (numbers: WardPath.md).</text>
+  <text x="60" y="50" font-size="11" fill="#444">Left: plan, 5 px per m, north up, x east, z north, ground heights in m. Right: eye-level sketch of the arrival shot (Shot A). Red = the new walk. Grey dashes = the old loop, taken out.</text>
+
+  <!-- ===================== PLAN ===================== -->
+  <rect x="60" y="80" width="650" height="725" fill="#dfe4cc" stroke="#999"/>
+  <!-- west face and fire beyond -->
+  <rect x="60" y="80" width="50" height="725" fill="url(#fireW)"/>
+  <text transform="translate(82,440) rotate(-90)" text-anchor="middle" font-size="11" font-weight="bold" fill="#5a1606">west face falls to -40; the burning valley and far front beyond</text>
+  <!-- ledge -->
+  <rect x="110" y="355" width="80" height="350" fill="#cbbfa6" stroke="#8a7a62"/>
+  <text x="114" y="372" font-size="10" fill="#333">LEDGE 62</text>
+  <line x1="110" y1="355" x2="110" y2="705" stroke="#5a4a38" stroke-width="4"/>
+  <text transform="translate(104,640) rotate(-90)" font-size="9" fill="#333">lip rim 1.1 m</text>
+  <!-- locked crest band x 6 to 20 -->
+  <rect x="190" y="80" width="70" height="725" fill="url(#locked)" opacity="0.85"/>
+  <rect x="200" y="555" width="60" height="225" fill="#8f877a" stroke="#555"/>
+  <text x="206" y="672" font-size="11" font-weight="bold" fill="#fff">KNOB</text>
+  <text x="212" y="686" font-size="11" font-weight="bold" fill="#fff">84</text>
+  <text transform="translate(232,300) rotate(-90)" text-anchor="middle" font-size="10" fill="#222">CREST 80, x 20 or less: unchanged (F-1, W-1)</text>
+  <!-- ledge end walls -->
+  <rect x="104" y="350" width="92" height="6" fill="#6e6660"/>
+  <rect x="104" y="702" width="100" height="6" fill="#6e6660"/>
+  <!-- W foot rock band and IW2 arms -->
+  <polyline points="560,280 560,650 590,650 590,707.5" fill="none" stroke="#6e6660" stroke-width="6"/>
+  <polyline points="560,805 560,780 590,780 590,722.5" fill="none" stroke="#6e6660" stroke-width="6"/>
+  <line x1="590" y1="707.5" x2="590" y2="722.5" stroke="#b01e1e" stroke-width="2" stroke-dasharray="2,2"/>
+  <text x="596" y="702" font-size="9" fill="#333">IW2 + chain (day)</text>
+  <text x="566" y="300" font-size="9" fill="#333">W foot rock band</text>
+
+  <!-- old route, removed -->
+  <polyline points="435,530 445,400 380,390 330,280 290,260 310,360 290,470" fill="none" stroke="#888" stroke-width="3" stroke-dasharray="7,5"/>
+  <text x="340" y="250" font-size="10" fill="#666">old cwm and leg 4: OUT</text>
+  <text x="340" y="263" font-size="10" fill="#666">(its firs stay as the view north)</text>
+  <!-- closing rims -->
+  <line x1="400" y1="500" x2="470" y2="500" stroke="#6b4a2a" stroke-width="5"/>
+  <text x="474" y="503" font-size="9" fill="#6b4a2a">deadfall rim z 256</text>
+  <line x1="268" y1="450" x2="322" y2="450" stroke="#6b4a2a" stroke-width="5"/>
+  <text x="300" y="442" font-size="9" fill="#6b4a2a">rim z 266</text>
+
+  <!-- draw firs (trees as the walls) -->
+  <g fill="#3f5a2e" opacity="0.85">
+    <circle cx="575" cy="696" r="7"/><circle cx="548" cy="698" r="7"/><circle cx="522" cy="697" r="7"/><circle cx="496" cy="694" r="7"/><circle cx="470" cy="690" r="7"/><circle cx="446" cy="684" r="7"/>
+    <circle cx="560" cy="732" r="7"/><circle cx="534" cy="733" r="7"/><circle cx="506" cy="731" r="7"/><circle cx="480" cy="728" r="7"/><circle cx="452" cy="722" r="7"/><circle cx="430" cy="720" r="7"/>
+    <circle cx="372" cy="545" r="6"/><circle cx="352" cy="532" r="6"/><circle cx="395" cy="560" r="6"/><circle cx="372" cy="490" r="6"/><circle cx="398" cy="470" r="6"/>
+    <circle cx="420" cy="430" r="6"/><circle cx="395" cy="420" r="6"/><circle cx="360" cy="410" r="6"/><circle cx="330" cy="400" r="6"/><circle cx="305" cy="330" r="6"/>
+  </g>
+  <circle cx="600" cy="740" r="11" fill="#2c3f20"/>
+  <text x="612" y="752" font-size="9" fill="#222">old giant (threshold)</text>
+
+  <!-- new route -->
+  <polyline points="680,750 590,715 510,715 420,700 435,530 360,515 420,490 330,470 300,470 280,470 250,470 232.5,452.5 180,452.5 180,493.5 117.5,550" fill="none" stroke="#b01e1e" stroke-width="4" stroke-linejoin="round"/>
+  <!-- flights as step ticks -->
+  <g stroke="#7a3a10" stroke-width="1.5">
+    <line x1="430" y1="524" x2="432" y2="534"/><line x1="415" y1="521" x2="417" y2="531"/><line x1="400" y1="518" x2="402" y2="528"/><line x1="385" y1="515" x2="387" y2="525"/><line x1="370" y1="512" x2="372" y2="522"/>
+    <line x1="372" y1="507" x2="370" y2="517"/><line x1="386" y1="502" x2="384" y2="512"/><line x1="400" y1="497" x2="398" y2="507"/><line x1="413" y1="492" x2="411" y2="502"/>
+  </g>
+  <!-- fin -->
+  <polygon points="170,462 196,462 196,486 186,486" fill="#6e6660"/>
+  <text x="150" y="447" font-size="9" fill="#222">cleft</text>
+  <text x="197" y="482" font-size="9" fill="#fff">fin</text>
+  <!-- stones -->
+  <rect x="131" y="640" width="18" height="20" fill="#222"/>
+  <rect x="156" y="655" width="18" height="20" fill="#222"/>
+  <rect x="116" y="665" width="18" height="20" fill="#222"/>
+  <text x="140" y="700" font-size="10" font-weight="bold" fill="#222">STONES</text>
+
+  <!-- Shot A wedge and arrow -->
+  <polygon points="180,493.5 202.9,611.3 61.4,512.2" fill="#f3a54a" fill-opacity="0.25" stroke="#c0601a" stroke-dasharray="3,3"/>
+  <line x1="180" y1="493.5" x2="145.6" y2="542.6" stroke="#c0601a" stroke-width="2.5" marker-end="url(#arr)"/>
+  <circle cx="180" cy="493.5" r="5" fill="#c0601a"/>
+  <text x="196" y="508" font-size="11" font-weight="bold" fill="#c0601a">A</text>
+  <circle cx="117.5" cy="550" r="5" fill="#7a1e08"/>
+  <line x1="117.5" y1="550" x2="72" y2="550" stroke="#7a1e08" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text x="122" y="566" font-size="11" font-weight="bold" fill="#7a1e08">B path end</text>
+
+  <!-- W-1 line -->
+  <line x1="565" y1="805" x2="165" y2="665" stroke="#2a5aa5" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="380" y="770" font-size="10" fill="#2a5aa5">deck to stones: the knob blocks it (W-1, as built)</text>
+  <text x="560" y="822" font-size="10" fill="#2a5aa5">to tower deck (164, 166)</text>
+
+  <!-- labels on the walk -->
+  <g font-size="10" fill="#111">
+    <circle cx="680" cy="750" r="5" fill="#111"/><text x="636" y="772">J 10, cairn lamp</text>
+    <text x="596" y="728" font-weight="bold">GATE 12</text>
+    <text x="470" y="760" font-weight="bold" fill="#2c4a1c">1 THE DRAW</text>
+    <text x="470" y="773" fill="#2c4a1c">fir gully, creek, log steps</text>
+    <rect x="496" y="708" width="10" height="12" fill="#a0784a"/><text x="486" y="684">bridge 38</text>
+    <circle cx="420" cy="700" r="4" fill="#2a5aa5"/><text x="356" y="716">P1 30, seep + cup</text>
+    <text x="446" y="620" font-weight="bold">2 THE SHELF</text>
+    <text x="446" y="633">as built, open east</text>
+    <rect x="429" y="547" width="6" height="6" fill="#222"/><text x="440" y="556">rune post 88</text>
+    <text x="440" y="538">stair foot 36.5</text>
+    <text x="300" y="540">landing 1 45.5</text>
+    <text x="300" y="552">bent fir, hide</text>
+    <text x="426" y="486">landing 2 53</text>
+    <text x="474" y="458" font-weight="bold">3 THE STAIR</text>
+    <text x="474" y="471">three timber flights</text>
+    <rect x="322" y="464" width="16" height="12" fill="none" stroke="#7a3a10" stroke-width="2"/>
+    <text x="318" y="494" font-weight="bold">4 LOOKOUT 58</text>
+    <text x="318" y="506">deck faces east</text>
+    <text x="268" y="430">split snag, cleft entry 60</text>
+    <text x="120" y="400" font-weight="bold">5 THE LEDGE</text>
+  </g>
+
+  <!-- north arrow and scale -->
+  <g transform="translate(675,110)"><line x1="0" y1="30" x2="0" y2="0" stroke="#222" stroke-width="2" marker-end="url(#arrK)"/><text x="-4" y="44" font-size="11">N</text></g>
+  <line x1="590" y1="790" x2="690" y2="790" stroke="#222" stroke-width="2"/>
+  <text x="620" y="784" font-size="10">20 m</text>
+
+  <!-- ===================== SHOT A SKETCH ===================== -->
+  <text x="760" y="74" font-size="13" font-weight="bold" fill="#222">Shot A: stepping round the fin, night one</text>
+  <rect x="760" y="80" width="540" height="360" fill="url(#sky)" stroke="#333"/>
+  <!-- smoke columns -->
+  <path d="M960,230 C940,170 980,120 950,80 L1020,80 C1040,130 1010,180 1015,230 Z" fill="url(#smoke)" opacity="0.9"/>
+  <path d="M1080,228 C1070,160 1110,110 1090,80 L1170,80 C1180,140 1140,180 1150,228 Z" fill="url(#smoke)" opacity="0.9"/>
+  <path d="M1210,230 C1200,170 1240,120 1230,80 L1290,80 C1300,140 1270,190 1280,230 Z" fill="url(#smoke)" opacity="0.85"/>
+  <path d="M800,232 C790,190 820,150 805,110 L850,110 C860,160 845,200 850,232 Z" fill="url(#smoke)" opacity="0.7"/>
+  <!-- far ridge silhouette -->
+  <path d="M760,262 L820,255 L880,258 L950,252 L1030,256 L1110,250 L1190,255 L1260,252 L1300,256 L1300,272 L760,272 Z" fill="#120806"/>
+  <!-- far front flames on the ridge, uneven -->
+  <path d="M760,258 L772,236 L780,250 L795,222 L806,248 L822,230 L834,252 L850,214 L862,246 L880,226 L896,250 L912,206 L926,244 L944,220 L960,248 L976,204 L992,240 L1010,218 L1030,246 L1046,208 L1062,242 L1080,200 L1096,238 L1114,216 L1130,244 L1148,206 L1166,240 L1184,222 L1200,248 L1218,210 L1236,240 L1252,224 L1270,250 L1286,214 L1300,238 L1300,262 L760,262 Z" fill="url(#flame)"/>
+  <line x1="760" y1="260" x2="1300" y2="260" stroke="#ffd59a" stroke-width="0.6" stroke-dasharray="3,6" opacity="0.6"/>
+  <text x="1238" y="275" font-size="9" fill="#ffd59a">eye level</text>
+  <!-- ledge foreground: lip hides the valley floor -->
+  <path d="M760,300 C820,286 900,280 980,276 C1080,272 1180,272 1300,270 L1300,440 L760,440 Z" fill="#0d0907"/>
+  <path d="M1060,440 C1000,380 940,330 900,290" fill="none" stroke="#2a201a" stroke-width="16" stroke-linecap="round"/>
+  <!-- lip rim at right -->
+  <path d="M1130,278 L1160,268 L1190,274 L1220,266 L1260,272 L1300,266 L1300,300 L1130,300 Z" fill="#050403"/>
+  <!-- stunted firs at the lip, right edge -->
+  <path d="M1238,272 L1248,210 L1256,272 Z M1232,250 L1262,250 L1247,226 Z" fill="#050403"/>
+  <path d="M1272,268 L1284,190 L1294,268 Z M1266,238 L1300,236 L1283,206 Z" fill="#050403"/>
+  <!-- stones, left third, black against the glow -->
+  <rect x="836" y="198" width="34" height="84" fill="#050403"/>
+  <rect x="888" y="194" width="38" height="88" fill="#050403"/>
+  <rect x="920" y="206" width="30" height="74" fill="#050403"/>
+  <g fill="#B8481C">
+    <rect x="849" y="220" width="6" height="3"/><rect x="851" y="236" width="3" height="7"/><rect x="848" y="252" width="7" height="3"/>
+    <rect x="903" y="216" width="3" height="8"/><rect x="900" y="232" width="8" height="3"/><rect x="904" y="250" width="3" height="7"/>
+    <rect x="931" y="226" width="7" height="3"/><rect x="933" y="242" width="3" height="7"/>
+  </g>
+  <!-- annotations -->
+  <g font-size="10" fill="#ffe8c0">
+    <text x="830" y="186">THE STONES, 31 to 36 m</text>
+    <text x="1040" y="196">far front: across the whole horizon, tops 6 to 10 degrees up</text>
+    <text x="960" y="100">smoke columns leave the frame top</text>
+    <text x="780" y="330">bare ledge; the path curves down-left to the stones</text>
+    <text x="1080" y="320">lip and two stunted firs;</text>
+    <text x="1080" y="333">the lip hides the valley floor (Shot B shows it)</text>
+  </g>
+  <text x="760" y="458" font-size="11" fill="#222">Eye (4, 257.3), 63.6 m, heading 215, level. 91.5 degrees across. Left third: stones. Centre and right: fire.</text>
+  <text x="760" y="474" font-size="11" fill="#222">Sky glow #5A2412 fades to black by 30 degrees up. Runes dim ember #B8481C. Fire core is the brightest value in frame.</text>
+
+  <!-- ===================== BEATS ===================== -->
+  <text x="760" y="520" font-size="13" font-weight="bold" fill="#222">The walk, chainage from J (about 106 s from camp; ceiling 150 s)</text>
+  <g font-size="11" fill="#222">
+    <text x="760" y="545">0  Gate, 0 to 20: cairn lamp, chain down, one old giant at the gap.</text>
+    <text x="760" y="565">1  The draw, 20 to 58: fir gully by the creek, log steps, bridge, seep and cup. Sheltered.</text>
+    <text x="760" y="585">2  The shelf, 58 to 92: as built. The valley on your right, rune post. On show.</text>
+    <text x="760" y="605">3  The stair, 92 to 145: three timber flights, landings 1 and 2. Effort.</text>
+    <text x="760" y="625">4  Lookout and throat, 145 to 190: last look east, split snag, cleft. Silence.</text>
+    <text x="760" y="645">5  The ledge, 190 to 207: A, the fire out there; B, the fire under you.</text>
+  </g>
+  <text x="760" y="680" font-size="13" font-weight="bold" fill="#222">As WARD falls: the silence line walks down the hill</text>
+  <g font-size="11" fill="#222">
+    <text x="760" y="702">High: insects cut at the dogleg.   Mid: at the lookout.   Low: at the stair foot.   Last: at the gate.</text>
+    <text x="760" y="720">The fire is heard first at the lookout, then on the shelf, then from J.</text>
+  </g>
+  <text x="760" y="760" font-size="11" fill="#444">Kept: crest, knob, shoulder, cleft, fin, stones' positions (F-1, W-1). Out: cwm, leg 4, ring walls on the walk.</text>
+  <text x="760" y="778" font-size="11" fill="#444">Edges on the walk: trees, logs, brush, timber rails. The throat is the one rock beat.</text>
+  <text x="1240" y="880" font-size="11" fill="#444">Sable</text>
+</svg>
