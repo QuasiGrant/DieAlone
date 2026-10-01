@@ -7,3 +7,4 @@ Tully reviews at each commit review. A line whose fix now lives in an agent file
 - 2026-09-30 Wren, Tully: deadline beat quality, nobody challenged it / Tully challenges any date-driven task / process-manager.md
 - 2026-10-01 Rook, Wren: fix checks retested the exact old repro, so a moved trap still passed / sweep a ring of approaches around each found problem / pending: coder.md line
 - 2026-10-01 Rook: recipe fixes reported done did not show in the rebuilt scene / verify each fix in the scene after a rebuild before reporting / pending: diagnosis
+- 2026-10-01 Rook, Vesper, Pim: the VHS noise band sat on the eye line in every capture frame and hid built objects, so reviews failed real work / capture with the band off, noted on each sheet / pending: main3_review_capture.cs
