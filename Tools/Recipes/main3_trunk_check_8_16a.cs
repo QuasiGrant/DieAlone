@@ -1,5 +1,6 @@
 // Main3 trunk check (Play mode; 8.16a, Marlow's walk-through test, Gate_816_Marlow.md 16). Never saves the scene. For every standing
-// tree (BK Sequoia, RedFir, RedPine and the standing dead snags) and hollow log under Forest, Ground815, SliceLook and Camp:
+// tree (BK Sequoia, RedFir, RedPine and the standing dead snags) and hollow log under Forest, Ground815, SliceLook, Camp and Ward (8.16b:
+// the leg 3 split snags; fallen dead trunks are walked as logs):
 // - COLLIDER: it has its own trunk capsule (a log: its log mesh collider), or, for SliceLook's pack giants, the gray 8.3 giant under it
 //   holds its trunk (a collider under the Giants root within its trunk), or, for a hedge log, the hedge collider under it (8.15).
 //   One with none of these is a FAIL.
@@ -19,7 +20,7 @@ var inv = System.Globalization.CultureInfo.InvariantCulture;
 bool Kind(string n, out bool log)
 {
     log = n.StartsWith("RedwoodHollowLog");
-    return log || n.StartsWith("Sequoia") || (n.StartsWith("RedFir") && !n.StartsWith("RedFirBranches")) || n.StartsWith("RedPine") || n.StartsWith("Tree_Dead");
+    return log || n.StartsWith("Sequoia") || (n.StartsWith("RedFir") && !n.StartsWith("RedFirBranches")) || n.StartsWith("RedPine") || n.StartsWith("Tree_Dead") || n.StartsWith("SplitSnag");
 }
 bool Open(UnityEngine.Vector3 at) { foreach (var c in UnityEngine.Physics.OverlapCapsule(at + UnityEngine.Vector3.up * (cc.radius + 0.1f), at + UnityEngine.Vector3.up * (cc.height - cc.radius), cc.radius, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) if (!(c is UnityEngine.TerrainCollider) && !c.transform.IsChildOf(pc.transform)) return false; return true; }
 void Put(UnityEngine.Vector3 p) { cc.enabled = false; pc.transform.position = p + UnityEngine.Vector3.up * 0.05f; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (int k = 0; k < 5; k++) pc.Step(UnityEngine.Vector3.zero, false, false, dt); }
@@ -48,7 +49,7 @@ string Name(string rn, UnityEngine.Transform t) => rn + "/" + (t.parent != null 
 string repro = "";
 try
 {
-    foreach (var rn in new[] { "Forest", "Ground815", "SliceLook", "Camp" })
+    foreach (var rn in new[] { "Forest", "Ground815", "SliceLook", "Camp", "Ward" })   // 8.16b: Ward for the split snags on leg 3
     {
         var root = Root(rn); if (root == null) continue; var beyond = root.transform.Find("BeyondRoad");   // past the fence and the road: out of reach
         foreach (UnityEngine.Transform t in root.GetComponentsInChildren<UnityEngine.Transform>())
@@ -56,8 +57,9 @@ try
             if (!Kind(t.name, out bool log) || (t.parent != null && Kind(t.parent.name, out _))) continue;   // the instance root only
             if (beyond != null && t.IsChildOf(beyond)) continue;
             var rends = t.GetComponentsInChildren<UnityEngine.Renderer>(); if (rends.Length == 0) continue;
-            if (!log && UnityEngine.Mathf.Abs(UnityEngine.Mathf.DeltaAngle(0f, t.eulerAngles.z)) > 45f) continue;   // fallen snags lie down: not standing
-            trees++; string kn = log ? "log" : t.name.StartsWith("Sequoia") ? "giant" : t.name.StartsWith("Tree_Dead") ? "snag" : "fir or pine"; kinds.TryGetValue(kn, out var kc); kinds[kn] = kc + 1;
+            // 8.16b (Marlow: the fallen burn trunks were never tested): a dead tree lying down is walked as a log
+            if (!log && UnityEngine.Mathf.Abs(UnityEngine.Mathf.DeltaAngle(0f, t.eulerAngles.z)) > 45f) { if (!t.name.StartsWith("Tree_Dead")) continue; log = true; }
+            trees++; string kn = log ? (t.name.StartsWith("Tree_Dead") ? "fallen trunk" : "log") : t.name.StartsWith("Sequoia") ? "giant" : (t.name.StartsWith("Tree_Dead") || t.name.StartsWith("SplitSnag")) ? "snag" : "fir or pine"; kinds.TryGetValue(kn, out var kc); kinds[kn] = kc + 1;
             var cols = t.GetComponentsInChildren<UnityEngine.Collider>();
             var cap = t.GetComponentInChildren<UnityEngine.CapsuleCollider>();
             if (cols.Length == 0)

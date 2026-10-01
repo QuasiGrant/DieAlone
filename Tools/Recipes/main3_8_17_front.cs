@@ -166,7 +166,7 @@ foreach (var pz in new[] { porchZ0 + 0.2f, porchZ1 - 0.2f }) kit.On(PlaceKit.CI 
 kit.Slab("PorchRoof", porch, V(-porchD * 0.5f, porchRoofH + 0.15f, (porchZ0 + porchZ1) * 0.5f), V(porchD + 0.5f, 0.12f, porchZ1 - porchZ0 + 0.4f), roofChar, V(0f, 0f, -12f));
 var oSign = kit.Slab("SignBoard", porch, V(-porchD - 0.05f, porchRoofH - 0.3f, (porchZ0 + porchZ1) * 0.5f), V(2.8f, 0.5f, 0.06f), boardWood, V(0f, 90f, 0f));
 kit.Label(oSign.transform, "RANGER STATION", paleText, 40);
-kit.On(PlaceKit.CE + "Decoration_Out/Bench", porch, V(-0.7f, floorTop, porchZ1 - 0.9f), 90f, 1f, true, null, true);
+kit.On(PlaceKit.CE + "Decoration_Out/Bench", porch, V(-1.1f, floorTop, porchZ1 - 0.4f), 180f, 1f, true, null, true);   // along the porch's north end, clear of the west door's swing (Marlow 7)
 kit.On(PlaceKit.CE + "Decoration_Lamps/Wall_Cage_Light", porch, V(-0.02f, 2.35f, oMod * 1.5f + 0.9f), -90f);
 kit.Practical("PorchLight", porch, V(-0.5f, 2.3f, oMod * 1.5f + 0.9f), 6f, PracticalLight.Kind.Lamp, PracticalLight.ByDay.Off);
 kit.On(PlaceKit.CE + "Decoration_Out/Trash_Can", porch, V(-porchD - 0.6f, 0f, porchZ0 - 0.4f), 0f, 1f, true, null, true);
@@ -179,7 +179,9 @@ kit.On(PlaceKit.CE + "Furniture/Drawer_Cabinet", fr, V(3.6f, floorTop, 5.4f), 90
 kit.On(PlaceKit.CE + "Furniture/Drawer_Cabinet", fr, V(3.6f, floorTop, 6.7f), 90f, 1f, true, null, true);
 kit.On(PlaceKit.CE + "Decoration_Home/Radio", fr, V(3.6f, floorTop + 1.13f, 5.3f), -90f, 1f, false, null, true);
 kit.On(PlaceKit.CE + "Decoration_Kitchen/Mug", fr, V(3.5f, floorTop + 1.13f, 6.2f), 30f, 1f, false, null, true);
-kit.On(PlaceKit.CE + "Decoration_Home/Notepad", fr, V(3.7f, floorTop + 1.13f, 6.8f), 10f, 1f, false, null, true);
+// 8.17 gate (Quill): a squared stack of blank forms and a capped pen on the counter
+for (int i = 0; i < 6; i++) kit.On(PlaceKit.CE + "Decoration_Home/Paper", fr, V(3.7f, floorTop + 1.13f + i * 0.004f, 6.75f), 90f, 0.6f, false, null, true);
+kit.On(PlaceKit.CE + "Decoration_Home/Ballpoint_Pen", fr, V(3.55f, floorTop + 1.16f, 6.75f), 10f, 1f, false, null, true);
 kit.On(PlaceKit.CE + "Decoration_Lamps/Table_Lamp", fr, V(3.6f, floorTop + 1.13f, 7.2f), 0f, 1f, false, null, true);
 kit.On(PlaceKit.CE + "Furniture/Chair", fr, V(5.0f, floorTop, 6.0f), -90f, 1f, true, null, true);
 foreach (var fx in new[] { 5.6f, 6.3f }) kit.On(PlaceKit.CE + "Furniture/Filing_Cabinet", fr, V(fx, floorTop, oD - 0.6f), 180f, 1f, true, null, true);
@@ -197,7 +199,9 @@ kit.On(PlaceKit.CE + "Furniture/Single_Bed_Metal", br, V(oW - 0.8f, floorTop, 2.
 kit.On(PlaceKit.CE + "Furniture/Table", br, V(10.0f, floorTop, oD - 0.8f), 0f, 0.7f, true, null, true);
 kit.On(PlaceKit.CE + "Furniture/Chair", br, V(10.0f, floorTop, oD - 1.6f), 0f, 1f, true, null, true);
 kit.On(PlaceKit.CE + "Decoration_Lamps/Table_Lamp", br, V(10.6f, floorTop + 0.68f, oD - 0.7f), 0f, 1f, false, null, true);
-kit.On(PlaceKit.CE + "Decoration_Home/Ashtray", br, V(9.6f, floorTop + 0.68f, oD - 0.8f), 0f, 1f, false, null, true);
+// a second mug, clean and upside down, on the desk; a blanket pulled flat on the cot (Quill)
+kit.On(PlaceKit.CE + "Decoration_Kitchen/Mug", br, V(9.6f, floorTop + 0.68f, oD - 0.8f), 0f, 1f, false, V(180f, 0f, 0f), true);
+kit.On(PlaceKit.CI + "Furniture/CITW_Blanket", br, V(oW - 0.8f, floorTop + 0.62f, 2.0f), 90f, 0.9f, false, null, true);
 kit.On(PlaceKit.CI + "Props/CITW_Trunk_1", br, V(8.9f, floorTop, 1.0f), 90f, 1f, true, null, true);
 kit.Practical("BackRoomLamp", br, V(10.6f, 1.4f, oD - 0.8f), 5f, PracticalLight.Kind.Lamp, PracticalLight.ByDay.Dimmed);
 foreach (var w in oWins) GlowPane("WindowGlow", office, w.p + V(0f, (0.95f + openHead) * 0.5f + floorTop, 0f) + UnityEngine.Quaternion.Euler(0f, w.yaw, 0f) * V(0f, 0f, 0.2f), new UnityEngine.Vector2(openHalf * 2f, openHead - 0.95f), w.yaw);

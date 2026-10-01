@@ -25,7 +25,7 @@ UnityEngine.GameObject RockBox(string name, UnityEngine.Transform parent, UnityE
 int retex = 0;
 foreach (UnityEngine.Transform piece in cave.transform)
 {
-    if (piece.name == "Resident_Cave_Spot" || piece.name == "SideRoom" || piece.name == "MouthDressing") continue;
+    if (piece.name == "Resident_Cave_Spot" || piece.name == "SideRoom" || piece.name == "MouthDressing" || piece.name == "ChamberDressing") continue;
     foreach (var r in piece.GetComponentsInChildren<UnityEngine.MeshRenderer>())
     {
         if (r.transform.parent != null && r.transform.parent.name == "DayOneBoard") continue;
@@ -45,8 +45,13 @@ if (board != null)
 }
 // ---- outside the mouth: boulders and rubble on both sides of the opening (x 50.5 to 53.5), none in it
 var md = kit.Fresh("MouthDressing", cave.transform, V(52f, kit.H(52f, 39f), 39f), 0f);
-kit.Ground(PlaceKit.BK + "Rocks/BigBoulders_1", md, 47.6f, 38.6f, 30f, 0.55f, true, 0.5f);
-kit.Ground(PlaceKit.BK + "Rocks/Boulder_2", md, 56.2f, 38.4f, 200f, 0.45f, true, 0.3f);
+// 8.17 gate (Vesper, cave D: the mouth read as a textured cube on the floor): the 8.8 boxes round the opening are hidden in owned rock.
+// An overhang boulder above the opening (its underside at overhangLow, over the 3 m x 4 m opening), a boulder mass either side reaching
+// the top ground, rubble at the foot; the opening itself (x 50.5 to 53.5 under overhangLow) stays clear
+const float overhangLow = -2.3f, overhangW = 7f, flankW = 6.2f;
+var over = kit.Spawn(PlaceKit.BK + "Rocks/BigBoulders_2", md);
+if (over != null) { PlaceKit.StripColliders(over); over.transform.rotation = UnityEngine.Quaternion.Euler(0f, 40f, 180f); float s0 = overhangW / 6.2f; over.transform.localScale = V(s0, s0 * 0.8f, s0); var ob = PlaceKit.MeshBounds(over); over.transform.position += V(52f - ob.center.x, overhangLow - ob.min.y, 38.2f - ob.center.z); }
+foreach (var fx in new[] { 46.9f, 57.1f }) kit.Ground(PlaceKit.BK + "Rocks/BigBoulders_" + (fx < 52f ? "4" : "5"), md, fx, 37.6f, fx * 7f, flankW / 6.2f, true, 0.6f);
 kit.Ground(PlaceKit.BK + "Rocks/Boulder_4", md, 48.9f, 41.2f, 110f, 0.3f, true, 0.2f);
 kit.Ground(PlaceKit.BK + "Rocks/RubbleSparse_1", md, 52f, 40.5f, 15f, 0.6f, false, 0.1f);
 // over the opening: two boulders on the top ground either side of the cap rock, overhanging its edges, so the lintel reads as rock
@@ -74,14 +79,43 @@ RockBox("Wall_E_Future", room, V(rx1 + T * 0.5f, floorY + roomH * 0.5f, (rz0 + r
 var tbl = kit.Group("RouletteTable", room, V(93.8f, floorY, 11.5f), 90f);
 var tblMesh = kit.On(PlaceKit.CE + "Furniture/Table", tbl, V(0f, 0f, 0f), 0f, 0.6f, true, null, true);
 float tTop = tblMesh != null ? PlaceKit.LocalBounds(tblMesh, tbl).max.y : 0.58f;
+// 8.17 gate (Quill): the guest's chair (toward the door) squared up to the table, his own turned easy and pushed back
 kit.On(PlaceKit.CE + "Furniture/Chair", tbl, V(0f, 0f, -0.95f), 0f, 1f, true, null, true);
-kit.On(PlaceKit.CE + "Furniture/Chair", tbl, V(0f, 0f, 0.95f), 180f, 1f, true, null, true);
+kit.On(PlaceKit.CE + "Furniture/Chair", tbl, V(0.2f, 0f, 1.25f), 205f, 1f, true, null, true);
 kit.On(PlaceKit.CE + "Weapons/Pistol", tbl, V(0.1f, tTop, 0f), 70f, 1f, false, V(0f, 0f, 90f), true);   // lying on its side
 kit.On(PlaceKit.CC + "Props/C_Candle_1", tbl, V(-0.45f, tTop, 0.2f), 0f, 1f, false, null, true);
-kit.On(PlaceKit.CE + "Decoration_Home/Ashtray", tbl, V(0.4f, tTop, -0.25f), 0f, 1f, false, null, true);
+// a party carried in (Quill): a bottle and two glasses, the guest's poured; the table edge kept free
+kit.On(PlaceKit.CE + "Decoration_Out/Glass_Bottle", tbl, V(-0.1f, tTop, 0.25f), 0f, 1f, false, null, true);
+kit.On(PlaceKit.CI + "Props/CITW_Glass_Cup_1", tbl, V(0.15f, tTop, -0.3f), 0f, 1f, false, null, true);
+kit.On(PlaceKit.CI + "Props/CITW_Glass_Cup_2", tbl, V(-0.2f, tTop, 0.35f), 0f, 1f, false, null, true);
 kit.On(PlaceKit.CE + "Decoration_Lamps/Cage_Light", tbl, V(0f, roomH - 0.05f, 0f), 0f);
 kit.Practical("TableLamp", tbl, V(0f, roomH - 0.5f, 0f), 5f, PracticalLight.Kind.Lamp, PracticalLight.ByDay.Full);
 kit.On(PlaceKit.CC + "Props/C_Crate_Small_1", room, room.InverseTransformPoint(V(96.6f, floorY, 14.6f)), 20f, 1f, true, null, true);
+// the bulb string, carried in from the chamber through the doorway and hung over the table (Quill)
+var bulbGlow = kit.Glow("Places_BulbGlow", kit.Look.practicalColor, kit.Look.cabWindowGlowIntensity);
+var steel = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Slice/Slice_Steel.mat");
+var bulbA = V(86.5f, floorY + 2.4f, 12.3f); var bulbB = V(96.8f, floorY + 2.6f, 11.2f); const int roomBulbs = 9; const float roomSag = 0.35f;
+var line = kit.Slab("BulbLine", room, room.InverseTransformPoint((bulbA + bulbB) * 0.5f - V(0f, roomSag * 0.5f, 0f)), V(0.02f, 0.02f, UnityEngine.Vector3.Distance(bulbA, bulbB)), steel);
+line.transform.rotation = UnityEngine.Quaternion.LookRotation(bulbB - bulbA);
+for (int i = 1; i <= roomBulbs; i++) { float u = i / (roomBulbs + 1f); var p = UnityEngine.Vector3.Lerp(bulbA, bulbB, u) - V(0f, roomSag * 4f * u * (1f - u) + 0.1f, 0f); kit.Slab("Bulb", room, room.InverseTransformPoint(p), V(0.1f, 0.13f, 0.1f), bulbGlow).GetComponent<UnityEngine.Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; }
+// 8.17 gate (Vesper): rock broken into the room's north and east walls and its ceiling, a timber prop under a ceiling beam
+foreach (var rb in new[] { (V(92f, floorY + 1.2f, rz1 + 0.6f), 1.6f, "BigBoulders_1"), (V(95.5f, floorY + 0.8f, rz1 + 0.5f), 1.3f, "Boulder_3"), (V(rx1 + 0.6f, floorY + 1.4f, 9.5f), 1.7f, "BigBoulders_3"), (V(rx1 + 0.5f, floorY + 1.8f, 13.8f), 1.2f, "Boulder_0"), (V(91f, floorY + roomH + 0.5f, 9.5f), 2f, "BigBoulders_0"), (V(95f, floorY + roomH + 0.5f, 14f), 1.8f, "BigBoulders_5") })
+{
+    var g = kit.Spawn(PlaceKit.BK + "Rocks/" + rb.Item3, room); if (g == null) continue; PlaceKit.StripColliders(g);
+    g.transform.localScale = UnityEngine.Vector3.one * (rb.Item2 / 3f); g.transform.rotation = UnityEngine.Quaternion.Euler(rb.Item1.x * 13f, rb.Item1.z * 29f, 20f); g.transform.position += rb.Item1 - PlaceKit.MeshBounds(g).center;
+}
+kit.Fill(PlaceKit.CI + "Building/CITW_Wood_Pillar", room, room.InverseTransformPoint(V(96.2f, floorY, 8.4f)), V(0.25f, roomH, 0.25f));
+var beam = kit.Spawn(PlaceKit.CS + "Wood/CS_Log_Large_Long", room); if (beam != null) { PlaceKit.StripColliders(beam); beam.transform.rotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f); beam.transform.localScale = V(3.6f, 0.8f, 0.8f); beam.transform.position += V(96.2f, floorY + roomH - 0.15f, 11.5f) - PlaceKit.MeshBounds(beam).center; }
+// the chamber (Vesper: near black and flat): a faint lantern by the side room door, rubble on the floor, rock ledges on its walls
+var ch = kit.Fresh("ChamberDressing", cave.transform, V(80f, floorY, 12f), 0f);
+kit.On(PlaceKit.CS + "CS_Lantern_Old", ch, ch.InverseTransformPoint(V(87.8f, floorY, 13.6f)), 0f, 1f, false, null, true);
+kit.Practical("ChamberLantern", ch, ch.InverseTransformPoint(V(87.8f, floorY + 0.5f, 13.6f)), 9f, PracticalLight.Kind.Lantern, PracticalLight.ByDay.Full);
+foreach (var rp in new[] { V(76f, floorY, 6f), V(83f, floorY, 19f), V(74f, floorY, 18f) }) kit.On(PlaceKit.BK + "Rocks/RubbleSparse_2", ch, ch.InverseTransformPoint(rp), rp.x * 11f, 0.6f, false, null, true);
+foreach (var lp in new[] { (V(71.6f, floorY + 2.5f, 5f), "BigBoulders_2"), (V(80f, floorY + 3f, 20.9f), "BigBoulders_4"), (V(88.6f, floorY + 4.5f, 5.5f), "Boulder_1"), (V(79f, floorY + 1.2f, 3.4f), "Boulder_5") })
+{
+    var g = kit.Spawn(PlaceKit.BK + "Rocks/" + lp.Item2, ch); if (g == null) continue; PlaceKit.StripColliders(g);
+    g.transform.localScale = UnityEngine.Vector3.one * 0.6f; g.transform.rotation = UnityEngine.Quaternion.Euler(10f, lp.Item1.x * 17f, -12f); g.transform.position += lp.Item1 - PlaceKit.MeshBounds(g).center;
+}
 PlaceKit.MarkerOnly(cave.transform.Find("Resident_Cave_Spot"));
 // check: the terrain over the room stays above its ceiling rock (0 over it, Valley M10)
 float lowest = float.MaxValue; for (float x = rx0; x <= rx1; x += 1f) for (float z = rz0; z <= rz1; z += 1f) lowest = UnityEngine.Mathf.Min(lowest, kit.H(x, z));

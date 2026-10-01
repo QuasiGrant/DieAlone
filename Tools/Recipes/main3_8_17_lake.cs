@@ -43,7 +43,7 @@ void Run(string[] kinds, UnityEngine.Vector3 start, UnityEngine.Vector3 along, f
     for (int i = 0; i < kinds.Length; i++) { var g = kit.On(PlaceKit.CI + "Building/CITW_Plank_" + kinds[i], bd, bd.InverseTransformPoint(start + along * (w * (i + 0.5f))), yaw, 1f, false, null, true); if (g != null) g.transform.localScale = V(w / modW, sy, 1f); }
 }
 Run(new[] { "Wall", "Wall", "Wall" }, V(bx0, floorY, bz0 + 0.1f), V(1f, 0f, 0f), W, 0f);
-Run(new[] { "Wall", "Window_Wall", "Wall" }, V(bx0, floorY, bz1 - 0.1f), V(1f, 0f, 0f), W, 180f);
+Run(new[] { "Wall", "Doorway", "Wall" }, V(bx0, floorY, bz1 - 0.1f), V(1f, 0f, 0f), W, 180f);
 Run(new[] { "Wall", "Window_Wall", "Wall" }, V(bx0 + 0.1f, floorY, bz0), V(0f, 0f, 1f), Dd, 90f);
 Run(new[] { "Wall", "Doorway", "Wall" }, V(bx1 - 0.1f, floorY, bz0), V(0f, 0f, 1f), Dd, -90f);
 foreach (var cx in new[] { bx0, bx1 }) foreach (var cz in new[] { bz0, bz1 }) { var p = kit.On(PlaceKit.CI + "Building/CITW_Wood_Pillar", bd, bd.InverseTransformPoint(V(cx, floorY, cz)), 0f, 1f, false, null, true); if (p != null) p.transform.localScale = V(1f, sy, 1f); }
@@ -58,12 +58,27 @@ kit.On(PlaceKit.CI + "Props/CITW_Barrel_2", bd, bd.InverseTransformPoint(V(237.6
 kit.On(PlaceKit.FT + "Rope", bd, bd.InverseTransformPoint(V(240.5f, floorY, 54.6f)), 0f, 1.5f, false, null, true);
 kit.On(PlaceKit.FT + "Bucket", bd, bd.InverseTransformPoint(V(242.3f, floorY, 50.3f)), 0f, 1f, false, null, true);
 // the step on the north side over the water, facing the tower (M8): planks on two log legs, a bowl and a chair
-var step = kit.Group("Step", bd, V(240f, floorY, 55.9f), 0f);
-for (float x = -1.2f; x <= 1.21f; x += plankW) kit.Fill(PlaceKit.CC + "Props/C_Plank_A_Thick", step, V(x, -plankT, 0f), V(plankW - 0.02f, plankT, 1.4f));
-foreach (var lx in new[] { -1.1f, 1.1f }) Log(step, step.TransformPoint(V(lx, -plankT, 0.55f)), V(step.position.x + lx, water - 0.8f, step.position.z + 0.55f), 0.22f);
+// 8.17 gate (Wren: the step must be reachable, the cat is fed there): a doorway in the north wall (its 8.4 box cut round it) onto a
+// plank step stepW x stepD m at the floor level, a box under it to stand on and rails on its three open sides
+const float stepW = 3.6f, stepD = 1.8f, stepRail = 1.05f, doorHalf = 0.64f, doorHead = 2.15f * (2.6f / 3f);
+var wallN = B.Find("Wall_N"); if (wallN != null && wallN.GetComponent<UnityEngine.BoxCollider>() != null) UnityEngine.Object.DestroyImmediate(wallN.GetComponent<UnityEngine.BoxCollider>());
+foreach (var seg in new[] { (bx0, (bx0 + bx1) * 0.5f - doorHalf), ((bx0 + bx1) * 0.5f + doorHalf, bx1) }) kit.Blocker("WallN_Solid", bd, bd.InverseTransformPoint(V((seg.Item1 + seg.Item2) * 0.5f, floorY + wallH * 0.5f, bz1 - 0.075f)), V(seg.Item2 - seg.Item1, wallH, 0.15f));
+kit.Blocker("WallN_Lintel", bd, bd.InverseTransformPoint(V((bx0 + bx1) * 0.5f, floorY + (doorHead + wallH) * 0.5f, bz1 - 0.075f)), V(doorHalf * 2f, wallH - doorHead, 0.15f));
+var step = kit.Group("Step", bd, V(240f, floorY, bz1 + stepD * 0.5f), 0f);
+kit.Blocker("StepFloor", step, V(0f, -0.15f, 0f), V(stepW, 0.3f, stepD));
+foreach (var rs in new[] { (V(-stepW * 0.5f, 0f, 0f), V(0.12f, stepRail, stepD), 90f), (V(stepW * 0.5f, 0f, 0f), V(0.12f, stepRail, stepD), 90f), (V(0f, 0f, stepD * 0.5f), V(stepW, stepRail, 0.12f), 0f) })
+{ var rl = kit.On(PlaceKit.CI + "Building/CITW_Railing", step, rs.Item1, rs.Item3, 1f, false, null, true); if (rl != null) rl.transform.localScale = V((rs.Item3 == 0f ? stepW : stepD) / 2f, 1f, 1f); kit.Blocker("StepRail", step, rs.Item1 + V(0f, stepRail * 0.5f, 0f), rs.Item2); }
+for (float x = -stepW * 0.5f + plankW * 0.5f; x < stepW * 0.5f; x += plankW) kit.Fill(PlaceKit.CC + "Props/C_Plank_A_Thick", step, V(x, -plankT, 0f), V(plankW - 0.02f, plankT, stepD));
+foreach (var lx in new[] { -stepW * 0.5f + 0.1f, stepW * 0.5f - 0.1f }) Log(step, step.TransformPoint(V(lx, -plankT, stepD * 0.4f)), V(step.position.x + lx, water - 0.8f, step.position.z + stepD * 0.4f), 0.22f);
 float towerYaw = UnityEngine.Quaternion.LookRotation(V(164f - 240f, 0f, 166f - 57f)).eulerAngles.y;
-kit.On(PlaceKit.CS + "CS_Chair_2", step, V(-0.6f, 0f, 0.1f), towerYaw, 1f, false, null, true);
-kit.On(PlaceKit.CI + "Props/CITW_Bowl_Small", step, V(0.6f, 0f, 0.2f), 0f, 1f, false, null, true);
+kit.On(PlaceKit.CS + "CS_Chair_2", step, V(-1.2f, 0f, 0.3f), towerYaw, 1f, false, null, true);
+kit.On(PlaceKit.CI + "Props/CITW_Bowl_Small", step, V(1.2f, 0f, 0.4f), 0f, 1f, false, null, true);   // empty
+// 8.17 gate (Quill): her name hand-lettered on the bowl (a small painted tag on its side; the name is DECISIONS 2026-09-29's Tuesday,
+// read as the lake resident: unverified, Wren to confirm), and a small folded blanket on the step
+const string bowlName = "TUESDAY";
+var tag = kit.Slab("BowlTag", step, V(1.2f, 0.05f, 0.28f), V(0.14f, 0.04f, 0.004f), kit.Tinted("Places_BowlTag", "Assets/Materials/Concrete034_1.0x1.0.mat", Hex("#D8D0BC"), UnityEngine.Vector2.one), V(0f, 180f, 0f));
+kit.Label(tag.transform, bowlName, Hex("#3A2A1E"), 30);
+kit.On(PlaceKit.CI + "Furniture/CITW_Blanket", step, V(0.7f, 0f, 0.55f), 15f, 0.35f, false, null, true);
 // reeds on the west side (M7), in the shallows
 var rng = new System.Random(8017); var reeds = kit.Group("Reeds", bd, V(232f, water, 55f), 0f);
 for (int i = 0; i < 22; i++) { float x = 233.8f + (float)rng.NextDouble() * 2.8f, z = 49.8f + (float)rng.NextDouble() * 7f; { float h = 1.4f + 0.6f * (float)rng.NextDouble(); var rd = kit.Fill(PlaceKit.CS + "Vegetation/CS_Grass_Long_" + (1 + i % 2), reeds, reeds.InverseTransformPoint(V(x, water - 0.15f, z)), V(0.9f, h, 0.9f), (float)rng.NextDouble() * 360f); } }   // stood up as reeds }

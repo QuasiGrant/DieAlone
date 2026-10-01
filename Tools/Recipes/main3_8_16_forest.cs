@@ -92,13 +92,18 @@ const int footTries = 20, footBush = 8, footFern = 12, footLeaves = 2, footBranc
 const int groveTries = 400, groveFirCap = 10; const float groveCountPad = 6f;   // groveFirCap 10: ForestPlan 7 thinning step 5 (Camp 1% low 58 to 68 with the full counts)
 const float c1RingIn = 29f, c1RingOut = 40f, knollIn = 23f, knollOut = 30f, knollTall = 35f;
 const float wallX0 = 90f, wallX1 = 300f, wallZ0 = 285f, wallZ1 = 310f, wallWander = 5f, wallFootStep = 12f; const int wallFirs = 110, wallGiants = 5, wallSaplings = 30;   // wallFirs 110 (was 150): ForestPlan 7 thinning step 3 (the back half thinner, by chance of placement)
-const float beltX0 = 5f, beltX1 = 30f, beltZ0 = -40f, beltZ1 = 350f, beltGround = 70f, beltGapZ0 = 190f, beltGapZ1 = 300f, beltKnotR = 9f, beltKnotShare = 0.75f;
-const int beltKnots = 28, beltFirs = 180, beltGiants = 12, beltGiantKnots = 4;   // beltFirs 180 (was 250): thinning step 4
-var nRuns = new[] { P(40f, 110f), P(175f, 230f), P(240f, 290f), P(300f, 350f), P(355f, 392f) }; const float nZ0 = 320f, nZ1 = 350f; const int nFirsPerRun = 20;   // 20 (was 30): ForestPlan 7 thinning step 2
+// 8.16b (Vesper: the W crest read as one single-file row of even pines): every belt fir stands in a knot (clumps of 3 to 7, beltKnotR, mixed
+// heights beltLow to beltHigh), and the knots reach down the slope to beltGround, so they stand in depth, not along the crest line
+const float beltX0 = 5f, beltX1 = 30f, beltZ0 = -40f, beltZ1 = 350f, beltGround = 64f, beltGapZ0 = 190f, beltGapZ1 = 300f, beltKnotR = 5f, beltKnotShare = 1f, beltLow = 12f, beltHigh = 26f;
+const int beltKnots = 40, beltFirs = 180, beltGiants = 12, beltGiantKnots = 4;   // beltFirs 180 (was 250): thinning step 4
+// 8.16b (Vesper: the north bench held singles): each north run is nClumps clumps of about nFirsPerRun / nClumps firs within nClumpR m
+var nRuns = new[] { P(40f, 110f), P(175f, 230f), P(240f, 290f), P(300f, 350f), P(355f, 392f) }; const float nZ0 = 320f, nZ1 = 350f, nClumpR = 6f; const int nFirsPerRun = 20, nClumps = 4;   // 20 (was 30): ForestPlan 7 thinning step 2
 const float sX0 = 40f, sX1 = 390f, sZ0 = -30f, sZ1 = -50f, sSaddleX = 170f, sSaddleHalf = 20f, sSpace = 6f; const int sFirs = 40;
 const float eastX0 = 230f, eastX1 = 390f, eastZ0 = 60f, eastZ1 = 300f, clumpR = 9f, clumpLineKeep = 10f; const int eastClumps = 10, clumpFirs = 12, clumpTries = 400;   // clumpFirs 12 (was 20): ForestPlan 7 thinning step 1, S1 1% low 57.8 with 20
 int eastClumpsN = 0;
-const float roadX = 428f, beyondNear = 100f, beyondFar = 400f, beyondZ0 = -150f, beyondZ1 = 450f, beyondRayTop = 300f, beyondSpace = 7f; const int beyondTrees = 200;
+// 8.16b (Vesper: one even band of one height past the road): two bands, a near one beyondNear to beyondMid m out at nearLow to nearHigh m,
+// and a back one beyondBack to beyondFar m out, taller (backLow to backHigh), so it rises behind and pales with the distance
+const float roadX = 428f, beyondNear = 100f, beyondMid = 190f, beyondBack = 260f, beyondFar = 420f, nearLow = 18f, nearHigh = 28f, backLow = 30f, backHigh = 45f, beyondZ0 = -150f, beyondZ1 = 450f, beyondRayTop = 300f, beyondSpace = 7f; const int beyondTrees = 200, beyondNearShare = 55;
 const float snagSpace = 6f, snagGirth = 1.5f; const int burnSnags = 20, burnFallen = 10;
 var trailPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform leg in Root("Trails").transform) foreach (UnityEngine.Transform p in leg) trailPts.Add(P(p.position.x, p.position.z));
 var clearings = new (UnityEngine.Vector2 c, float r)[] { (P(170f, 160f), 22f), (P(282f, 238f), 28f), (P(292f, 108f), 18f), (P(78f, 146f), 14f) };   // camp, Camp 1, Camp 2, Camp 3
@@ -213,6 +218,18 @@ foreach (var gv in groves)
     }
     GroveFoot(g, gv.c, gv.r);
 }
+// 1b. 8.17 gate (Marlow 4; Valley.md E11: the ruin is not seen from the deck): a screen of firs across the deck-to-ruin line, ruinScreen
+// m south of the ruin in three rows (between the ruin and the north loop, which runs 10 m south), 2 m apart (ruinScreenSpace), south of
+// the side path's view from the loop to the south-west doorway, so the ruin stays seen from the loop
+const float ruinScreenSpace = 2f;
+{
+    var g = new UnityEngine.GameObject("RuinScreen").transform; g.SetParent(forest, false);
+    var deckP = P(164f, 166f); var ruinP = P(172f, 281f); var along = (deckP - ruinP).normalized; var side = P(along.y, -along.x);
+    foreach (var s in new[] { 5f, 7.5f, 10f }) foreach (var off in new[] { -6f, -4f, -2f, 0f, 2f, 4f, 6f })
+    {
+        var p = ruinP + along * s + side * (off + R(-0.4f, 0.4f)); if (Free(p, ruinScreenSpace, floorSlope)) Fir(g, p, 14f, 22f);
+    }
+}
 // C1 ring round Camp 1 (r 35) and the knoll (4 giants at 35 m round the camp clearing's edge)
 {
     var g = new UnityEngine.GameObject("Grove_C1Ring").transform; g.SetParent(forest, false);
@@ -242,7 +259,7 @@ int crestN = 0;
     for (int t = 0, n = 0; t < beltFirs * 8 && n < beltFirs; t++)
     {
         var p = rng.NextDouble() < beltKnotShare ? InDisk(knots[rng.Next(knots.Count)], beltKnotR) : P(R(beltX0, beltX1), R(beltZ0, beltZ1));   // knots and scatter, never a line
-        if (!BeltOk(p) || !Free(p, firSpace, crestSlope)) continue; if (Fir(belt, p, 18f, 24f) != null) { n++; crestN++; }
+        if (!BeltOk(p) || !Free(p, firSpace, crestSlope)) continue; if (Fir(belt, p, beltLow, beltHigh) != null) { n++; crestN++; }
     }
     for (int k = 0; k < beltGiantKnots; k++)
     {
@@ -250,7 +267,7 @@ int crestN = 0;
         for (int t = 0, n = 0; t < groveTries && n < beltGiants / beltGiantKnots; t++) { var p = InDisk(c, beltKnotR); if (!BeltOk(p) || !Free(p, giantSpace, crestSlope)) continue; float gy = H(p.x, p.y); if (Tree(BK + "Trees/Sequoia" + (1 + rng.Next(5)), belt, p, R(30f, 38f), gy, giantSpace) != null) { n++; giantsN++; crestN++; } }
     }
     var nl = new UnityEngine.GameObject("CrestLine_N").transform; nl.SetParent(forest, false);
-    foreach (var run in nRuns) for (int t = 0, n = 0; t < nFirsPerRun * 8 && n < nFirsPerRun; t++) { var p = P(R(run.x, run.y), R(nZ0, nZ1)); if (!Free(p, firSpace, crestSlope)) continue; if (Fir(nl, p, 15f, 22f) != null) { n++; crestN++; } }
+    foreach (var run in nRuns) for (int k = 0; k < nClumps; k++) { var cc = P(R(run.x, run.y), R(nZ0, nZ1)); for (int t = 0, n = 0; t < nFirsPerRun * 8 && n < nFirsPerRun / nClumps; t++) { var p = InDisk(cc, nClumpR); if (!Free(p, firSpace, crestSlope)) continue; if (Fir(nl, p, 12f, 24f) != null) { n++; crestN++; } } }
     var sl = new UnityEngine.GameObject("CrestLine_S").transform; sl.SetParent(forest, false);
     for (int t = 0, n = 0; t < sFirs * 10 && n < sFirs; t++) { var p = P(R(sX0, sX1), R(sZ1, sZ0)); if (UnityEngine.Mathf.Abs(p.x - sSaddleX) < sSaddleHalf || !Free(p, sSpace, crestSlope)) continue; if (Fir(sl, p, 15f, 22f) != null) { n++; crestN++; } }
 }
@@ -270,32 +287,42 @@ int crestN = 0;
     eastClumpsN = clumps;
 }
 
+// 4b. 8.16b (Vesper: round open blobs in the top-down, north loop interior, east of the lake, south of W8): a sweep of the valley floor
+// every gapStep m; wherever no tree stands within gapOpen m (so no open ground wider than about 2 x gapOpen outside the named clearings,
+// the lake and the front zone, which Free keeps out), a clump of gapClumpMin to gapClumpMax firs 8 to 20 m and a bush, at most gapMax
+int gapClumps = 0;
+{
+    var gf = new UnityEngine.GameObject("GapClumps").transform; gf.SetParent(forest, false);
+    const float gapStep = 8f, gapOpen = 15f, gapClumpR = 5f, gapX0 = 40f, gapX1 = 392f, gapZ0 = -20f, gapZ1 = 300f, gapJitter = 3f; const int gapMax = 45, gapClumpMin = 3, gapClumpMax = 6;
+    var burnP = new[] { P(185f, 181f), P(340f, 213f), P(340f, 143f), P(185f, 151f) };   // 8.15's old burn: its regrowth fills it
+    for (float gx = gapX0; gx < gapX1 && gapClumps < gapMax; gx += gapStep) for (float gz = gapZ0; gz < gapZ1 && gapClumps < gapMax; gz += gapStep)
+    {
+        var p = P(gx + R(-gapJitter, gapJitter), gz + R(-gapJitter, gapJitter)); if (Inside(p, burnP)) continue;
+        bool open = true; foreach (var t in trees) if ((t.p - p).sqrMagnitude < gapOpen * gapOpen) { open = false; break; } if (!open) continue;
+        if (!Free(p, firSpace, floorSlope)) continue;
+        int want = gapClumpMin + rng.Next(gapClumpMax - gapClumpMin + 1), n = 0;
+        for (int t = 0; t < groveTries && n < want; t++) { var q = InDisk(p, gapClumpR); if (Free(q, firSpace, floorSlope) && Fir(gf, q, 8f, 20f) != null) n++; }
+        if (n > 0) { Foot(gf, SUF + "Bush" + (1 + rng.Next(4)), p, gapClumpR, 1.2f, 2f, true); gapClumps++; }
+    }
+}
 // 5. beyond the highway: masses of firs and pines 20 to 35 m on the outer ground, 100 to 400 m past the road
 int beyondN = 0;
 {
     var bf = new UnityEngine.GameObject("BeyondRoad").transform; bf.SetParent(forest, false);
     for (int t = 0; t < beyondTrees * 6 && beyondN < beyondTrees; t++)
     {
-        var p = P(R(roadX + beyondNear, roadX + beyondFar), R(beyondZ0, beyondZ1));
+        bool nearBand = beyondN < beyondTrees * beyondNearShare / 100; var p = P(nearBand ? R(roadX + beyondNear, roadX + beyondMid) : R(roadX + beyondBack, roadX + beyondFar), R(beyondZ0, beyondZ1));
         float gy = float.MinValue; foreach (var h in UnityEngine.Physics.RaycastAll(V(p.x, beyondRayTop, p.y), UnityEngine.Vector3.down, beyondRayTop * 2f, UnityEngine.Physics.AllLayers, UnityEngine.QueryTriggerInteraction.Ignore)) gy = UnityEngine.Mathf.Max(gy, h.point.y);
         if (gy == float.MinValue) continue;
         bool crowd = false; foreach (var tr in trees) if ((tr.p - p).sqrMagnitude < beyondSpace * beyondSpace) { crowd = true; break; } if (crowd) continue;
-        if (Tree(firPaths[rng.Next(firPaths.Length)], bf, p, R(20f, 35f), gy, beyondSpace) != null) beyondN++;
+        if (Tree(firPaths[rng.Next(firPaths.Length)], bf, p, nearBand ? R(nearLow, nearHigh) : R(backLow, backHigh), gy, beyondSpace) != null) beyondN++;
     }
 }
 
 // 8.16a (Wren: standing snags stopped nobody): a capsule on a dead tree's trunk only, measured from its mesh: the median reach of the
 // vertices in the lowest snagTrunkBand of its height about their centre, up snagTrunkShare of its height (limbs start above that)
-const float snagTrunkBand = 0.15f, snagTrunkShare = 0.4f;
-void SnagTrunk(UnityEngine.GameObject g)
-{
-    foreach (var c in g.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);   // the pack's convex hull takes in the limbs
-    var mf = g.GetComponentInChildren<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) return;
-    var m = mf.sharedMesh; float y0 = m.bounds.min.y, h = m.bounds.size.y, cx = 0f, cz = 0f; int n = 0; var vs = m.vertices;
-    foreach (var v in vs) if (v.y < y0 + h * snagTrunkBand) { cx += v.x; cz += v.z; n++; } if (n == 0) return; cx /= n; cz /= n;
-    var d = new System.Collections.Generic.List<float>(); foreach (var v in vs) if (v.y < y0 + h * snagTrunkBand) d.Add(UnityEngine.Mathf.Sqrt((v.x - cx) * (v.x - cx) + (v.z - cz) * (v.z - cz))); d.Sort();
-    var cap = mf.gameObject.AddComponent<UnityEngine.CapsuleCollider>(); cap.direction = 1; cap.radius = d[d.Count / 2]; cap.height = h * snagTrunkShare; cap.center = new UnityEngine.Vector3(cx, y0 + h * snagTrunkShare * 0.5f, cz);
-}
+const float snagTrunkBand = 0.15f, snagTrunkShare = 0.4f, fallenTrunkShare = 0.7f;   // 8.16b (Marlow: the fallen trunks had no collider): a lying trunk keeps fallenTrunkShare of its length
+void SnagTrunk(UnityEngine.GameObject g) => PlaceKit.DeadTrunkCapsule(g, snagTrunkBand, snagTrunkShare);
 // 6. the old burn: 20 snags and 10 fallen trunks (Celestia's dead tree on the charred wood material)
 {
     var burn = new UnityEngine.GameObject("BurnDeadwood").transform; burn.SetParent(forest, false);
@@ -303,19 +330,33 @@ void SnagTrunk(UnityEngine.GameObject g)
     var charred = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Slice/Slice_RoofChar.mat");
     const string dead = "Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Decoration_Out/Tree_Dead";
     int snags = 0, fallen = 0;
+    // 8.16b (Vesper: the burn reads as a hard-edged green rectangle from the top): young firs thinning out past its edge, every
+    // featherStep m along each side, at featherOut m or less outside it, more often nearer the edge
+    const float featherStep = 3f, featherOut = 14f; int feathered = 0;
+    for (int e = 0; e < burnPoly.Length; e++)
+    {
+        var a = burnPoly[e]; var b = burnPoly[(e + 1) % burnPoly.Length]; var t = (b - a).normalized; var o = P(t.y, -t.x);
+        if (Inside((a + b) * 0.5f + o, burnPoly)) o = -o;   // outward
+        for (float s = 0f; s < (b - a).magnitude; s += featherStep)
+        {
+            float d = R(0f, featherOut); if (R(0f, 1f) > 1f - d / featherOut) continue;
+            var p = a + t * s + o * d; if (Free(p, firSpace, floorSlope) && Fir(burn, p, 3f, 8f) != null) feathered++;
+        }
+    }
     for (int t = 0; t < 600 && (snags < burnSnags || fallen < burnFallen); t++)
     {
         var p = P(R(185f, 340f), R(143f, 213f)); if (!Inside(p, burnPoly) || !Free(p, snagSpace, floorSlope)) continue;
         bool lying = snags >= burnSnags; var g = Spawn(dead, burn); if (g == null) break;
-        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), lying ? R(80f, 88f) : R(-4f, 4f)); g.transform.position = V(p.x, 0f, p.y); g.transform.localScale = UnityEngine.Vector3.one;
+        // 8.16b (trunk check: a player got under the raised end of a trunk lying at 80 to 88 degrees): fallen trunks lie flat
+        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), lying ? 90f : R(-4f, 4f)); g.transform.position = V(p.x, 0f, p.y); g.transform.localScale = UnityEngine.Vector3.one;
         float h0 = lying ? 4.3f : Top(g) - Bottom(g); float s = R(lying ? 6f : 8f, lying ? 12f : 16f) / UnityEngine.Mathf.Max(0.5f, h0); g.transform.localScale = V(s * snagGirth, s, s * snagGirth);
         float b = Bottom(g); g.transform.position = V(p.x, H(p.x, p.y) - b - (lying ? 0.3f : 0.2f), p.y);
         if (charred != null) foreach (var rr in g.GetComponentsInChildren<UnityEngine.Renderer>()) rr.sharedMaterial = charred;
-        if (lying) fallen++; else { SnagTrunk(g); snags++; } snagsN++;
+        if (lying) { PlaceKit.DeadTrunkCapsule(g, snagTrunkBand, fallenTrunkShare); fallen++; } else { SnagTrunk(g); snags++; } snagsN++;
     }
 }
 
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " | giants " + giantsN + ", firs and pines " + firsN + " (crests " + crestN + ", open-east clumps " + eastClumpsN + "), beyond the road " + beyondN + ", burn deadwood " + snagsN + ", foot pieces " + footN + " (logs kept off low stops " + logSkips + ")"
+return "saved=" + saved + " | giants " + giantsN + ", firs and pines " + firsN + " (crests " + crestN + ", open-east clumps " + eastClumpsN + ", gap clumps " + gapClumps + "), beyond the road " + beyondN + ", burn deadwood " + snagsN + ", foot pieces " + footN + " (logs kept off low stops " + logSkips + ")"
     + " | rejected: trail " + rejTrail + ", place " + rejPlace + ", slope " + rejSlope + ", collider " + rejCollider + ", spacing " + rejSpace + " | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));

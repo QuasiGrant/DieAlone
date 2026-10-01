@@ -24,13 +24,15 @@ var clouds = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Texture>("Ass
 if (paint != null && clouds != null) { paint.SetTexture("_BaseMap", clouds); UnityEditor.EditorUtility.SetDirty(paint); } else kit.Missing.Add("Cloud_dist.png");
 
 // ---- the tent, the fire, the seat log, the lantern on the Snag (8.5's places)
-kit.Ground(PlaceKit.CS + "CS_Tent_Old_2", d, 71f, 151f, 60f, 1f, true);
-var fire = kit.Group("Fire", d, V(73.5f, kit.H(73.5f, 141.5f), 141.5f), 0f);
+// 8.17 gate (Vesper, Camp 3 D: no tent or fire in any frame): tent and fire on the flat 8 to 13 m in front of the Camp 3 warp (74, 142, facing
+// north-east), clear of the trail end
+kit.Ground(PlaceKit.CS + "CS_Tent_Old_2", d, 80.5f, 153f, 215f, 1f, true);
+var fire = kit.Group("Fire", d, V(76.5f, kit.H(76.5f, 149.5f), 149.5f), 0f);
 kit.On(PlaceKit.CS + "CS_Campfire_2", fire, V(0f, 0f, 0f), 0f, 1f, false, null, true);
 kit.On(PlaceKit.CS + "Wood/CS_Firewood_Logs_Burnt", fire, V(0f, 0.05f, 0f), 80f, 1f, false, null, true);
 kit.On(PlaceKit.CS + "CS_Campfire_Pot_Hanger_Wood", fire, V(0f, 0f, 0f), 30f, 1f, false, null, true);
-kit.On(PlaceKit.CS + "Cookware/CS_Cookware_Pot_3", fire, V(0.9f, 0f, -0.6f), 0f, 1f, false, null, true);
-kit.Ground(PlaceKit.CS + "Wood/CS_Log_Large_Long_Seat_1", d, 71.2f, 139.6f, 70f, 1f, true);
+kit.On(PlaceKit.CS + "Cookware/CS_Cookware_Pot_3", fire, V(0f, 0.12f, 0f), 0f, 1f, false, null, true);   // a pot on the cold fire
+kit.Ground(PlaceKit.CS + "Wood/CS_Log_Large_Long_Seat_1", d, 74.6f, 151.2f, 40f, 1f, true);
 var snag = kit.Root("Giants").transform.Find("Heroes/Snag");
 if (snag != null)
 {
@@ -41,11 +43,13 @@ if (snag != null)
     kit.Practical("LanternGlow", lan, V(0f, 0f, 0.2f), 4f, PracticalLight.Kind.Lantern, PracticalLight.ByDay.Off);
 }
 // ---- a camp mid-task: a paint box open by the fire, rags on the log, brushes in a jar, a bucket of water, his pack
-kit.Ground(PlaceKit.CI + "Props/CITW_Crate", d, 75.5f, 140.4f, 20f, 0.8f, true);
-kit.Ground(PlaceKit.CI + "Props/CITW_Jar", d, 75.4f, 140.9f, 0f, 1f, false, -0.35f);
-kit.Ground(PlaceKit.CI + "Props/CITW_Bucket", d, 76.4f, 139.8f, 0f, 1f, false);
-kit.Ground(PlaceKit.CS + "Bags/CS_Backpack_Old_3", d, 72.8f, 150.0f, 200f, 1f, false);
-kit.Ground(PlaceKit.CS + "Beds/CS_Bedroll_Old_Rolled_2", d, 73.5f, 151.2f, 150f, 1f, false);
+// the paint box, jar and rag at the easel foot
+kit.Ground(PlaceKit.CI + "Props/CITW_Crate", d, 84.6f, 149.8f, 20f, 0.6f, true);
+kit.Ground(PlaceKit.CI + "Props/CITW_Jar", d, 84.6f, 149.8f, 0f, 1f, false, -0.5f);
+kit.Ground(PlaceKit.CS + "CS_Bedroll_Old_1", d, 83.1f, 150.4f, 70f, 0.35f, false);   // a rag
+kit.Ground(PlaceKit.CI + "Props/CITW_Bucket", d, 77.8f, 150.6f, 0f, 1f, false);
+kit.Ground(PlaceKit.CS + "Bags/CS_Backpack_Old_3", d, 79.0f, 154.0f, 200f, 1f, false);
+kit.Ground(PlaceKit.CS + "Beds/CS_Bedroll_Old_Rolled_2", d, 82.6f, 151.4f, 150f, 1f, false);
 
 // ---- a canvas: a linen back and frame, the painted face on its front (local -z); bottom centre at the parent's origin
 UnityEngine.Transform Canvas(string name, UnityEngine.Transform parent, UnityEngine.Vector3 lp, float yaw, float lean, float w, float h, bool faceOut)
@@ -58,18 +62,38 @@ UnityEngine.Transform Canvas(string name, UnityEngine.Transform parent, UnityEng
     return g;
 }
 // canvases faced to the rock of the west bank, backs to the camp (Valley 1.4)
-// the bank foot: from the centre west along z 146.5 to where the ground rises bankRise over the floor, bankBack short of it
-const float bankRise = 0.4f, bankBack = 0.5f, bankZ = 146.5f; float floorY = kit.H(cx, bankZ), footX = cx;
-while (footX > cx - 14f && kit.H(footX - 0.25f, bankZ) < floorY + bankRise) footX -= 0.25f; footX += bankBack;
-var stack = kit.Group("FacedCanvases", d, V(footX, kit.H(footX, bankZ), bankZ), 0f);
-float bankYaw = -90f;   // the face toward the bank (west), backs toward the camp
-for (int i = 0; i < 5; i++) Canvas("Canvas", stack, V(0.12f * i, kit.H(footX + 0.12f * i, bankZ - 1.6f + i * 0.75f) - stack.position.y, -1.6f + i * 0.75f), bankYaw + 180f + (i % 2) * 6f, -10f + i, 0.7f + 0.15f * (i % 3), 0.9f + 0.2f * (i % 2), false);
+// 8.17 gate (Quill: the canvases did not read, boulders stood in front of them): the bank foot is searched round the hollow for a
+// stretch of bare rock: from the centre out along each bearing (every bankStep degrees from bankFrom) to where the ground rises bankRise
+// over the floor, bankBack short of it, and the first with no 8.15 face rock within rockClear m and no trail within trailClear m wins
+const float bankRise = 0.4f, bankBack = 0.5f, bankStep = 10f, bankFrom = 270f, rockClear = 3f, trailClear = 3.5f; float floorY = kit.H(cx, cz);
+var faceRocks = new System.Collections.Generic.List<UnityEngine.Bounds>(); var fr = kit.Root("Ground815") != null ? kit.Root("Ground815").transform.Find("Stops/FaceRock") : null;
+if (fr != null) foreach (var r in fr.GetComponentsInChildren<UnityEngine.Renderer>()) faceRocks.Add(r.bounds);
+var trailP = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform leg in kit.Root("Trails").transform) foreach (UnityEngine.Transform p in leg) trailP.Add(new UnityEngine.Vector2(p.position.x, p.position.z));
+UnityEngine.Vector3 foot = V(cx - 8f, 0f, cz); float bankYaw = -90f; bool bare = false;
+for (float k = 0f; k < 360f && !bare; k += bankStep)
+{
+    foreach (var sgn in new[] { 1f, -1f })
+    {
+        float b = bankFrom + sgn * k; var dir = V(UnityEngine.Mathf.Sin(b * UnityEngine.Mathf.Deg2Rad), 0f, UnityEngine.Mathf.Cos(b * UnityEngine.Mathf.Deg2Rad)); float s = 0f;
+        while (s < 14f && kit.H(cx + dir.x * (s + 0.25f), cz + dir.z * (s + 0.25f)) < floorY + bankRise) s += 0.25f;
+        var q = V(cx + dir.x * (s - bankBack), 0f, cz + dir.z * (s - bankBack)); bool ok = true;
+        foreach (var rb in faceRocks) if (rb.SqrDistance(V(q.x, rb.center.y, q.z)) < rockClear * rockClear) { ok = false; break; }
+        foreach (var t in trailP) if ((t - new UnityEngine.Vector2(q.x, q.z)).sqrMagnitude < trailClear * trailClear) { ok = false; break; }
+        if (ok) { foot = q; bankYaw = b; bare = true; break; }
+    }
+}
+var stack = kit.Group("FacedCanvases", d, V(foot.x, kit.H(foot.x, foot.z), foot.z), bankYaw);   // local +z toward the bank
+for (int i = 0; i < 4; i++) Canvas("Canvas", stack, V(-1.5f + i * 0.95f, kit.H(stack.TransformPoint(V(-1.5f + i * 0.95f, 0f, 0f)).x, stack.TransformPoint(V(-1.5f + i * 0.95f, 0f, 0f)).z) - stack.position.y, 0f), 180f + (i % 2) * 6f, -12f + i, 1.0f + 0.15f * (i % 3), 1.3f + 0.25f * (i % 2), false);
+// the job form (Quill): one white sheet weighted with a mug, on the flat by the tent, nothing else near it
+var form = kit.Group("JobForm", d, V(77.6f, kit.H(77.6f, 155.4f), 155.4f), 20f);
+kit.On(PlaceKit.CE + "Decoration_Home/Paper", form, V(0f, 0f, 0f), 0f, 1f, false, null, true);
+kit.On(PlaceKit.CI + "Props/CITW_Mug", form, V(0.05f, 0.005f, 0.04f), 0f, 1f, false, null, true);
 // the easel: two front legs, a back leg, a ledge; the one canvas on it faces the camp across open floor (M6), a stool 1.6 m in front
-var easel = kit.Group("Easel", d, V(81.5f, kit.H(81.5f, 150.5f), 150.5f), 0f);
-float faceYaw = UnityEngine.Quaternion.LookRotation(V(81.5f - cx, 0f, 150.5f - cz)).eulerAngles.y;   // the painting's face (local -z) looks back toward the camp centre
+var easel = kit.Group("Easel", d, V(83.5f, kit.H(83.5f, 149f), 149f), 0f);
+float faceYaw = UnityEngine.Quaternion.LookRotation(V(83.5f - cx, 0f, 149f - cz)).eulerAngles.y;   // the painting's face (local -z) looks back toward the camp centre
 easel.localRotation = UnityEngine.Quaternion.Euler(0f, faceYaw, 0f);
-foreach (var sx in new[] { -0.35f, 0.35f }) kit.Slab("Leg", easel, V(sx, 0.85f, 0f), V(0.05f, 1.75f, 0.05f), easelWood, V(-8f, 0f, sx > 0f ? -6f : 6f));
-kit.Slab("BackLeg", easel, V(0f, 0.8f, 0.45f), V(0.05f, 1.7f, 0.05f), easelWood, V(22f, 0f, 0f));
+foreach (var sx in new[] { -0.35f, 0.35f }) kit.Slab("Leg", easel, V(sx, 0.85f, 0f), V(0.07f, 1.75f, 0.07f), easelWood, V(-8f, 0f, sx > 0f ? -6f : 6f));
+kit.Slab("BackLeg", easel, V(0f, 0.8f, 0.45f), V(0.07f, 1.7f, 0.07f), easelWood, V(22f, 0f, 0f));
 kit.Slab("Ledge", easel, V(0f, 0.72f, -0.08f), V(0.9f, 0.04f, 0.08f), easelWood);
 Canvas("TheCanvas", easel, V(0f, 0.74f, -0.02f), 0f, -8f, 0.9f, 1.1f, true);
 kit.On(PlaceKit.CS + "CS_Stool_2", easel, V(0f, 0f, -1.6f), 0f, 1f, true, null, true);

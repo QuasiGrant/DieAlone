@@ -131,9 +131,14 @@ float SAt(float x, float z) { int bi = 0; float bd = float.MaxValue; for (int i 
 const float landmarkShare = 0.6f;
 float sP1 = SAt(52f, 216f), sP2 = SAt(57f, 276f), sP3 = SAt(26f, 304f), sP4 = SAt(26f, 262f), sSeep = sP1 - 3.5f, sRune = (sP1 + sP2) * 0.5f;
 float sSnag = L2(sP2, sP3, landmarkShare), sFir = L2(sP3, sP4, landmarkShare);
-Mark("Seep_Rock", sSeep, -2.1f, Cube, V(0.4f, 2.5f, 2f), 1.25f); Mark("Seep_Cup", sSeep, -1.8f, Cyl, V(0.1f, 0.06f, 0.1f), 1.3f);
-Mark("RunePost", sRune, 2.6f, Cube, V(0.3f, 2f, 0.3f), 1f);
-Mark("BentFir", sFir, 2.2f, Cyl, V(0.35f, 2f, 0.35f), 0.5f, 90f);
+// 8.16b (Marlow 6, Vesper: a grey plank floating across the trail on leg 4, grey stand-ins on the climb): the seep, the rune post and the
+// bent fir are owned meshes now (the gray primitives are in git history): a BK boulder with a bowl at its foot for the seep, a small carved
+// menhir for the rune post, a young red fir leaning hard over the trail's valley side for the bent fir (named RedFir_Bent, so the trunk check
+// takes it as one tree), a trunk capsule on it
+Owned("Seep_Rock", "Assets/BK/PureNature_Redwood/Prefabs/Rocks/Boulder_3.prefab", sSeep, -2.4f, 0.3f, V(0.45f, 0.45f, 0.45f), V(0f, 30f, 0f));
+Owned("Seep_Cup", "Assets/Revolving Pizza Games/Cabin In The Woods/Prefabs/Props/CITW_Bowl_Small.prefab", sSeep, -1.5f, 0f, UnityEngine.Vector3.one, UnityEngine.Vector3.zero);
+Owned("RunePost", "Assets/Effigy GameWorks/Menhir Stone Circle/Prefabs/Single/Rock/Rock - Carved Runes/StoneMenhir_1_Rock_CarvedRunes.prefab", sRune, 2.6f, 0.2f, V(0.27f, 0.27f, 0.27f), V(0f, 15f, 4f));
+PlaceKit.DeadTrunkCapsule(Owned("RedFir_Bent", "Assets/BK/PureNature_Redwood/Prefabs/Trees/RedFir4.prefab", sFir, 2.2f, 0.1f, UnityEngine.Vector3.one, V(0f, 0f, -35f)), 0.1f, 0.5f);
 // 8.14a (Vesper: pale untextured pillars, a flat untextured overhang slab, a white disc): the split snag, the platform hides and the root
 // plate from owned art, colliders removed (the climb's pieces never catch the player); the chute steps take 8.1's rock
 var bandRock = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Blockout/Blockout_BandRock.mat"); if (bandRock == null) return "no Blockout_BandRock (8.1)";
@@ -155,8 +160,10 @@ UnityEngine.GameObject Owned(string name, string path, float s, float side, floa
 }
 float deadUnitTall = 0f; { var pf = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(climbDeadTree); if (pf == null) return "missing Tree_Dead"; foreach (var r in pf.GetComponentsInChildren<UnityEngine.Renderer>()) deadUnitTall = UnityEngine.Mathf.Max(deadUnitTall, r.bounds.max.y); }
 UnityEngine.Vector3 DeadScale(float tall, float girth) => V(girth / deadTreeUnitGirth, tall / UnityEngine.Mathf.Max(0.5f, deadUnitTall), girth / deadTreeUnitGirth);
-Owned("SplitSnag_L", climbDeadTree, sSnag, -1.2f, 0.3f, DeadScale(7f, 1.2f), V(0f, 20f, -4f));   // the two halves of one split trunk, leaning apart
-Owned("SplitSnag_R", climbDeadTree, sSnag, 1.2f, 0.3f, DeadScale(6f, 1.1f), V(0f, 200f, 5f));
+// 8.16b (Marlow: the player walked into both halves): a capsule on each trunk (PlaceKit.DeadTrunkCapsule, as the burn snags)
+const float splitTrunkBand = 0.15f, splitTrunkShare = 0.5f;
+PlaceKit.DeadTrunkCapsule(Owned("SplitSnag_L", climbDeadTree, sSnag, -1.2f, 0.3f, DeadScale(7f, 1.2f), V(0f, 20f, -4f)), splitTrunkBand, splitTrunkShare);   // the two halves of one split trunk, leaning apart
+PlaceKit.DeadTrunkCapsule(Owned("SplitSnag_R", climbDeadTree, sSnag, 1.2f, 0.3f, DeadScale(6f, 1.1f), V(0f, 200f, 5f)), splitTrunkBand, splitTrunkShare);
 Owned("P1_Overhang", bkRocks + "Boulder_2.prefab", sP1, -2.6f, 0.6f, V(0.55f, 0.55f, 0.55f), V(8f, 30f, 0f));
 Owned("P2_RockRoof", bkRocks + "BigBoulders_3.prefab", sP2, -3f, 1f, V(0.5f, 0.45f, 0.5f), V(-10f, 70f, 6f));
 Owned("P3_RootPlate", climbDeadTree, sP3, 2.6f, -0.4f, DeadScale(6f, 1.4f), V(0f, 60f, 84f));   // a fallen snag, its root end toward the trail

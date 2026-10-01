@@ -10,7 +10,7 @@ if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 var kit = new PlaceKit(scene);
 if (kit.Root("Forest") == null) return "run 8.16 first";
 var V = new System.Func<float, float, float, UnityEngine.Vector3>((x, y, z) => new UnityEngine.Vector3(x, y, z));
-const float menhirSink = 0.4f, bigBoulderWidth = 6.1f, boulderSink = 0.6f;
+const float menhirSink = 0.4f, bigBoulderWidth = 6.1f;
 // ---- Ward stones
 var stones = kit.Root("Ward").transform.Find("Stones"); if (stones == null) return "no Ward/Stones";
 var ward = kit.Fresh("StonesDressing", kit.Root("Ward").transform, stones.position, 0f);
@@ -22,15 +22,20 @@ foreach (UnityEngine.Transform s in stones)
         ward.InverseTransformPoint(V(b.center.x, b.min.y - menhirSink, b.center.z)), V(b.size.x, b.size.y + menhirSink, b.size.z), menhirs * 70f);
     menhirs++;
 }
-// ---- trail boulders
+// ---- trail boulders. 8.17 gate (Vesper): two meshes, three sizes, sunk sinkShare of their height; rerunnable (a swapped one is a bare
+// POI_Boulder group whose children are rebuilt; 8.3's spheres are poiWidth m across)
+const float poiWidth = 5f, sinkShare = 0.2f;
+var picksB = new[] { ("BigBoulders_0", 1.0f), ("Boulder_2", 0.8f), ("BigBoulders_3", 1.2f), ("Boulder_5", 0.9f) };
 var poi = kit.Root("PointsOfInterest").transform; int swapped = 0;
 foreach (var t in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(poi)))
 {
-    if (t.name != "POI_Boulder" || t.GetComponent<UnityEngine.MeshRenderer>() == null) continue;   // an already swapped one is a bare group
-    var p = t.position; float w = t.localScale.x;
-    PlaceKit.Remove(t);
-    var g = kit.Group("POI_Boulder", poi, p, 0f);
-    kit.Ground(PlaceKit.BK + "Rocks/BigBoulders_" + (swapped % 6), g, p.x, p.z, swapped * 83f, w / bigBoulderWidth * 1.1f, true, boulderSink);
+    if (t.name != "POI_Boulder") continue;
+    var p = t.position; var mr = t.GetComponent<UnityEngine.MeshRenderer>();
+    if (mr != null) { UnityEngine.Object.DestroyImmediate(t.GetComponent<UnityEngine.Collider>()); UnityEngine.Object.DestroyImmediate(mr); UnityEngine.Object.DestroyImmediate(t.GetComponent<UnityEngine.MeshFilter>()); t.localScale = UnityEngine.Vector3.one; }
+    foreach (var c in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(t))) PlaceKit.Remove(c);
+    var pick = picksB[swapped % picksB.Length];
+    var g = kit.Ground(PlaceKit.BK + "Rocks/" + pick.Item1, t, p.x, p.z, swapped * 83f, poiWidth * pick.Item2 / bigBoulderWidth * 1.1f, true, 0f);
+    if (g != null) g.transform.position -= V(0f, PlaceKit.MeshBounds(g).size.y * sinkShare, 0f);
     swapped++;
 }
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();

@@ -14,6 +14,7 @@
 //    within spikeTopDrop metres of the zone's highest ground and within spikeTopReach metres of it (standing on a top). A zone whose
 //    top stands less than spikeRise over the highest ground on the ring spikeOut outside it has no spike left and passes as it is.
 // 5. FENCE (13.6): a walk north along the inside of the fence (x fenceWalkX, z 160 to 300), reported with where it stalls; and walks and
+// 6. CAMP 2 POCKET (8.17 gate, Marlow 1): the sprint into the talus pocket by the stack and 16 sprint-jumps out of wherever it stops.
 //    sprint-jumps east every 5 m; FAIL if one ends east of the fence (IW1 and the panels hold).
 // 6. TRAPS (8.15, Wren: nobody trapped however they got there): the player is dropped on every trapStep grid point over the climb zone
 //    (x -12 to 92, z 190 to 335; not inside rock), left trapSettle seconds to slide, and from each distinct place it settles (trapStep grid) tries 8 walks
@@ -217,6 +218,24 @@ try
             }
     if (ff > 0) allPass = false;
     sb.Append("FENCE: walk north along x " + fenceWalkX + " from z " + fenceZ0 + " to " + fenceZ1 + ": " + (stalls.Count == 0 ? "no stall" : "stalls at " + string.Join(", ", stalls)) + " (report); " + ft + " pushes east, " + ff + " past the fence: " + (ff == 0 ? "PASS" : "FAIL") + fFirst + "\n");
+    // 6. 8.17 gate (Marlow 1): Marlow's Camp 2 trap: sprint from (287, 107) toward (290.2, 113.5) for pocketRunSeconds, then try to
+    // leave by sprint-jumping on 16 headings for pocketRunSeconds each; a FAIL when no heading gets pocketOut m from where it stopped
+    {
+        const float pocketRunSeconds = 3f, pocketOut = 2f; var from2 = new UnityEngine.Vector3(287f, 0f, 107f); var to2 = new UnityEngine.Vector2(290.2f, 113.5f);
+        from2.y = ter.SampleHeight(from2) + ter.transform.position.y; Put(from2);
+        var dir2 = new UnityEngine.Vector3(to2.x - from2.x, 0f, to2.y - from2.z).normalized;
+        for (float t = 0f; t < pocketRunSeconds; t += dt) pc.Step(dir2, false, true, dt);
+        for (int k = 0; k < 20; k++) pc.Step(UnityEngine.Vector3.zero, false, false, dt);
+        var stop = pc.transform.position; int outs = 0;
+        for (int h = 0; h < 16; h++)
+        {
+            Put(stop - UnityEngine.Vector3.up * 0.3f); var d2 = UnityEngine.Quaternion.Euler(0f, h * 22.5f, 0f) * UnityEngine.Vector3.forward;
+            for (float t = 0f; t < pocketRunSeconds; t += dt) pc.Step(d2, true, true, dt);
+            if (new UnityEngine.Vector2(pc.transform.position.x - stop.x, pc.transform.position.z - stop.z).magnitude > pocketOut) outs++;
+        }
+        bool ok2 = outs > 0; if (!ok2) allPass = false;
+        sb.Append("CAMP 2 POCKET: sprint from (287, 107) toward (290.2, 113.5) stopped at " + stop.ToString("F1") + "; " + outs + " of 16 sprint-jumps leave it: " + (ok2 ? "PASS" : "FAIL") + "\n");
+    }
 }
 finally
 {

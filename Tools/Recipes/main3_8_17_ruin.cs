@@ -45,6 +45,10 @@ var slid = kit.On(PlaceKit.CI + "Building/CITW_Roof_1", ruin, V(4.2f, 0f, 0.4f),
 kit.On(PlaceKit.CE + "Decoration_Home/Potbelly_Stove", ruin, V(1.9f, 0f, -1.3f), 20f, 1f, true, null, true);
 kit.On(PlaceKit.CE + "Decoration_Home/Potbelly_Stove_Pipe_Long", ruin, V(2.1f, 1.1f, -1.3f), 0f, 1.6f, false, V(0f, 0f, -14f), true);
 kit.On(PlaceKit.CI + "Props/CITW_Trunk_2", ruin, V(-2.3f, 0f, -1.4f), 90f, 1f, true, null, true);
+// 8.17 gate (Quill): a report box by the doorway, the same kind as at the player's cabin (8.9d: the Cabin crate at 0.3 x 0.3 x 0.4), on a stump
+var boxStump = kit.On(PlaceKit.CI + "Vegetation/CITW_Tree_Stump", ruin, V(1.4f, 0f, 2.7f), 30f, 1f, true, null, true);
+float stumpTop = boxStump != null ? PlaceKit.LocalBounds(boxStump, ruin).max.y : 0.5f;
+kit.Fill(PlaceKit.CI + "Props/CITW_Crate", ruin, V(1.4f, stumpTop, 2.7f), V(0.3f, 0.3f, 0.4f));
 kit.On(PlaceKit.CI + "Furniture/CITW_Rocking_Chair", ruin, V(-1.8f, 0f, 1.0f), 160f, 1f, false, V(0f, 0f, 80f), true);   // on its side
 for (int i = 0; i < 5; i++) kit.On(PlaceKit.CC + "Props/C_Plank_B_Thick", ruin, V(-1.5f + i * 0.9f, 0.02f * i, 0.6f - (i % 2) * 1.1f), i * 41f, 1f, false, null, true);
 foreach (var lp in new[] { V(-1f, 0f, 0.3f), V(1.2f, 0f, 1.2f), V(3.8f, 0f, -1.5f) }) kit.On(PlaceKit.BK + "Plants/DeadLeaves" + (1 + (int)(lp.x + 2f) % 2), ruin, lp, lp.x * 30f, 0.6f, false, null, true);

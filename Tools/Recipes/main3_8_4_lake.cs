@@ -39,6 +39,7 @@ w.GetComponent<UnityEngine.Renderer>().sharedMaterial = waterMat;
 // wadeOver over the ground there, so the water's visible edge is the stop (Valley.md 8); under the dock deck and the boathouse floor they stay low
 var wade = new UnityEngine.GameObject("WadeLimit"); wade.transform.SetParent(Lk, false);
 const int segs = 96; const float wadeRing = 1f, wadeOver = 1.5f, wadeReach = 10f, wadeReachStep = 1f, wadeSide = 1f;
+const float dockX0 = 188.4f, dockX1 = 191.6f, dockZ = 80f, underDockTop = -5.0f;   // the dock deck's x span (map) and its water-level box top
 // 8.14a gate (Marlow: at the lake's ends the ring stood 1.1 to 1.5 m short of the water on dry ground): each ring point moves in along
 // its ray from the centre to where the ground first falls to the water (searched from wadeOut down to wadeIn of the ellipse)
 const float wadeOut = 1.1f, wadeIn = 0.8f, wadeSearch = 0.005f, wadeWet = 0.05f;
@@ -63,8 +64,28 @@ for (int i = 0; i < segs; i++)
     // ground within wadeReach landward of the box (on the ray from the lake centre, and wadeSide either side), so no jump from the bank clears it
     float bankTop = H(mid.x, mid.z); var outDir = new UnityEngine.Vector2(mid.x - cx, mid.z - cz).normalized;
     for (float s = 0f; s <= wadeReach; s += wadeReachStep) foreach (var sd in new[] { -wadeSide, 0f, wadeSide }) bankTop = UnityEngine.Mathf.Max(bankTop, H(mid.x + outDir.x * s - outDir.y * sd, mid.z + outDir.y * s + outDir.x * sd));
-    bool underDock = mid.x > 188.4f && mid.x < 191.6f && mid.z > 80f; float boxTop = underDock ? -5.0f : bankTop + wadeOver;
+    bool underDock = mid.x > dockX0 && mid.x < dockX1 && mid.z > dockZ; float boxTop = underDock ? underDockTop : bankTop + wadeOver;
     if (mid.x > 236f && mid.x < 244f && mid.z > 49f && mid.z < 56f) boxTop = UnityEngine.Mathf.Min(boxTop, -4.05f);   // under the boathouse floor (-3.8)
+    // 8.17 gate (Marlow 2: two boxes whose middles lay just off the deck crossed it 1.3 m short of its end): a box whose line crosses
+    // the dock's x span (north of dockZ) is cut into pieces, the piece under the deck at the deck's water-level top, the rest full height
+    void WadeBox(string name, UnityEngine.Vector3 a, UnityEngine.Vector3 b, float top)
+    {
+        var m = (a + b) * 0.5f; var d = b - a; if (d.magnitude < 0.05f) return;
+        var bx = new UnityEngine.GameObject(name); bx.transform.SetParent(wade.transform, false);
+        bx.transform.position = V(m.x, (top - 8.5f) * 0.5f, m.z); bx.transform.rotation = UnityEngine.Quaternion.LookRotation(d.normalized, UnityEngine.Vector3.up);
+        bx.AddComponent<UnityEngine.BoxCollider>().size = V(0.4f, top + 8.5f, d.magnitude + 0.3f);   // y -8.5 to the top
+    }
+    float lo = UnityEngine.Mathf.Min(p0.x, p1.x), hi = UnityEngine.Mathf.Max(p0.x, p1.x);
+    if (mid.z > dockZ && hi > dockX0 && lo < dockX1)
+    {
+        UnityEngine.Vector3 AtX(float x) => UnityEngine.Vector3.Lerp(p0, p1, UnityEngine.Mathf.InverseLerp(p0.x, p1.x, x));
+        var west = p0.x < p1.x ? p0 : p1; var east = p0.x < p1.x ? p1 : p0;
+        UnityEngine.Object.DestroyImmediate(box);
+        if (west.x < dockX0) WadeBox("W" + i + "_W", west, AtX(dockX0), bankTop + wadeOver);
+        WadeBox("W" + i + "_Dock", west.x < dockX0 ? AtX(dockX0) : west, east.x > dockX1 ? AtX(dockX1) : east, underDockTop);
+        if (east.x > dockX1) WadeBox("W" + i + "_E", AtX(dockX1), east, bankTop + wadeOver);
+        continue;
+    }
     box.transform.position = V(mid.x, (boxTop - 8.5f) * 0.5f, mid.z); box.transform.rotation = UnityEngine.Quaternion.LookRotation(dir.normalized, UnityEngine.Vector3.up);
     box.AddComponent<UnityEngine.BoxCollider>().size = V(0.4f, boxTop + 8.5f, dir.magnitude + 0.3f);   // y -8.5 to the top
 }

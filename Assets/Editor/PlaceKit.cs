@@ -249,5 +249,60 @@ public sealed class PlaceKit
         var g = new GameObject(name).transform; g.SetParent(parent, false); g.localPosition = lp; g.localRotation = Quaternion.Euler(0f, yaw, 0f); return g;
     }
 
+    /// One capsule on a dead tree's trunk (Celestia Tree_Dead, standing or lying), measured from its mesh: the median reach of the
+    /// vertices in the lowest band of its height about their centre, along the mesh's own up axis for share of its height (limbs start
+    /// above). The pack's convex hull takes in the limbs, so it goes. Used by 8.7 (Ward snags) and 8.16 (burn snags and fallen trunks).
+    public static void DeadTrunkCapsule(GameObject g, float band, float share)
+    {
+        if (g == null) return;
+        foreach (var c in g.GetComponentsInChildren<Collider>()) Object.DestroyImmediate(c);
+        var mf = g.GetComponentInChildren<MeshFilter>(); if (mf == null || mf.sharedMesh == null) return;
+        var m = mf.sharedMesh; float y0 = m.bounds.min.y, h = m.bounds.size.y, cx = 0f, cz = 0f; int n = 0; var vs = m.vertices;
+        foreach (var v in vs) if (v.y < y0 + h * band) { cx += v.x; cz += v.z; n++; }
+        if (n == 0) return; cx /= n; cz /= n;
+        var d = new List<float>(); foreach (var v in vs) if (v.y < y0 + h * band) d.Add(Mathf.Sqrt((v.x - cx) * (v.x - cx) + (v.z - cz) * (v.z - cz))); d.Sort();
+        var cap = mf.gameObject.AddComponent<CapsuleCollider>(); cap.direction = 1; cap.radius = d[d.Count / 2]; cap.height = h * share; cap.center = new Vector3(cx, y0 + h * share * 0.5f, cz);
+    }
+
+    /// Clears the terrain's detail layers (grass, ferns) within radius m of a world point, so a camp's ground reads trampled and
+    /// props are not buried; returns the cells cleared.
+    public int ClearDetail(Vector3 centre, float radius)
+    {
+        var data = Terrain.terrainData; int res = data.detailResolution; var org = Terrain.transform.position;
+        float cw = data.size.x / res, ch = data.size.z / res;
+        int x0 = Mathf.Clamp(Mathf.FloorToInt((centre.x - radius - org.x) / cw), 0, res - 1), x1 = Mathf.Clamp(Mathf.CeilToInt((centre.x + radius - org.x) / cw), 0, res - 1);
+        int z0 = Mathf.Clamp(Mathf.FloorToInt((centre.z - radius - org.z) / ch), 0, res - 1), z1 = Mathf.Clamp(Mathf.CeilToInt((centre.z + radius - org.z) / ch), 0, res - 1);
+        int w = x1 - x0 + 1, h = z1 - z0 + 1, cleared = 0;
+        for (int layer = 0; layer < data.detailPrototypes.Length; layer++)
+        {
+            var map = data.GetDetailLayer(x0, z0, w, h, layer);
+            for (int j = 0; j < h; j++) for (int i = 0; i < w; i++)
+            {
+                float px = org.x + (x0 + i + 0.5f) * cw, pz = org.z + (z0 + j + 0.5f) * ch;
+                if ((px - centre.x) * (px - centre.x) + (pz - centre.z) * (pz - centre.z) > radius * radius || map[j, i] == 0) continue;
+                map[j, i] = 0; cleared++;
+            }
+            data.SetDetailLayer(x0, z0, layer, map);
+        }
+        EditorUtility.SetDirty(data); return cleared;
+    }
+
+    /// Removes 8.9f's scattered ground cover (SliceLook/OpenGround and ShotGround: grass, ferns, leaves) whose pieces stand within
+    /// radius m of a world point; returns the pieces removed. The terrain's own detail layers are cleared with ClearDetail.
+    public int ClearCover(Vector3 centre, float radius)
+    {
+        var slice = Root("SliceLook"); if (slice == null) return 0; int n = 0;
+        foreach (var group in new[] { "OpenGround", "ShotGround" })
+        {
+            var g = slice.transform.Find(group); if (g == null) continue;
+            foreach (var t in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<Transform>(g)))
+            {
+                var p = t.position; if ((p.x - centre.x) * (p.x - centre.x) + (p.z - centre.z) * (p.z - centre.z) > radius * radius) continue;
+                Object.DestroyImmediate(t.gameObject); n++;
+            }
+        }
+        return n;
+    }
+
     public string Report() => "props " + Props + ", missing: " + (Missing.Count == 0 ? "none" : string.Join(", ", Missing));
 }

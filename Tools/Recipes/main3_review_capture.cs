@@ -348,6 +348,14 @@ try
         Sheet("Trail_" + Safe(leg.name) + ".jpg", "Trail " + leg.name + ": forward then back, every 10 m (" + Length(leg.pts).ToString("F0", inv) + " m)", frames, trailDiv, trailCols);
     }
     sb.Append("trails " + legs.Count + " sheets; worst trail point off the ground " + worstY.ToString("F2", inv) + " m\n");
+    // 8.16b (Pim, Gate_816a_Pim.md 2): Camp to pump FWD 50 at full size, for the water-in-view call
+    {
+        var pl = legs.Find(q => q.name == "Camp to pump"); if (pl.pts == null) return "no leg Camp to pump";
+        const float fullAt = 50f; var p = At(pl.pts, fullAt); var c = p + UnityEngine.Vector3.up * eye; var ahead = At(pl.pts, fullAt + 3f); var far = At(pl.pts, fullAt + trailStep);
+        var yawDir = new UnityEngine.Vector3(ahead.x - p.x, 0f, ahead.z - p.z).normalized; float grade = (far.y - p.y) / trailStep;
+        var frames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)> { (c, c + yawDir * 10f + UnityEngine.Vector3.up * grade * 10f, "CAMP TO PUMP FWD 50 M, FULL SIZE") };
+        Sheet("Pump_FWD50_Full.jpg", "Camp to pump FWD 50 m at full size (Pim)", frames, 1, 1);
+    }
 
     // 4. the climb, J to Ward, up
     var climb = legs.Find(q => q.name == "J to Ward");
@@ -356,8 +364,10 @@ try
     // (climbRaysX by climbRaysY): rock is terrain whose rock layer weighs climbRockWeight or more, any mesh under the Rock root, or a
     // mesh on the band rock material; sky is a ray above the horizon that hits nothing (far land below it, drawn without colliders,
     // counts as neither); drawn trees within climbTreeNear m of the climb get temporary colliders on their first LOD
-    const int climbRaysX = 64, climbRaysY = 33; const float climbRockWeight = 0.5f, climbTreeNear = 120f, climbRayMax = 3000f;
-    var climbRockSky = new System.Text.StringBuilder("\n## Climb rock and sky (ClimbFix.md 3)\n\nShare of each Climb frame that is rock and sky, from " + climbRaysX + " x " + climbRaysY + " rays per frame (method in main3_review_capture.cs, step 4). Cleft frames are the slot (exempt from the rock bar).\n\n| Frame | Rock pct | Sky pct |\n|---|---|---|\n");
+    // 8.16b (Vesper's count, Wren's call): rock counts only where the hit surface is steeper than climbSteepRock (walls, not the tread),
+    // and the partner share is "open": sky, or any hit farther than climbOpenFar m. Bar outside the cleft: rock 30 or less, open 15 or more
+    const int climbRaysX = 64, climbRaysY = 33; const float climbRockWeight = 0.5f, climbTreeNear = 120f, climbRayMax = 3000f, climbSteepRock = 35f, climbOpenFar = 60f;
+    var climbRockSky = new System.Text.StringBuilder("\n## Climb steep rock and open (ClimbFix.md 3, 8.16b count)\n\nShare of each Climb frame that is steep rock (surfaces over 35 degrees) and open (sky or anything over 60 m away), from " + climbRaysX + " x " + climbRaysY + " rays per frame (method in main3_review_capture.cs, step 4). Cleft frames are the slot (exempt from the rock bar).\n\n| Frame | Steep rock pct | Open pct |\n|---|---|---|\n");
     {
         var climbTemp = new System.Collections.Generic.List<UnityEngine.Collider>(); var climbMid = At(climb.pts, Length(climb.pts) * 0.5f);
         foreach (var lod in UnityEngine.Object.FindObjectsByType<UnityEngine.LODGroup>(UnityEngine.FindObjectsSortMode.None))
@@ -378,6 +388,8 @@ try
             {
                 var ray = cam.ViewportPointToRay(new UnityEngine.Vector3((gx + 0.5f) / climbRaysX, (gy + 0.5f) / climbRaysY, 0f)); n++;
                 if (!UnityEngine.Physics.Raycast(ray, out var h, climbRayMax, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) { if (ray.direction.y > 0f) sky++; continue; }
+                if (h.distance > climbOpenFar) { sky++; continue; }   // open: the far view
+                if (UnityEngine.Vector3.Angle(h.normal, UnityEngine.Vector3.up) <= climbSteepRock) continue;   // ground under the feet and treads are not rock walls
                 if (h.collider is UnityEngine.TerrainCollider)
                 {
                     if (rockIdx < 0) continue; var tp = terrain.transform.position; int ax = UnityEngine.Mathf.Clamp((int)((h.point.x - tp.x) / tdata.size.x * tdata.alphamapWidth), 0, tdata.alphamapWidth - 1), az = UnityEngine.Mathf.Clamp((int)((h.point.z - tp.z) / tdata.size.z * tdata.alphamapHeight), 0, tdata.alphamapHeight - 1);
@@ -400,10 +412,10 @@ try
                 Pose(c, c + yawDir * 10f + UnityEngine.Vector3.up * (far.y - p.y)); var rs = RockSky();
                 float sUp = back ? len - s : s; string name = (back ? "BACK " : "FWD ") + sUp.ToString("F0", inv) + " M";
                 climbRockSky.Append("| " + name + " | " + rs.rock.ToString("F0", inv) + " | " + rs.sky.ToString("F0", inv) + " |\n");
-                frames.Add((Render(trailDiv), "CLIMB " + name + "  Y " + p.y.ToString("F0", inv) + "  ROCK " + rs.rock.ToString("F0", inv) + " SKY " + rs.sky.ToString("F0", inv)));
+                frames.Add((Render(trailDiv), "CLIMB " + name + "  Y " + p.y.ToString("F0", inv) + "  ROCK " + rs.rock.ToString("F0", inv) + " OPEN " + rs.sky.ToString("F0", inv)));
             }
             int rows = (frames.Count + trailCols - 1) / trailCols; NewCanvas(trailCols * (tw + gap) + gap, headH + rows * (labelH + th + gap) + gap);
-            string title = "Climb J to Ward, " + (back ? "back down" : "up") + ", every 10 m (" + len.ToString("F0", inv) + " m), rock and sky percent";
+            string title = "Climb J to Ward, " + (back ? "back down" : "up") + ", every 10 m (" + len.ToString("F0", inv) + " m), steep rock and open percent";
             Text(gap + 4, 12, title, 3, gold);
             for (int i = 0; i < frames.Count; i++) { int x = gap + (i % trailCols) * (tw + gap), y = headH + (i / trailCols) * (labelH + th + gap); Blit(frames[i].px, tw, th, x, y + labelH); Text(x + 2, y + 4, frames[i].label, 2, white); }
             SaveCanvas(back ? "Climb_J_to_Ward_Back.jpg" : "Climb_J_to_Ward.jpg", title, frames.Count);
@@ -491,24 +503,42 @@ try
     // stands on (interiors); a look y of NaN looks level. The four trail boulders get one frame each from the nearest trail point,
     // placeBack m further out, facing the rock.
     {
-        const float placeFree = 999f, placeBack = 2f;
+        const float placeFree = 999f, placeBack = 2f, standStep = 0.5f, standClear = 0.6f, standDrop = 6f; const int standTries = 24;
+        var standBlockers = new System.Collections.Generic.List<UnityEngine.Bounds>(); var stopsG = UnityEngine.GameObject.Find("Ground815/Stops");
+        if (stopsG != null) foreach (var r in stopsG.GetComponentsInChildren<UnityEngine.Renderer>()) if (r.name != "Rims" && r.bounds.size.magnitude < 15f) standBlockers.Add(r.bounds);
         var spots = new (string n, float x, float y, float z, float lx, float ly, float lz)[] {
             ("STORE FRONT 12 M", 366f, placeFree, 188f, 366f, 4.5f, 200f), ("STORE FROM THE LOT", 352f, placeFree, 186f, 366f, 4.5f, 200f), ("STORE EAST SIDE", 378f, placeFree, 196f, 366f, 4f, 200f), ("STORE DOOR 4 M", 366f, placeFree, 191.5f, 366f, 4.2f, 197f),
-            ("OFFICE WEST DOOR 6 M", 338f, placeFree, 200f, 344f, 4.5f, 199f), ("OFFICE FROM SOUTH-WEST", 339f, placeFree, 188f, 350f, 4.5f, 200f), ("OFFICE SOUTH FACE", 350f, placeFree, 189f, 350f, 4.5f, 200f), ("OFFICE FRONT ROOM TO BACK ROOM", 345.5f, 3.05f, 200f, 356f, 4.4f, 201f),
-            ("CAMP 1 FROM THE WARP", 268f, placeFree, 226f, 282f, 6f, 238f), ("CAMP 1 FROM THE EAST", 296f, placeFree, 232f, 282f, 6f, 238f), ("CAMP 1 FROM THE NORTH", 282f, placeFree, 252f, 284f, 6f, 238f), ("CAMP 1 KID'S TABLE", 288f, placeFree, 234f, 285.2f, 5.5f, 236.5f),
-            ("CAMP 2 FROM THE SOUTH", 294f, placeFree, 88f, 294f, 8f, 106f), ("CAMP 2 FROM THE WEST", 280f, placeFree, 104f, 292f, 8f, 108f), ("CAMP 2 PAYPHONE AND CARD TABLE", 297f, placeFree, 93f, 298.5f, 4.8f, 99f), ("CAMP 2 STACK TOP", 294.5f, 24f, 107.2f, 292f, 24.5f, 108.5f),
-            ("CAMP 3 EASEL", 76f, placeFree, 142f, 81.5f, -3f, 150.5f), ("CAMP 3 FROM THE CREEK", 84f, placeFree, 138f, 72f, -3.5f, 148f), ("CAMP 3 CANVASES AT THE BANK", 74f, placeFree, 147f, 68f, -3.5f, 146.5f), ("CAMP 3 FROM THE RIM", 100f, placeFree, 148f, 78f, -4f, 146f),
+            ("OFFICE WEST DOOR 6 M", 338f, placeFree, 200f, 344f, 4.5f, 199f), ("OFFICE FROM SOUTH-WEST 19 M", 336.5f, placeFree, 178.5f, 350f, 4.5f, 200f), ("OFFICE SOUTH FACE", 350f, placeFree, 189f, 350f, 4.5f, 200f), ("OFFICE FRONT ROOM TO BACK ROOM", 345.5f, 3.05f, 200f, 356f, 4.4f, 201f),
+            ("CAMP 1 TENT FROM 15 M", 266f, placeFree, 220.4f, 271f, 5.8f, 234.5f), ("CAMP 1 FROM THE EAST", 296f, placeFree, 232f, 282f, 6f, 238f), ("CAMP 1 FROM THE NORTH", 282f, placeFree, 252f, 284f, 6f, 238f), ("CAMP 1 KID'S TABLE", 288f, placeFree, 234f, 285.2f, 5.5f, 236.5f),
+            ("CAMP 2 FROM THE SOUTH", 294f, placeFree, 88f, 294f, 8f, 106f), ("CAMP 2 FROM THE WEST", 279f, placeFree, 111f, 292f, 8f, 108f), ("CAMP 2 PAYPHONE AND CARD TABLE", 297f, placeFree, 93f, 298.5f, 4.8f, 99f), ("CAMP 2 STACK TOP", 294.5f, 24f, 107.2f, 292f, 24.5f, 108.5f),
+            ("CAMP 3 EASEL", 76f, placeFree, 142f, 81.5f, -3f, 150.5f), ("CAMP 3 FROM THE CREEK", 84f, placeFree, 138f, 72f, -3.5f, 148f), ("CAMP 3 CANVASES AT THE BANK", 74f, placeFree, 147f, 68f, -3.5f, 146.5f), ("CAMP 3 FROM THE RIM", 99f, placeFree, 152f, 78f, -3.2f, 151f),
             ("CAVE MOUTH FROM THE TRAIL", 52f, placeFree, 46f, 52f, -4.5f, 37f), ("CAVE MOUTH FROM THE EAST", 60f, placeFree, 44f, 52f, -4.5f, 36f), ("CAVE MOUTH AT THE BOARD", 52f, placeFree, 40f, 52f, -4.3f, 30f), ("CAVE CHAMBER TO THE SIDE ROOM", 80f, -18f, 12f, 94f, -17f, 12f),
             ("SIDE ROOM FROM THE DOOR", 90.2f, -18f, 13.8f, 94f, -17.2f, 11.5f), ("SIDE ROOM FROM THE EAST", 96.5f, -18f, 9f, 90f, -17f, 12f), ("SIDE ROOM TABLE", 93.8f, -18f, 9f, 93.8f, -17.4f, 11.5f), ("SIDE ROOM DOOR FROM INSIDE", 96.8f, -18f, 14.8f, 89.5f, -16.8f, 12f),
             ("BOATHOUSE FROM THE GANGWAY", 252f, placeFree, 50f, 240f, -3f, 52.4f), ("BOATHOUSE ACROSS THE WATER", 226f, placeFree, 64f, 240f, -3.5f, 54f), ("BOATHOUSE INSIDE", 244.6f, -3.8f, 52.4f, 238f, -3f, 52.4f), ("BOATHOUSE STEP, BOWL AND CHAIR", 233f, placeFree, 64f, 240f, -3.3f, 56f),
-            ("DOCK FROM THE PUMP TRAIL", 193f, placeFree, 99f, 190f, -4.8f, 89f), ("DOCK FROM THE WEST SHORE", 182f, placeFree, 93f, 190f, -4.5f, 90f), ("DOCK END LOOKING BACK", 190f, -4.8f, 87.5f, 190f, -4f, 96f), ("THE PUMP", 195f, placeFree, 97f, 190f, -4f, 94.8f),
+            ("DOCK FROM THE PUMP TRAIL", 195f, placeFree, 101f, 190f, -4.8f, 89f), ("DOCK FROM THE WEST SHORE", 182f, placeFree, 93f, 190f, -4.5f, 90f), ("DOCK END LOOKING BACK", 190f, -4.8f, 87.5f, 190f, -4f, 96f), ("THE PUMP", 195f, placeFree, 97f, 190f, -4f, 94.8f),
             ("NORTH RUIN FROM THE LOOP WARP", 165.8f, placeFree, 267.7f, 172f, 4f, 281f), ("NORTH RUIN DOORWAY", 167f, placeFree, 277f, 172f, 4f, 281f), ("NORTH RUIN FROM THE EAST", 178f, placeFree, 276f, 172f, 3.8f, 281f), ("NORTH RUIN FROM THE NORTH", 172f, placeFree, 288f, 172f, 4f, 281f),
-            ("WARD STONES FROM THE PATH END", -2f, placeFree, 238f, -3f, 65f, 224f), ("WARD STONES FROM THE WARP", -8.5f, placeFree, 246f, -3f, 66f, 224f), ("WARD STONES FROM THE EAST", 6f, placeFree, 230f, -3f, 65f, 224f), ("WARD STONES FROM THE WEST", -12f, placeFree, 228f, -2f, 65f, 224f),
+            ("WARD STONES FROM THE PATH END", -2f, placeFree, 238f, -3f, 65f, 224f), ("WARD STONES FROM THE WARP", -8.5f, placeFree, 246f, -3f, 66f, 224f), ("WARD STONES FROM THE EAST", 6f, placeFree, 230f, -3f, 65f, 224f), ("WARD STONES FROM THE LEDGE, EAST", -11.3f, placeFree, 223.5f, -3f, 65f, 223.5f),
+            // 8.17 gate (Vesper, Style.md 5.1): one frame at about 20 m per place for the silhouette test
+            ("STORE AT 20 M", 366f, placeFree, 175.5f, 366f, 4.5f, 200f), ("OFFICE AT 20 M", 350f, placeFree, 176f, 350f, 4.5f, 200f), ("CAMP 1 AT 20 M", 262f, placeFree, 217f, 274f, 7f, 236f),
+            ("CAMP 2 AT 20 M", 292f, placeFree, 86f, 292f, 10f, 108f), ("CAMP 3 AT 20 M", 78f, placeFree, 170f, 79f, -3f, 150f), ("CAVE MOUTH AT 20 M", 52f, placeFree, 57f, 52f, -4f, 37f),
+            ("BOATHOUSE AT 20 M", 260f, placeFree, 52.4f, 240f, -2.5f, 52.4f), ("DOCK AT 20 M", 190f, placeFree, 110f, 190f, -4.5f, 91f), ("NORTH RUIN AT 20 M", 158f, placeFree, 267f, 172f, 4f, 281f),
+            ("WARD STONES AT 20 M", -6f, placeFree, 243f, -3f, 66f, 224f),
         };
         var frames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
         foreach (var s in spots)
         {
             var c = s.y == placeFree ? Eye(new UnityEngine.Vector3(s.x, terrain.SampleHeight(new UnityEngine.Vector3(s.x, 0f, s.z)) + terrain.transform.position.y, s.z)) : new UnityEngine.Vector3(s.x, Ground(s.x, s.z, s.y) + eye, s.z);
+            // 8.17 gate (Marlow 5: frames from inside a hedge, a boulder or a trunk): the stand steps standStep m toward the look point,
+            // up to standTries times, while a collider lies within standClear m of the eye or a hedge brush or face rock mesh holds the eye
+            for (int k = 0; k < standTries; k++)
+            {
+                bool blocked = UnityEngine.Physics.CheckSphere(c, standClear, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore);
+                if (!blocked) foreach (var bb in standBlockers) if (bb.Contains(c)) { blocked = true; break; }
+                if (!blocked && s.y == placeFree && s.n.StartsWith("WARD") && UnityEngine.Mathf.Abs(c.y - eye - (terrain.SampleHeight(new UnityEngine.Vector3(s.lx, 0f, s.lz)) + terrain.transform.position.y)) > standDrop) blocked = true;   // a Ward stand off the ledge: step in
+                if (!blocked) break;
+                var standMove = new UnityEngine.Vector3(s.lx - c.x, 0f, s.lz - c.z).normalized * standStep; c += standMove;
+                c.y = (s.y == placeFree ? Ground(c.x, c.z, terrain.SampleHeight(c) + terrain.transform.position.y) : Ground(c.x, c.z, s.y)) + eye;
+            }
             frames.Add((c, new UnityEngine.Vector3(s.lx, float.IsNaN(s.ly) ? c.y : s.ly, s.lz), s.n));
         }
         var poiT = UnityEngine.GameObject.Find("PointsOfInterest"); int bi = 0;
