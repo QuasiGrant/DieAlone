@@ -112,8 +112,8 @@ var frontZone = new UnityEngine.Rect(334f, 145f, fenceX - 334f, 70f);   // the l
 var sightKeepLines = new (UnityEngine.Vector2 a, UnityEngine.Vector2 b)[] { (P(190f, 97f), P(98.7f, 145.2f)) }; const float sightKeep = 3f;
 var warpPts = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform w in Root("DevWarps").transform) warpPts.Add(P(w.position.x, w.position.z)); const float treeWarpGap = 8f;   // 8 (was 5; 8.16a: a pine's crown reached 0.6 m from the Closed_Campground warp's view)
 var trees = new System.Collections.Generic.List<(UnityEngine.Vector2 p, float r)>();   // trunks placed (and the giants 8.3 placed), with their spacing
-var existingGiants = new System.Collections.Generic.List<UnityEngine.Vector2>();
-foreach (var g in new[] { Root("Giants") }) if (g != null) foreach (UnityEngine.Transform t in g.transform) foreach (var tt in t.name == "Heroes" ? System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(t)) : new[] { t }) { trees.Add((P(tt.position.x, tt.position.z), 4f)); existingGiants.Add(P(tt.position.x, tt.position.z)); }   // the three heroes sit in a Heroes group
+var existingGiants = new System.Collections.Generic.List<UnityEngine.Vector2>(); var existingT = new System.Collections.Generic.List<UnityEngine.Transform>();
+foreach (var g in new[] { Root("Giants") }) if (g != null) foreach (UnityEngine.Transform t in g.transform) foreach (var tt in t.name == "Heroes" ? System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(t)) : new[] { t }) { trees.Add((P(tt.position.x, tt.position.z), 4f)); existingGiants.Add(P(tt.position.x, tt.position.z)); existingT.Add(tt); }   // the three heroes sit in a Heroes group
 int rejTrail = 0, rejPlace = 0, rejSlope = 0, rejCollider = 0, rejSpace = 0;
 bool Free(UnityEngine.Vector2 p, float spacing, float slopeMax, bool beyondFence = false)
 {
@@ -204,13 +204,17 @@ var groves = new (string n, UnityEngine.Vector2 c, float r, int giants, float lo
     ("LakeS1", P(165f, 18f), 14f, 7, 42f, 48f, 13), ("LakeS2", P(220f, 18f), 14f, 6, 42f, 48f, 13), ("BoathouseE", P(270f, 40f), 14f, 5, 41f, 47f, 12),
     ("Camp2E", P(325f, 100f), 14f, 5, 40f, 46f, 12), ("SE", P(340f, 40f), 16f, 6, 40f, 46f, 13), ("HollowGiant", P(208f, 130f), 10f, 4, 38f, 44f, 10),
     ("BurnEdge", P(285f, 130f), 12f, 5, 40f, 46f, 10), ("EastKnotN", P(315f, 225f), 8f, 3, 40f, 45f, 0), ("EastKnotS", P(305f, 50f), 8f, 3, 40f, 45f, 0) };
+var groveMembers = new System.Collections.Generic.List<(string n, System.Collections.Generic.List<UnityEngine.Transform> m)>();   // for the emergent read (section 7)
+var inGrove = new System.Collections.Generic.HashSet<UnityEngine.Transform>();
 foreach (var gv in groves)
 {
     var g = new UnityEngine.GameObject("Grove_" + gv.n).transform; g.SetParent(forest, false);
-    var placed = new System.Collections.Generic.List<UnityEngine.Vector2>();
+    var placed = new System.Collections.Generic.List<UnityEngine.Vector2>(); var members = new System.Collections.Generic.List<UnityEngine.Transform>();
     // 8.3's giants inside the grove count toward its number (Valley.md 10: about 115 giants in all, 41 of them already standing)
-    int standing = 0; foreach (var e in existingGiants) if (UnityEngine.Vector2.Distance(e, gv.c) <= gv.r + groveCountPad) { standing++; placed.Add(e); }
-    for (int t = 0, n = standing; t < groveTries && n < gv.giants; t++) { var p = InDisk(gv.c, gv.r); if (!Free(p, giantSpace, floorSlope)) continue; if (Giant(g, p, gv.lo, gv.hi) != null) { placed.Add(p); n++; } }
+    int standing = 0;
+    for (int i = 0; i < existingGiants.Count; i++) if (UnityEngine.Vector2.Distance(existingGiants[i], gv.c) <= gv.r + groveCountPad) { standing++; placed.Add(existingGiants[i]); if (inGrove.Add(existingT[i])) members.Add(existingT[i]); }
+    for (int t = 0, n = standing; t < groveTries && n < gv.giants; t++) { var p = InDisk(gv.c, gv.r); if (!Free(p, giantSpace, floorSlope)) continue; var gg = Giant(g, p, gv.lo, gv.hi); if (gg != null) { placed.Add(p); members.Add(gg.transform); n++; } }
+    groveMembers.Add((gv.n, members));
     for (int t = 0, n = 0; t < groveTries && n < UnityEngine.Mathf.Min(gv.firs, groveFirCap); t++)
     {
         var near = placed.Count > 0 ? placed[rng.Next(placed.Count)] : gv.c; var p = near + (InDisk(P(0f, 0f), 1f).normalized * R(firUnderLow, firUnderHigh));   // under the giants, not beside them
@@ -231,13 +235,15 @@ const float ruinScreenSpace = 2f;
     }
 }
 // C1 ring round Camp 1 (r 35) and the knoll (4 giants at 35 m round the camp clearing's edge)
+var knollM = new System.Collections.Generic.List<UnityEngine.Transform>();
 {
-    var g = new UnityEngine.GameObject("Grove_C1Ring").transform; g.SetParent(forest, false);
-    for (int t = 0, n = 0; t < groveTries && n < 7; t++) { float a = R(0f, 2f * UnityEngine.Mathf.PI); var p = P(282f, 238f) + P(UnityEngine.Mathf.Cos(a), UnityEngine.Mathf.Sin(a)) * R(c1RingIn, c1RingOut); if (Free(p, giantSpace, floorSlope) && Giant(g, p, 40f, 45f) != null) n++; }
+    var g = new UnityEngine.GameObject("Grove_C1Ring").transform; g.SetParent(forest, false); var ringM = new System.Collections.Generic.List<UnityEngine.Transform>();
+    for (int t = 0, n = 0; t < groveTries && n < 7; t++) { float a = R(0f, 2f * UnityEngine.Mathf.PI); var p = P(282f, 238f) + P(UnityEngine.Mathf.Cos(a), UnityEngine.Mathf.Sin(a)) * R(c1RingIn, c1RingOut); if (!Free(p, giantSpace, floorSlope)) continue; var gg = Giant(g, p, 40f, 45f); if (gg != null) { ringM.Add(gg.transform); n++; } }
+    groveMembers.Add(("C1Ring", ringM));
     for (int t = 0, n = 0; t < groveTries && n < 15; t++) { float a = R(0f, 2f * UnityEngine.Mathf.PI); var p = P(282f, 238f) + P(UnityEngine.Mathf.Cos(a), UnityEngine.Mathf.Sin(a)) * R(c1RingIn, c1RingOut); if (Free(p, firSpace, floorSlope) && Fir(g, p, 8f, 20f) != null) n++; }
     GroveFoot(g, P(282f, 238f) + P(0f, c1RingOut * 0.9f), c1RingOut - c1RingIn);
     var k = new UnityEngine.GameObject("Grove_Knoll").transform; k.SetParent(forest, false);
-    for (int t = 0, n = 0; t < groveTries && n < 4; t++) { float a = R(0f, 2f * UnityEngine.Mathf.PI); var p = P(170f, 160f) + P(UnityEngine.Mathf.Cos(a), UnityEngine.Mathf.Sin(a)) * R(knollIn, knollOut); if (Free(p, giantSpace, floorSlope) && Giant(k, p, knollTall, knollTall) != null) n++; }
+    for (int t = 0, n = 0; t < groveTries && n < 4; t++) { float a = R(0f, 2f * UnityEngine.Mathf.PI); var p = P(170f, 160f) + P(UnityEngine.Mathf.Cos(a), UnityEngine.Mathf.Sin(a)) * R(knollIn, knollOut); if (!Free(p, giantSpace, floorSlope)) continue; var gg = Giant(k, p, knollTall, knollTall); if (gg != null) { knollM.Add(gg.transform); n++; } }
 }
 
 // 2. the north fir wall
@@ -356,7 +362,87 @@ void SnagTrunk(UnityEngine.GameObject g) => PlaceKit.DeadTrunkCapsule(g, snagTru
     }
 }
 
+// 7. Emergent read inside the cap (Style.md 5.8, 2026-09-30): in each grove (the section 1 table with the 8.3 giants it holds, the C1
+// ring, and 8.3's other groves, clustered at clusterLink m) one giant tops out within emergentBelowMax m of giantCap with a broken
+// crown (a dead spike, spikeTall m of weathered wood, standing spikeShow m over the live crown); the rest top out restLow to restHigh m
+// below it. The knoll (8.3's knoll rule plus the knoll ring) gets one giant knollTall m tall and the rest knollRestLow to knollRestHigh
+// m. No fir or pine within firKeep m of an emergent's trunk: the emergent is the giant with the fewest firs that this recipe did not
+// plant (and no RuinScreen fir) in that ring, then the tallest; this recipe's firs in the ring are removed. Heroes are never resized
+// (the Hollow Giant, top 50, is its grove's emergent); the Snag and the Gate Tree stub are not giants here. 8.3 giants resize with
+// their 8.9f pack tree, about their base, trunk collider included.
+const float emergentBelowMin = 0.3f, emergentBelowMax = 1.7f, restLow = 12f, restHigh = 18f, knollRestLow = 17f, knollRestHigh = 23f, firKeep = 10f, spikeTall = 8f, spikeShow = 4f, clusterLink = 22f, knollR = 63f, knollGround = 8f;
+var emergentReport = new System.Text.StringBuilder(); int emergentN = 0, firsCleared = 0, firsKept = 0; float restTallMin = float.MaxValue;
+{
+    var giantsRoot = Root("Giants").transform; var slice = Root("SliceLook"); var packRoot = slice != null ? slice.transform.Find("GiantTrees") : null;
+    var weathered = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Slice/Slice_Wood_1x32.mat"); if (weathered == null) missing.Add("Slice_Wood_1x32.mat");
+    UnityEngine.Transform Pack(UnityEngine.Transform gray) { if (packRoot == null) return null; foreach (UnityEngine.Transform t in packRoot) if (P(t.position.x - gray.position.x, t.position.z - gray.position.z).sqrMagnitude < 0.01f) return t; return null; }
+    bool IsGray(UnityEngine.Transform t) => t.IsChildOf(giantsRoot);
+    bool IsHero(UnityEngine.Transform t) => t.parent != null && t.parent.name == "Heroes";
+    UnityEngine.Transform Look(UnityEngine.Transform t) => IsGray(t) ? (IsHero(t) ? t : Pack(t)) : t;
+    float TopOf(UnityEngine.Transform t) { var l = Look(t); if (l == null) return float.MinValue; if (IsHero(t)) { var tr = t.Find("Trunk"); return t.position.y + tr.localPosition.y + tr.localScale.y; } return Top(l.gameObject); }
+    UnityEngine.Vector2 XZ(UnityEngine.Transform t) => P(t.position.x, t.position.z);
+    void Resize(UnityEngine.Transform t, float top)   // uniform scale about the trunk's foot so the crown tops out at top
+    {
+        var p = XZ(t); float gy = H(p.x, p.y); float k = (top - gy) / UnityEngine.Mathf.Max(0.5f, TopOf(t) - gy);
+        foreach (var x in IsGray(t) ? new[] { t, Look(t) } : new[] { t }) { if (x == null) continue; x.localScale *= k; x.position = V(x.position.x, gy + (x.position.y - gy) * k, x.position.z); }
+    }
+    // every fir and pine in the scene (pack instance roots), and which of them this recipe planted and may remove
+    var firs = new System.Collections.Generic.List<(UnityEngine.GameObject g, bool mine)>(); var ruinScreen = forest.Find("RuinScreen");
+    foreach (var r in scene.GetRootGameObjects()) foreach (var lg in r.GetComponentsInChildren<UnityEngine.LODGroup>(true))
+    {
+        var path = UnityEditor.PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(lg.gameObject); if (path == null || !(path.Contains("/Trees/RedFir") || path.Contains("/Trees/RedPine"))) continue;
+        if (packRoot != null && lg.transform.IsChildOf(packRoot)) continue;   // the knoll's giants drawn as red pines
+        firs.Add((lg.gameObject, lg.transform.IsChildOf(forest) && (ruinScreen == null || !lg.transform.IsChildOf(ruinScreen))));
+    }
+    int Near(UnityEngine.Transform t, bool mine) { int n = 0; var p = XZ(t); foreach (var f in firs) if (f.g != null && f.mine == mine && (P(f.g.transform.position.x, f.g.transform.position.z) - p).sqrMagnitude < firKeep * firKeep) n++; return n; }
+    // the groups: knoll first (it takes any 8.3 knoll giant not already in a table grove), then 8.3's other groves by clustering
+    var knoll = new System.Collections.Generic.List<UnityEngine.Transform>(knollM); var loose = new System.Collections.Generic.List<UnityEngine.Transform>();
+    foreach (var t in existingT)
+    {
+        if (inGrove.Contains(t) || IsHero(t)) continue; var p = XZ(t);
+        if (UnityEngine.Vector2.Distance(p, P(170f, 160f)) < knollR && H(p.x, p.y) > knollGround) knoll.Add(t); else loose.Add(t);
+    }
+    var groups = new System.Collections.Generic.List<(string n, System.Collections.Generic.List<UnityEngine.Transform> m, bool knoll)>();
+    foreach (var gm in groveMembers) groups.Add((gm.n, gm.m, false));
+    groups.Add(("Knoll", knoll, true));
+    for (int c = 0; loose.Count > 0; c++)
+    {
+        var cl = new System.Collections.Generic.List<UnityEngine.Transform> { loose[0] }; loose.RemoveAt(0);
+        for (bool grew = true; grew;) { grew = false; for (int i = loose.Count - 1; i >= 0; i--) foreach (var q in cl) if (UnityEngine.Vector2.Distance(XZ(q), XZ(loose[i])) <= clusterLink) { cl.Add(loose[i]); loose.RemoveAt(i); grew = true; break; } }
+        groups.Add(("Giants83_" + c, cl, false));
+    }
+    foreach (var gr in groups)
+    {
+        var m = gr.m.FindAll(t => t != null && Look(t) != null && t.name != "Snag" && t.name != "Gate_Tree"); if (m.Count == 0) continue;
+        var em = m.Find(IsHero);
+        if (em == null) { em = m[0]; foreach (var t in m) { int a = Near(t, false), b = Near(em, false); if (a < b || (a == b && (Near(t, true) < Near(em, true) || (Near(t, true) == Near(em, true) && TopOf(t) > TopOf(em))))) em = t; } }
+        var ep = XZ(em); float egy = H(ep.x, ep.y);
+        float emTop = IsHero(em) ? TopOf(em) : gr.knoll ? egy + knollTall : giantCap - R(emergentBelowMin, emergentBelowMax);
+        if (!IsHero(em))
+        {
+            Resize(em, emTop - spikeShow);
+            var sp = Spawn("Assets/Celestia_Studio/PSX_Modular_Complete_Pack/Prefabs/Decoration_Out/Tree_Dead", Look(em));
+            if (sp != null)
+            {
+                sp.name = "BrokenTop"; sp.transform.rotation = UnityEngine.Quaternion.Euler(0f, R(0f, 360f), 0f); sp.transform.position = V(ep.x, 0f, ep.y);
+                float s = spikeTall / UnityEngine.Mathf.Max(0.5f, Top(sp) - Bottom(sp)); sp.transform.localScale = sp.transform.localScale * s; sp.transform.position = V(ep.x, emTop - Top(sp), ep.y);
+                if (weathered != null) foreach (var rr in sp.GetComponentsInChildren<UnityEngine.Renderer>()) rr.sharedMaterial = weathered;
+            }
+        }
+        float lo = float.MaxValue, hi = float.MinValue;
+        foreach (var t in m)
+        {
+            if (t == em || IsHero(t)) continue; var p = XZ(t); float gy = H(p.x, p.y);
+            float top = gr.knoll ? gy + R(knollRestLow, knollRestHigh) : emTop - R(restLow, restHigh); Resize(t, top);
+            float got = TopOf(t); lo = UnityEngine.Mathf.Min(lo, got); hi = UnityEngine.Mathf.Max(hi, got); restTallMin = UnityEngine.Mathf.Min(restTallMin, got - gy);
+        }
+        for (int i = 0; i < firs.Count; i++) { var f = firs[i]; if (f.g == null || (P(f.g.transform.position.x, f.g.transform.position.z) - ep).sqrMagnitude >= firKeep * firKeep) continue; if (f.mine) { UnityEngine.Object.DestroyImmediate(f.g); firsCleared++; } else firsKept++; }
+        emergentN++;
+        emergentReport.Append(gr.n + " " + m.Count + ": top " + TopOf(em).ToString("F1") + (IsHero(em) ? " (hero)" : "") + (m.Count > 1 ? ", rest " + lo.ToString("F1") + " to " + hi.ToString("F1") : "") + "; ");
+    }
+}
+
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " | giants " + giantsN + ", firs and pines " + firsN + " (crests " + crestN + ", open-east clumps " + eastClumpsN + ", gap clumps " + gapClumps + "), beyond the road " + beyondN + ", burn deadwood " + snagsN + ", foot pieces " + footN + " (logs kept off low stops " + logSkips + ")"
+return "saved=" + saved + " | emergent groves " + emergentN + ", firs cleared " + firsCleared + ", other firs within " + firKeep + " m " + firsKept + ", shortest rest giant " + restTallMin.ToString("F1") + " m tall (" + emergentReport + ") | giants " + giantsN + ", firs and pines " + firsN + " (crests " + crestN + ", open-east clumps " + eastClumpsN + ", gap clumps " + gapClumps + "), beyond the road " + beyondN + ", burn deadwood " + snagsN + ", foot pieces " + footN + " (logs kept off low stops " + logSkips + ")"
     + " | rejected: trail " + rejTrail + ", place " + rejPlace + ", slope " + rejSlope + ", collider " + rejCollider + ", spacing " + rejSpace + " | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));
