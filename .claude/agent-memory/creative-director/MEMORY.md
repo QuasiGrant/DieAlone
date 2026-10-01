@@ -16,4 +16,5 @@
 - [Gate 8.16a](project_gate_8_16a.md) — 2026-09-30 FAIL; climb F to D, forest items unchanged, rock count exclude tread
 - [Gate 8.17](project_gate_8_17.md) — 2026-09-30 FAIL; Camp 1, Camp 3, cave D; rest C; retakes and 20 m frames asked
 - [Gate 8.16b and 8.17](project_gate_816b_817.md) — 2026-10-01 both FAIL; Camp 1 C; Camp 3, cave, ruin D; climb and forest D
+- [Rebuild specs](project_rebuild_specs.md) — 2026-10-01 RebuildSpecs.md: forest, lot ground, cave, 8.18 values; noise band caveat
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions
