@@ -85,3 +85,5 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-01: Vesper's forest density (ForestPlan section 8) replaces the old open-ground rule in Style.md 10 (Wren's call, after Grant: the forest is far too sparse).
 - 2026-10-01: Night one keeps the low lit smoke sheet (Edges 6); columns from night two. The Ward ledge gets no day grade; capture keeps only the day leak checks from the tower and J.
 - 2026-10-01: WardPath draft 2 goes to build with Marlow's draft-2 conditions folded in (rail on all three open sides of the prow, two collider runs on the fallen giant, the flight 3 support height and the Band_S_W exit closed), checked on the built mesh rather than another paper round.
+- 2026-10-01: Walk-into colliders come from one late pass (main3_8_18a_solid.cs) plus the walk-into check, not each owning recipe.
+- 2026-10-01: The Cave_Chamber dev warp stays inside the cave and is exempt from the sealed-landing test; it is a dev-only warp and F1 is the way out.
