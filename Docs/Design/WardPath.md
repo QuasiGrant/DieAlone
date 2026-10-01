@@ -57,6 +57,16 @@ As WARD falls, one change per night, my pick by playtest (Exit 8's spot the diff
 4. Whether the ledge needs a day grade at all (2.4): Wren.
 Sable
 
+## Quill review
+2026-10-01. Story check of the night scares and events on the walk; details private. Draft until Grant approves.
+1. Night one holds: lookout (cab, car), split snag, silence at the dogleg, the fire round the fin. One beat each.
+2. Eight scares and events lose their old places (P1 to P4). All have a new place: the lookout takes the look-back ones, landings 1 and 2 take the stair ones, the cleft and ledge stay as they are. None goes in the throat.
+3. Needs from the layout: lanterns at the stair foot and both landings (none listed); a second hiding place above landing 1 (only landing 1's overhang is listed; P1's is unstated); the cabin window and cab in the lookout frame.
+4. Band table: "prints going up" and "cabin window lit" are already night events; as nightly changes they spend those events. "Valley dark but for camp" would show the resident sites' warning lights; only lights no storyline uses should go dark.
+5. Runes as the gauge fit the story, if: they relight when WARD rises; they are not the fire's colour; the rune post stays dark; 12 can be counted at 31 to 36 m (unverified).
+6. Two plank bridges now (Camp to J, and the draw at 38). Name the leg in any event that uses one.
+Quill
+
 ## Vesper review (2026-10-01)
 Against Style.md 10, Edges.md 6, UglySpots #1 and #2. Predicted letters are paper; only eye-height frames grade.
 1. Grades if built as written: Gate C. Draw C, D risk (creek, ferns and bank ground unnamed). Shelf B as built. Stair D until it is textured meshes on visible supports (Style 5.4, 5.7); C reachable. Lookout C (lot lights, cab, window must read as modest practicals at night). Throat D risk: "exempt" does not exempt hard line 6; every cleft frame needs the sky strip or a snag, never all wall. Shot A C, B reachable. Shot B D today (0 fire cards on the floor); C once the floor burns.
