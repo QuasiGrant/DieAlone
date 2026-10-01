@@ -19,4 +19,5 @@
 - [Gate batch](project_gate_batch.md) — 2026-10-01 all FAIL; fire cards 0 after rebuild; lamp 16/10; ground, trench C
 - [Rebuild specs](project_rebuild_specs.md) — 2026-10-01 RebuildSpecs.md: forest, lot ground, cave, 8.18 values; noise band caveat
 - [Density and ugly spots](project_density_ugly_1001.md) — 2026-10-01 ForestPlan 8 density target; UglySpots.md top 10
+- [WardPath review](project_wardpath_review.md) — 2026-10-01 Sable draft 1: grades, night-one sheet not columns, no ledge day grade
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions

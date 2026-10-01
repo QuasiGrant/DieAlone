@@ -56,3 +56,13 @@ As WARD falls, one change per night, my pick by playtest (Exit 8's spot the diff
 3. Ground at the stair face (x 34 to 55, z 250 to 262) is unmeasured; flight grades fit to it. Plank sizes for treads: unverified.
 4. Whether the ledge needs a day grade at all (2.4): Wren.
 Sable
+
+## Vesper review (2026-10-01)
+Against Style.md 10, Edges.md 6, UglySpots #1 and #2. Predicted letters are paper; only eye-height frames grade.
+1. Grades if built as written: Gate C. Draw C, D risk (creek, ferns and bank ground unnamed). Shelf B as built. Stair D until it is textured meshes on visible supports (Style 5.4, 5.7); C reachable. Lookout C (lot lights, cab, window must read as modest practicals at night). Throat D risk: "exempt" does not exempt hard line 6; every cleft frame needs the sky strip or a snag, never all wall. Shot A C, B reachable. Shot B D today (0 fire cards on the floor); C once the floor burns.
+2. UglySpots #2 answered: the bowl and leg 4 are gone. #1 half answered: cards and slab yes, but the plateau and ledge floor (FIN +0 to +14, Shot A lower third "bare ledge") have no dressing named. Fix: BK RubbleSparse and CS_Stone_1-8 in the cracks, moss tinted #4F4A2C (UglySpots #5), Boulder_0-5 only at the N and S ends, none in the middle 60 degrees (Edges 9.4).
+3. Conflict: Shot A asks for night-one smoke columns out of the frame top (Style 6.3.3); Edges 6 night one, agreed with Sable, is a low lit sheet streaming west, columns from night two. Keep Edges 6; fix the sheet's draw order and height, do not remove it.
+4. Vague assets, named: log steps CS_Log_* (StairRamp rule, LookBoards); ferns BK ThinFern1-5, GrassMoss, DeadLeaves; bank faces over 35 degrees the Rocks_a layer; stair stringers CITW_Log, treads CITW_Plank, deck C_Plank, posts RailingPost_Wood; creek: no owned water asset found, unverified, name it or drop the creek for a dry bed of CS_Stone_1-8.
+5. Menhir: Effigy pack ships its own shader; rebuild on the project shader (Style 4.5), import 1024 (4.1), rune emission under the cairn lamp (4.6).
+6. Day grade (open 4): no. Valley.md 8 closes the face, cwm and ledge by day on every day, so no player sees it lit. Keep one day frame from the tower and J only as a leak check (no ledge slab, sheet or card visible); drop day ledge frames from the capture set, they produced UglySpots #1. If the climb ever opens by day, Edges 6 "Day" becomes the bar.
+Vesper
