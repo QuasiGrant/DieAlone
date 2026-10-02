@@ -125,13 +125,14 @@ var lakeArea = new Main3AreaSet.Area { id = "lake", task = "8.23", title = "Lake
         DL("stake line", 240f, -4.8f, 60.4f), DL("rowboat", 226.47f, G, 87.28f), DL("shore path east", 255f, G, 55f) },
     deckHide = new Main3AreaSet.DeckTarget[0] };
 // north (8.24; NorthLayout.md draft 2 section 5, Sable 2026-10-02): places on their objects; the spar top is the hard deck target (mesh
-// rays, as 8.22); the kid's table, tent and tripod loose; the ruin and SS1 to SS3 hidden by the pixel check with its 20 m control.
+// rays, as 8.22); the kid's table, tent and tripod loose; the ruin and SS1 to SS3 hidden by the pixel check with its 20 m control (SS1 60 m: it stands under fir and
+// giant crowns that hid a 20 and a 35 m control).
 // Interactions with no collider yet (R1's spot, forage C's shrubs, the cookfire pot) wait for their milestone; the report box has one.
 var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Camp 1 and the north loop", bounds = new[] { R(116f, 200f, 310f, 305f) }, warps = new[] { "Camp_1", "North_Loop_Ruin" },
     places = new[] { P("Camp 1", 282f, G, 238f), PO("Spar", 284f, G, 240f, 24f, "Campsites/Camp_1/Dressing/Spar"), PO("Kid's table", 285.2f, G, 236.5f, 0.8f, "Campsites/Camp_1/Dressing/KidTable"),
         P("R1's spot", 285f, G, 244f), PO("Tent", 271f, G, 234.5f, 3.0f, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), PO("Cookfire", 276f, G, 232f, 1.0f, "Campsites/Camp_1/Dressing/Cookfire"),
         PO("Latrine shed", 264f, G, 207f, 2.2f, "PointsOfInterest/POI_Latrine_shed"), PO("Blaze stump", 271.7f, G, 247.3f, 1.4f, "Ground815/JunctionMarkers/Blaze_Camp1_Stump"),
-        PO("Forage C", 229.5f, G, 273.5f, 0.8f, "Places/ForageC"), PO("SS1", 251.6f, G, 272.0f, 0.3f, "Places/NorthLoop/SS1"), PO("SS2", 150.5f, G, 276.5f, 0.45f, "Places/NorthLoop/SS2"),
+        PO("Forage C", 229.5f, G, 273.5f, 0.8f, "Places/ForageC"), PO("SS1", 251.6f, G, 272.0f, 0.5f, "Places/NorthLoop/SS1"), PO("SS2", 150.5f, G, 276.5f, 0.45f, "Places/NorthLoop/SS2"),
         PO("SS3", 132.3f, G, 262.3f, 0.3f, "Places/NorthLoop/SS3"), PO("Fallen giant", 138.65f, G, 264.2f, 2.7f, "Places/NorthLoop/FallenGiant"), PO("North ruin", 172f, G, 281f, 3.0f, "Places/NorthRuin"),
         PO("Ruin doorway", 169.88f, G, 278.88f, 2.15f, "Places/NorthRuin"), PO("Report post", 171.22f, G, 278.38f, 1.3f, "Places/NorthRuin/Layout824/ReportPost") },
     interactions = new[] { IA("report box", "Places/NorthRuin/Layout824/ReportPost", 170.16f, G, 277.32f) },
@@ -145,10 +146,11 @@ var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Ca
         FR("F8 THE GIANT'S SW END", V(142.9f, G, 260.7f), V(131.5f, 7.0f, 257.3f)),
         FR("F9 SS3 BEHIND THE GIANT", V(130.5f, G, 259.5f), V(132.3f, 6.5f, 262.3f)),
         FR("THE RUIN FROM ITS DOORWAY", V(169.6f, G, 278.6f), V(172.4f, 4.5f, 281.4f)) },
+    walkLines = new[] { WL("side path to the ruin", V(168.1f, G, 267.1f), V(169.88f, G, 278.88f)) },   // the report box is found from the side path in (NorthLayout_UI 5)
     playChecks = new[] { "main3_8_24_north_check.cs" },
     inventory = new[] { "North ruin" }, deckListWritten = true,
     deckSee = new[] { DH("spar top", 284f, 29f, 240f, "Campsites/Camp_1/Dressing/Spar"), DL("kid's table", 285.2f, 5.8f, 236.5f), DL("tent", 271f, 6.5f, 234.5f), DL("tripod", 276f, 6.3f, 232f) },
-    deckHide = new[] { D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"), D("SS1", 251.6f, G, 272.0f, "Places/NorthLoop/SS1"), D("SS2", 150.5f, G, 276.5f, "Places/NorthLoop/SS2"), D("SS3", 132.3f, G, 262.3f, "Places/NorthLoop/SS3") } };
+    deckHide = new[] { D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"), new Main3AreaSet.DeckTarget { label = "SS1", point = V(251.6f, G, 272.0f), treeCoverPath = "Places/NorthLoop/SS1", controlRaise = 60f }, D("SS2", 150.5f, G, 276.5f, "Places/NorthLoop/SS2"), D("SS3", 132.3f, G, 262.3f, "Places/NorthLoop/SS3") } };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,
     front,

@@ -85,7 +85,7 @@ try
         UnityEngine.Vector3 G(float x, float z) => V(x, H(x, z), z); UnityEngine.Vector3 RL(float x, float z) { var p = ruin.TransformPoint(V(x, 0f, z)); p.y = slab.bounds.max.y; return p; }
         var legs = new System.Collections.Generic.List<(string, UnityEngine.Vector3[])>();
         foreach (var n in new[] { "Jg to Camp 1", "Camp 1 to J" }) { var leg = Root("Trails").transform.Find(n); if (leg == null) { Line(false, "WALK: no Trails/" + n); continue; } var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform p in leg) pts.Add(p.position); legs.Add((n + ", the trail", pts.ToArray())); }
-        legs.Add(("side path in at the doorway to the bunk, the cache trunk and the table, and out", new[] { G(168.1f, 267.1f), RL(0f, 3.2f), RL(0f, 1.0f), RL(-1.35f, -0.6f), RL(-2.0f, -0.45f), RL(-1.75f, 0.9f), RL(0f, 1.0f), RL(0f, 3.2f), G(168.1f, 267.1f) }));
+        legs.Add(("side path in at the doorway to the bunk, the cache trunk and the table, and out", new[] { G(168.1f, 267.1f), RL(0f, 3.2f), RL(0f, 1.0f), RL(-1.35f, -0.6f), RL(-2.0f, -0.45f), RL(-0.5f, -0.4f), RL(-0.5f, 1.3f), RL(-1.8f, 1.3f), RL(0f, 1.0f), RL(0f, 3.2f), G(168.1f, 267.1f) }));
         legs.Add(("side path to the report box stand", new[] { G(168.1f, 267.1f), G(170.16f, 277.32f) }));
         float speed = tuning != null ? tuning.walkSpeed : 2.5f;
         foreach (var (name, pts) in legs)

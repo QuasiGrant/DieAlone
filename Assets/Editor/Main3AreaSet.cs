@@ -66,6 +66,8 @@ public class Main3AreaSet : ScriptableObject
         public bool loose;
         [Tooltip("Hard must-see: scene path of the target's own object; a ray that reaches it counts as clear.")]
         public string objectPath;
+        [Tooltip("Must-hide pixel check: how high the control lifts the target, metres; 0 is 20. A target under a fir and giant crowns needs a higher one (8.24, SS1).")]
+        public float controlRaise;
     }
 
     [System.Serializable]

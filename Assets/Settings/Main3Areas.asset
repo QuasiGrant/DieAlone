@@ -134,7 +134,7 @@ MonoBehaviour:
     path: Places/NorthRuin
     kind: renderers
     name: 
-    expected: 44
+    expected: 47
   - label: Cave lights
     path: Cave
     kind: lights
@@ -298,54 +298,63 @@ MonoBehaviour:
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: Camp 1 spar top
       point: {x: 284, y: 29, z: 240}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: Camp 2 stack top (over its tent)
       point: {x: 292, y: 26, z: 108}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: Camp 3 Snag line (top)
       point: {x: 96, y: 54, z: 146.5}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: office west door
       point: {x: 341, y: 4.2, z: 199}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: cat step (boathouse)
       point: {x: 240, y: -3.3, z: 56}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: verge tree
       point: {x: 419, y: 25, z: 139}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: lot centre
       point: {x: 358, y: 3.1, z: 170}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: highway
       point: {x: 430, y: -999, z: 185}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     deckHide:
     - label: Ward stones, tops (W-1, land rays)
       point: {x: -3, y: 70, z: 224}
@@ -353,48 +362,56 @@ MonoBehaviour:
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: rune post (behind its rim rock)
       point: {x: 55.1, y: 36.5, z: 246.1}
       treeCoverPath: Ward/Climb/RunePost
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: north ruin
       point: {x: 172, y: 4, z: 281}
       treeCoverPath: Places/NorthRuin
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: far fire front, z 40
       point: {x: -240, y: 105, z: 40}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: far fire front, z 170
       point: {x: -240, y: 105, z: 170}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: far fire front, z 300
       point: {x: -240, y: 105, z: 300}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: day-one sheet top
       point: {x: -500, y: 110, z: 170}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: cave mouth
       point: {x: 52, y: -4, z: 37}
       treeCoverPath: 
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     interactions:
     - label: bunk
       path: Camp/Cabin/Bunk
@@ -535,54 +552,63 @@ MonoBehaviour:
       hard: 1
       loose: 0
       objectPath: FrontZone/Office/WestDoor
+      controlRaise: 0
     - label: verge tree
       point: {x: 419, y: 25, z: 139}
       treeCoverPath: 
       hard: 1
       loose: 0
       objectPath: FrontZone/VergeTree
+      controlRaise: 0
     - label: store roof
       point: {x: 366, y: 5.9, z: 200}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: lot centre
       point: {x: 358, y: 3.1, z: 170}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: R6's car
       point: {x: 370, y: 4.2, z: 179.4}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: booth roof light
       point: {x: 391.9, y: 5.8, z: 165.4}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: barrier arm
       point: {x: 389.3, y: 4, z: 169.5}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: highway
       point: {x: 430, y: -999, z: 185}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: gate T stop sign
       point: {x: 423.05, y: 5.3, z: 166}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     deckHide: []
     interactions:
     - label: booth window counter
@@ -689,60 +715,70 @@ MonoBehaviour:
       hard: 1
       loose: 0
       objectPath: Lake/Boathouse/Dressing/Step/Blanket
+      controlRaise: 0
     - label: her bowl
       point: {x: 241.2, y: -3.7, z: 56.5}
       treeCoverPath: 
       hard: 1
       loose: 0
       objectPath: Lake/Boathouse/Dressing/Step/CITW_Bowl_Small
+      controlRaise: 0
     - label: boathouse roof
       point: {x: 240, y: -1, z: 52.4}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: pump
       point: {x: 190, y: -3.6, z: 94.8}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: dock end
       point: {x: 190, y: -4.3, z: 86.4}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: mid water
       point: {x: 190, y: -5.4, z: 60}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: reed bed
       point: {x: 241.5, y: -4.6, z: 62.2}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: stake line
       point: {x: 240, y: -4.8, z: 60.4}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: rowboat
       point: {x: 226.47, y: -999, z: 87.28}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: shore path east
       point: {x: 255, y: -999, z: 55}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     deckHide: []
     interactions:
     - label: pump
@@ -773,7 +809,11 @@ MonoBehaviour:
     playChecks:
     - main3_8_23_lake_check.cs
     - main3_8_23_lake_frames.cs?look=Day_one
-  - walkLines: []
+  - walkLines:
+    - label: side path to the ruin
+      points:
+      - {x: 168.1, y: -999, z: 267.1}
+      - {x: 169.88, y: -999, z: 278.88}
     id: north
     task: 8.24
     title: Camp 1 and the north loop
@@ -825,7 +865,7 @@ MonoBehaviour:
       objectPath: Places/ForageC
     - label: SS1
       point: {x: 251.6, y: -999, z: 272}
-      height: 0.3
+      height: 0.5
       objectPath: Places/NorthLoop/SS1
     - label: SS2
       point: {x: 150.5, y: -999, z: 276.5}
@@ -862,24 +902,28 @@ MonoBehaviour:
       hard: 1
       loose: 0
       objectPath: Campsites/Camp_1/Dressing/Spar
+      controlRaise: 0
     - label: kid's table
       point: {x: 285.2, y: 5.8, z: 236.5}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: tent
       point: {x: 271, y: 6.5, z: 234.5}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     - label: tripod
       point: {x: 276, y: 6.3, z: 232}
       treeCoverPath: 
       hard: 0
       loose: 1
       objectPath: 
+      controlRaise: 0
     deckHide:
     - label: north ruin
       point: {x: 172, y: 4, z: 281}
@@ -887,24 +931,28 @@ MonoBehaviour:
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: SS1
       point: {x: 251.6, y: -999, z: 272}
       treeCoverPath: Places/NorthLoop/SS1
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 60
     - label: SS2
       point: {x: 150.5, y: -999, z: 276.5}
       treeCoverPath: Places/NorthLoop/SS2
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     - label: SS3
       point: {x: 132.3, y: -999, z: 262.3}
       treeCoverPath: Places/NorthLoop/SS3
       hard: 0
       loose: 0
       objectPath: 
+      controlRaise: 0
     interactions:
     - label: report box
       path: Places/NorthRuin/Layout824/ReportPost
@@ -1363,7 +1411,7 @@ MonoBehaviour:
       objectPath: Places/ForageC
     - label: SS1
       point: {x: 251.6, y: -999, z: 272}
-      height: 0.3
+      height: 0.5
       objectPath: Places/NorthLoop/SS1
     - label: SS2
       point: {x: 150.5, y: -999, z: 276.5}

@@ -4,7 +4,7 @@
 // three targets ran the Editor out of GPU memory (d3d12 device lost, 2026-10-02). Never saves; restores everything it touches.
 // The target is painted flat magenta (URP Unlit) and rendered through the game camera (look filter on; all renders fall in one frame, so
 // the filter's noise is the same in each) at its field of view, aimed at the target point, then rendered again with the target off;
-// changed pixels (any channel more than pixelTolerance) are target pixels. raised = 1 lifts the target 20 m first (the control: it
+// changed pixels (any channel more than pixelTolerance) are target pixels. raised = 1 lifts the target 20 m (or its controlRaise) first (the control: it
 // must show from at least one eye or the check is VOID). The first eye also renders the off frame twice: that noise must be 0.
 // Returns "PIXEL <target> raised <0|1> eyes <from>-<to>: seen <eyes> worst <px> noise <px>".
 string area = "camp"; int target = 0; int eyeFrom = 0; int raised = 0;
@@ -18,7 +18,8 @@ if (target < 0 || target >= covered.Count) return "no pixel target " + target + 
 var T = covered[target];
 var obj = Main3AreaSet.At(scene, T.treeCoverPath); if (obj == null) return "PIXEL " + T.label + ": no " + T.treeCoverPath;
 UnityEngine.GameObject Root(string n) { foreach (var r in scene.GetRootGameObjects()) if (r.name == n) return r; return null; }
-const int shotW = 3840, shotH = 1976; const float raise = 20f;
+const int shotW = 3840, shotH = 1976; const float defaultRaise = 20f;
+float raise = T.controlRaise > 0f ? T.controlRaise : defaultRaise;   // 8.24: a target under fir and giant crowns needs a higher control
 var tower = Root("Camp").transform.Find("Tower"); float deckTop = tower.Find("Cab").position.y;
 var eyes = new System.Collections.Generic.List<UnityEngine.Vector3>();   // the same order as main3_area_check.cs
 for (float gx = -set.deckHalf; gx <= set.deckHalf + 0.01f; gx += set.deckGrid) for (float gz = -set.deckHalf; gz <= set.deckHalf + 0.01f; gz += set.deckGrid)

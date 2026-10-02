@@ -118,7 +118,7 @@ if [ $rc -eq 0 ]; then
         done
       done
       if [ $ctrl -eq 0 ] || [ $noise -gt 0 ]; then v="VOID"; rc=1; elif [ $built -eq 0 ]; then v="PASS"; else v="FAIL"; rc=1; fi
-      line="$v PIXEL hide $label: seen from $built of $NEYES deck eyes (worst $worst px); control raised 20 m seen from $ctrl eyes; render noise $noise px"
+      line="$v PIXEL hide $label: seen from $built of $NEYES deck eyes (worst $worst px); control raised seen from $ctrl eyes; render noise $noise px"
       PIXRES="$PIXRES$line"$'\n'
       echo "$line"; { echo; echo "## main3_deck_pixel_check.cs"; echo; echo "    $line"; } >> "$OUT/Checks.md"
     done

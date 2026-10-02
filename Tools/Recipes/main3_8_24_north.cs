@@ -13,13 +13,13 @@
 // N5  a bucket and a 20 L can at the cookfire, 0.55 m apart.
 // N8  forage C: five shrubs on r 1.4 round (229.5, 273.5) under Places/ForageC (named Bush_ForageC_1 to 5: WalkIns skips "Bush"), the
 //     stand marker facing 0.
-// N9, N10, N12  the search spots SS1 to SS3 under Places/NorthLoop: SS1 a branch pile at the fir foot, SS2 an owned stump at scale 0.3
+// N9, N10, N12  the search spots SS1 to SS3 under Places/NorthLoop: SS1 a low boulder at the fir foot, SS2 an owned stump at scale 0.3
 //     with its box fitted, SS3 a leaf bed behind the giant.
 // N11 the fallen giant under Places/NorthLoop/FallenGiant: a Sequoia laid along (145.8, 271.1) to (131.5, 257.3) as in 8.20, its
 //     capsule giantColR round and sunk giantSink, tilted to the ground; the root plate at the NE end, a 4.0 m disc 0.8 thick facing NE,
 //     sunk 0.5, with its box.
 // N13 the ruin (Places/NorthRuin, ruin local metres): every wall, half wall, jamb and lintel box 0.30 thick on its log line (8.17 took
-//     the module's depth, 2.3 m); a floor slab over x -2.85 to 2.85, z -1.85 to 1.85, its top on the floor boards; the stump goes and
+//     the module's depth, 2.3 m); a floor slab over x -2.85 to 2.85, z -1.85 to 1.85, its top at the ruin's foot (local 0); the stump goes and
 //     the report box stands on a 1.0 m post at (-1.3, 2.4); the roof slab 4.6 x 0.12 x 1.8 with a box, from the back half-wall tops
 //     (z -1.85, y 1.5) to the floor at z -0.9 (58 degrees, slides), the ridge beam lying on it; the bunk frame (x -2.3 to -0.4, z -1.85
 //     to -1.05, top 0.45), the cache trunk (x -2.85 to -2.3, z -1.85 to -0.85, box fitted to its mesh), the table (x -2.85 to -2.25,
@@ -165,10 +165,12 @@ const float forageX = 229.5f, forageZ = 273.5f, forageR = 1.4f, shrubLow = 0.6f,
     kit.Marker("ForageC_Stand", fc, fc.InverseTransformPoint(V(229.2f, G(229.2f, 270.6f), 270.6f)), 0f);
     kit.ClearDetail(V(forageX, 0f, forageZ), forageR + 0.8f);
 }
+const float ssTall = 0.5f;
 var loop = kit.Fresh("NorthLoop", places.transform, V(150f, 0f, 270f), 0f);
 {
     // SS1 at the fir foot: a pile of branches; SS2 an owned stump at scale 0.3, its box fitted; SS3 a leaf bed behind the giant
-    var s1 = kit.Group("SS1", loop, V(251.6f, G(251.6f, 272.0f), 272.0f), 0f); kit.Ground(PlaceKit.BK + "Plants/Branchs", s1, 251.6f, 272.0f, 30f, 0.8f);
+    // SS1 a low boulder ssTall m tall a kid could sit on (a branch pile 0.1 m tall subtended under 1 degree from the trail, Pim's found bar)
+    var s1 = kit.Group("SS1", loop, V(251.6f, G(251.6f, 272.0f), 272.0f), 0f); var rk = kit.Fill(PlaceKit.BK + "Rocks/Boulder_0", s1, V(0f, -0.05f, 0f), V(0.7f, ssTall, 0.6f), 30f); if (rk != null) ExactBox(rk, null);
     var s2 = kit.Group("SS2", loop, V(150.5f, G(150.5f, 276.5f), 276.5f), 0f); var st = kit.Ground(PlaceKit.CI + "Vegetation/CITW_Tree_Stump", s2, 150.5f, 276.5f, 40f, 0.3f); if (st != null) ExactBox(st, null);
     var s3 = kit.Group("SS3", loop, V(132.3f, G(132.3f, 262.3f), 262.3f), 0f); kit.Ground(PlaceKit.BK + "Plants/DeadLeaves1", s3, 132.3f, 262.3f, 0f, 1.2f);
 }
@@ -216,9 +218,9 @@ int wallBoxes = 0; string slabDeg = "";
     // 8.17's pieces the doc moves or replaces
     foreach (var n in new[] { "CITW_Tree_Stump", "CITW_Crate", "RoofSlab", "CITW_Trunk_2" }) PlaceKit.Remove(ruin.Find(n));
     var R = kit.Fresh("Layout824", ruin, ruin.position, ruin.eulerAngles.y);
-    // the floor: a slab over the room, its top on 8.17's floor boards (they lie 0.05 over the ruin's foot)
+    // the floor: a slab over the room; 8.17's floor boards lie 0.05 over it (looks only)
     float boards = 0f; foreach (UnityEngine.Transform t in ruin) if (t.name.StartsWith("CITW_Floor")) boards = UnityEngine.Mathf.Max(boards, PlaceKit.LocalBounds(t.gameObject, ruin).max.y);
-    kit.Blocker("FloorSlab", R, V(0f, boards - floorT * 0.5f, 0f), V(2f * floorX, floorT, 2f * floorZ));
+    kit.Blocker("FloorSlab", R, V(0f, -floorT * 0.5f, 0f), V(2f * floorX, floorT, 2f * floorZ));   // its top at the ruin's foot (doc: local 0), so the doorway step is the ground's fall only (0.11 with its top on the boards)
     // the report box on its post
     Log(R, R.TransformPoint(V(postX, boards - 0.05f, postZ)), R.TransformPoint(V(postX, boards + postH, postZ)), postW);
     var post = kit.Blocker("ReportPost", R, V(postX, boards + postH * 0.5f, postZ), V(postW, postH, postW));
