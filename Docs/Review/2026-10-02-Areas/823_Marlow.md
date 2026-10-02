@@ -36,3 +36,16 @@
 Rook's lake check and area check pass as written: the dock rails are not stops and the lake bed is not a closed zone, so neither sees finding 1.
 
 Marlow
+
+## Round 2
+2026-10-02, Marlow. **PASS** on my four items. Scene and terrain at 489be8a (6b3620a after it is docs only; uncommitted Editor and recipe edits for 8.24 were in the tree, Main3.unity unmodified). One short Play session, entered and stopped by me; same mover as round 1 (PlayerController.Step, dt 0.02; walk, sprint, walk-jump, sprint-jump, crouch 1.0).
+
+1. **Dock rail trap (finding 1): PASS.** Repro: the start (191.30, 88.92) is now on DeckFlat (-4.77), the sprint-jump heading 150 stays on the deck at (191.13, -4.77, 87.18); the bank start (188.0, 89.04) is now at -5.11 (ground lowered), the walk-jump heading 150 stays on the ground at (188.01, -5.13, 88.43). A capsule does not fit on any rail top (east, west or end rail): each RailStop (Ignore Raycast) stands to -2.40, -2.41 and -2.64. Grids, 16 headings x 4 modes: 0.5 m over x 184 to 196, z 88 to 98 plus the deck (498 starts, 31,872 moves) and 0.25 m over x 185.5 to 194.5, z 86.25 to 91 (418 starts, 26,752 moves): 0 on a rail or rail stop, 0 on a wade box, 0 past the ring, 0 below -5.55. Flood from the pump trail, ramp and west bank (0.5 m cells, 12 headings, walk, sprint-jump, walk-jump, crouch; 1,624 places, reverse pass): 0 with no way back, 0 in the water. The only raised landings are the 8.17 deck-edge Post tops (z 88.2 and 90.0, 0.2 m over the deck), reached by a sprint-jump from the west or east bank; from them nothing reaches a rail.
+2. **Slip rails: PASS.** 0.25 m grid over the house floor and step (296 starts, 18,944 moves): 0 on a slip rail, crate or barrel, 0 into the slip. The 0.15 m floor sliver under the boat door (x 236.80 to 236.95) is only reachable from the lake side; not counted.
+3. **Lake bed closed: PASS.** Boathouse flood (x 231 to 252, z 45 to 68, from the warp, step, step approach, floor and reeds stand; 1,685 places, 52,512 moves): 0 with no way back, 0 on the stake line, wade boxes, rest or slip rails, 0 below the shallows' floor. With the dock flood, no way onto the lake bed past the ring.
+4. **Reeds rest: PASS.** RestCollider now x 243.49 to 243.71, y -3.52 to -3.12, 1.3 to 1.6 m over the bank beside it. 0.25 m grid x 241.5 to 247.5, z 59.5 to 65 (445 starts, 28,480 moves): every move ends on terrain.
+5. **Skirts as boards over invisible boxes: PASS, no snag, no pocket.** Walks along every skirt face, both sides, both ways, 0.45 and 0.6 m off (88 runs): every stall is at a corner into a visible piece (another skirt, the west wall, a wade box at the stakes, the gangway, a barrel); no stall on open board. The boxes are 0.2 m thick round 0.05 m boards: 0.075 m of invisible face each side, under the capsule radius, not noticeable. Boards cover 80 to 92 percent of each box's length (the slits by design). Walking off the step's open north edge (128 walks, 4 modes, every 0.1 m): every one drops into the shallows; a few moves read grounded on the skirt lip at -4.2 for a frame, then slide off to -5.96 within 5 s, 14 to 15 of 16 ways out: not a perch.
+
+Not in scope, noted: the bowl ruling (Milestone 10 step rule) is Wren's; I did not re-test the bowl.
+
+Marlow
