@@ -54,3 +54,58 @@
 - Night: office and store windows read; the lot is black beyond the one post light; the booth roof light needs to show at night.
 
 Vesper
+
+## Round 2
+
+2026-10-02. Capture: Docs/Captures/Main3Review_front, 15:18 (Checks.md all pass). By eye from the full-size frames. Also covers Pim's items 2 and 3 at Wren's ask.
+
+**Verdict: FAIL.** The chain is still not seen; two Found targets are not found by eye (first sight of the lot, ice chest). Deck door and verge tree now pass at C.
+
+### My round 1 items
+
+| Item | R1 | R2 | Frames | Note |
+|---|---|---|---|---|
+| Campground ring and pitches | D | C | Pitch_P1, P4, P8; Join_CarsP1toP3 | Each pad is a clear flat slab off the ring with a tree-free mouth; P1 and P4 show a neighbour pad. Reads as pitches. The car stand-ins sit on P1 to P3 by the road. |
+| Campground chain | D | D | Chain_8m; Found_10_Chain | No chain and no posts at 8 m; the spur runs on into the trees. Found_10 shows the ball on the road at 30 m and nothing under it. Fix: posts at least 1 m tall, pale or reflector-banded, with a sagging chain that crosses the road at 8 m in frame. |
+| Deck west door, Day one | D | C | DeckDoor_Day_one_*_Binoculars, _Crop4x | Open: a white lamp bar over the door, plain in binoculars side by side and clear in the crop; shut: gone. Naked eye still no read; binoculars is the bar, so C. The doorway itself still does not show; the lamp carries it. |
+| Deck west door, Night | D | C | DeckDoor_Night_*_Binoculars, _Crop4x | Open adds one white point beside the porch lights; shut, it is gone. Small, but a new light in a black field reads. |
+| Lectern eye | flag | ok | DeckDoor_Day_one_Open_Eye | From the NE walkway corner: logbook and rail in frame, view clear to the lot. |
+| Verge tree, Day one | D | C | Verge_Day_one_Binoculars | Centred, bare and pale, alone against the haze in a gap over the highway; reads as the tree. |
+| Verge tree, Night | - | n/a | Verge_Night_Binoculars | Black. Not a night target unless Sable says it is; if so it needs light on it. |
+
+### Pim's items
+
+Found by eye at full size (ball and target):
+
+| Frame | Found | Note |
+|---|---|---|
+| 01 Office west door | Partly | Office found at once; the ball sits at the toilet's edge and the west door is behind the toilet. C as a place; the door itself is not seen from this walk. |
+| 02 Store door | Yes | Ball under the lit sign; the lot post light stands in front of the door. |
+| 03 Booth door | Partly | Booth found at once, centred under the dead tree; door is on the far (south) face, no ball in view. Booth C. |
+| 04 Lot centre | Yes | |
+| 05 Trailhead board | Yes | Small and dark at the brush gap, but the ball and board are on the path line. |
+| 06 First sight of the lot | No | Brush and a dark rail fill the frame; only the mast beacon shows. No lot, no ball. D. |
+| 07 Ice chest | No | No ball seen; at 27.6 m the chest is lost among the porch shapes behind the post light. D. |
+| 08 R6's car | Yes, weakly | A tan box alone mid-lot; no ball seen, no car read. Found as an object; C for layout. |
+| 09 Toilet door | Yes | |
+| 10 Chain | Ball only | Ball on the road; no chain under it. See chain above. |
+
+| Item | Grade | Note |
+|---|---|---|
+| StoreDoor_LotCentre | B | Door centred, GENERAL STORE sign, lit windows, ICE sign and chest, post light to the right. Reads as the store from the lot centre. |
+| FirstSight_Lot | B | From the trail mouth: the ALLEY TRAIL board, the lot stripes and lights beyond. This is the first-sight frame Found_06 should be. |
+| Gate T stop sign | C | Red with a white STOP legend and cut top corners, but the lower half hides behind the entrance board. Fix: raise it clear of the board or set it 2 m nearer the road. Not blocking. |
+
+### To pass
+
+1. Chain: posts and chain built and seen in Chain_8m.
+2. First sight of the lot: Found_06 from the trail point where FirstSight_Lot is taken, or open the brush at the 29.4 m point so the lot shows.
+3. Ice chest: found by eye from its walk, or Sable moves its found point to the porch approach; whiten the chest per 11.0 note.
+
+### Look notes, not blocking
+
+- Pitch ground: saturated green and red blotches in a checker read as a broken terrain layer. Off-palette; check the campground terrain layer against the lot ground.
+- Verge binocular frame: the far card band shows a row of pale inverted spikes along its top edge. A card artifact; fix before any deck capture is used for look.
+- Pitch frames are near black at Day one under the canopy; fine for layout, flag for the look pass.
+
+Vesper
