@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680mm" height="300mm" viewBox="0 0 680 300" font-family="Arial, sans-serif">
+<style>
+ .t{font-size:3.2px;fill:#222}
+ .s{font-size:2.6px;fill:#333}
+ .h{font-size:5px;font-weight:bold;fill:#111}
+ .piece{fill:#cfcac0;stroke:#555;stroke-width:0.5}
+ .void{fill:#2a2c2e;fill-opacity:0.8;stroke:#111;stroke-width:0.4}
+ .room{fill:#e8e2d4;stroke:#555;stroke-width:0.5}
+ .unk{fill:#b8b2a6;fill-opacity:0.25;stroke:#c0392b;stroke-width:0.5;stroke-dasharray:3 1.5}
+ .fur{fill:#d9d2c3;stroke:#333;stroke-width:0.4}
+ .act{fill:#f2c98a;stroke:#7a4a10;stroke-width:0.5}
+ .evt{fill:#e8a0c8;stroke:#8a2a6a;stroke-width:0.5}
+ .trail{fill:none;stroke:#b07a3a;stroke-width:1.4}
+ .rope{fill:none;stroke:#6e5a44;stroke-width:1;stroke-dasharray:1.5 0.8}
+ .cable{fill:none;stroke:#f4f0e0;stroke-width:0.8;stroke-dasharray:2 0.6}
+ .gone{fill:none;stroke:#c0392b;stroke-width:0.6}
+ .sight{fill:none;stroke:#8e44ad;stroke-width:0.5;stroke-dasharray:3 1.5}
+ .keep{fill:#3d5a2a;fill-opacity:0.08;stroke:#3d5a2a;stroke-width:0.4;stroke-dasharray:1 1}
+ .trap{fill:none;stroke:#c0392b;stroke-width:0.8}
+ .frame{fill:none;stroke:#999;stroke-width:0.3}
+ .warp{fill:#2a7fd4;stroke:#123;stroke-width:0.3}
+ .water{fill:#2a7fd4;fill-opacity:0.5;stroke:#2a7fd4;stroke-width:0.4}
+</style>
+<rect x="0" y="0" width="680" height="300" fill="#fff"/>
+<text class="h" x="20" y="14">CaveLayout.svg, draft 1, 2026-10-02, Sable. Plans: north up, world metres. Nothing decided until DECISIONS.md.</text>
+
+<!-- PANEL A: spur and ravine, 3 px per m, x 40 to 132, z 30 to 72. X = 20 + 3(x-40), Y = 30 + 3(72-z) -->
+<rect class="frame" x="20" y="30" width="276" height="126"/>
+<text class="h" x="20" y="27">A. The spur, W1 to the mouth (x 40 to 132, z 30 to 72), 3 px = 1 m; ground from trail points</text>
+<rect class="unk" x="32" y="66" width="108" height="72"/>
+<text class="s" x="34" y="72" fill="#c0392b">ravine floor, walls and rim: NOT DRAWN until Marlow's S1 to S4</text>
+<polyline class="trail" points="284,36 281.2,41.6 280.2,49.6 276.1,77.9 271.1,84.1 246.4,82.7 237.7,78.1 229.8,74.1 223.1,72.5 202.5,94.4 197.6,102.1 192.3,107.5 180.5,108.2 173.9,103.9 159.8,92.2 146.5,87.1 136.1,94.2 131.9,100.3 123.5,110.3 111.5,110.9 103.6,107.8 86.2,101.1 78.5,100.4 72.3,102.5 67.9,107.3 56.4,133.1"/>
+<text class="s" x="270" y="34">W1 -4.5</text><text class="s" x="214" y="68">-3.0</text><text class="s" x="186" y="114">-3.4</text>
+<text class="s" x="140" y="84">+0.6</text><text class="s" x="124" y="98">rise +2.3</text><text class="s" x="98" y="116">-0.5</text><text class="s" x="74" y="98">-2.7</text><text class="s" x="44" y="138">mouth -6.0</text>
+<line class="gone" x1="217" y1="70" x2="224" y2="76"/><line class="gone" x1="224" y1="70" x2="217" y2="76"/><text class="s" x="204" y="64">old rope rail (chant spot 1 stays)</text>
+<line class="rope" x1="131.9" y1="96.6" x2="103.7" y2="104.1" stroke-width="1.6"/><text class="s" x="100" y="92">V1 rope rail on the descent</text>
+<circle class="act" cx="146" cy="90" r="2"/><text class="s" x="150" y="88">V2 bulbs</text>
+<rect class="keep" x="76" y="98" width="35" height="16"/><text class="s" x="80" y="124">V10 narrow (if open)</text>
+<polygon class="void" points="52,131 60,131 60,134 52,134"/>
+<circle class="warp" cx="74" cy="114" r="1.6"/><text class="s" x="62" y="120">Cave_Mouth</text>
+<circle class="warp" cx="131.9" cy="100.3" r="1.6"/><text class="s" x="134" y="106">Spur_Descent (new)</text>
+<line class="sight" x1="173.9" y1="103.9" x2="146" y2="90"/><text class="s" x="168" y="98">F2</text>
+<text class="s" x="24" y="152">Cave interior lies south, under z 38 (panel B)</text>
+
+<!-- PANEL B: cave plan, 5 px per m, x 48 to 104, z 0 to 40. X = 330 + 5(x-48), Y = 30 + 5(40-z) -->
+<rect class="frame" x="320" y="30" width="300" height="200"/>
+<text class="h" x="320" y="27">B. The cave (x 48 to 104, z 0 to 40), 5 px = 1 m, built boxes</text>
+<rect class="piece" x="342.5" y="43" width="15" height="84.5"/><text class="s" x="324" y="100" transform="rotate(-90 336 100)">entrance -6</text>
+<rect class="piece" x="357.5" y="112.5" width="65" height="15"/><text class="s" x="372" y="122">leg 1, -6 to -10</text>
+<rect class="piece" x="422.5" y="112.5" width="15" height="40"/>
+<rect class="piece" x="357.5" y="137.5" width="65" height="15"/><text class="s" x="372" y="147">leg 2, -10 to -14 (colour)</text>
+<rect class="piece" x="342.5" y="137.5" width="15" height="40"/>
+<rect class="piece" x="357.5" y="162.5" width="65" height="15"/><text class="s" x="372" y="172">leg 3, -14 to -18</text>
+<rect class="piece" x="422.5" y="162.5" width="22.5" height="15"/>
+<rect class="room" x="445" y="125" width="90" height="90"/><text class="t" x="470" y="212">chamber, floor -18</text>
+<rect class="room" x="537.5" y="152.5" width="40" height="40"/><text class="s" x="540" y="196">side room</text>
+<rect class="void" x="535" y="167" width="2.5" height="6"/>
+<!-- V9 deeper -->
+<polyline class="gone" points="577.5,158 597.5,158 597.5,152.5 603.5,152.5 603.5,164 577.5,164" stroke-dasharray="2 1"/><text class="s" x="580" y="150">V9 deeper (event 16 only)</text>
+<circle class="evt" cx="600" cy="160" r="1.6"/>
+<!-- keep clear -->
+<rect class="keep" x="445" y="164" width="91.25" height="12"/><text class="s" x="470" y="182">keep clear z 10.8 to 13.2</text>
+<!-- passage contents -->
+<circle class="water" cx="346" cy="90" r="1.6"/><text class="s" x="348" y="92">drip + can</text>
+<rect class="keep" x="342.5" y="65" width="15" height="50"/><text class="s" x="359" y="78">drip clear z 23 to 33</text>
+<rect class="fur" x="343" y="55" width="3" height="7.5"/><text class="s" x="326" y="58">jugs</text>
+<rect class="act" x="343" y="45" width="9" height="9" fill-opacity="0.4"/><text class="s" x="322" y="50">load spot</text>
+<rect class="fur" x="357.5" y="50" width="10" height="10"/><text class="s" x="369" y="56">V3 niche, generator cold</text>
+<rect class="fur" x="326" y="40" width="13" height="2"/><text class="s" x="322" y="37">day-2 boards (outside)</text>
+<!-- cable -->
+<polyline class="cable" points="362,55 357,60 357,126 437,126 437,151 358,151 358,176 445,176 447,126 510,126" stroke="#8a7a50"/>
+<text class="s" x="440" y="122">pale cable to the bank</text>
+<!-- chamber contents -->
+<rect class="fur" x="515" y="127.5" width="17.5" height="17.5"/><text class="s" x="505" y="141">stack</text>
+<rect class="act" x="510" y="126" width="5" height="3"/><text class="s" x="496" y="133">bank</text>
+<rect class="fur" x="529" y="195" width="6" height="10"/><text class="s" x="514" y="200">his seat</text>
+<line class="sight" x1="532" y1="200" x2="445" y2="170"/>
+<rect class="fur" x="510" y="207.5" width="10" height="5"/><text class="s" x="494" y="211">sleep</text>
+<circle class="fur" cx="507" cy="210" r="1"/>
+<rect class="fur" x="452.5" y="152.5" width="5" height="7.5"/><text class="s" x="448" y="150">food</text>
+<circle class="act" cx="529" cy="162" r="1.4"/><text class="s" x="518" y="160">lantern</text>
+<circle class="gone" cx="510" cy="155" r="1.6"/><text class="s" x="490" y="156">old R7 spot</text>
+<!-- side room contents -->
+<rect class="fur" x="556" y="169.5" width="6" height="6"/><circle class="act" cx="554.25" cy="172.5" r="1.5"/><circle class="fur" cx="565.25" cy="173.5" r="1.5"/>
+<rect class="fur" x="540" y="155" width="4" height="4"/><circle class="fur" cx="571" cy="188" r="1.2"/>
+<circle class="warp" cx="460" cy="170" r="1.6"/><circle class="warp" cx="545" cy="170" r="1.6"/>
+<text class="s" x="545" y="178">Cave_SideRoom (new)</text>
+<circle class="trap" cx="362" cy="42" r="2"/><text class="s" x="366" y="40">T1</text>
+
+<!-- legend -->
+<text class="h" x="20" y="176">Legend</text>
+<rect class="piece" x="20" y="182" width="5" height="3"/><text class="s" x="28" y="185">cave piece as built (exact)</text>
+<rect class="unk" x="20" y="189" width="5" height="3"/><text class="s" x="28" y="192">not drawn: waits on Marlow's samples</text>
+<line class="trail" x1="20" y1="197" x2="26" y2="197"/><text class="s" x="28" y="198">trail, with ground from its points</text>
+<line class="rope" x1="20" y1="203" x2="26" y2="203"/><text class="s" x="28" y="204">rope rail</text>
+<line class="cable" x1="20" y1="209" x2="26" y2="209" stroke="#8a7a50"/><text class="s" x="28" y="210">pale cable, no collider, no light</text>
+<rect class="act" x="20" y="213" width="5" height="3"/><text class="s" x="28" y="216">place, stand or interaction</text>
+<rect class="fur" x="20" y="219" width="5" height="3"/><text class="s" x="28" y="222">solid prop, box from the mesh</text>
+<rect class="keep" x="20" y="225" width="5" height="3"/><text class="s" x="28" y="228">keep clear or keep-out</text>
+<line class="gone" x1="20" y1="233" x2="26" y2="233"/><text class="s" x="28" y="234">removed, moved, or event-only</text>
+<circle class="warp" cx="23" cy="239" r="1.6"/><text class="s" x="28" y="240">dev warp</text>
+<circle class="trap" cx="23" cy="245" r="1.6"/><text class="s" x="28" y="246">trap spot, held</text>
+</svg>
