@@ -102,3 +102,5 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: IW3 always shows "You can't abandon your post." when it stops the player, shift or not, so no invisible wall is silent. The booth is an open doorway.
 - 2026-10-02: The tower check is done from anywhere on the deck, so the office door counts as seen from the deck's east side; it need not be seen from the lectern.
 - 2026-10-02: The fishing eat point is the boathouse step chair (Valley and the build), not a pump dock chair. Stilts rest and the step door are Sable's to settle in LakeLayout.
+- 2026-10-02: The tower lectern moves to the cab's east side so the binoculars see the office door (Sable). The office porch lamp is fully off when the door is shut and near white when open.
+- 2026-10-02: Lake: no window lamp in the boathouse (nobody lives there); a shallow wading strip past the shore for the three wading events, inside the wade limit (Sable designs it).
