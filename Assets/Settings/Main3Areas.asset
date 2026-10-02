@@ -34,12 +34,29 @@ MonoBehaviour:
     y: -10
     width: 107
     height: 35
+  closedFills:
+  - label: lake
+    seed: {x: 190, y: 60}
+    surface: -5.5
+    within:
+      serializedVersion: 2
+      x: 133
+      y: 25
+      width: 129
+      height: 105
+    cell: 0.5
+    body: 0.35
   stopRoots:
   - FrontZone/BrushBands
   - FrontZone/ShiftWalls
   - FrontZone/Gate/PlayerBlocker
   - Ground815/Stops
   - Fence
+  - Lake/WadeLimit
+  - Lake/Boathouse/Layout823/StakeLine
+  - Lake/Dock/Rail
+  - Lake/Dock/Layout823/RailStops
+  - Lake/Boathouse/Layout823/SlipRails
   reachRadius: 4
   reachRise: 3
   foundReach: 30
@@ -664,11 +681,11 @@ MonoBehaviour:
     deckListWritten: 1
     deckSee:
     - label: her blanket
-      point: {x: 240.7, y: -3.6, z: 56.65}
+      point: {x: 240.5, y: -3.6, z: 56.62}
       treeCoverPath: 
       hard: 1
       loose: 0
-      objectPath: Lake/Boathouse/Dressing/Step/CITW_Blanket
+      objectPath: Lake/Boathouse/Dressing/Step/Blanket
     - label: her bowl
       point: {x: 241.2, y: -3.7, z: 56.5}
       treeCoverPath: 
@@ -752,6 +769,7 @@ MonoBehaviour:
       look: {x: 240, y: -3, z: 54}
     playChecks:
     - main3_8_23_lake_check.cs
+    - main3_8_23_lake_frames.cs?look=Day_one
   - walkLines: []
     id: camp1
     task: 8.24

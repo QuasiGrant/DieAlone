@@ -5,7 +5,7 @@
 //   area's warps and trail points, each expanded by floodHeadings headings x (walk, sprint-jump) moves of floodMoveTime s with the real
 //   mover (PlayerController.Step, dt 0.02), inside the bounds plus floodMargin m (a place past that is an exit and is not expanded); a
 //   move ends where the body lands, never mid-fall (8.21a). Within stopNear m of a stop the cells are stopCell m and stopLevel m (8.21b).
-//   FAIL on a place inside a closed zone (Valley.md 8 thicket), fellUnder m under the terrain, or standing on a stop (stopRoots or the
+//   FAIL on a place inside a closed zone (Valley.md 8 thicket) or closed water (closedFills, 8.23 round 2), fellUnder m under the terrain, or standing on a stop (stopRoots or the
 //   Ignore Raycast layer: an escape over a stop, wherever it leads; 8.22 round 2).
 // TRAPS: a reverse search from the seeds and exits finds the places with no way back; each group is retested from its first place with
 //   escapeHeadings headings x (walk, sprint, sprint-jump) for escapeTime s; a trap is 0 escapes (an escape ends on a place with a way
@@ -39,7 +39,16 @@ const float dt = 0.02f, groundY = -900f, raise = 20f, escapeAway = 4f, trailStep
 const int landSteps = 10, settleSteps = 3, fallSteps = 500, shotW = 3840, shotH = 1976;
 UnityEngine.Vector3 Pt(UnityEngine.Vector3 p) => p.y <= groundY ? new UnityEngine.Vector3(p.x, H(p.x, p.z) + 1f, p.z) : p;   // y -999: the ground plus 1 m
 bool InRegion(UnityEngine.Vector3 p) { foreach (var r in A.bounds) { var e = new UnityEngine.Rect(r.x - set.floodMargin, r.y - set.floodMargin, r.width + 2f * set.floodMargin, r.height + 2f * set.floodMargin); if (e.Contains(new UnityEngine.Vector2(p.x, p.z))) return true; } return false; }
-bool Closed(UnityEngine.Vector3 p) { if (set.closedZones != null) foreach (var r in set.closedZones) if (r.Contains(new UnityEngine.Vector2(p.x, p.z))) return true; return false; }
+// closed water (8.23 round 2, Marlow 823 finding 1: the lake bed was not closed, so a landing in it passed): each fill the area's
+// bounds touch, built once before the flood with the player's own colliders left out
+UnityEngine.Physics.SyncTransforms();
+var closedWater = new System.Collections.Generic.List<(string label, System.Func<UnityEngine.Vector3, bool> inside, int cells)>();
+if (set.closedFills != null) foreach (var f in set.closedFills)
+{
+    bool touches = false; foreach (var r in A.bounds) if (r.Overlaps(f.within)) touches = true; if (!touches) continue;
+    var fn = Main3AreaSet.ClosedWater(f, H, c => c.transform.IsChildOf(pc.transform)); closedWater.Add((f.label, fn, Main3AreaSet.ReachedCells(f, fn)));
+}
+bool Closed(UnityEngine.Vector3 p) { if (set.closedZones != null) foreach (var r in set.closedZones) if (r.Contains(new UnityEngine.Vector2(p.x, p.z))) return true; foreach (var w in closedWater) if (w.inside(p)) return true; return false; }
 // finer keys near stops (8.21b): the coarse cells within stopNear m of a stop collider's bounds; a place there keys on stopCell cells and
 // stopLevel levels (negative keys), so a short step from a raised fill onto a stop's top is its own place
 var nearStop = new System.Collections.Generic.HashSet<long>();
@@ -112,15 +121,18 @@ try
     var onStop = new System.Collections.Generic.List<string>();
     foreach (var kv in pos)
     {
-        var p = kv.Value; foreach (var h in UnityEngine.Physics.RaycastAll(p + UnityEngine.Vector3.up * 0.3f, UnityEngine.Vector3.down, 0.6f, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
-        {
-            var ht = h.collider.transform; if (ht.IsChildOf(pc.transform) || h.collider is UnityEngine.TerrainCollider) continue; var path = WalkIns.PathOf(ht); bool stop = ht.gameObject.layer == 2;
-            if (set.stopRoots != null) foreach (var sr in set.stopRoots) if (path.StartsWith(sr)) stop = true;
-            if (stop) { onStop.Add(P3(p) + " on " + path); break; }
-        }
+        // only the surface the body stands on, the highest under it (8.23 round 2: ring boxes 0.2 m under the boathouse floor and the dock
+        // deck read as stood on once Lake/WadeLimit was a stop)
+        var p = kv.Value; UnityEngine.RaycastHit top = default; bool any = false;
+        foreach (var h in UnityEngine.Physics.RaycastAll(p + UnityEngine.Vector3.up * 0.3f, UnityEngine.Vector3.down, 0.6f, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
+            if (!h.collider.transform.IsChildOf(pc.transform) && (!any || h.distance < top.distance)) { top = h; any = true; }
+        if (!any || top.collider is UnityEngine.TerrainCollider) continue;
+        var ht = top.collider.transform; var path = WalkIns.PathOf(ht); bool stop = ht.gameObject.layer == 2;
+        if (set.stopRoots != null) foreach (var sr in set.stopRoots) if (path.StartsWith(sr)) stop = true;
+        if (stop) onStop.Add(P3(p) + " on " + path);
     }
     bool floodOk = leaks.Count == 0 && fell.Count == 0 && onStop.Count == 0; if (!floodOk) fails++;
-    sb.Append((floodOk ? "PASS" : "FAIL") + " FLOOD: " + pos.Count + " standing places from " + seeds + " seeds, " + moves + " moves; closed-zone leaks " + leaks.Count + ", fell through " + fell.Count + ", standing on a stop " + onStop.Count + "\n");
+    sb.Append((floodOk ? "PASS" : "FAIL") + " FLOOD: " + pos.Count + " standing places from " + seeds + " seeds, " + moves + " moves; closed-zone leaks " + leaks.Count + ", fell through " + fell.Count + ", standing on a stop " + onStop.Count + (closedWater.Count > 0 ? "; closed water: " + string.Join(", ", System.Linq.Enumerable.Select(closedWater, w => w.label + " " + w.cells + " cells")) : "") + "\n");
     foreach (var l in onStop) sb.Append("  ON STOP " + l + "\n");
     foreach (var l in leaks) sb.Append("  LEAK " + l + "\n"); foreach (var l in fell) sb.Append("  FELL " + l + "\n");
     // ---- TRAPS

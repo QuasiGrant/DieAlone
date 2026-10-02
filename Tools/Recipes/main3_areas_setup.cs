@@ -25,6 +25,12 @@ Main3AreaSet.WalkLine WL(string l, params UnityEngine.Vector3[] pts) => new Main
 Main3AreaSet.InventoryItem I(string l, string p, string k, string n, int e) => new Main3AreaSet.InventoryItem { label = l, path = p, kind = k, name = n, expected = e };
 // ground Valley.md 8 closes with thicket (as main3_reach_check_8_16a.cs)
 set.closedZones = new[] { R(346f, -10f, 395f, 99f), R(141f, -10f, 248f, 25f) };
+// stops (Main3AreaSet.stopRoots), set here so the asset follows this file (the asset had kept its first list, without the lake's):
+// 8.23 round 2 adds the dock rails, their RailStops and the slip rails (Marlow 823 finding 1)
+set.stopRoots = new[] { "FrontZone/BrushBands", "FrontZone/ShiftWalls", "FrontZone/Gate/PlayerBlocker", "Ground815/Stops", "Fence", "Lake/WadeLimit", "Lake/Boathouse/Layout823/StakeLine",
+    "Lake/Dock/Rail", "Lake/Dock/Layout823/RailStops", "Lake/Boathouse/Layout823/SlipRails" };
+// closed water (8.23 round 2): the lake inside the wade ring, the stake line and the house skirts, filled from mid water
+set.closedFills = new[] { new Main3AreaSet.ClosedFill { label = "lake", seed = new UnityEngine.Vector2(190f, 60f), surface = -5.5f, within = R(133f, 25f, 262f, 130f), cell = 0.5f, body = 0.35f } };
 // inventory (Vesper, Docs/Review/2026-10-02-Meeting/Vesper.md 4): expected counts as built by the runner on 2026-10-02
 set.inventory = new[] {
     I("Ridge fire cards, night", "Ward/StandInFire", "quads", "RidgeFlames", 132), I("Ridge fire cards, day", "Ward/StandInFire", "quads", "RidgeFlamesDay", 68),
@@ -112,9 +118,9 @@ var lakeArea = new Main3AreaSet.Area { id = "lake", task = "8.23", title = "Lake
         FR("THE STEP FROM THE NORTH DOORWAY", V(240f, lakeFloor + eyeH, 54.6f), V(240f, lakeFloor + 0.3f, 56.6f)),
         FR("THE SHALLOWS AND STAKE LINE FROM THE BEACH", V(244.5f, G, 57.5f), V(238f, -5.6f, 59f)),
         FR("THE BOATHOUSE FROM THE SHORE PATH, 20 M OUT", V(252f, G, 70f), V(240f, -3f, 54f)) },
-    playChecks = new[] { "main3_8_23_lake_check.cs" },
+    playChecks = new[] { "main3_8_23_lake_check.cs", "main3_8_23_lake_frames.cs?look=Day_one" },
     inventory = new[] { "Lanterns and lamps" }, deckListWritten = true,
-    deckSee = new[] { DH("her blanket", 240.7f, -3.6f, 56.65f, "Lake/Boathouse/Dressing/Step/CITW_Blanket"), DH("her bowl", 241.2f, -3.7f, 56.5f, "Lake/Boathouse/Dressing/Step/CITW_Bowl_Small"),
+    deckSee = new[] { DH("her blanket", 240.5f, -3.6f, 56.62f, "Lake/Boathouse/Dressing/Step/Blanket"), DH("her bowl", 241.2f, -3.7f, 56.5f, "Lake/Boathouse/Dressing/Step/CITW_Bowl_Small"),
         DL("boathouse roof", 240f, -1.0f, 52.4f), DL("pump", 190f, -3.6f, 94.8f), DL("dock end", 190f, -4.3f, 86.4f), DL("mid water", 190f, -5.4f, 60f), DL("reed bed", 241.5f, -4.6f, 62.2f),
         DL("stake line", 240f, -4.8f, 60.4f), DL("rowboat", 226.47f, G, 87.28f), DL("shore path east", 255f, G, 55f) },
     deckHide = new Main3AreaSet.DeckTarget[0] };

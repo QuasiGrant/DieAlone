@@ -69,6 +69,60 @@ public class Main3AreaSet : ScriptableObject
     }
 
     [System.Serializable]
+    public struct ClosedFill
+    {
+        public string label;
+        [Tooltip("A point (x, z) in the closed water.")] public Vector2 seed;
+        [Tooltip("The water surface, world metres: only ground under it fills, and only a place under it is in the water.")] public float surface;
+        [Tooltip("The fill never leaves this rectangle (x, z).")] public Rect within;
+        [Tooltip("Fill grid cell, metres.")] public float cell;
+        [Tooltip("A cell is shut when any collider stands within this many metres of it (the body's radius), so gaps the body cannot pass hold.")] public float body;
+    }
+
+    /// The water a closed fill's seed reaches: grid cells over ground lower than the surface, shut by any collider (not the terrain, not
+    /// one the skip test names) within the body's radius between the ground and half a metre over the surface; 4-way from the seed. The
+    /// result says whether a standing place lies in that water and under its surface. Call Physics.SyncTransforms first.
+    public static System.Func<Vector3, bool> ClosedWater(ClosedFill f, System.Func<float, float, float> ground, System.Func<Collider, bool> skip)
+    {
+        int nx = Mathf.Max(1, Mathf.CeilToInt(f.within.width / f.cell)), nz = Mathf.Max(1, Mathf.CeilToInt(f.within.height / f.cell));
+        var state = new sbyte[nx, nz];   // 0 unknown, 1 open, -1 shut
+        bool Open(int i, int j)
+        {
+            if (state[i, j] != 0) return state[i, j] > 0;
+            float x = f.within.xMin + (i + 0.5f) * f.cell, z = f.within.yMin + (j + 0.5f) * f.cell, g = ground(x, z); bool open = g < f.surface;
+            if (open)
+            {
+                float lo = g + 0.05f, hi = f.surface + 0.5f; var half = new Vector3(f.cell * 0.5f + f.body, (hi - lo) * 0.5f, f.cell * 0.5f + f.body);
+                foreach (var c in Physics.OverlapBox(new Vector3(x, (lo + hi) * 0.5f, z), half, Quaternion.identity, ~0, QueryTriggerInteraction.Ignore))
+                    if (!(c is TerrainCollider) && (skip == null || !skip(c))) { open = false; break; }
+            }
+            state[i, j] = (sbyte)(open ? 1 : -1); return open;
+        }
+        var reached = new bool[nx, nz]; int si = Mathf.FloorToInt((f.seed.x - f.within.xMin) / f.cell), sj = Mathf.FloorToInt((f.seed.y - f.within.yMin) / f.cell);
+        if (si >= 0 && si < nx && sj >= 0 && sj < nz && Open(si, sj))
+        {
+            var q = new Queue<Vector2Int>(); q.Enqueue(new Vector2Int(si, sj)); reached[si, sj] = true;
+            while (q.Count > 0)
+            {
+                var c = q.Dequeue();
+                foreach (var d in new[] { new Vector2Int(1, 0), new Vector2Int(-1, 0), new Vector2Int(0, 1), new Vector2Int(0, -1) })
+                { int i = c.x + d.x, j = c.y + d.y; if (i < 0 || j < 0 || i >= nx || j >= nz || reached[i, j] || !Open(i, j)) continue; reached[i, j] = true; q.Enqueue(new Vector2Int(i, j)); }
+            }
+        }
+        return p =>
+        {
+            if (p.y >= f.surface) return false; int i = Mathf.FloorToInt((p.x - f.within.xMin) / f.cell), j = Mathf.FloorToInt((p.z - f.within.yMin) / f.cell);
+            return i >= 0 && j >= 0 && i < nx && j < nz && reached[i, j];
+        };
+    }
+
+    /// How many cells the fill reached (for reports): the predicate's grid is private, so this counts by sampling cell centres.
+    public static int ReachedCells(ClosedFill f, System.Func<Vector3, bool> inWater)
+    {
+        int n = 0; for (float x = f.within.xMin + f.cell * 0.5f; x < f.within.xMax; x += f.cell) for (float z = f.within.yMin + f.cell * 0.5f; z < f.within.yMax; z += f.cell) if (inWater(new Vector3(x, f.surface - 1f, z))) n++; return n;
+    }
+
+    [System.Serializable]
     public struct WalkLine
     {
         public string label;
@@ -121,6 +175,7 @@ public class Main3AreaSet : ScriptableObject
     [Tooltip("Escape headings per move kind in the trap retest (Marlow: 16 x walk, sprint, sprint-jump = 48).")] public int escapeHeadings = 16;
     [Tooltip("Seconds per escape try.")] public float escapeTime = 3f;
     [Tooltip("Ground closed by thicket (Valley.md 8): a reached place inside one is a leak.")] public Rect[] closedZones;
+    [Tooltip("Closed water (8.23 round 2): a reached place below a fill's surface inside the water its seed reaches is a leak.")] public ClosedFill[] closedFills;
     [Tooltip("Stops (8.22 round 2, Marlow 1: a jump onto the brush band and off its far side): a flood place standing on a collider under one of these scene paths, or on the Ignore Raycast layer (hedge boxes, invisible walls), is an escape over a stop and fails.")] public string[] stopRoots = { "FrontZone/BrushBands", "FrontZone/ShiftWalls", "FrontZone/Gate/PlayerBlocker", "Ground815/Stops", "Fence", "Lake/WadeLimit", "Lake/Boathouse/Layout823/StakeLine" };
 
     [Header("Reach and found (Pim, Wren 2026-10-02)")]
