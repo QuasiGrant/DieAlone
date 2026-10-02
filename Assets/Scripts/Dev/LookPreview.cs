@@ -125,25 +125,5 @@ public class LookPreview : MonoBehaviour
     {
         if (skyCopy != null) Destroy(skyCopy);
     }
-
-    private void OnGUI()
-    {
-        if (current == 0 || Count == 0 || DevMenu.IsShowing) return;   // the panel shows the current look itself
-        // Scales with screen height like the dev panel, and stays inside a narrow screen.
-        float scale = Mathf.Max(Screen.height / LabelReferenceHeight, LabelMinScale);
-        float width = Screen.width / scale;
-        float labelWidth = Mathf.Min(LabelWidth, width - 2f * LabelMargin);
-        var saved = GUI.matrix;
-        GUI.matrix = Matrix4x4.Scale(new Vector3(scale, scale, 1f));
-        GUI.Label(new Rect(width - LabelMargin - labelWidth, LabelMargin, labelWidth, LabelHeight), "Look preview: " + CurrentLabel + "  (F1 menu)");
-        GUI.matrix = saved;
-    }
-
-    // Corner label layout, in reference pixels at 720 high.
-    private const float LabelReferenceHeight = 720f;
-    private const float LabelWidth = 250f;
-    private const float LabelHeight = 44f;
-    private const float LabelMargin = 10f;
-    private const float LabelMinScale = 1f;   // never smaller than 1 reference pixel per screen pixel
 #endif
 }
