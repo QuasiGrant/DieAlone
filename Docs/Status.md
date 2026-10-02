@@ -105,3 +105,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: The tower lectern moves to the cab's east side so the binoculars see the office door (Sable). The office porch lamp is fully off when the door is shut and near white when open.
 - 2026-10-02: Lake: no window lamp in the boathouse (nobody lives there); a shallow wading strip past the shore for the three wading events, inside the wade limit (Sable designs it).
 - 2026-10-02: Lake: fishing from the empty boat slip inside the boathouse through a new boat door; the shallows behind a stake-and-rope line north of the house for the wading events; the cat (R4) has no Talk point.
+- 2026-10-02: The bowl and chair answer only from the step floor, so the shallows event point can stay where it is.
