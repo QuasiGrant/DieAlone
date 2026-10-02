@@ -100,3 +100,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: The gate booth moves to the driver's side (south of the drive, x 390.6 to 393.2); a lift barrier does the check; the turning circle goes and refused cars reverse out. The front zone owns the closed campground.
 - 2026-10-02: IW3 is on whenever an admitted car is on the campground spur, not tied to the gate shift (DECISIONS 2026-09-29).
 - 2026-10-02: IW3 always shows "You can't abandon your post." when it stops the player, shift or not, so no invisible wall is silent. The booth is an open doorway.
+- 2026-10-02: The tower check is done from anywhere on the deck, so the office door counts as seen from the deck's east side; it need not be seen from the lectern.
