@@ -1,0 +1,8 @@
+# Main3.unity size (Tully, 2026-10-01)
+
+Recommend: put Main3.unity in LFS. Facts checked: 54.8 MB, 69 commits of it, .git 624 MB, git-lfs 3.7.1 installed, LFS already a clone requirement (images, audio, models).
+Why not the others: not committing the scene means a fresh clone has no playable scene until the full runner (about 35 recipes plus Play checks, Editor open) passes, which breaks "never leave the project broken" and Grant's clone-and-restore. A git-ignored forest scene leaves a clone with no forest, and every check that reads the forest becomes multi-scene; a larger rework for the same gain.
+Steps (coder, one commit): 1) in .gitattributes, after line 5, add `Assets/Scenes/Main3.unity filter=lfs diff=lfs merge=lfs -text` (the later line wins). 2) `git rm --cached Assets/Scenes/Main3.unity` then `git add .gitattributes Assets/Scenes/Main3.unity`. 3) `git lfs ls-files` must list Main3.unity; `git show :Assets/Scenes/Main3.unity | head -3` must show an LFS pointer, not YAML. 4) commit with a one-line message, push. 5) Grant: nothing new; `git pull` fetches it if LFS is installed.
+Risks: the GitHub LFS storage and bandwidth quota still takes about 55 MB per rebuild (quota for this account unverified; check Settings, Billing before the first push). No text diff of Main3 in git (a 54 MB YAML diff is unreadable anyway). Past 69 copies stay in .git; do not rewrite history (git lfs migrate) without Grant's yes. Hooks: the LFS pre-push and post-checkout hooks already live in Tools/Hooks, so push uploads it; the commit-msg plan check does not read scenes.
+If the quota bites: move the 8.19 forest to an additive scene then, as its own planned task.
+Tully
