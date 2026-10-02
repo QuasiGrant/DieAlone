@@ -113,3 +113,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: North: search spot SS3 is found from the fallen giant's end; the ruin gets a report box like the keeper's (Quill's draft; Grant can overturn); the loop passes within about 21 m of SS1.
 - 2026-10-02: The bowl and chair use a must-stand-on-the-step-floor rule when they become usable (Milestone 10); the lake layout passes without it.
 - 2026-10-02: 8.23 ruling after round 2: from the deck the step need only show a warm spot there or gone; the full read (the cat itself on the step) is checked when the cat is built (Milestone 11/12).
+- 2026-10-02: Camp 2: the empty setting is a third place at the table nobody sits in; the ring box stays in the tent; the phone cord reaches the table (Sable sets the distance).
