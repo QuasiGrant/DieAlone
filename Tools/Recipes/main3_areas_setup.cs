@@ -33,7 +33,7 @@ set.inventory = new[] {
     I("Smoke columns, day two", "Ward/StandInFire/SmokeColumns", "quads", "", 128), I("Ward stones", "Ward/Stones", "renderers", "", 3),
     I("Camp 3 tent", "Campsites/Camp_3/Dressing", "renderers", "CS_Tent", 8), I("Camp 3 fire", "Campsites/Camp_3/Dressing/Fire", "renderers", "", 15),
     I("Camp 3 easel", "Campsites/Camp_3/Dressing/Easel", "renderers", "", 13), I("North ruin", "Places/NorthRuin", "renderers", "", 44),
-    I("Cave lights", "Cave", "lights", "", 5), I("Lanterns and lamps", "", "practicals", "", 30),
+    I("Cave lights", "Cave", "lights", "", 5), I("Lanterns and lamps", "", "practicals", "", 29),   // 8.23: the boathouse lamp goes
     // camp (8.21, Wren 2026-10-02)
     I("Cabin", "Camp/Cabin", "renderers", "", 106), I("Tower", "Camp/Tower", "renderers", "", 393), I("Fire pit", "Camp/FirePit", "renderers", "", 32),
     I("Generator", "Camp/GeneratorDressing", "renderers", "", 3), I("Privy", "Camp/Privy", "renderers", "", 2), I("Stump", "Camp/Cabin/Woodpile", "renderers", "CITW_Tree_Stump", 1),
@@ -97,12 +97,31 @@ var front = new Main3AreaSet.Area { id = "front", task = "8.22", title = "Front 
         DL("store roof", 366f, 5.9f, 200f), DL("lot centre", 358f, 3.1f, 170f), DL("R6's car", 370f, 4.2f, 179.4f), DL("booth roof light", 391.9f, 5.8f, 165.4f),
         DL("barrier arm", 389.3f, 4.0f, 169.5f), DL("highway", 430f, G, 185f), DL("gate T stop sign", 423.05f, 5.3f, 166f) },
     deckHide = new Main3AreaSet.DeckTarget[0] };
+// lake (8.23; LakeLayout.md draft 2 section 5, Sable 2026-10-02): places on their objects; deck must-see hard: her blanket and the bowl,
+// every mesh; the rest loose; must-hide none. The water is -5.5, the house floor -3.8, the dock deck -4.8.
+const float lakeFloor = -3.8f, dockDeck = -4.8f;
+var lakeArea = new Main3AreaSet.Area { id = "lake", task = "8.23", title = "Lake", bounds = new[] { R(133f, 25f, 262f, 130f) }, warps = new[] { "Lake_Pump", "Lake_Boathouse" },
+    places = new[] { PO("Pump", 190f, dockDeck, 94.8f, 1.3f, "Lake/Dock/Pump"), PO("Dock end rail", 190f, dockDeck, 86.44f, 1.0f, "Lake/Dock/RailEnd"),
+        PO("Rowboat", 226.47f, G, 87.28f, 0.8f, "PointsOfInterest/POI_Overturned_rowboat"), PO("Water tank", 186.34f, G, 124.53f, 3f, "PointsOfInterest/POI_Water_tank"),
+        PO("East doorway", 243.2f, lakeFloor, 52.4f, 2.0f, "Lake/Boathouse"), PO("Step", 240f, lakeFloor, 56.1f, 1.0f, "Lake/Boathouse/Dressing/Step"),
+        PO("Slip rest", 240.85f, lakeFloor, 52.4f, 1.3f, "Lake/Boathouse/Layout823/SlipRest"), PO("Reeds rest", 243.6f, G, 62.0f, 1.3f, "Lake/Boathouse/Layout823/ReedsRest"),
+        P("Beach", 243.6f, G, 57.0f), PO("Stake line", 240f, G, 60.4f, 1.3f, "Lake/Boathouse/Layout823/StakeLine"), PO("Soft ground", 250f, G, 58.35f, 0.3f, "Lake/Boathouse/Layout823/SoftGround") },
+    interactions = new[] { IA("pump", "Lake/Dock/Pump", 190f, dockDeck, 96f), IA("slip rest", "Lake/Boathouse/Layout823/SlipRest", 241.3f, lakeFloor, 52.4f), IA("reeds rest", "Lake/Boathouse/Layout823/ReedsRest", 244.1f, G, 62.0f) },
+    frames = new[] { FR("THE PUMP FROM THE TRAIL END, FACING SOUTH", V(190f, G, 96.5f), V(190f, dockDeck + 1.1f, 94.8f)),
+        FR("THE SLIP FROM THE EAST DOORWAY", V(242.6f, lakeFloor + eyeH, 52.4f), V(238f, lakeFloor, 52.4f)),
+        FR("THE STEP FROM THE NORTH DOORWAY", V(240f, lakeFloor + eyeH, 54.6f), V(240f, lakeFloor + 0.3f, 56.6f)),
+        FR("THE SHALLOWS AND STAKE LINE FROM THE BEACH", V(244.5f, G, 57.5f), V(238f, -5.6f, 59f)),
+        FR("THE BOATHOUSE FROM THE SHORE PATH, 20 M OUT", V(252f, G, 70f), V(240f, -3f, 54f)) },
+    playChecks = new[] { "main3_8_23_lake_check.cs" },
+    inventory = new[] { "Lanterns and lamps" }, deckListWritten = true,
+    deckSee = new[] { DH("her blanket", 240.7f, -3.6f, 56.65f, "Lake/Boathouse/Dressing/Step/CITW_Blanket"), DH("her bowl", 241.2f, -3.7f, 56.5f, "Lake/Boathouse/Dressing/Step/CITW_Bowl_Small"),
+        DL("boathouse roof", 240f, -1.0f, 52.4f), DL("pump", 190f, -3.6f, 94.8f), DL("dock end", 190f, -4.3f, 86.4f), DL("mid water", 190f, -5.4f, 60f), DL("reed bed", 241.5f, -4.6f, 62.2f),
+        DL("stake line", 240f, -4.8f, 60.4f), DL("rowboat", 226.47f, G, 87.28f), DL("shore path east", 255f, G, 55f) },
+    deckHide = new Main3AreaSet.DeckTarget[0] };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,
     front,
-    new Main3AreaSet.Area { id = "lake", task = "8.23", title = "Lake", bounds = new[] { R(150f, 25f, 262f, 130f) }, warps = new[] { "Lake_Pump", "Lake_Boathouse" },
-        places = new[] { P("Pump", 190f, G, 97f), P("Boathouse", 244f, G, 52f), P("Cat step", 233f, G, 62f), P("Dock end", 190f, G, 88f), P("Overturned rowboat", 226f, G, 87f), P("Water tank", 186f, G, 125f) },
-        inventory = new string[0], deckSee = none, deckHide = none },
+    lakeArea,
     new Main3AreaSet.Area { id = "camp1", task = "8.24", title = "Camp 1 and the north loop", bounds = new[] { R(150f, 195f, 300f, 305f) }, warps = new[] { "Camp_1", "North_Loop_Ruin" },
         places = new[] { P("Camp 1", 282f, G, 238f), P("Latrine shed", 264f, G, 207f), P("North ruin", 172f, G, 281f) },
         inventory = new[] { "North ruin" }, deckSee = none, deckHide = none },
