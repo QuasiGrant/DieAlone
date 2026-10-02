@@ -1,0 +1,609 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a2958e67067e074db9bf6982b708e28, type: 3}
+  m_Name: Main3Areas
+  m_EditorClassIdentifier: Assembly-CSharp-Editor::Main3AreaSet
+  floodCell: 2
+  floodLevel: 2
+  floodHeadings: 8
+  floodMoveTime: 1
+  floodMargin: 10
+  fellUnder: 2
+  escapeHeadings: 16
+  escapeTime: 3
+  closedZones:
+  - serializedVersion: 2
+    x: 346
+    y: -10
+    width: 49
+    height: 109
+  - serializedVersion: 2
+    x: 141
+    y: -10
+    width: 107
+    height: 35
+  reachRadius: 4
+  reachRise: 3
+  foundReach: 30
+  foundAimUp: 1
+  deckGrid: 1
+  deckHalf: 3.5
+  deckEye: 1.6
+  deckJump: 2.2
+  mustSeeShare: 0.25
+  rayEndSkip: 1.5
+  pixelSize: 512
+  pixelFov: 10
+  pixelTolerance: 4
+  inventory:
+  - label: Ridge fire cards, night
+    path: Ward/StandInFire
+    kind: quads
+    name: RidgeFlames
+    expected: 132
+  - label: Ridge fire cards, day
+    path: Ward/StandInFire
+    kind: quads
+    name: RidgeFlamesDay
+    expected: 68
+  - label: Valley fire cards, night
+    path: Ward/StandInFire
+    kind: quads
+    name: ValleyFlames
+    expected: 297
+  - label: Valley fire cards, day
+    path: Ward/StandInFire
+    kind: quads
+    name: ValleyFlamesDay
+    expected: 167
+  - label: Smoke sheet, day one
+    path: Ward/SmokeSheet
+    kind: quads
+    name: Body
+    expected: 689
+  - label: Smoke lid, night
+    path: Ward/SmokeSheet
+    kind: quads
+    name: Lid
+    expected: 171
+  - label: Smoke columns, day two
+    path: Ward/StandInFire/SmokeColumns
+    kind: quads
+    name: 
+    expected: 128
+  - label: Ward stones
+    path: Ward/Stones
+    kind: renderers
+    name: 
+    expected: 3
+  - label: Camp 3 tent
+    path: Campsites/Camp_3/Dressing
+    kind: renderers
+    name: CS_Tent
+    expected: 8
+  - label: Camp 3 fire
+    path: Campsites/Camp_3/Dressing/Fire
+    kind: renderers
+    name: 
+    expected: 15
+  - label: Camp 3 easel
+    path: Campsites/Camp_3/Dressing/Easel
+    kind: renderers
+    name: 
+    expected: 13
+  - label: North ruin
+    path: Places/NorthRuin
+    kind: renderers
+    name: 
+    expected: 44
+  - label: Cave lights
+    path: Cave
+    kind: lights
+    name: 
+    expected: 5
+  - label: Lanterns and lamps
+    path: 
+    kind: practicals
+    name: 
+    expected: 28
+  areas:
+  - id: camp
+    task: 8.21
+    title: Keeper's camp, cabin and tower
+    bounds:
+    - serializedVersion: 2
+      x: 138
+      y: 130
+      width: 70
+      height: 62
+    warps:
+    - Keepers_Camp
+    - Cabin
+    - Tower_Deck
+    places:
+    - label: Cabin door
+      point: {x: 178, y: -999, z: 165}
+    - label: Fire pit
+      point: {x: 172, y: -999, z: 163}
+    - label: Generator
+      point: {x: 183, y: -999, z: 173}
+    - label: Privy
+      point: {x: 176.5, y: -999, z: 178}
+    - label: Woodpile
+      point: {x: 182.5, y: -999, z: 168}
+    - label: Tower stair foot
+      point: {x: 164, y: -999, z: 160}
+    - label: Forage patch B
+      point: {x: 141, y: -999, z: 167}
+    inventory:
+    - Lanterns and lamps
+    deckListWritten: 1
+    deckSee:
+    - label: cabin roof
+      point: {x: 178, y: 19.5, z: 168}
+      treeCoverPath: 
+    - label: fire pit
+      point: {x: 172, y: 15.6, z: 163}
+      treeCoverPath: 
+    - label: woodpile
+      point: {x: 182, y: 16.5, z: 168}
+      treeCoverPath: 
+    - label: lake, mid water
+      point: {x: 190, y: -5.4, z: 60}
+      treeCoverPath: 
+    - label: Camp 1 spar top
+      point: {x: 284, y: 29, z: 240}
+      treeCoverPath: 
+    - label: Camp 2 stack top
+      point: {x: 292, y: 24.2, z: 108}
+      treeCoverPath: 
+    - label: Camp 3 Snag line (top)
+      point: {x: 96, y: 54, z: 146.5}
+      treeCoverPath: 
+    - label: office west door
+      point: {x: 341, y: 4.2, z: 199}
+      treeCoverPath: 
+    - label: cat step (boathouse)
+      point: {x: 240, y: -3.3, z: 56}
+      treeCoverPath: 
+    - label: verge tree
+      point: {x: 419, y: 25, z: 139}
+      treeCoverPath: 
+    - label: lot centre
+      point: {x: 358, y: 3.1, z: 170}
+      treeCoverPath: 
+    - label: highway
+      point: {x: 430, y: -999, z: 185}
+      treeCoverPath: 
+    deckHide:
+    - label: Ward stones
+      point: {x: -3, y: 66, z: 224}
+      treeCoverPath: Ward/Stones
+    - label: rune post
+      point: {x: 57, y: 36, z: 246}
+      treeCoverPath: Ward/Climb/RunePost
+    - label: north ruin
+      point: {x: 172, y: 4, z: 281}
+      treeCoverPath: Places/NorthRuin
+    - label: far fire front, z 40
+      point: {x: -240, y: 105, z: 40}
+      treeCoverPath: 
+    - label: far fire front, z 170
+      point: {x: -240, y: 105, z: 170}
+      treeCoverPath: 
+    - label: far fire front, z 300
+      point: {x: -240, y: 105, z: 300}
+      treeCoverPath: 
+    - label: day-one sheet top
+      point: {x: -500, y: 110, z: 170}
+      treeCoverPath: 
+    - label: cave mouth
+      point: {x: 52, y: -4, z: 37}
+      treeCoverPath: 
+  - id: front
+    task: 8.22
+    title: Front zone
+    bounds:
+    - serializedVersion: 2
+      x: 318
+      y: 140
+      width: 130
+      height: 130
+    warps:
+    - Office
+    - Store
+    - Gate_Booth
+    - Trailhead_T
+    - Lot_Highway
+    places:
+    - label: Office west door
+      point: {x: 341, y: -999, z: 199}
+    - label: Store door
+      point: {x: 366, y: -999, z: 194}
+    - label: Gate booth
+      point: {x: 392, y: -999, z: 176}
+    - label: Lot
+      point: {x: 358, y: -999, z: 170}
+    - label: The T
+      point: {x: 337, y: -999, z: 170}
+    - label: First sight of the lot
+      point: {x: 327, y: -999, z: 168}
+    inventory: []
+    deckListWritten: 0
+    deckSee: []
+    deckHide: []
+  - id: lake
+    task: 8.23
+    title: Lake
+    bounds:
+    - serializedVersion: 2
+      x: 150
+      y: 25
+      width: 112
+      height: 105
+    warps:
+    - Lake_Pump
+    - Lake_Boathouse
+    places:
+    - label: Pump
+      point: {x: 190, y: -999, z: 97}
+    - label: Boathouse
+      point: {x: 244, y: -999, z: 52}
+    - label: Cat step
+      point: {x: 233, y: -999, z: 62}
+    - label: Dock end
+      point: {x: 190, y: -999, z: 88}
+    - label: Overturned rowboat
+      point: {x: 226, y: -999, z: 87}
+    - label: Water tank
+      point: {x: 186, y: -999, z: 125}
+    inventory: []
+    deckListWritten: 0
+    deckSee: []
+    deckHide: []
+  - id: camp1
+    task: 8.24
+    title: Camp 1 and the north loop
+    bounds:
+    - serializedVersion: 2
+      x: 150
+      y: 195
+      width: 150
+      height: 110
+    warps:
+    - Camp_1
+    - North_Loop_Ruin
+    places:
+    - label: Camp 1
+      point: {x: 282, y: -999, z: 238}
+    - label: Latrine shed
+      point: {x: 264, y: -999, z: 207}
+    - label: North ruin
+      point: {x: 172, y: -999, z: 281}
+    inventory:
+    - North ruin
+    deckListWritten: 0
+    deckSee: []
+    deckHide: []
+  - id: camp2
+    task: 8.25
+    title: Camp 2
+    bounds:
+    - serializedVersion: 2
+      x: 255
+      y: 55
+      width: 80
+      height: 110
+    warps:
+    - Camp_2
+    - Camp_2_Top
+    places:
+    - label: Camp 2
+      point: {x: 292, y: -999, z: 104}
+    - label: Stack top
+      point: {x: 294.5, y: 24, z: 107.2}
+    - label: Payphone
+      point: {x: 298.5, y: -999, z: 99}
+    - label: Food lockers
+      point: {x: 317, y: -999, z: 136}
+    - label: Phone pole
+      point: {x: 273, y: -999, z: 72}
+    inventory: []
+    deckListWritten: 0
+    deckSee: []
+    deckHide: []
+  - id: camp3
+    task: 8.26
+    title: Camp 3 and the west trails
+    bounds:
+    - serializedVersion: 2
+      x: 55
+      y: 60
+      width: 105
+      height: 120
+    warps:
+    - Camp_3
+    - Camp_3_Rim
+    - Junction_W1
+    places:
+    - label: Camp 3
+      point: {x: 78, y: -999, z: 146}
+    - label: Easel
+      point: {x: 83.5, y: -999, z: 149}
+    - label: Rim
+      point: {x: 100, y: -999, z: 148}
+    - label: Camper trailer
+      point: {x: 89, y: -999, z: 112}
+    - label: Stepping stones
+      point: {x: 132, y: -999, z: 73}
+    - label: Footbridge
+      point: {x: 115, y: -999, z: 85}
+    - label: Washed-out truck
+      point: {x: 156, y: -999, z: 92}
+    inventory:
+    - Camp 3 tent
+    - Camp 3 fire
+    - Camp 3 easel
+    deckListWritten: 0
+    deckSee: []
+    deckHide: []
+  - id: cave
+    task: 8.27
+    title: Cave and ravine
+    bounds:
+    - serializedVersion: 2
+      x: 20
+      y: -20
+      width: 100
+      height: 85
+    - serializedVersion: 2
+      x: 365
+      y: 215
+      width: 40
+      height: 50
+    warps:
+    - Cave_Mouth
+    - Cave_Chamber
+    - Closed_Campground
+    places:
+    - label: Cave mouth
+      point: {x: 52, y: -999, z: 40}
+    - label: Chamber
+      point: {x: 80, y: -18, z: 12}
+    - label: Side room
+      point: {x: 94, y: -18, z: 12}
+    - label: Rope handrail
+      point: {x: 107, y: -999, z: 58}
+    - label: Coloured bulbs
+      point: {x: 83, y: -999, z: 49}
+    - label: Closed campground
+      point: {x: 385, y: -999, z: 232}
+    inventory:
+    - Cave lights
+    deckListWritten: 0
+    deckSee: []
+    deckHide: []
+  - id: burn
+    task: 8.28
+    title: Old burn and forage
+    bounds:
+    - serializedVersion: 2
+      x: 205
+      y: 140
+      width: 130
+      height: 60
+    warps:
+    - Old_Burn
+    - Junction_Jg
+    places:
+    - label: Old burn
+      point: {x: 240, y: -999, z: 160}
+    - label: Forage patch A
+      point: {x: 240, y: -999, z: 163}
+    - label: Jg
+      point: {x: 262, y: -999, z: 170}
+    inventory: []
+    deckListWritten: 0
+    deckSee: []
+    deckHide: []
+  - id: ward
+    task: 8.29
+    title: Ward path and ledge
+    bounds:
+    - serializedVersion: 2
+      x: -70
+      y: 185
+      width: 185
+      height: 120
+    warps:
+    - Junction_J
+    - Ward_Stair
+    - Ward_Lookout
+    - Ward
+    places:
+    - label: J
+      point: {x: 106, y: -999, z: 203}
+    - label: Plank bridge
+      point: {x: 105, y: -999, z: 205}
+    - label: Ward stair
+      point: {x: 35, y: -999, z: 248}
+    - label: Lookout
+      point: {x: 29, y: -999, z: 261}
+    - label: Ward stones
+      point: {x: -3, y: -999, z: 230}
+    - label: Path end
+      point: {x: -9, y: -999, z: 246}
+    inventory:
+    - Ridge fire cards, night
+    - Ridge fire cards, day
+    - Valley fire cards, night
+    - Valley fire cards, day
+    - Smoke sheet, day one
+    - Smoke lid, night
+    - Smoke columns, day two
+    - Ward stones
+    deckListWritten: 0
+    deckSee: []
+    deckHide: []
+  - id: whole
+    task: 8.30
+    title: Whole map
+    bounds:
+    - serializedVersion: 2
+      x: -80
+      y: -80
+      width: 540
+      height: 540
+    warps:
+    - Keepers_Camp
+    - Cabin
+    - Tower_Deck
+    - Office
+    - Store
+    - Gate_Booth
+    - Trailhead_T
+    - Lot_Highway
+    - Lake_Pump
+    - Lake_Boathouse
+    - Camp_1
+    - North_Loop_Ruin
+    - Camp_2
+    - Camp_2_Top
+    - Camp_3
+    - Camp_3_Rim
+    - Junction_W1
+    - Cave_Mouth
+    - Cave_Chamber
+    - Closed_Campground
+    - Old_Burn
+    - Junction_Jg
+    - Junction_J
+    - Ward_Stair
+    - Ward_Lookout
+    - Ward
+    places:
+    - label: Cabin door
+      point: {x: 178, y: -999, z: 165}
+    - label: Fire pit
+      point: {x: 172, y: -999, z: 163}
+    - label: Generator
+      point: {x: 183, y: -999, z: 173}
+    - label: Privy
+      point: {x: 176.5, y: -999, z: 178}
+    - label: Woodpile
+      point: {x: 182.5, y: -999, z: 168}
+    - label: Tower stair foot
+      point: {x: 164, y: -999, z: 160}
+    - label: Forage patch B
+      point: {x: 141, y: -999, z: 167}
+    - label: Office west door
+      point: {x: 341, y: -999, z: 199}
+    - label: Store door
+      point: {x: 366, y: -999, z: 194}
+    - label: Gate booth
+      point: {x: 392, y: -999, z: 176}
+    - label: Lot
+      point: {x: 358, y: -999, z: 170}
+    - label: The T
+      point: {x: 337, y: -999, z: 170}
+    - label: First sight of the lot
+      point: {x: 327, y: -999, z: 168}
+    - label: Pump
+      point: {x: 190, y: -999, z: 97}
+    - label: Boathouse
+      point: {x: 244, y: -999, z: 52}
+    - label: Cat step
+      point: {x: 233, y: -999, z: 62}
+    - label: Dock end
+      point: {x: 190, y: -999, z: 88}
+    - label: Overturned rowboat
+      point: {x: 226, y: -999, z: 87}
+    - label: Water tank
+      point: {x: 186, y: -999, z: 125}
+    - label: Camp 1
+      point: {x: 282, y: -999, z: 238}
+    - label: Latrine shed
+      point: {x: 264, y: -999, z: 207}
+    - label: North ruin
+      point: {x: 172, y: -999, z: 281}
+    - label: Camp 2
+      point: {x: 292, y: -999, z: 104}
+    - label: Stack top
+      point: {x: 294.5, y: 24, z: 107.2}
+    - label: Payphone
+      point: {x: 298.5, y: -999, z: 99}
+    - label: Food lockers
+      point: {x: 317, y: -999, z: 136}
+    - label: Phone pole
+      point: {x: 273, y: -999, z: 72}
+    - label: Camp 3
+      point: {x: 78, y: -999, z: 146}
+    - label: Easel
+      point: {x: 83.5, y: -999, z: 149}
+    - label: Rim
+      point: {x: 100, y: -999, z: 148}
+    - label: Camper trailer
+      point: {x: 89, y: -999, z: 112}
+    - label: Stepping stones
+      point: {x: 132, y: -999, z: 73}
+    - label: Footbridge
+      point: {x: 115, y: -999, z: 85}
+    - label: Washed-out truck
+      point: {x: 156, y: -999, z: 92}
+    - label: Cave mouth
+      point: {x: 52, y: -999, z: 40}
+    - label: Chamber
+      point: {x: 80, y: -18, z: 12}
+    - label: Side room
+      point: {x: 94, y: -18, z: 12}
+    - label: Rope handrail
+      point: {x: 107, y: -999, z: 58}
+    - label: Coloured bulbs
+      point: {x: 83, y: -999, z: 49}
+    - label: Closed campground
+      point: {x: 385, y: -999, z: 232}
+    - label: Old burn
+      point: {x: 240, y: -999, z: 160}
+    - label: Forage patch A
+      point: {x: 240, y: -999, z: 163}
+    - label: Jg
+      point: {x: 262, y: -999, z: 170}
+    - label: J
+      point: {x: 106, y: -999, z: 203}
+    - label: Plank bridge
+      point: {x: 105, y: -999, z: 205}
+    - label: Ward stair
+      point: {x: 35, y: -999, z: 248}
+    - label: Lookout
+      point: {x: 29, y: -999, z: 261}
+    - label: Ward stones
+      point: {x: -3, y: -999, z: 230}
+    - label: Path end
+      point: {x: -9, y: -999, z: 246}
+    inventory:
+    - Ridge fire cards, night
+    - Ridge fire cards, day
+    - Valley fire cards, night
+    - Valley fire cards, day
+    - Smoke sheet, day one
+    - Smoke lid, night
+    - Smoke columns, day two
+    - Ward stones
+    - Camp 3 tent
+    - Camp 3 fire
+    - Camp 3 easel
+    - North ruin
+    - Cave lights
+    - Lanterns and lamps
+    deckListWritten: 0
+    deckSee: []
+    deckHide: []

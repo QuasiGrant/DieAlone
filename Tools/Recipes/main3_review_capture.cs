@@ -19,6 +19,11 @@ if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 string step = "day";
+// area (main3_review_capture.sh --area <id>; Assets/Settings/Main3Areas.asset): only frames that stand in the area's bounds, plus the
+// compass views and Deck_<id>.jpg (the deck toward each target of the area's deck list); "" captures the whole map
+string area = "";
+Main3AreaSet.Area areaSel = null;
+if (area != "") { var areaSet = Main3AreaSet.Load(); areaSel = areaSet != null ? areaSet.Find(area) : null; if (areaSel == null) return "no area " + area + " in Assets/Settings/Main3Areas.asset"; }
 string outDir = System.IO.Path.GetFullPath("Docs/Captures/Main3Review");
 string tempDir = System.IO.Path.GetFullPath("Temp/ReviewCapture");
 UnityEngine.Application.runInBackground = true;
@@ -142,6 +147,7 @@ void SaveCanvas(string file, string what, int frames)
 // one frame spec: camera, look-at, label
 void Sheet(string file, string title, System.Collections.Generic.List<(UnityEngine.Vector3 cam, UnityEngine.Vector3 look, string label)> frames, int div, int cols)
 {
+    if (areaSel != null && !file.StartsWith("Deck_") && file != "Compass_Views.jpg") { frames = frames.FindAll(f => areaSel.Contains(f.cam)); if (frames.Count == 0) return; }
     int tw = shotW / div, th = shotH / div; int rows = (frames.Count + cols - 1) / cols;
     NewCanvas(cols * (tw + gap) + gap, headH + rows * (labelH + th + gap) + gap);
     Text(gap + 4, 12, title, 3, gold);
@@ -167,6 +173,7 @@ var pairs = new (string n, float x, float z, float lx, float ly, float lz)[] {
     ("Lot centre looking north to office and store", 358f, 170f, 358f, float.NaN, 200f),
     ("J (Junction J warp)", 106f, 203f, 106f + 40f * UnityEngine.Mathf.Sin(316f * UnityEngine.Mathf.Deg2Rad), float.NaN, 203f + 40f * UnityEngine.Mathf.Cos(316f * UnityEngine.Mathf.Deg2Rad)),
     ("Ward path end (Ward warp)", -8.5f, 246f, -48.5f, float.NaN, 246f) };   // Valley.md rev 10 (8.14)
+if (areaSel != null) pairs = System.Array.FindAll(pairs, p => areaSel.Contains(new UnityEngine.Vector3(p.x, 0f, p.z)));
 System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)> PairFrames(string half)
 {
     var f = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
@@ -521,6 +528,15 @@ try
         foreach (var d in new[] { ("NORTH", 0f), ("EAST", 90f), ("SOUTH", 180f), ("WEST", 270f) })
             { var e = deckEye + UnityEngine.Quaternion.Euler(0f, d.Item2, 0f) * UnityEngine.Vector3.forward * compassOut; frames.Add((e, Toward(e, d.Item2, 100f) + UnityEngine.Vector3.down * compassDip, "TOWER DECK WALKWAY FACING " + d.Item1)); }   // 8.14a gate: on the walkway, outside the cab (inside it the posts and lamps covered the view)
         Sheet("Compass_Views.jpg", "Compass views from the tower deck: north, east, south, west", frames, pairDiv, 2);
+        // the area's deck list: one frame from the deck centre toward each target (the pass and fail are main3_area_check.cs's)
+        if (areaSel != null && areaSel.deckListWritten)
+        {
+            var deckFrames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
+            UnityEngine.Vector3 Aim(UnityEngine.Vector3 p) => p.y <= -900f ? new UnityEngine.Vector3(p.x, terrain.SampleHeight(p) + terrain.transform.position.y + 1f, p.z) : p;
+            foreach (var t in areaSel.deckSee) deckFrames.Add((deckEye, Aim(t.point), "MUST SEE: " + t.label.ToUpperInvariant()));
+            foreach (var t in areaSel.deckHide) deckFrames.Add((deckEye, Aim(t.point), "MUST HIDE: " + t.label.ToUpperInvariant()));
+            Sheet("Deck_" + areaSel.id + ".jpg", "From the tower deck toward " + areaSel.title + " (" + areaSel.task + "): every target of its deck list", deckFrames, pairDiv, 3);
+        }
     }
 
     // 3c2. 8.17 places sheet (Gate.md 2.4, Style.md 10 "Places"): four frames of every place built in 8.17, outside and in; each is
@@ -803,7 +819,7 @@ try
     // index
     var md = new System.Text.StringBuilder();
     md.Append("# Main3 review sheets\n\nMade by Tools/Recipes/main3_review_capture.sh (recipe main3_review_capture.cs), " + System.DateTime.Now.ToString("yyyy-MM-dd HH:mm", inv) + ". ");
-    md.Append("Each frame is 1920 x 988 with the look filter on (its rolling noise band off: every frame renders at one instant, so the band sat in one row across every sheet), eye 1.6 m over the ground, shrunk onto the sheet (trails, climb, warps, ends, stops at 1/3, pairs at 1/2). ");
+    md.Append("Each frame is 1920 x 988 with the look filter on, eye 1.6 m over the ground, shrunk onto the sheet (trails, climb, warps, ends, stops at 1/3, pairs at 1/2). ");
     md.Append("Day one look except the Night halves of the pairs. Trail frames look along the trail, pitched with its grade over the next 10 m. Positions are metres, x east, z north.\n\n");
     md.Append("| Sheet | What | Frames |\n|---|---|---|\n");
     foreach (var w in written) md.Append("| [" + w.file + "](" + w.file + ") | " + w.what + " | " + w.frames + " |\n");

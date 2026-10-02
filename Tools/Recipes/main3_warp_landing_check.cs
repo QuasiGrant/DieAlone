@@ -12,6 +12,8 @@
 //   way in and the dev panel the way out; the cabin door opens on Interact.
 // Each line gives the warp, the ground under it (terrain height and the first collider down from 50 m up) and the result.
 // Never saves the scene; restores the player's place and runInBackground (false) before it returns.
+// onlyWarps: a comma list of DevWarps names to check (main3_review_capture.sh --area sets it to the area's warps); empty checks every warp.
+string onlyWarps = "";
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 UnityEngine.Application.runInBackground = true;
 UnityEngine.GameObject Root(string name) { foreach (var r in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects()) if (r.name == name) return r; return null; }
@@ -39,8 +41,10 @@ string Under(UnityEngine.Vector3 p)
 var sb = new System.Text.StringBuilder(); int fails = 0, n = 0;
 try
 {
+    var only = new System.Collections.Generic.HashSet<string>(onlyWarps.Split(new[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries));
     foreach (UnityEngine.Transform w in warps.transform)
     {
+        if (only.Count > 0 && !only.Contains(w.name)) continue;
         n++; Warp(w); Settle();
         var settled = pc.transform.position; var problems = new System.Collections.Generic.List<string>();
         float fall = w.position.y - settled.y; if (fall > maxFall) problems.Add("FELL " + fall.ToString("F1", inv) + " m");
