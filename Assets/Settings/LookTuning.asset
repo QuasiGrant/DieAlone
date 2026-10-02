@@ -19,7 +19,7 @@ MonoBehaviour:
   crushBlacks: 0.3
   grainStrength: 0.2
   grainSpeed: 24
-  noiseBandStrength: 0.35
+  noiseBandStrength: 0
   noiseBandSpeed: 0.6
   noiseBandInterval: 20
   scanLines: 0.3

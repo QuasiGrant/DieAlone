@@ -19,7 +19,7 @@ MonoBehaviour:
   crushBlacks: 0.3
   grainStrength: 0.2
   grainSpeed: 24
-  noiseBandStrength: 0.35
+  noiseBandStrength: 0
   noiseBandSpeed: 0.6
   noiseBandInterval: 20
   scanLines: 0.3
@@ -42,9 +42,15 @@ MonoBehaviour:
   skyTop: {r: 0.36862746, g: 0.40784314, b: 0.47058824, a: 1}
   skyHorizon: {r: 0.8901961, g: 0.6039216, b: 0.34509805, a: 1}
   skyBandHeight: 6
+  skyBlendRate: 1.8
   skyGround: {r: 0.3529412, g: 0.2901961, b: 0.23529412, a: 1}
   sunGlowColor: {r: 0.8156863, g: 0.5647059, b: 0.3764706, a: 1}
   sunGlowSize: 60
+  nightGradientSky: 0
+  gradientSky: {fileID: 0}
+  westGlowColor: {r: 0, g: 0, b: 0, a: 1}
+  westGlowSpread: 77
+  westGlowTop: 30
   sunColor: {r: 1, g: 0.72156864, b: 0.47058824, a: 1}
   sunElevation: 16
   sunBearing: 212
@@ -55,10 +61,16 @@ MonoBehaviour:
   fireEmbers: 0
   fireFlicker: 0.3
   fireFlickerSpeed: 0.8
+  fireCardDim: 0
+  flameBaseColor: {r: 1, g: 0.91, b: 0.753, a: 1}
+  flameBodyColor: {r: 1, g: 0.42, b: 0.102, a: 1}
+  flameTipColor: {r: 0.722, g: 0.282, b: 0.11, a: 1}
+  floorGlowColor: {r: 0.541, g: 0.227, b: 0.078, a: 1}
   smokeBodyColor: {r: 0.29, g: 0.227, b: 0.196, a: 1}
   smokeFireColor: {r: 0.42, g: 0.165, b: 0.071, a: 1}
   smokeShadowFloor: 0.45
   smokeFireStrength: 1
+  backdropFireStrength: 0
   practicalColor: {r: 1, g: 0.659, b: 0.376, a: 1}
   firePitIntensity: 3
   stoveIntensity: 1.2
@@ -67,6 +79,13 @@ MonoBehaviour:
   practicalDayScale: 0.4
   interiorFillIntensity: 3
   interiorFillColor: {r: 0.6, g: 0.5411765, b: 0.4509804, a: 1}
+  caveCrackColor: {r: 0.604, g: 0.639, b: 0.678, a: 1}
+  caveCrackIntensity: 3
+  caveCrackRange: 14
+  caveCrackAngle: 25
+  caveFillColor: {r: 0.29, g: 0.314, b: 0.345, a: 1}
+  caveFillIntensity: 0.4
+  caveFillRange: 12
   cabLampBulbIntensity: 3
   cabWindowGlowIntensity: 0.6
   lotLightColor: {r: 0.941, g: 0.541, b: 0.165, a: 1}

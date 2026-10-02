@@ -27,12 +27,6 @@ job() {   # $1 = file; prints the result text
   [ -n "$id" ] || { echo "could not start the job"; return; }
   unity job wait "$id" --timeout 1800 --json 2>/dev/null | sed -n 's/^ *"result": "\(.*\)",\{0,1\}$/\1/p' | head -1
 }
-# the look filter's rolling noise band off for the capture (every frame renders at one instant, so the band sat in the same row on
-# every sheet, over the eye line); in memory only, never saved, restored below
-TUNE='UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning.asset")'
-BAND=$(unity command eval --code "return $TUNE.noiseBandStrength.ToString(System.Globalization.CultureInfo.InvariantCulture);" --result-only 2>/dev/null | sed -n 's/.*"result": "\([0-9.]*\)".*/\1/p')
-[ -n "$BAND" ] || { echo "FAIL could not read LookTuning noiseBandStrength"; exit 1; }
-unity command eval --code "$TUNE.noiseBandStrength = 0f; return \"band off\";" --result-only >/dev/null 2>&1
 unity command editor_play >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "playing"' && break; sleep 2; done
 rc=0
@@ -57,7 +51,6 @@ fi
 unity command editor_stop >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "stopped"' && break; sleep 2; done
 unity command eval --code 'UnityEngine.Application.runInBackground = false; return "runInBackground " + UnityEngine.Application.runInBackground;' --result-only 2>/dev/null
-unity command eval --code "$TUNE.noiseBandStrength = ${BAND}f; return \"noise band restored to \" + $TUNE.noiseBandStrength;" --result-only 2>/dev/null
 rm -f Temp/main3_review_capture_day.cs Temp/main3_review_capture_night.cs Temp/main3_review_capture_daytwo.cs
 echo "ProjectSettings changes (should be none): $(git status --porcelain ProjectSettings | tr '\n' ' ')"
 exit $rc
