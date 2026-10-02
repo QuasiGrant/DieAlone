@@ -6,6 +6,7 @@
 // the filter's noise is the same in each) at its field of view, aimed at the target point, then rendered again with the target off;
 // changed pixels (any channel more than pixelTolerance) are target pixels. raised = 1 lifts the target 20 m (or its controlRaise) first (the control: it
 // must show from at least one eye or the check is VOID). The first eye also renders the off frame twice: that noise must be 0.
+// The target's LOD groups are held at LOD 0 for every render (8.24: SS1's LODs culled it at deck range and voided its control).
 // Returns "PIXEL <target> raised <0|1> eyes <from>-<to>: seen <eyes> worst <px> noise <px>".
 string area = "camp"; int target = 0; int eyeFrom = 0; int raised = 0;
 const int eyeBatch = 16;   // eyes per job (3 renders each plus one: 49 readbacks, about 1.5 GB of staging buffers at 3840 x 1976)
@@ -30,7 +31,7 @@ var aim = T.point.y <= -900f ? new UnityEngine.Vector3(T.point.x, ter.SampleHeig
 if (raised == 1) aim += UnityEngine.Vector3.up * raise;
 // every renderer under the target, drawn or not (the Ward stones are built with their renderers off): painted and drawn for the test
 var rends = new System.Collections.Generic.List<UnityEngine.Renderer>(); var wasOn = new System.Collections.Generic.List<bool>(); foreach (var r in obj.GetComponentsInChildren<UnityEngine.Renderer>()) { rends.Add(r); wasOn.Add(r.enabled); }
-var mats = new System.Collections.Generic.List<UnityEngine.Material[]>();
+var mats = new System.Collections.Generic.List<UnityEngine.Material[]>(); var lods = obj.GetComponentsInChildren<UnityEngine.LODGroup>();
 var cam = UnityEngine.Camera.main; var camParent = cam.transform.parent; var camPos = cam.transform.localPosition; var camRot = cam.transform.localRotation;
 var home = obj.position; UnityEngine.RenderTexture rt = null; UnityEngine.Texture2D shot = null; UnityEngine.Material flat = null;
 int seen = 0, worst = 0, noise = 0;
@@ -38,6 +39,7 @@ try
 {
     flat = new UnityEngine.Material(UnityEngine.Shader.Find("Universal Render Pipeline/Unlit")); flat.SetColor("_BaseColor", UnityEngine.Color.magenta);
     foreach (var r in rends) r.enabled = true;
+    foreach (var lg in lods) lg.ForceLOD(0);   // 8.24: a small target's LOD group culls it at deck range, so the control could never show (SS1); the test is of cover, at LOD 0
     foreach (var r in rends) { mats.Add(r.sharedMaterials); var m = new UnityEngine.Material[r.sharedMaterials.Length]; for (int i = 0; i < m.Length; i++) m[i] = flat; r.sharedMaterials = m; }
     if (raised == 1) obj.position = home + UnityEngine.Vector3.up * raise;
     rt = new UnityEngine.RenderTexture(shotW, shotH, 24); shot = new UnityEngine.Texture2D(shotW, shotH, UnityEngine.TextureFormat.RGB24, false);
@@ -61,6 +63,7 @@ try
 finally
 {
     for (int i = 0; i < rends.Count; i++) { rends[i].forceRenderingOff = false; rends[i].enabled = wasOn[i]; if (i < mats.Count) rends[i].sharedMaterials = mats[i]; }
+    foreach (var lg in lods) if (lg != null) lg.ForceLOD(-1);
     obj.position = home;
     cam.targetTexture = null; cam.transform.SetParent(camParent, false); cam.transform.localPosition = camPos; cam.transform.localRotation = camRot;
     if (rt != null) { rt.Release(); UnityEngine.Object.DestroyImmediate(rt); } if (shot != null) UnityEngine.Object.DestroyImmediate(shot); if (flat != null) UnityEngine.Object.DestroyImmediate(flat);
