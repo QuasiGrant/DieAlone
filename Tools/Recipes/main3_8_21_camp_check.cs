@@ -1,7 +1,9 @@
 // Main3 8.21 camp check (Play mode, Main3; CampLayout.md draft 2): the cabin and privy as the doc walks them, with the real mover
 // (PlayerController.Step, dt 0.02, walk speed). In main3_review_capture.sh --area camp's Play checks. Never saves; restores the player.
 // DOOR: the cabin door stands open into the room at load (Door startOpen, fixedSwing).
-// WAKE: Play starts with the player at the wake spot, doc (4.9, 3.2), within wakeSlack m, facing 245 within 5 degrees.
+// WAKE: Play starts with the player at the wake spot, doc (4.9, 3.2), within wakeSlack m, facing 245 within 5 degrees, feet on the cabin
+//   floor and the eye eyeHeight m over it (each within floorSlack m). CABIN WARP: DevWarps/Cabin on the wake spot, facing 245. STEPS: the
+//   tower's flights and steps, the same count per flight.
 // ROOM: from just inside the door, a walk to the bunk front, the stove front, the desk chair and the shelf front each arrives within arrive m.
 // PRIVY: the path from the porch's west end up the cabin's west side (x 173.5) to the privy door, then 1.5 m in through the door,
 //   each leg arriving; inside, the player stands on the privy floor.
@@ -13,14 +15,22 @@ UnityEngine.GameObject Root(string n) { foreach (var r in scene.GetRootGameObjec
 var inv = System.Globalization.CultureInfo.InvariantCulture; string F(float v) => v.ToString("F2", inv);
 var pc = UnityEngine.Object.FindFirstObjectByType<PlayerController>(); var cc = pc.GetComponent<UnityEngine.CharacterController>();
 var start = pc.transform.position; var startRot = pc.transform.rotation; bool pcWas = pc.enabled; pc.enabled = false;
-const float dt = 0.02f, arrive = 0.5f, wakeSlack = 0.3f, legTime = 20f, inPrivy = 1.5f;
+const float dt = 0.02f, arrive = 0.5f, wakeSlack = 0.3f, legTime = 20f, inPrivy = 1.5f, floorSlack = 0.1f, eyeHeight = 1.6f;
 var C = Root("Camp").transform.Find("Cabin");
 UnityEngine.Vector3 Doc(float x, float z) => C.TransformPoint(new UnityEngine.Vector3(x - 3f, 0.1f, z - 2.25f));   // doc cabin-local (X, Z) to world
 var sb = new System.Text.StringBuilder(); int fails = 0;
 void Line(bool ok, string s) { if (!ok) fails++; sb.Append((ok ? "PASS " : "FAIL ") + s + "\n"); }
 // WAKE (the player has not been moved yet)
 var wake = Doc(4.9f, 3.2f); float wd = new UnityEngine.Vector2(start.x - wake.x, start.z - wake.z).magnitude, yawOff = UnityEngine.Mathf.Abs(UnityEngine.Mathf.DeltaAngle(startRot.eulerAngles.y, 245f));
-Line(wd <= wakeSlack && yawOff <= 5f, "WAKE: Play starts " + F(wd) + " m from the wake spot, facing " + F(startRot.eulerAngles.y));
+// standing on the cabin floor (8.21 gate, Marlow 1: Play started on the mattress, 0.64 m up), the eye at eyeHeight over it
+float floorY = C.position.y + 0.03f, standOver = start.y - floorY, eyeOver = UnityEngine.Camera.main.transform.position.y - floorY;
+Line(wd <= wakeSlack && yawOff <= 5f && UnityEngine.Mathf.Abs(standOver) <= floorSlack && UnityEngine.Mathf.Abs(eyeOver - eyeHeight) <= floorSlack, "WAKE: Play starts " + F(wd) + " m from the wake spot, facing " + F(startRot.eulerAngles.y) + ", feet " + F(standOver) + " m and eye " + F(eyeOver) + " m over the cabin floor (" + F(floorY) + ")");
+// the Cabin dev warp lands on the wake spot (Marlow 9)
+var cabinWarp = Root("DevWarps").transform.Find("Cabin");
+Line(cabinWarp != null && new UnityEngine.Vector2(cabinWarp.position.x - wake.x, cabinWarp.position.z - wake.z).magnitude <= wakeSlack && UnityEngine.Mathf.Abs(UnityEngine.Mathf.DeltaAngle(cabinWarp.eulerAngles.y, 245f)) <= 5f, "CABIN WARP: " + (cabinWarp == null ? "no DevWarps/Cabin" : "at (" + F(cabinWarp.position.x) + ", " + F(cabinWarp.position.z) + "), facing " + F(cabinWarp.eulerAngles.y)));
+// the tower's step count (Quill 14, Sable 3.3): treads per flight and in all
+{ var stairs = Root("Camp").transform.Find("Tower/Stairs"); int flights = 0, steps = 0, perMin = int.MaxValue, perMax = 0; if (stairs != null) foreach (UnityEngine.Transform fl in stairs) { if (!fl.name.StartsWith("Flight")) continue; int n = 0; foreach (UnityEngine.Transform s in fl) if (s.name.StartsWith("Step")) n++; flights++; steps += n; perMin = UnityEngine.Mathf.Min(perMin, n); perMax = UnityEngine.Mathf.Max(perMax, n); }
+  Line(flights > 0 && perMin == perMax, "STEPS: " + flights + " flights of " + (perMin == perMax ? perMin.ToString() : perMin + " to " + perMax) + " steps, " + steps + " in all, foot to deck"); }
 // DOOR
 var door = C.Find("Door") != null ? C.Find("Door").GetComponent<Door>() : null;
 Line(door != null && door.IsOpen && door.CurrentAngle < 0f, "DOOR: " + (door == null ? "no Camp/Cabin/Door" : "open " + door.IsOpen + ", angle " + F(door.CurrentAngle) + " (negative is into the room)"));

@@ -25,8 +25,32 @@ public class Main3AreaSet : ScriptableObject
     public struct Place
     {
         public string label;
-        [Tooltip("The point that must be reached and seen from a trail (world metres).")]
+        [Tooltip("The place's foot (world metres); y -999 is the ground there.")]
         public Vector3 point;
+        [Tooltip("The place's height, metres (found: it must subtend foundMinDeg degrees); 0 means 2.")]
+        public float height;
+        [Tooltip("Scene path of the place's object, if any: a ray that reaches it counts as reaching the place.")]
+        public string objectPath;
+    }
+
+    [System.Serializable]
+    public struct Interaction
+    {
+        public string label;
+        [Tooltip("Scene path of the object whose colliders are the interaction's body.")]
+        public string path;
+        [Tooltip("Where the player stands to use it (world metres; y -999 is the ground there; the eye is 1.6 m over it).")]
+        public Vector3 approach;
+    }
+
+    [System.Serializable]
+    public struct Frame
+    {
+        public string label;
+        [Tooltip("Eye (world metres; y -999 is the ground plus 1.6).")]
+        public Vector3 eye;
+        [Tooltip("Look-at point (world metres; y -999 is level with the eye).")]
+        public Vector3 look;
     }
 
     [System.Serializable]
@@ -55,6 +79,10 @@ public class Main3AreaSet : ScriptableObject
         public bool deckListWritten;
         public DeckTarget[] deckSee;
         public DeckTarget[] deckHide;
+        [Tooltip("Interaction points measured for spacing (CampLayout_UI rule 1: centre and edge distances, the first eye-ray hit from the approach).")]
+        public Interaction[] interactions;
+        [Tooltip("Extra full-size frames the area capture shoots (AreaFrames_<id>.jpg).")]
+        public Frame[] frames;
         [Tooltip("Play-mode check recipes (Tools/Recipes) the area capture also runs; each must return ALL PASS.")]
         public string[] playChecks;
 
@@ -81,7 +109,10 @@ public class Main3AreaSet : ScriptableObject
     [Tooltip("A place counts as reached when a flood place lies within this many metres (xz) of its point.")] public float reachRadius = 4f;
     [Tooltip("And within this many metres in height.")] public float reachRise = 3f;
     [Tooltip("Found: a trail point within this many metres with a clear eye line to the place.")] public float foundReach = 30f;
-    [Tooltip("Metres over the place point the eye line aims at.")] public float foundAimUp = 1f;
+    [Tooltip("Found (Pim, 8.21 gate): the place within this many degrees of the direction of travel along the trail.")] public float foundMaxAngle = 45f;
+    [Tooltip("Found: the place subtends at least this many degrees vertically from the trail eye.")] public float foundMinDeg = 1f;
+    [Header("Interaction spacing (CampLayout_UI rule 1)")]
+    public float spacingCentre = 1.2f, spacingEdge = 0.5f, approachRay = 2f;
 
     [Header("Deck (Valley.md 7, CampLayout.md 5)")]
     [Tooltip("Eye grid spacing over the deck, metres.")] public float deckGrid = 1f;
@@ -131,6 +162,32 @@ public class Main3AreaSet : ScriptableObject
         return false;
     }
 
+
+    public struct FoundResult { public bool found; public Vector3 eye, aim; public string leg; public float dist, angle, tall; public int tried; }
+
+    /// Pim's found rule (8.21 gate, replacing the 30 m line): from a trail point within foundReach m (eye 1.6 m), clear lines to the
+    /// place's centre and top (clear(eye, target) decides, by meshes), the place within foundMaxAngle degrees of the direction of travel
+    /// in at least one direction along that trail, and at least foundMinDeg degrees tall. Of the points that pass, the farthest (where a
+    /// walker first finds it). legs: each trail's points in order; ground(x, z): the walking height.
+    public FoundResult Found(Place pl, List<(string leg, List<Vector3> pts)> legs, System.Func<float, float, float> ground, System.Func<Vector3, Vector3, bool> clear)
+    {
+        var r = new FoundResult { leg = "" };
+        float foot = pl.point.y <= -900f ? ground(pl.point.x, pl.point.z) : pl.point.y, h = pl.height > 0f ? pl.height : 2f;
+        var footP = new Vector3(pl.point.x, foot, pl.point.z); var centre = footP + Vector3.up * (h * 0.5f); var top = footP + Vector3.up * (h * 0.9f);
+        foreach (var (leg, pts) in legs)
+            for (int i = 0; i < pts.Count; i++)
+            {
+                var p = pts[i]; var to = new Vector2(pl.point.x - p.x, pl.point.z - p.z); float d = to.magnitude; if (d > foundReach || d < 0.5f) continue;
+                var a = pts[Mathf.Max(0, i - 1)]; var b = pts[Mathf.Min(pts.Count - 1, i + 1)]; var dir = new Vector2(b.x - a.x, b.z - a.z); if (dir.sqrMagnitude < 1e-4f) continue;
+                float ang = Mathf.Min(Vector2.Angle(dir, to), Vector2.Angle(-dir, to)); if (ang > foundMaxAngle) continue;
+                var eye = new Vector3(p.x, ground(p.x, p.z) + 1.6f, p.z); float tall = Vector3.Angle(footP - eye, footP + Vector3.up * h - eye); if (tall < foundMinDeg) continue;
+                r.tried++;
+                if (r.found && d <= r.dist) continue;
+                if (!clear(eye, centre) || !clear(eye, top)) continue;
+                r.found = true; r.eye = eye; r.aim = centre; r.leg = leg; r.dist = d; r.angle = ang; r.tall = tall;
+            }
+        return r;
+    }
     public static Main3AreaSet Load() => UnityEditor.AssetDatabase.LoadAssetAtPath<Main3AreaSet>("Assets/Settings/Main3Areas.asset");
 
     public List<InventoryItem> ItemsFor(Area a)

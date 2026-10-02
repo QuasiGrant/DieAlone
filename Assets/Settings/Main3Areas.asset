@@ -34,7 +34,11 @@ MonoBehaviour:
   reachRadius: 4
   reachRise: 3
   foundReach: 30
-  foundAimUp: 1
+  foundMaxAngle: 45
+  foundMinDeg: 1
+  spacingCentre: 1.2
+  spacingEdge: 0.5
+  approachRay: 2
   deckGrid: 1
   deckHalf: 3.5
   deckEye: 1.6
@@ -177,18 +181,36 @@ MonoBehaviour:
     places:
     - label: Cabin door
       point: {x: 178, y: -999, z: 165}
+      height: 2.1
+      objectPath: Camp/Cabin
     - label: Fire pit
-      point: {x: 172, y: -999, z: 163}
+      point: {x: 169, y: -999, z: 156}
+      height: 1
+      objectPath: Camp/FirePit
     - label: Generator
-      point: {x: 183, y: -999, z: 173}
+      point: {x: 181, y: -999, z: 172.8}
+      height: 0.9
+      objectPath: Camp/Generator
+    - label: Stump (chopping block)
+      point: {x: 182.8, y: -999, z: 165.4}
+      height: 0.6
+      objectPath: Camp/Cabin/Woodpile/CITW_Tree_Stump
     - label: Privy
       point: {x: 176.5, y: -999, z: 178}
+      height: 2.6
+      objectPath: Camp/Privy
     - label: Woodpile
-      point: {x: 182.5, y: -999, z: 168}
+      point: {x: 181.7, y: -999, z: 168}
+      height: 1
+      objectPath: Camp/Cabin/Woodpile
     - label: Tower stair foot
       point: {x: 164, y: -999, z: 160}
+      height: 2.5
+      objectPath: Camp/Tower
     - label: Forage patch B
       point: {x: 141, y: -999, z: 167}
+      height: 1
+      objectPath: 
     inventory:
     - Lanterns and lamps
     - Cabin
@@ -202,12 +224,6 @@ MonoBehaviour:
     - Rune post screen
     deckListWritten: 1
     deckSee:
-    - label: cabin roof
-      point: {x: 178, y: 19.5, z: 168}
-      treeCoverPath: 
-    - label: fire pit
-      point: {x: 172, y: 15.6, z: 163}
-      treeCoverPath: 
     - label: lake, mid water
       point: {x: 190, y: -5.4, z: 60}
       treeCoverPath: 
@@ -260,6 +276,38 @@ MonoBehaviour:
     - label: cave mouth
       point: {x: 52, y: -4, z: 37}
       treeCoverPath: 
+    interactions:
+    - label: bunk
+      path: Camp/Cabin/Bunk
+      approach: {x: 179.9, y: 15.03, z: 168.85}
+    - label: stove
+      path: Camp/Cabin/Stove
+      approach: {x: 175.8, y: 15.03, z: 168.65}
+    - label: desk, report box and chair
+      path: Camp/Cabin/Desk;Camp/Cabin/ReportBox;Camp/Cabin/Interior/CITW_Chair
+      approach: {x: 176.4, y: 15.03, z: 168}
+    - label: door
+      path: Camp/Cabin/Door/Panel
+      approach: {x: 178, y: 15.03, z: 164.75}
+    - label: shelf and counter
+      path: Camp/Cabin/Interior/Counter
+      approach: {x: 178, y: 15.03, z: 169.15}
+    - label: washstand
+      path: Camp/Cabin/Interior/Washstand
+      approach: {x: 179.3, y: 15.03, z: 166.85}
+    - label: stump
+      path: Camp/Cabin/Woodpile/CITW_Tree_Stump
+      approach: {x: 182, y: -999, z: 164.4}
+    - label: lectern
+      path: Camp/Tower/Cab/Lectern
+      approach: {x: 164, y: 56.03, z: 166.3}
+    frames:
+    - label: WAKE, FACING 245 (DOOR LEFT, DESK AND WINDOW CENTRE, STOVE RIGHT)
+      eye: {x: 179.9, y: 16.63, z: 168.95}
+      look: {x: 170.83691, y: 16.63, z: 164.72382}
+    - label: WOODPILE AND STUMP FROM THE SOUTH, 4 M OUT
+      eye: {x: 182.6, y: -999, z: 161.4}
+      look: {x: 182.3, y: 15.53, z: 166.8}
     playChecks:
     - main3_8_21_camp_check.cs
     - main3_tower_stairs_check.cs
@@ -281,20 +329,34 @@ MonoBehaviour:
     places:
     - label: Office west door
       point: {x: 341, y: -999, z: 199}
+      height: 0
+      objectPath: 
     - label: Store door
       point: {x: 366, y: -999, z: 194}
+      height: 0
+      objectPath: 
     - label: Gate booth
       point: {x: 392, y: -999, z: 176}
+      height: 0
+      objectPath: 
     - label: Lot
       point: {x: 358, y: -999, z: 170}
+      height: 0
+      objectPath: 
     - label: The T
       point: {x: 337, y: -999, z: 170}
+      height: 0
+      objectPath: 
     - label: First sight of the lot
       point: {x: 327, y: -999, z: 168}
+      height: 0
+      objectPath: 
     inventory: []
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    interactions: []
+    frames: []
     playChecks: []
   - id: lake
     task: 8.23
@@ -311,20 +373,34 @@ MonoBehaviour:
     places:
     - label: Pump
       point: {x: 190, y: -999, z: 97}
+      height: 0
+      objectPath: 
     - label: Boathouse
       point: {x: 244, y: -999, z: 52}
+      height: 0
+      objectPath: 
     - label: Cat step
       point: {x: 233, y: -999, z: 62}
+      height: 0
+      objectPath: 
     - label: Dock end
       point: {x: 190, y: -999, z: 88}
+      height: 0
+      objectPath: 
     - label: Overturned rowboat
       point: {x: 226, y: -999, z: 87}
+      height: 0
+      objectPath: 
     - label: Water tank
       point: {x: 186, y: -999, z: 125}
+      height: 0
+      objectPath: 
     inventory: []
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    interactions: []
+    frames: []
     playChecks: []
   - id: camp1
     task: 8.24
@@ -341,15 +417,23 @@ MonoBehaviour:
     places:
     - label: Camp 1
       point: {x: 282, y: -999, z: 238}
+      height: 0
+      objectPath: 
     - label: Latrine shed
       point: {x: 264, y: -999, z: 207}
+      height: 0
+      objectPath: 
     - label: North ruin
       point: {x: 172, y: -999, z: 281}
+      height: 0
+      objectPath: 
     inventory:
     - North ruin
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    interactions: []
+    frames: []
     playChecks: []
   - id: camp2
     task: 8.25
@@ -366,18 +450,30 @@ MonoBehaviour:
     places:
     - label: Camp 2
       point: {x: 292, y: -999, z: 104}
+      height: 0
+      objectPath: 
     - label: Stack top
       point: {x: 294.5, y: 24, z: 107.2}
+      height: 0
+      objectPath: 
     - label: Payphone
       point: {x: 298.5, y: -999, z: 99}
+      height: 0
+      objectPath: 
     - label: Food lockers
       point: {x: 317, y: -999, z: 136}
+      height: 0
+      objectPath: 
     - label: Phone pole
       point: {x: 273, y: -999, z: 72}
+      height: 0
+      objectPath: 
     inventory: []
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    interactions: []
+    frames: []
     playChecks: []
   - id: camp3
     task: 8.26
@@ -395,18 +491,32 @@ MonoBehaviour:
     places:
     - label: Camp 3
       point: {x: 78, y: -999, z: 146}
+      height: 0
+      objectPath: 
     - label: Easel
       point: {x: 83.5, y: -999, z: 149}
+      height: 0
+      objectPath: 
     - label: Rim
       point: {x: 100, y: -999, z: 148}
+      height: 0
+      objectPath: 
     - label: Camper trailer
       point: {x: 89, y: -999, z: 112}
+      height: 0
+      objectPath: 
     - label: Stepping stones
       point: {x: 132, y: -999, z: 73}
+      height: 0
+      objectPath: 
     - label: Footbridge
       point: {x: 115, y: -999, z: 85}
+      height: 0
+      objectPath: 
     - label: Washed-out truck
       point: {x: 156, y: -999, z: 92}
+      height: 0
+      objectPath: 
     inventory:
     - Camp 3 tent
     - Camp 3 fire
@@ -414,6 +524,8 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    interactions: []
+    frames: []
     playChecks: []
   - id: cave
     task: 8.27
@@ -436,21 +548,35 @@ MonoBehaviour:
     places:
     - label: Cave mouth
       point: {x: 52, y: -999, z: 40}
+      height: 0
+      objectPath: 
     - label: Chamber
       point: {x: 80, y: -18, z: 12}
+      height: 0
+      objectPath: 
     - label: Side room
       point: {x: 94, y: -18, z: 12}
+      height: 0
+      objectPath: 
     - label: Rope handrail
       point: {x: 107, y: -999, z: 58}
+      height: 0
+      objectPath: 
     - label: Coloured bulbs
       point: {x: 83, y: -999, z: 49}
+      height: 0
+      objectPath: 
     - label: Closed campground
       point: {x: 385, y: -999, z: 232}
+      height: 0
+      objectPath: 
     inventory:
     - Cave lights
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    interactions: []
+    frames: []
     playChecks: []
   - id: burn
     task: 8.28
@@ -467,14 +593,22 @@ MonoBehaviour:
     places:
     - label: Old burn
       point: {x: 240, y: -999, z: 160}
+      height: 0
+      objectPath: 
     - label: Forage patch A
       point: {x: 240, y: -999, z: 163}
+      height: 0
+      objectPath: 
     - label: Jg
       point: {x: 262, y: -999, z: 170}
+      height: 0
+      objectPath: 
     inventory: []
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    interactions: []
+    frames: []
     playChecks: []
   - id: ward
     task: 8.29
@@ -493,16 +627,28 @@ MonoBehaviour:
     places:
     - label: J
       point: {x: 106, y: -999, z: 203}
+      height: 0
+      objectPath: 
     - label: Plank bridge
       point: {x: 105, y: -999, z: 205}
+      height: 0
+      objectPath: 
     - label: Ward stair
       point: {x: 35, y: -999, z: 248}
+      height: 0
+      objectPath: 
     - label: Lookout
       point: {x: 29, y: -999, z: 261}
+      height: 0
+      objectPath: 
     - label: Ward stones
       point: {x: -3, y: -999, z: 230}
+      height: 0
+      objectPath: 
     - label: Path end
       point: {x: -9, y: -999, z: 246}
+      height: 0
+      objectPath: 
     inventory:
     - Ridge fire cards, night
     - Ridge fire cards, day
@@ -515,6 +661,8 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    interactions: []
+    frames: []
     playChecks: []
   - id: whole
     task: 8.30
@@ -555,102 +703,204 @@ MonoBehaviour:
     places:
     - label: Cabin door
       point: {x: 178, y: -999, z: 165}
+      height: 2.1
+      objectPath: Camp/Cabin
     - label: Fire pit
-      point: {x: 172, y: -999, z: 163}
+      point: {x: 169, y: -999, z: 156}
+      height: 1
+      objectPath: Camp/FirePit
     - label: Generator
-      point: {x: 183, y: -999, z: 173}
+      point: {x: 181, y: -999, z: 172.8}
+      height: 0.9
+      objectPath: Camp/Generator
+    - label: Stump (chopping block)
+      point: {x: 182.8, y: -999, z: 165.4}
+      height: 0.6
+      objectPath: Camp/Cabin/Woodpile/CITW_Tree_Stump
     - label: Privy
       point: {x: 176.5, y: -999, z: 178}
+      height: 2.6
+      objectPath: Camp/Privy
     - label: Woodpile
-      point: {x: 182.5, y: -999, z: 168}
+      point: {x: 181.7, y: -999, z: 168}
+      height: 1
+      objectPath: Camp/Cabin/Woodpile
     - label: Tower stair foot
       point: {x: 164, y: -999, z: 160}
+      height: 2.5
+      objectPath: Camp/Tower
     - label: Forage patch B
       point: {x: 141, y: -999, z: 167}
+      height: 1
+      objectPath: 
     - label: Office west door
       point: {x: 341, y: -999, z: 199}
+      height: 0
+      objectPath: 
     - label: Store door
       point: {x: 366, y: -999, z: 194}
+      height: 0
+      objectPath: 
     - label: Gate booth
       point: {x: 392, y: -999, z: 176}
+      height: 0
+      objectPath: 
     - label: Lot
       point: {x: 358, y: -999, z: 170}
+      height: 0
+      objectPath: 
     - label: The T
       point: {x: 337, y: -999, z: 170}
+      height: 0
+      objectPath: 
     - label: First sight of the lot
       point: {x: 327, y: -999, z: 168}
+      height: 0
+      objectPath: 
     - label: Pump
       point: {x: 190, y: -999, z: 97}
+      height: 0
+      objectPath: 
     - label: Boathouse
       point: {x: 244, y: -999, z: 52}
+      height: 0
+      objectPath: 
     - label: Cat step
       point: {x: 233, y: -999, z: 62}
+      height: 0
+      objectPath: 
     - label: Dock end
       point: {x: 190, y: -999, z: 88}
+      height: 0
+      objectPath: 
     - label: Overturned rowboat
       point: {x: 226, y: -999, z: 87}
+      height: 0
+      objectPath: 
     - label: Water tank
       point: {x: 186, y: -999, z: 125}
+      height: 0
+      objectPath: 
     - label: Camp 1
       point: {x: 282, y: -999, z: 238}
+      height: 0
+      objectPath: 
     - label: Latrine shed
       point: {x: 264, y: -999, z: 207}
+      height: 0
+      objectPath: 
     - label: North ruin
       point: {x: 172, y: -999, z: 281}
+      height: 0
+      objectPath: 
     - label: Camp 2
       point: {x: 292, y: -999, z: 104}
+      height: 0
+      objectPath: 
     - label: Stack top
       point: {x: 294.5, y: 24, z: 107.2}
+      height: 0
+      objectPath: 
     - label: Payphone
       point: {x: 298.5, y: -999, z: 99}
+      height: 0
+      objectPath: 
     - label: Food lockers
       point: {x: 317, y: -999, z: 136}
+      height: 0
+      objectPath: 
     - label: Phone pole
       point: {x: 273, y: -999, z: 72}
+      height: 0
+      objectPath: 
     - label: Camp 3
       point: {x: 78, y: -999, z: 146}
+      height: 0
+      objectPath: 
     - label: Easel
       point: {x: 83.5, y: -999, z: 149}
+      height: 0
+      objectPath: 
     - label: Rim
       point: {x: 100, y: -999, z: 148}
+      height: 0
+      objectPath: 
     - label: Camper trailer
       point: {x: 89, y: -999, z: 112}
+      height: 0
+      objectPath: 
     - label: Stepping stones
       point: {x: 132, y: -999, z: 73}
+      height: 0
+      objectPath: 
     - label: Footbridge
       point: {x: 115, y: -999, z: 85}
+      height: 0
+      objectPath: 
     - label: Washed-out truck
       point: {x: 156, y: -999, z: 92}
+      height: 0
+      objectPath: 
     - label: Cave mouth
       point: {x: 52, y: -999, z: 40}
+      height: 0
+      objectPath: 
     - label: Chamber
       point: {x: 80, y: -18, z: 12}
+      height: 0
+      objectPath: 
     - label: Side room
       point: {x: 94, y: -18, z: 12}
+      height: 0
+      objectPath: 
     - label: Rope handrail
       point: {x: 107, y: -999, z: 58}
+      height: 0
+      objectPath: 
     - label: Coloured bulbs
       point: {x: 83, y: -999, z: 49}
+      height: 0
+      objectPath: 
     - label: Closed campground
       point: {x: 385, y: -999, z: 232}
+      height: 0
+      objectPath: 
     - label: Old burn
       point: {x: 240, y: -999, z: 160}
+      height: 0
+      objectPath: 
     - label: Forage patch A
       point: {x: 240, y: -999, z: 163}
+      height: 0
+      objectPath: 
     - label: Jg
       point: {x: 262, y: -999, z: 170}
+      height: 0
+      objectPath: 
     - label: J
       point: {x: 106, y: -999, z: 203}
+      height: 0
+      objectPath: 
     - label: Plank bridge
       point: {x: 105, y: -999, z: 205}
+      height: 0
+      objectPath: 
     - label: Ward stair
       point: {x: 35, y: -999, z: 248}
+      height: 0
+      objectPath: 
     - label: Lookout
       point: {x: 29, y: -999, z: 261}
+      height: 0
+      objectPath: 
     - label: Ward stones
       point: {x: -3, y: -999, z: 230}
+      height: 0
+      objectPath: 
     - label: Path end
       point: {x: -9, y: -999, z: 246}
+      height: 0
+      objectPath: 
     inventory:
     - Ridge fire cards, night
     - Ridge fire cards, day
@@ -678,4 +928,6 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    interactions: []
+    frames: []
     playChecks: []

@@ -147,7 +147,7 @@ void SaveCanvas(string file, string what, int frames)
 // one frame spec: camera, look-at, label
 void Sheet(string file, string title, System.Collections.Generic.List<(UnityEngine.Vector3 cam, UnityEngine.Vector3 look, string label)> frames, int div, int cols)
 {
-    if (areaSel != null && !file.StartsWith("Deck_") && file != "Compass_Views.jpg") { frames = frames.FindAll(f => areaSel.Contains(f.cam)); if (frames.Count == 0) return; }
+    if (areaSel != null && !file.StartsWith("Deck_") && !file.StartsWith("AreaFrames_") && !file.StartsWith("Found_") && file != "Compass_Views.jpg") { frames = frames.FindAll(f => areaSel.Contains(f.cam)); if (frames.Count == 0) return; }
     int tw = shotW / div, th = shotH / div; int rows = (frames.Count + cols - 1) / cols;
     NewCanvas(cols * (tw + gap) + gap, headH + rows * (labelH + th + gap) + gap);
     Text(gap + 4, 12, title, 3, gold);
@@ -537,6 +537,33 @@ try
             foreach (var t in areaSel.deckSee) deckFrames.Add((Walkway(Aim(t.point)), Aim(t.point), "MUST SEE: " + t.label.ToUpperInvariant()));
             foreach (var t in areaSel.deckHide) deckFrames.Add((Walkway(Aim(t.point)), Aim(t.point), "MUST HIDE: " + t.label.ToUpperInvariant()));
             Sheet("Deck_" + areaSel.id + ".jpg", "From the tower deck toward " + areaSel.title + " (" + areaSel.task + "): every target of its deck list", deckFrames, pairDiv, 3);
+        }
+        // the area's own frames, full size (8.21 gate: the wake frame, the woodpile and stump), each labelled with the first hit of a 2 m
+        // eye ray straight ahead (Pim: none within 2 m at the wake)
+        if (areaSel != null && areaSel.frames != null && areaSel.frames.Length > 0)
+        {
+            var af = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
+            foreach (var fr in areaSel.frames)
+            {
+                var e = fr.eye.y <= -900f ? Eye(new UnityEngine.Vector3(fr.eye.x, terrain.SampleHeight(fr.eye) + terrain.transform.position.y, fr.eye.z)) : fr.eye;
+                var lk = fr.look.y <= -900f ? new UnityEngine.Vector3(fr.look.x, e.y, fr.look.z) : fr.look;
+                string ray = UnityEngine.Physics.Raycast(e, (lk - e).normalized, out var eh, 2f, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) ? eh.collider.name + " at " + eh.distance.ToString("F1", inv) + " M" : "NONE WITHIN 2 M";
+                af.Add((e, lk, fr.label + ", EYE RAY: " + ray.ToUpperInvariant()));   // the sheet font has no ; or | glyph
+            }
+            Sheet("AreaFrames_" + areaSel.id + ".jpg", areaSel.title + " (" + areaSel.task + "): the area's own frames, full size", af, 1, 1);
+        }
+        // Pim's found rule: one frame per place from the trail point main3_area_check.cs found it from (Temp/area_found_<id>.txt; the area
+        // capture runs that check first)
+        if (areaSel != null && System.IO.File.Exists("Temp/area_found_" + areaSel.id + ".txt"))
+        {
+            var ff = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
+            foreach (var line in System.IO.File.ReadAllLines("Temp/area_found_" + areaSel.id + ".txt"))
+            {
+                var c = line.Split('|'); if (c.Length < 6) continue;
+                UnityEngine.Vector3 P3v(string s) { var v = s.Split(','); return new UnityEngine.Vector3(float.Parse(v[0], inv), float.Parse(v[1], inv), float.Parse(v[2], inv)); }
+                if (c[1] == "1") ff.Add((P3v(c[2]), P3v(c[3]), "FOUND: " + c[0].ToUpperInvariant() + " FROM " + c[4].ToUpperInvariant() + ", " + c[5] + " M"));
+            }
+            if (ff.Count > 0) Sheet("Found_" + areaSel.id + ".jpg", "Places found from their trails (Pim's rule): " + areaSel.title, ff, pairDiv, 2);
         }
     }
 

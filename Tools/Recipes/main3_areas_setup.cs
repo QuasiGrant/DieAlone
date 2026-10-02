@@ -13,6 +13,9 @@ if (set == null) { set = UnityEngine.ScriptableObject.CreateInstance<Main3AreaSe
 UnityEngine.Rect R(float x0, float z0, float x1, float z1) => new UnityEngine.Rect(x0, z0, x1 - x0, z1 - z0);
 UnityEngine.Vector3 V(float x, float y, float z) => new UnityEngine.Vector3(x, y, z);
 Main3AreaSet.Place P(string l, float x, float y, float z) => new Main3AreaSet.Place { label = l, point = V(x, y, z) };
+Main3AreaSet.Place PO(string l, float x, float y, float z, float h, string obj) => new Main3AreaSet.Place { label = l, point = V(x, y, z), height = h, objectPath = obj };
+Main3AreaSet.Interaction IA(string l, string p, float x, float y, float z) => new Main3AreaSet.Interaction { label = l, path = p, approach = V(x, y, z) };
+Main3AreaSet.Frame FR(string l, UnityEngine.Vector3 eye, UnityEngine.Vector3 look) => new Main3AreaSet.Frame { label = l, eye = eye, look = look };
 Main3AreaSet.DeckTarget D(string l, float x, float y, float z, string cover = "") => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), treeCoverPath = cover };
 Main3AreaSet.InventoryItem I(string l, string p, string k, string n, int e) => new Main3AreaSet.InventoryItem { label = l, path = p, kind = k, name = n, expected = e };
 // ground Valley.md 8 closes with thicket (as main3_reach_check_8_16a.cs)
@@ -33,12 +36,23 @@ set.inventory = new[] {
 };
 string[] fireItems = { "Ridge fire cards, night", "Ridge fire cards, day", "Valley fire cards, night", "Valley fire cards, day", "Smoke sheet, day one", "Smoke lid, night", "Smoke columns, day two", "Ward stones" };
 var none = new Main3AreaSet.DeckTarget[0];
+// camp (8.21; gate round 2, 2026-10-02): places at their built spots with heights for Pim's found rule; Wren: the deck need not see the
+// camp under its own tower (must-see is the far valley only); the cabin floor is at 15.03 and the deck floor at 56.03
+const float campFloor = 15.03f, deckFloor = 56.03f, eyeH = 1.6f;
+var wakeEye = V(179.9f, campFloor + eyeH, 168.95f); float wakeYaw = 245f * UnityEngine.Mathf.Deg2Rad;
 var camp = new Main3AreaSet.Area { id = "camp", task = "8.21", title = "Keeper's camp, cabin and tower", bounds = new[] { R(138f, 130f, 208f, 192f) },
     warps = new[] { "Keepers_Camp", "Cabin", "Tower_Deck" },
-    places = new[] { P("Cabin door", 178f, G, 165f), P("Fire pit", 172f, G, 163f), P("Generator", 183f, G, 173f), P("Privy", 176.5f, G, 178f), P("Woodpile", 182.5f, G, 168f), P("Tower stair foot", 164f, G, 160f), P("Forage patch B", 141f, G, 167f) },
+    places = new[] { PO("Cabin door", 178f, G, 165f, 2.1f, "Camp/Cabin"), PO("Fire pit", 169f, G, 156f, 1.0f, "Camp/FirePit"), PO("Generator", 181f, G, 172.8f, 0.9f, "Camp/Generator"),
+        PO("Stump (chopping block)", 182.8f, G, 165.4f, 0.6f, "Camp/Cabin/Woodpile/CITW_Tree_Stump"), PO("Privy", 176.5f, G, 178f, 2.6f, "Camp/Privy"), PO("Woodpile", 181.7f, G, 168f, 1.0f, "Camp/Cabin/Woodpile"),
+        PO("Tower stair foot", 164f, G, 160f, 2.5f, "Camp/Tower"), PO("Forage patch B", 141f, G, 167f, 1.0f, "") },
+    interactions = new[] { IA("bunk", "Camp/Cabin/Bunk", 179.9f, campFloor, 168.85f), IA("stove", "Camp/Cabin/Stove", 175.8f, campFloor, 168.65f), IA("desk, report box and chair", "Camp/Cabin/Desk;Camp/Cabin/ReportBox;Camp/Cabin/Interior/CITW_Chair", 176.4f, campFloor, 168.0f),
+        IA("door", "Camp/Cabin/Door/Panel", 178f, campFloor, 164.75f), IA("shelf and counter", "Camp/Cabin/Interior/Counter", 178f, campFloor, 169.15f),
+        IA("washstand", "Camp/Cabin/Interior/Washstand", 179.3f, campFloor, 166.85f), IA("stump", "Camp/Cabin/Woodpile/CITW_Tree_Stump", 182.0f, G, 164.4f), IA("lectern", "Camp/Tower/Cab/Lectern", 164f, deckFloor, 166.3f) },
+    frames = new[] { FR("WAKE, FACING 245 (DOOR LEFT, DESK AND WINDOW CENTRE, STOVE RIGHT)", wakeEye, wakeEye + V(UnityEngine.Mathf.Sin(wakeYaw), 0f, UnityEngine.Mathf.Cos(wakeYaw)) * 10f),
+        FR("WOODPILE AND STUMP FROM THE SOUTH, 4 M OUT", V(182.6f, G, 161.4f), V(182.3f, campFloor + 0.5f, 166.8f)) },
     playChecks = new[] { "main3_8_21_camp_check.cs", "main3_tower_stairs_check.cs" },
     inventory = new[] { "Lanterns and lamps", "Cabin", "Tower", "Fire pit", "Generator", "Privy", "Stump", "Woodpile", "Rune post", "Rune post screen" }, deckListWritten = true,
-    deckSee = new[] { D("cabin roof", 178f, 19.5f, 168f), D("fire pit", 172f, 15.6f, 163f), D("lake, mid water", 190f, -5.4f, 60f),
+    deckSee = new[] { D("lake, mid water", 190f, -5.4f, 60f),
         D("Camp 1 spar top", 284f, 29f, 240f), D("Camp 2 stack top (over its tent)", 292f, 26f, 108f), D("Camp 3 Snag line (top)", 96f, 54f, 146.5f), D("office west door", 341f, 4.2f, 199f),
         D("cat step (boathouse)", 240f, -3.3f, 56f), D("verge tree", 419f, 25f, 139f), D("lot centre", 358f, 3.1f, 170f), D("highway", 430f, G, 185f) },
     deckHide = new[] { D("Ward stones, tops (W-1, land rays)", -3f, 70f, 224f), D("rune post (behind its rim rock)", 55.1f, 36.5f, 246.1f, "Ward/Climb/RunePost"), D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"),

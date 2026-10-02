@@ -62,6 +62,11 @@ if [ -n "$AREA" ]; then
     echo "$c: $(printf '%s' "$res" | sed 's/\n/ | /g')"
     case "$res" in *"ALL PASS"*) ;; *) erc=1;; esac
   done
+  # the area check next, also before the capture: it writes Temp/area_found_<id>.txt, from which the capture draws Found_<id>.jpg
+  area_copy main3_area_check.cs Temp/main3_area_check_run.cs
+  AREARES=$(job "$(pwd)/Temp/main3_area_check_run.cs")
+  EARLYMD="$EARLYMD"$'\n'"## main3_area_check.cs"$'\n\n'"$(printf '%s\n' "$AREARES" | sed 's/\\n/\n/g' | sed 's/^/    /')"$'\n'
+  case "$AREARES" in *"ALL PASS"*) ;; *) erc=1;; esac
 fi
 for step in day night daytwo; do
   for try in 1 2 3; do
@@ -76,13 +81,12 @@ if [ $rc -eq 0 ]; then
   { echo "# Main3 scripted Play checks"; echo; echo "From Tools/Recipes/main3_review_capture.sh, $(date '+%Y-%m-%d %H:%M'). Every move is PlayerController.Step; see each recipe's header for the method."; }  > "$OUT/Checks.md"
   printf '%s' "$EARLYMD" >> "$OUT/Checks.md"
   if [ -n "$AREA" ]; then   # area mode: the area's hard checks only
-    area_copy main3_area_check.cs Temp/main3_area_check_run.cs
     sed -e "s|^string onlyWarps = \"\";|string onlyWarps = \"$WARPS\";|" "$R/main3_warp_landing_check.cs" > Temp/main3_warp_landing_check_run.cs
-    CHECKS="$(pwd)/Temp/main3_area_check_run.cs $(pwd)/Temp/main3_warp_landing_check_run.cs"
+    CHECKS="$(pwd)/Temp/main3_warp_landing_check_run.cs"   # the area check ran before the capture
   else
     CHECKS=""; for c in main3_8_19_forest_check.cs main3_warp_landing_check.cs main3_walk_into_check.cs main3_tower_stairs_check.cs main3_breaks_recheck.cs main3_8_20_closure_check.cs main3_8_14_climb_check.cs main3_hand_walk_check.cs main3_reach_check_8_16a.cs main3_trunk_check_8_16a.cs; do CHECKS="$CHECKS $R/$c"; done
   fi
-  AREARES=""; LANDRES=""
+  LANDRES=""
   for path in $CHECKS; do
     check=$(basename "$path" | sed 's/_run\.cs$/.cs/')
     res=$(job "$path")

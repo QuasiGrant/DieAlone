@@ -157,19 +157,69 @@ try
             foreach (var r in lods[0].renderers) { var mf = r != null ? r.GetComponent<UnityEngine.MeshFilter>() : null; if (mf == null || mf.sharedMesh == null || r.GetComponent<UnityEngine.Collider>() != null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; temps.Add(mc); }
         }
     UnityEngine.Physics.SyncTransforms();
-    // ---- REACH AND FOUND
-    int rfFail = 0; var rfLines = new System.Text.StringBuilder();
+    // ---- REACH AND FOUND (found: Pim's rule, 8.21 gate; Main3AreaSet.Found). The found points go to Temp/area_found_<id>.txt, from which
+    // main3_review_capture.cs draws one labelled frame per place (Found_<id>.jpg)
+    var legsOrdered = new System.Collections.Generic.List<(string leg, System.Collections.Generic.List<UnityEngine.Vector3> pts)>();
+    foreach (UnityEngine.Transform leg in Root("Trails").transform)
+    {
+        var lp = new System.Collections.Generic.List<UnityEngine.Vector3>(); UnityEngine.Vector3? prev = null;
+        foreach (UnityEngine.Transform pt in leg) { var qq = pt.position; if (prev.HasValue) { int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(UnityEngine.Vector3.Distance(prev.Value, qq) / 2f)); for (int i = 1; i <= n; i++) lp.Add(UnityEngine.Vector3.Lerp(prev.Value, qq, i / (float)n)); } else lp.Add(qq); prev = qq; }
+        legsOrdered.Add((leg.name, lp));
+    }
+    int rfFail = 0; var rfLines = new System.Text.StringBuilder(); var foundFile = new System.Text.StringBuilder();
     foreach (var pl in A.places)
     {
         var p = Pt(pl.point); float gy = pl.point.y <= groundY ? H(p.x, p.z) : pl.point.y; bool reached = false;
         foreach (var kv in pos) { var d = kv.Value - p; if (new UnityEngine.Vector2(d.x, d.z).magnitude <= set.reachRadius && UnityEngine.Mathf.Abs(kv.Value.y - gy) <= set.reachRise) { reached = true; break; } }
-        var aim = new UnityEngine.Vector3(p.x, gy + set.foundAimUp, p.z); float best = -1f;
-        foreach (var tp in trailPts) { var d = tp - p; float xz = new UnityEngine.Vector2(d.x, d.z).magnitude; if (xz > set.foundReach) continue; var eye = new UnityEngine.Vector3(tp.x, H(tp.x, tp.z) + eyeH, tp.z); if (Clear(eye, aim, null) && (best < 0f || xz < best)) best = xz; }
-        bool found = best >= 0f; if (!reached || !found) rfFail++;
-        rfLines.Append("  " + (reached && found ? "ok   " : "FAIL ") + pl.label + " " + P3(aim) + ": " + (reached ? "reached" : "NOT REACHED") + ", " + (found ? "seen from a trail " + F1(best) + " m away" : "NOT SEEN from any trail within " + F1(set.foundReach) + " m") + "\n");
+        var obj = string.IsNullOrEmpty(pl.objectPath) ? null : Main3AreaSet.At(scene, pl.objectPath);
+        bool ClearTo(UnityEngine.Vector3 a, UnityEngine.Vector3 b)   // by meshes: colliders and the drawn trees; a hit on the place's own object reaches it
+        {
+            var d = b - a; float len = d.magnitude - (obj != null ? 0.05f : set.rayEndSkip); if (len <= 0f) return true; float firstOther = float.MaxValue, firstOwn = float.MaxValue;
+            foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, len, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore))
+            { if (h.collider.transform.IsChildOf(pc.transform)) continue; if (obj != null && h.collider.transform.IsChildOf(obj)) firstOwn = UnityEngine.Mathf.Min(firstOwn, h.distance); else firstOther = UnityEngine.Mathf.Min(firstOther, h.distance); }
+            return firstOther == float.MaxValue || firstOwn < firstOther;
+        }
+        var fr = set.Found(pl, legsOrdered, (x, z) => H(x, z), ClearTo);
+        if (!reached || !fr.found) rfFail++;
+        rfLines.Append("  " + (reached && fr.found ? "ok   " : "FAIL ") + pl.label + ": " + (reached ? "reached" : "NOT REACHED") + ", " + (fr.found ? "found from " + fr.leg + " " + F1(fr.dist) + " m out, " + F1(fr.angle) + " degrees off the way, " + F1(fr.tall) + " degrees tall" : "NOT FOUND (" + fr.tried + " trail points within " + F1(set.foundReach) + " m, " + F1(set.foundMaxAngle) + " degrees of travel and " + F1(set.foundMinDeg) + " degrees tall; none with clear lines to its centre and top)") + "\n");
+        foundFile.Append(pl.label + "|" + (fr.found ? "1" : "0") + "|" + fr.eye.x.ToString(inv) + "," + fr.eye.y.ToString(inv) + "," + fr.eye.z.ToString(inv) + "|" + fr.aim.x.ToString(inv) + "," + fr.aim.y.ToString(inv) + "," + fr.aim.z.ToString(inv) + "|" + fr.leg + "|" + F1(fr.dist) + "\n");
     }
+    System.IO.Directory.CreateDirectory("Temp"); System.IO.File.WriteAllText("Temp/area_found_" + A.id + ".txt", foundFile.ToString());
     if (rfFail > 0) fails++;
-    sb.Append((rfFail == 0 ? "PASS" : "FAIL") + " REACH AND FOUND: " + (A.places.Length - rfFail) + " of " + A.places.Length + " places reached and seen from a trail\n" + rfLines);
+    sb.Append((rfFail == 0 ? "PASS" : "FAIL") + " REACH AND FOUND: " + (A.places.Length - rfFail) + " of " + A.places.Length + " places reached and found (Pim's rule: within " + F1(set.foundReach) + " m of a trail, " + F1(set.foundMaxAngle) + " degrees of travel, " + F1(set.foundMinDeg) + " degree tall, clear by meshes)\n" + rfLines);
+    // ---- SPACING (CampLayout_UI rule 1, Pim): the interaction points' collider bounds, centre and edge distances between points on one
+    // floor within 3 m, and the first hit of a 2 m eye ray from each approach toward its point (it must be the point itself)
+    if (A.interactions != null && A.interactions.Length > 0)
+    {
+        int spFail = 0; var spLines = new System.Text.StringBuilder(); var partsOf = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<UnityEngine.Transform>>(); var bodies = new System.Collections.Generic.List<(string label, UnityEngine.Bounds b, UnityEngine.Transform t, UnityEngine.Vector3 approach)>();
+        foreach (var ia in A.interactions)
+        {
+            var paths = ia.path.Split(';'); var t = Main3AreaSet.At(scene, paths[0]); var parts = new System.Collections.Generic.List<UnityEngine.Transform>(); foreach (var pp in paths) { var pt = Main3AreaSet.At(scene, pp.Trim()); if (pt != null) parts.Add(pt); } partsOf[ia.label] = parts; bool any = false; var b = new UnityEngine.Bounds();
+            if (t != null) foreach (var c in t.GetComponentsInChildren<UnityEngine.Collider>()) { if (!c.enabled) continue; if (!any) { b = c.bounds; any = true; } else b.Encapsulate(c.bounds); }
+            if (!any) { spFail++; spLines.Append("  FAIL " + ia.label + ": no collider under " + ia.path + "\n"); continue; }
+            var ap = ia.approach.y <= groundY ? new UnityEngine.Vector3(ia.approach.x, H(ia.approach.x, ia.approach.z), ia.approach.z) : ia.approach;
+            bodies.Add((ia.label, b, t, ap));
+            spLines.Append("  " + ia.label + ": collider x " + F1(b.min.x) + " to " + F1(b.max.x) + ", z " + F1(b.min.z) + " to " + F1(b.max.z) + ", top " + F1(b.max.y) + "\n");
+        }
+        for (int i = 0; i < bodies.Count; i++) for (int j = i + 1; j < bodies.Count; j++)
+        {
+            var a = bodies[i]; var c = bodies[j]; if (UnityEngine.Mathf.Abs(a.b.min.y - c.b.min.y) > 2f) continue;
+            float centre = new UnityEngine.Vector2(a.b.center.x - c.b.center.x, a.b.center.z - c.b.center.z).magnitude; if (centre > 3f) continue;
+            float gx = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(a.b.min.x - c.b.max.x, c.b.min.x - a.b.max.x)), gz = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(a.b.min.z - c.b.max.z, c.b.min.z - a.b.max.z)); float edgeGap = UnityEngine.Mathf.Sqrt(gx * gx + gz * gz);
+            bool pairOk = centre >= set.spacingCentre - 0.01f && edgeGap >= set.spacingEdge - 0.02f; if (!pairOk) spFail++;
+            spLines.Append("  " + (pairOk ? "ok   " : "FAIL ") + a.label + " to " + c.label + ": centres " + F1(centre) + " m (at least " + F1(set.spacingCentre) + "), edges " + F1(edgeGap) + " m (at least " + F1(set.spacingEdge) + ")\n");
+        }
+        foreach (var bd in bodies)
+        {
+            var eye = bd.approach + UnityEngine.Vector3.up * 1.6f; var dir = (bd.b.center - eye).normalized; string first = "none within " + F1(set.approachRay) + " m"; bool rayOk = true;
+            if (UnityEngine.Physics.Raycast(eye, dir, out var hit, set.approachRay, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) && !hit.collider.transform.IsChildOf(pc.transform))
+            { bool own = false; foreach (var pt in partsOf[bd.label]) if (hit.collider.transform.IsChildOf(pt)) own = true; first = (own ? "itself" : WalkIns.PathOf(hit.collider.transform)) + " at " + F1(hit.distance) + " m"; rayOk = own; }
+            if (!rayOk) spFail++;
+            spLines.Append("  " + (rayOk ? "ok   " : "FAIL ") + bd.label + " eye ray from its approach " + P3(bd.approach) + ": first hit " + first + "\n");
+        }
+        if (spFail > 0) fails++;
+        sb.Append((spFail == 0 ? "PASS" : "FAIL") + " SPACING: " + bodies.Count + " interaction points\n" + spLines);
+    }
     // ---- DECK must-see (trees block) and the pixel check
     if (A.deckListWritten)
     {
