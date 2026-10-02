@@ -44,3 +44,31 @@
 - Camp chair and birch log seat: one chair, one log, sits flat; worn ground and scatter at the fire.
 
 Vesper
+
+## Round 2
+
+2026-10-02. Capture: Docs/Captures/Main3Review_camp (11:53, re-capture at d9dcab7). Same bar, layout only.
+
+**Verdict: PASS.** Every item C or better. One proof frame owed (desk seated view), listed below.
+
+| Item | Grade | Frames |
+|---|---|---|
+| Deck views, far valley (camp-from-deck dropped by call) | C | Deck_camp, 9 must-see frames |
+| Clearing edge brought in | C | Warps W1 E, S, W; Pairs camp |
+| Worn paths | C | Camp to J back 60, 70; Found stump, woodpile, stair foot |
+| Wake frame at 245 | B | AreaFrames wake |
+| Desk on the window | C | Checks spacing; AreaFrames wake |
+| Woodpile and stump frame | C | AreaFrames woodpile |
+| Fire pit cold | C | Pairs (day and night), W1 N |
+| STEPS 160 | Pass | Checks: 10 flights of 16 |
+
+1. Deck. Lake, Camp 1, Camp 2, office, boathouse, verge, lot and highway each sit below the rail as valley; Camp 3 snag line reads on the west skyline. Pass. Valley notes from round 1 (pale card band, dam wall, yellow ribbons) stand, not 8.21.
+2. Edge. W1 E and S now close on firs and saplings a few metres out; the lawn is gone. Pass. Side effect: the warp report puts a fir 0.0 to 0.9 m ahead of W1 in all four directions, so the camp pair is shot through branches. Capture fix: move the W1 pair eye 2 m north. Not a build fix.
+3. Paths. SW gap to Camp to J: back 60 and 70 show a worn line running between tower legs and cabin. Porch to stump: Found stump and woodpile show a broad worn approach to the porch. Porch to stair foot: no frame isolates it, and the clearing floor is the same dirt, so the spur does not read on its own. C on the two that show; one frame from the porch facing the stair foot owed with the next capture.
+4. Wake. Door open on daylight left, desk and window centre, stove and pipe right, one frame. Exactly the brief. B.
+5. Desk. Spacing check: desk collider z 167.4 to 168.6, 1.2 m long, edge 0.5 m to the stove; that is Z 1.65 to 2.85 with the window (Z 2.25) at its centre. Wake frame agrees: window centred over the desk. Tower in the glass from the chair: **no seated frame in the capture**. Position passes; the seated proof is Sable's to hold or wave.
+6. Woodpile and stump. Frame is from the south, 4 m out, not the porch east end. Stump, axe and porch corner read as the chore spot. C. Dressing for 11.0: the woodpile reads as two loose logs, not a stacked wall; the axe stands apart from the stump instead of in it.
+7. Fire pit. Ring and logs, no flame, no glow, day or night. Pass.
+8. Steps. 160, constant 16 per flight. Pass.
+
+Vesper

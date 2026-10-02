@@ -20,4 +20,5 @@
 - [Rebuild specs](project_rebuild_specs.md) — 2026-10-01 RebuildSpecs.md: forest, lot ground, cave, 8.18 values; noise band caveat
 - [Density and ugly spots](project_density_ugly_1001.md) — 2026-10-01 ForestPlan 8 density target; UglySpots.md top 10
 - [WardPath review](project_wardpath_review.md) — 2026-10-01 Sable draft 1: grades, night-one sheet not columns, no ledge day grade
+- [Gate 8.21 camp](project_gate_8_21.md) — 2026-10-02 R1 FAIL deck; R2 PASS d9dcab7; owed seated desk and porch-stair frames
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions
