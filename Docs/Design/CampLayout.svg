@@ -1,0 +1,224 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="594mm" height="420mm" viewBox="0 0 594 420" font-family="Arial, sans-serif">
+<style>
+ .t{font-size:3.2px;fill:#222}
+ .s{font-size:2.6px;fill:#333}
+ .h{font-size:5px;font-weight:bold;fill:#111}
+ .wall{fill:#555}
+ .fur{fill:#d9d2c3;stroke:#333;stroke-width:0.4}
+ .act{fill:#f2c98a;stroke:#7a4a10;stroke-width:0.5}
+ .dash{fill:none;stroke:#555;stroke-width:0.4;stroke-dasharray:2 1.2}
+ .path{fill:none;stroke:#2a7fd4;stroke-width:20;stroke-opacity:0.15;stroke-linejoin:round;stroke-linecap:round}
+ .route{fill:none;stroke:#c0392b;stroke-width:0.8}
+ .warm{fill:none;stroke:#e67e22;stroke-width:0.8;stroke-dasharray:2 1}
+ .night{fill:none;stroke:#2c3e50;stroke-width:0.8;stroke-dasharray:3 1.5}
+ .priv{fill:none;stroke:#7f8c8d;stroke-width:0.6;stroke-dasharray:1.5 1}
+ .frame{fill:none;stroke:#999;stroke-width:0.3}
+</style>
+<rect x="0" y="0" width="594" height="420" fill="#fff"/>
+<text x="10" y="14" class="h">CampLayout.svg, DRAFT 1, 2026-10-02, Sable (PLAN 8.21). Keeper's camp: cabin plan and section 1:50, camp 1:500. Doc: CampLayout.md wins for numbers.</text>
+<text x="10" y="21" class="t">Cabin local metres: origin inside south-west corner = world (175, 165.75), X east, Z north. Orange = interaction point (Pim). Blue band = the 1 m clear path. Dashed = above head, beyond the cut, or clear zone.</text>
+
+<!-- ================= PANEL A: cabin plan 1:50 (x=50+20X, y=200-20Z) ================= -->
+<rect x="10" y="26" width="315" height="236" class="frame"/>
+<text x="14" y="32" class="h">A. Cabin plan, 1:50 (1 m = 20 mm)</text>
+<!-- porch -->
+<rect x="46" y="204" width="128" height="40" fill="#efe8da" stroke="#777" stroke-width="0.4" stroke-dasharray="2 1"/>
+<text x="54" y="236" class="t">Porch 6.4 x 2.0 m, flush with the ground (0.1 m or less, else StairRamp)</text>
+<!-- woodshed lean-to -->
+<rect x="174" y="106" width="30" height="89" fill="none" stroke="#777" stroke-width="0.4" stroke-dasharray="2 1"/>
+<rect x="174" y="115" width="20" height="80" fill="#c8b48f" stroke="#555" stroke-width="0.3"/>
+<rect x="174" y="106" width="20" height="9" class="fur"/>
+<text x="206" y="112" class="s">Woodshed lean-to, roof edge 2.2 m+</text>
+<text x="206" y="116" class="s">tool rack N end: Pulaski, shovel,</text>
+<text x="206" y="120" class="s">bow saw, maul, fire bucket</text>
+<text x="176" y="160" class="s" transform="rotate(-90 180 160)">woodpile 1 m deep</text>
+<!-- chopping block -->
+<circle cx="260" cy="165" r="50" class="dash"/>
+<circle cx="260" cy="165" r="5" class="act"/>
+<text x="268" y="166" class="t">Chopping block (185.5, 167.5)</text>
+<text x="268" y="170" class="s">axe in it; `Split wood`; 2.5 m clear</text>
+<!-- walls -->
+<rect x="46" y="106" width="128" height="98" class="wall"/>
+<rect x="50" y="110" width="120" height="90" fill="#fbfaf6"/>
+<!-- door gap and window -->
+<rect x="100" y="199" width="20" height="6" fill="#fbfaf6"/>
+<rect x="45" y="158" width="6" height="20" fill="#cfe3f3"/>
+<line x1="46" y1="158" x2="46" y2="178" stroke="#333" stroke-width="0.3"/>
+<line x1="50" y1="158" x2="50" y2="178" stroke="#333" stroke-width="0.3"/>
+<text x="14" y="166" class="s">West window</text>
+<text x="14" y="170" class="s">Z 1.1 to 2.1,</text>
+<text x="14" y="174" class="s">sill 1.0, head 2.0</text>
+<text x="14" y="178" class="s">tower legs in it</text>
+<!-- 1 m path -->
+<polyline class="path" points="110,204 110,156 74,146"/>
+<polyline class="path" points="110,156 148,142"/>
+<polyline class="path" points="110,172 86,168"/>
+<polyline class="path" points="110,156 116,138"/>
+<!-- door leaf and sweep -->
+<line x1="100" y1="200" x2="100" y2="180" stroke="#111" stroke-width="0.9"/>
+<path d="M120,200 A20,20 0 0 0 100,180" class="dash"/>
+<rect x="100" y="180" width="20" height="20" fill="#ff0000" fill-opacity="0.05"/>
+<rect x="103" y="194" width="14" height="4" class="act"/>
+<text x="101" y="214" class="t">Door C8, 1.0 m clear, swings in, hinge west</text>
+<text x="101" y="218" class="s">sweep kept empty; open at wake</text>
+<circle cx="95" cy="198" r="1.2" fill="#b07020"/>
+<circle cx="89" cy="198" r="1.2" fill="#c0392b"/>
+<text x="56" y="196" class="s">lamp hook, extinguisher</text>
+<!-- stove -->
+<rect x="50" y="110" width="43" height="43" class="dash"/>
+<text x="76" y="150" class="s">1 m clear</text>
+<line x1="50.6" y1="110" x2="50.6" y2="140" stroke="#888" stroke-width="1"/>
+<line x1="50" y1="110.6" x2="82" y2="110.6" stroke="#888" stroke-width="1"/>
+<rect x="59" y="119" width="14" height="14" class="act"/>
+<circle cx="66" cy="126" r="3" fill="#333"/>
+<rect x="56" y="116" width="32" height="20" class="dash"/>
+<text x="53" y="145" class="t">C2 Wood stove, cooks and heats</text>
+<text x="53" y="149" class="s">`Light the stove` (Warmth); rack over at 2.2 m</text>
+<!-- wood box, counter -->
+<rect x="94" y="110" width="12" height="11" class="fur"/>
+<text x="93" y="125" class="s">C4 wood box</text>
+<rect x="106" y="110" width="20" height="12" class="act"/>
+<text x="105" y="131" class="s">C5 supply shelf, jug,</text>
+<text x="105" y="134" class="s">2 water cans under</text>
+<!-- bunk -->
+<rect x="128" y="110" width="40" height="18" class="act"/>
+<rect x="160" y="112" width="7" height="14" fill="#fff" stroke="#333" stroke-width="0.3"/>
+<text x="131" y="120" class="t">C1 Bunk, drawers under</text>
+<!-- wake look -->
+<polygon points="148,136 131.1,172.2 109.4,125.6" fill="#f1c40f" fill-opacity="0.15" stroke="#b7950b" stroke-width="0.3"/>
+<line x1="148" y1="136" x2="111.8" y2="152.9" stroke="#b7950b" stroke-width="0.5"/>
+<circle cx="148" cy="136" r="3.5" fill="none" stroke="#c0392b" stroke-width="0.6"/>
+<text x="140" y="146" class="s">wake spot (4.9, 3.2),</text>
+<text x="140" y="149" class="s">facing 245: door, desk,</text>
+<text x="140" y="152" class="s">stove in one look</text>
+<!-- desk, chair -->
+<rect x="50" y="156" width="14" height="24" class="act"/>
+<rect x="52" y="160" width="6" height="8" fill="#8e6b3a"/>
+<rect x="65" y="163" width="10" height="10" class="fur"/>
+<text x="66" y="186" class="s">C6 desk, chair (static):</text>
+<text x="66" y="189" class="s">report box, lamp, radio</text>
+<!-- washstand, pegs -->
+<rect x="130" y="190" width="12" height="10" class="act"/>
+<text x="128" y="187" class="s">C7 washstand</text>
+<line x1="169" y1="136" x2="169" y2="176" stroke="#333" stroke-width="1.2" stroke-dasharray="1 3"/>
+<text x="150" y="180" class="s">C9 coat pegs</text>
+<!-- dims -->
+<line x1="50" y1="101" x2="170" y2="101" stroke="#333" stroke-width="0.3"/>
+<text x="102" y="99" class="t">6.0 m inside</text>
+<line x1="40" y1="110" x2="40" y2="200" stroke="#333" stroke-width="0.3"/>
+<text x="36" y="160" class="t" transform="rotate(-90 36 160)">4.5 m inside</text>
+<text x="52" y="90" class="s">Ceiling 2.7 m. Gaps under 0.6 m or 1.0 m and over; nothing in between. Middle floor X 1.3 to 5.4, Z 0.5 to 3.3 empty.</text>
+<!-- section cut -->
+<line x1="110" y1="94" x2="110" y2="250" stroke="#000" stroke-width="0.4" stroke-dasharray="6 2 1 2"/>
+<text x="106" y="93" class="t">A</text><text x="106" y="255" class="t">A</text>
+<!-- off-panel pointers -->
+<text x="210" y="60" class="s">N: privy 16 m (panel C); generator (187, 173), 6.3 m off</text>
+<!-- north arrow, scale -->
+<path d="M300,40 L304,52 L300,49 L296,52 Z" fill="#111"/><text x="298.5" y="38" class="t">N</text>
+<line x1="230" y1="250" x2="270" y2="250" stroke="#111" stroke-width="0.8"/>
+<line x1="230" y1="248" x2="230" y2="252" stroke="#111" stroke-width="0.4"/><line x1="250" y1="248" x2="250" y2="252" stroke="#111" stroke-width="0.4"/><line x1="270" y1="248" x2="270" y2="252" stroke="#111" stroke-width="0.4"/>
+<text x="229" y="256" class="s">0</text><text x="249" y="256" class="s">1</text><text x="266" y="256" class="s">2 m</text>
+
+<!-- ================= PANEL B: section A-A 1:50 looking west (x=60+20(Z+2.4), y=380-20H) ================= -->
+<rect x="10" y="268" width="315" height="146" class="frame"/>
+<text x="14" y="275" class="h">B. Section A-A at X 3.0, looking west, 1:50</text>
+<line x1="20" y1="380" x2="260" y2="380" stroke="#4a3b22" stroke-width="0.8"/>
+<text x="20" y="386" class="s">knoll ground, 15 m</text>
+<rect x="64" y="378" width="40" height="2" fill="#c8b48f" stroke="#555" stroke-width="0.3"/>
+<text x="66" y="375" class="s">porch</text>
+<rect x="104" y="326" width="4" height="12" class="wall"/>
+<rect x="198" y="326" width="4" height="54" class="wall"/>
+<line x1="108" y1="379.4" x2="198" y2="379.4" stroke="#555" stroke-width="0.6"/>
+<line x1="108" y1="326" x2="198" y2="326" stroke="#555" stroke-width="0.6"/>
+<polyline points="94,328 153,300 212,328" fill="none" stroke="#555" stroke-width="1"/>
+<rect x="108" y="338" width="20" height="42" class="dash"/>
+<text x="109" y="336" class="s">door leaf open</text>
+<rect x="130" y="340" width="20" height="20" class="dash"/>
+<text x="131" y="338" class="s">window beyond</text>
+<rect x="128" y="365" width="24" height="15" class="dash"/>
+<text x="129" y="363" class="s">desk 0.75</text>
+<rect x="141" y="344" width="14" height="36" rx="7" fill="#2a7fd4" fill-opacity="0.2" stroke="#2a7fd4" stroke-width="0.4"/>
+<circle cx="148" cy="348" r="0.9" fill="#2a7fd4"/>
+<text x="157" y="349" class="s">eye 1.6, capsule 0.7 x 1.8</text>
+<rect x="175" y="362" width="14" height="18" class="dash"/>
+<line x1="172" y1="336" x2="192" y2="336" stroke="#888" stroke-width="0.6" stroke-dasharray="1.5 1"/>
+<text x="166" y="333" class="s">rack 2.2</text>
+<text x="170" y="359" class="s">stove beyond</text>
+<rect x="186" y="362" width="12" height="18" class="fur"/>
+<rect x="186" y="344" width="12" height="6" class="fur"/>
+<text x="204" y="347" class="s">shelf 1.5 to 1.8</text>
+<text x="204" y="366" class="s">counter 0.9, cut</text>
+<text x="204" y="330" class="s">ceiling 2.7</text>
+<text x="80" y="340" class="s">door head 2.1</text>
+<text x="20" y="400" class="t">Threshold flush. Rugs and wall-mounted things carry no collider. The player spawns on the floor at the bunk edge, never on the mattress.</text>
+<text x="20" y="405" class="t">Roof overhang 0.5 m or more (LookSlice). The porch and floor sit within 0.1 m of the ground (stepOffset 0.1).</text>
+
+<!-- ================= PANEL C: camp 1:500 (x=345+2(wx-145), y=300-2(wz-138)) ================= -->
+<rect x="333" y="26" width="255" height="388" class="frame"/>
+<text x="337" y="32" class="h">C. Camp and tower, 1:500 (1 m = 2 mm)</text>
+<text x="337" y="38" class="s">World metres; knoll top 15, clearing r 18 round (170, 160).</text>
+<circle cx="395" cy="256" r="36" fill="#f3efe4" stroke="#999" stroke-width="0.4"/>
+<!-- trails out -->
+<line x1="365.4" y1="235.4" x2="347" y2="222.8" stroke="#a67c52" stroke-width="2.8"/>
+<text x="337" y="219" class="s">to J, 80 m (night: Ward)</text>
+<line x1="359.6" y1="262.8" x2="347" y2="265.2" stroke="#a67c52" stroke-width="2.8"/>
+<text x="337" y="271" class="s">to Camp 3, 126 m</text>
+<line x1="379" y1="288.2" x2="371" y2="298" stroke="#a67c52" stroke-width="2.8"/>
+<text x="352" y="304" class="s">to pump, 110 m (Water)</text>
+<line x1="431" y1="268" x2="455" y2="274" stroke="#a67c52" stroke-width="2.8"/>
+<text x="440" y="281" class="s">to Jg, 108 m</text>
+<!-- tower -->
+<rect x="374.2" y="235.2" width="17.6" height="17.6" class="dash"/>
+<rect x="375.5" y="236.5" width="15" height="15" fill="none" stroke="#333" stroke-width="0.6"/>
+<rect x="375" y="236" width="1" height="1" fill="#333"/><rect x="390" y="236" width="1" height="1" fill="#333"/><rect x="375" y="251" width="1" height="1" fill="#333"/><rect x="390" y="251" width="1" height="1" fill="#333"/>
+<circle cx="377.2" cy="249.8" r="1.2" class="act"/>
+<text x="350" y="246" class="s">Tower (164, 166)</text>
+<text x="350" y="249" class="s">deck 56, eye 57.6</text>
+<text x="350" y="252" class="s">stair foot SW,</text>
+<text x="350" y="255" class="s">way in: south bay</text>
+<!-- cabin, porch, woodshed -->
+<rect x="404.6" y="244.9" width="12.8" height="4" fill="#efe8da" stroke="#777" stroke-width="0.3"/>
+<rect x="404.6" y="235.1" width="12.8" height="9.8" fill="#555"/>
+<rect x="417.4" y="235.1" width="3" height="8.9" fill="#c8b48f" stroke="#555" stroke-width="0.2"/>
+<text x="404" y="232" class="s">Cabin</text>
+<circle cx="426" cy="241" r="5" class="dash"/>
+<circle cx="426" cy="241" r="0.8" class="act"/>
+<text x="432" y="241" class="s">block</text>
+<rect x="427.6" y="229" width="2.8" height="2" class="fur"/>
+<text x="432" y="230" class="s">generator</text>
+<!-- privy -->
+<rect x="407.6" y="200.4" width="2.8" height="3.2" class="fur"/>
+<line x1="408.2" y1="200.4" x2="409.8" y2="200.4" stroke="#c0392b" stroke-width="0.6"/>
+<text x="413" y="200" class="s">Privy (177, 187), door north</text>
+<text x="413" y="203" class="s">88 m to lake, 75 m to creek</text>
+<polyline class="priv" points="405,247 401.4,244 401.4,234 406,208 412.2,204 411,199.2"/>
+<text x="381" y="222" class="s">privy path 25 m</text>
+<!-- fire pit -->
+<circle cx="393" cy="264" r="2" fill="#7f6a4f"/>
+<text x="397" y="267" class="s">fire pit (169, 156), cold</text>
+<text x="402" y="253" class="s">x old pit (172, 163)</text>
+<line x1="398" y1="249" x2="400" y2="251" stroke="#c0392b" stroke-width="0.4"/><line x1="400" y1="249" x2="398" y2="251" stroke="#c0392b" stroke-width="0.4"/>
+<rect x="384.4" y="259.4" width="1.2" height="1.2" fill="#333"/>
+<text x="371" y="262" class="s">sign</text>
+<!-- routes -->
+<polyline class="route" points="411,244.9 411,249 387,253.6 379,253.2 377.2,249.8"/>
+<polyline class="warm" points="377.2,251 421,250.8 426,241"/>
+<polyline class="warm" points="426,241 419,250 411,249"/>
+<polyline class="night" points="411,249 399,246 393,233 371,233 365.4,235.4"/>
+<!-- north arrow, scale -->
+<path d="M570,44 L574,56 L570,53 L566,56 Z" fill="#111"/><text x="568.5" y="42" class="t">N</text>
+<line x1="345" y1="312" x2="365" y2="312" stroke="#111" stroke-width="0.8"/>
+<text x="344" y="317" class="s">0</text><text x="361" y="317" class="s">10 m</text>
+<!-- legend -->
+<text x="345" y="328" class="t">Walking order (2.5 m/s):</text>
+<line x1="345" y1="333" x2="357" y2="333" class="route"/><text x="360" y="334" class="s">wake to the stair foot: 3.7 m in the cabin + 18 m, 8.5 s; stair 56 m, 22.4 s</text>
+<line x1="345" y1="339" x2="357" y2="339" class="warm"/><text x="360" y="340" class="s">Warmth: stair foot to block 24 m, 10 s; block to stove with the armload 15 m, 6 s</text>
+<line x1="345" y1="345" x2="357" y2="345" class="night"/><text x="360" y="346" class="s">night: door to the clearing edge 27 m, then 80 m to J; 107 m, 43 s</text>
+<line x1="345" y1="351" x2="357" y2="351" class="priv"/><text x="360" y="352" class="s">privy path, not in the loop: 25 m, 10 s</text>
+<text x="345" y="360" class="s">Water stays a walk: no barrel at camp. Pump 110 m, about 92 s round trip from the door.</text>
+<text x="345" y="366" class="s">Deck view (doc section 5): sees the camp below, the five checks, verge tree, lot, highway.</text>
+<text x="345" y="371" class="s">Hides: Ward stones (W-1 12.8 m), fire (F-1 1.9 m, 1.5 at jump), cave (C-1), ruin (E11).</text>
+<text x="345" y="376" class="s">Ward stair on the face: seen as a plain trail, lanterns unlit by day (open 3).</text>
+<text x="345" y="384" class="s">Ground at the privy, generator and block: unverified; Rook samples before building.</text>
+<text x="345" y="404" class="t">Sable</text>
+</svg>

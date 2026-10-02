@@ -88,3 +88,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-01: Walk-into colliders come from one late pass (main3_8_18a_solid.cs) plus the walk-into check, not each owning recipe.
 - 2026-10-01: The Cave_Chamber dev warp stays inside the cave and is exempt from the sealed-landing test; it is a dev-only warp and F1 is the way out.
 - 2026-10-02: Warmth comes from the cabin stove: split wood at the woodpile, then light the stove. The outdoor fire pit loses its prompt and stays as camp dressing.
+- 2026-10-02: Cabin interior swaps bunk and stove (bunk north-east sees door, desk and stove); the fire pit moves off the door-to-tower line and stays cold.
