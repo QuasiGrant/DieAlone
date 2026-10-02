@@ -74,3 +74,40 @@ Yes, weakly. Bowl plus chair facing out says someone feeds something here. The b
 - Night pair: the lake water stays near white against a black sky; check against the night rule.
 
 Vesper
+
+## Round 2
+
+2026-10-02. Capture: Docs/Captures/Main3Review_lake, round-2 frames (Dock_Day_one_*, Step_Day_one_*, S2, Found_Reeds_rest_Day_one, Found_Beach_Day_one). Same bar: C or better, layout only, by eye.
+
+**Verdict: FAIL.** Dock passes. The step does not read as the cat's place in binoculars.
+
+| Item | R1 | R2 | Frames |
+|---|---|---|---|
+| Dock | D | C | Dock_Day_one_TrailEnd, Dock_Day_one_FWD90 |
+| Deck, hard: step in binoculars | D | D | Step_Day_one_Binoculars_BlanketOn/Off, Crop4x pair |
+| S2 | reads | C | S2.png |
+| Found: reeds rest | No | D | Found_Reeds_rest_Day_one |
+| Found: beach | No | C | Found_Beach_Day_one |
+
+1. Dock, C. Trail end: planks run from the eye to the end rail, side rails both sides, end rail sits on the deck end, brush cleared. FWD 90: a plank deck with rails out over water, square to the beach. Reads as a dock. Posts under the deck over water are not seen in either frame; acceptable at C. Off: a pale blue-white strip along the left edge of the deck in the trail-end frame (water or skirt seam showing through); two dark flat shapes on the sand in the FWD 90 foreground (a rectangle and an oval) read as holes or stray decals. Neither blocks.
+2. Step in binoculars, D. On and off differ only by an orange glint about the size of a spark at frame centre, behind the rail bars, in the house's shade. It reads as a lamp ember or a reflection, not a bed and not a place. The bowl is not seen. A player who did not take the "off" frame would not miss it. Fix: bed footprint about twice the current size, ochre lifted in value (lighter, not more saturated) so it reads against shaded planks, placed clear of the rail bars on the binocular line from the deck eye; retake the same pair.
+   - Alternative for Wren: if the bed cannot grow, change the deck read from "the cat's place" to "a warm spot is there or gone". This pair passes that weaker bar. Not my call.
+3. S2, C. Sky reads; 33 percent agrees with the eye. The sawtooth bank is gone; the right bank now ends in a smooth hard ledge, fine for layout. The rod still reads as a planted post with a grey board across it, centre frame, splitting the fishing view (look note, not blocking). Reeds now read as stems in the foreground.
+4. Found: reeds rest, D. Trail runs down to the water and the house shows left, so the shore is found; the rest itself is not. No rod, no reed stand is legible at this distance; one small clump at the water edge behind a crown. Fix: rod and reed stand readable from this frame, or the found frame taken from the point the trail first opens on the rest.
+5. Found: beach, C. The tan strip between the shrub row and the water reads as a walkable shore at the trail end; stake posts mark it. Weak but readable.
+
+### To pass
+
+1. Step binocular pair retaken after the bed fix (note 2), or Wren's call on the weaker bar.
+
+### Still owed
+
+- Found frames for water tank and rowboat (not in this capture).
+- Reeds rest found frame (note 4); Pim's item, not blocking my gate.
+
+### Look notes, not blocking
+
+- Boathouse roof reads near white in Found_Reeds_rest; lift it toward the plank brown.
+- Reed clump still saturated yellow-green in Found_Beach.
+
+Vesper
