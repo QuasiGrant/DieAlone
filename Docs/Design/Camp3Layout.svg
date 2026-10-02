@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680mm" height="520mm" viewBox="0 0 680 520" font-family="Arial, sans-serif">
+<style>
+ .t{font-size:3.2px;fill:#222}
+ .s{font-size:2.6px;fill:#333}
+ .h{font-size:5px;font-weight:bold;fill:#111}
+ .floor{fill:#e4ddcf;stroke:#555;stroke-width:0.4}
+ .wall{fill:#b8b2a6;fill-opacity:0.5;stroke:#555;stroke-width:0.4}
+ .rim{fill:none;stroke:#888;stroke-width:0.4;stroke-dasharray:2 1}
+ .fur{fill:#d9d2c3;stroke:#333;stroke-width:0.4}
+ .act{fill:#f2c98a;stroke:#7a4a10;stroke-width:0.5}
+ .evt{fill:#e8a0c8;stroke:#8a2a6a;stroke-width:0.5}
+ .water{fill:none;stroke:#2a7fd4;stroke-width:2;stroke-opacity:0.7}
+ .trail{fill:none;stroke:#b07a3a;stroke-width:1.4}
+ .spur{fill:none;stroke:#b07a3a;stroke-width:1;stroke-dasharray:2 0.8}
+ .steps{fill:none;stroke:#6e5a44;stroke-width:3;stroke-dasharray:0.6 1.2}
+ .plank{fill:#c9a97a;stroke:#6e5a44;stroke-width:0.4}
+ .line{fill:none;stroke:#222;stroke-width:0.5}
+ .gone{fill:none;stroke:#c0392b;stroke-width:0.6}
+ .sight{fill:none;stroke:#8e44ad;stroke-width:0.5;stroke-dasharray:3 1.5}
+ .trap{fill:none;stroke:#c0392b;stroke-width:0.8}
+ .keep{fill:none;stroke:#3d5a2a;stroke-width:0.4;stroke-dasharray:1 1}
+ .frame{fill:none;stroke:#999;stroke-width:0.3}
+ .warp{fill:#2a7fd4;stroke:#123;stroke-width:0.3}
+ .snag{fill:#d8d4cc;stroke:#555;stroke-width:0.5}
+</style>
+<defs><clipPath id="clipA"><rect x="20" y="30" width="280" height="280"/></clipPath></defs>
+<rect x="0" y="0" width="680" height="520" fill="#fff"/>
+<text class="h" x="20" y="14">Camp3Layout.svg, draft 1, 2026-10-02, Sable. Plans: north up, world metres. Section: looking north. Nothing decided until DECISIONS.md.</text>
+
+<!-- PANEL A: hollow plan, 7 px per m, x 64 to 104, z 128 to 168. X = 20 + 7(x-64), Y = 30 + 7(168-z) -->
+<rect class="frame" x="20" y="30" width="280" height="280"/>
+<text class="h" x="20" y="27">A. The hollow (x 64 to 104, z 128 to 168), 7 px = 1 m. Floor positions wait on Marlow's samples</text>
+<g clip-path="url(#clipA)">
+<circle class="rim" cx="118" cy="184" r="140"/>
+<circle class="wall" cx="118" cy="184" r="86.8"/>
+<circle class="floor" cx="118" cy="184" r="56"/>
+<text class="s" x="40" y="300">rim r 20, wall r 8 to 12.4, floor -4 inside r 8</text>
+<!-- creek -->
+<polyline class="water" points="192.9,63.6 174,116.8 158.6,144.8 155.1,177 153,200.8 164.2,236.5 179.6,282 181,324"/>
+<text class="t" x="182" y="250" fill="#2a7fd4">C5 creek</text>
+<circle class="evt" cx="158.6" cy="144.8" r="2"/><text class="s" x="162" y="142">dam point (inlet)</text>
+<circle class="act" cx="150.2" cy="147.6" r="1.2"/>
+<rect class="plank" x="146" y="198" width="15.4" height="5.6"/><text class="s" x="160" y="214">plank span 2.2</text>
+<!-- trails -->
+<polyline class="trail" points="278.2,211.6 262.2,206.7 247.7,206.2 233.9,208.1 219.9,209.2 205.9,209.4 191.9,208.6 178.1,206.7 164.4,203.7 151,199.6 138,194.4 125.4,188.3"/>
+<polyline class="steps" points="247.7,206.2 233.9,208.1 219.9,209.2 205.9,209.4 191.9,208.6 178.1,206.7 164.4,203.7 151,199.6"/>
+<text class="t" x="196" y="219">C4 log steps, 107 m, 13.8 m, 7.7 m down</text>
+<polyline class="trail" points="143.6,324 157.3,285.2 157.1,269.6 151.2,256.9 145.2,244.3 139.2,231.6 133.4,218.9 127.7,206.1 122,193.3"/>
+<text class="t" x="124" y="290">W1 leg, level</text>
+<circle class="gone" cx="125" cy="186" r="2.5"/><text class="s" x="96" y="200">old POI_Log_steps x2 on the floor</text>
+<!-- rim spur -->
+<polyline class="spur" points="262.2,207.1 274.1,177 230,146.2 206.2,122.4 185.2,102.8 164.2,80.4 142.5,54.5"/>
+<rect class="plank" x="181" y="99" width="8" height="7"/>
+<rect class="act" x="128.5" y="40.5" width="28" height="28" fill-opacity="0.4"/><text class="s" x="104" y="38">C6 rim spot 4 x 4</text>
+<text class="s" x="232" y="132">C6 rim spur</text>
+<!-- Snag and line -->
+<circle class="snag" cx="244" cy="180.5" r="21"/><text class="t" x="232" y="182">Snag</text>
+<line class="line" x1="244" y1="180.5" x2="132" y2="65"/>
+<circle class="evt" cx="221.6" cy="157.4" r="2"/><circle class="evt" cx="199.2" cy="134.3" r="2"/><circle class="evt" cx="176.8" cy="111.2" r="2"/><circle class="evt" cx="154.4" cy="88.1" r="2"/>
+<text class="s" x="150" y="76">C3 line, 4 sketches face E</text>
+<rect class="fur" x="130.5" y="63.5" width="3" height="3"/><text class="s" x="118" y="62">stake</text>
+<circle class="act" cx="265" cy="175" r="1.6"/><text class="s" x="268" y="168">hoist</text>
+<circle class="warp" cx="272" cy="170" r="1.8"/><text class="s" x="272" y="166">Rim warp</text>
+<!-- floor items -->
+<circle class="act" cx="104" cy="152.5" r="5.6"/><text class="s" x="98" y="146">fire</text>
+<rect class="fur" x="86.85" y="141.1" width="3.5" height="16.8"/><text class="s" x="64" y="140">seat log</text>
+<circle class="act" cx="88.6" cy="155" r="1.8"/><text class="s" x="66" y="162">R3 seat</text>
+<rect class="fur" x="122.5" y="122" width="26" height="26" transform="rotate(215 135.5 135)"/><text class="s" x="132" y="122">tent</text>
+<rect class="fur" x="121.9" y="139.6" width="10.5" height="10.5" fill-opacity="0.4" stroke-dasharray="1 0.6"/><text class="s" x="104" y="134">porch sheet</text>
+<rect class="fur" x="131" y="162.3" width="6.3" height="4.2"/>
+<line class="sight" x1="134.1" y1="164.4" x2="120" y2="160.9"/><text class="s" x="138" y="162">easel, face 284</text>
+<circle class="fur" cx="123.25" cy="161.6" r="1.6"/><text class="s" x="110" y="168">stool</text>
+<rect class="fur" x="134.5" y="171.4" width="3.5" height="2.8"/>
+<rect class="fur" x="117.3" y="172.8" width="8.4" height="4.2"/><text class="s" x="104" y="181">table, job form</text>
+<line class="fur" x1="62" y1="174.2" x2="62" y2="194.5" stroke-width="2"/><text class="s" x="40" y="200">faced canvases</text>
+<circle class="warp" cx="90" cy="212" r="1.8"/><line class="sight" x1="90" y1="212" x2="100" y2="202"/><text class="s" x="76" y="220">Camp_3 warp</text>
+<!-- trap marks -->
+<circle class="trap" cx="190" cy="268" r="3"/><text class="s" x="194" y="270">T1 BigBoulders_2</text>
+<!-- deck bearing -->
+<line class="sight" x1="118" y1="184" x2="290" y2="144"/><text class="s" x="252" y="140">to the deck, bearing 77</text>
+</g>
+
+<!-- PANEL B: area, 2 px per m, x 50 to 160, z 62 to 205. X = 330 + 2(x-50), Y = 30 + 2(205-z) -->
+<rect class="frame" x="330" y="30" width="220" height="286"/>
+<text class="h" x="330" y="27">B. Area bounds x 50 to 160, z 62 to 205, 2 px = 1 m</text>
+<circle class="rim" cx="386" cy="148" r="40"/><circle class="wall" cx="386" cy="148" r="24.8"/><circle class="floor" cx="386" cy="148" r="16"/>
+<polyline class="water" points="439.6,33.6 423,70 407.4,113.6 402,128.8 397.6,136.8 396.6,146 396,152.8 399.2,163 403.6,176 404,188 409,198 417,203 427,213 430,220 450,244 470,268 493.4,294.4 503,308"/>
+<polyline class="trail" points="486,300 482.2,298 476.7,297.6 465,297.2 461.2,295.2 459.5,291.2 459.6,285.7 460.6,279.6 461,274 459.7,269.9 456.2,267.5 451,266.6 444.8,266.2 438.8,265.7 433.7,264.4 430.3,261.7 428.8,257.7 428.5,252.9 428.5,247.8 427.8,243.4 421.2,238 416.2,236.3 413.1,233.4 413.2,228.5 415.8,222.1 418.4,215.7 418.3,211 410.1,206.5 404.1,205.3 398.3,203.9 393.9,201.6 391.7,198.2 391.6,193.5 393.3,188 397.2,176.9 397.2,172.5 395.5,168.8 393.8,165.2 392.1,161.6 390.4,158 388.8,154.3 387.1,150.7"/>
+<polyline class="trail" points="541.3,103.5 536.6,98 531.7,95.8 527,97.4 523.3,101.7 520.3,107 517.4,111.3 513.9,113.4 510.7,116.1 508.1,120 505.8,124.4 503.5,128.4 500.5,131.1 496.6,132 491.6,130.9 485.7,128.3 479.2,124.7 472.7,121.3 466.9,119 462.2,118.6 458.9,120.6 456.9,125.1 455.8,131.4 455.1,138.7 454.1,145.9 452.5,152.1 449.8,156.4 446.1,158.6 441.5,158.8 436.7,157.6 431.8,155.9 427.2,154.6 423.1,154.3 410,150.5 388.1,149.2"/>
+<polyline class="trail" points="486,300 487.4,294.9 495.5,292.3 497.7,288.4 499.5,283.9 501.7,279.9 504.9,277.1 509.1,276.2 518.8,276.6 526.5,265 540.3,265.7 544.4,265.2 548,263.3"/>
+<polyline class="spur" points="484.1,303.8 483.5,309"/><text class="s" x="470" y="314">cave spur, unsigned (8.27)</text>
+<circle class="snag" cx="422" cy="147" r="3"/><line class="line" x1="422" y1="147" x2="390" y2="114"/>
+<circle class="act" cx="493.4" cy="294.4" r="2"/><text class="s" x="496" y="300">stepping stones</text>
+<rect class="act" x="482.5" y="292.9" width="3" height="3"/><text class="s" x="444" y="292">C9 W1 sign, turnable</text>
+<rect class="act" x="469.8" y="293.2" width="2" height="2"/><text class="s" x="452" y="304">blaze</text>
+<circle class="warp" cx="486" cy="300" r="1.6"/><text class="t" x="490" y="308">W1</text>
+<rect class="fur" x="405.7" y="211" width="4.6" height="10"/><text class="s" x="372" y="222">camper trailer</text>
+<line class="gone" x1="457" y1="267" x2="462" y2="272"/><line class="gone" x1="462" y1="267" x2="457" y2="272"/><text class="s" x="440" y="280">footbridge removed</text>
+<circle class="keep" cx="346" cy="140" r="6"/><text class="s" x="334" y="152">lamppost spot</text>
+<circle class="act" cx="514.8" cy="112.8" r="2"/><text class="s" x="506" y="108">forage B</text>
+<rect class="plank" x="436" y="31" width="7" height="5"/><text class="s" x="446" y="38">plank bridge (Camp to J)</text>
+<text class="t" x="470" y="90">Camp to Camp 3, 126 m</text><text class="t" x="430" y="252">W1 to Camp 3, 114 m</text><text class="t" x="506" y="258">Pump to W1, 80 m</text>
+
+<!-- PANEL C: section west-east through z 146, x 60 to 104 at 5 px/m, height at 8 px/m. Xc = 20 + 5(x-60), Yc = 490 - 8(y+6) -->
+<rect class="frame" x="20" y="340" width="230" height="160"/>
+<text class="h" x="20" y="336">C. Section through z 146, looking north (x across, height up)</text>
+<polygon class="wall" points="20,410 48,410 70,474 150,474 172,410 240,410 240,500 20,500"/>
+<text class="s" x="96" y="486">floor -4</text><text class="s" x="200" y="406">rim 4</text>
+<rect class="snag" x="196" y="345" width="10" height="65"/><text class="s" x="208" y="360">Snag, top 54</text>
+<line class="line" x1="200" y1="382" x2="160" y2="398"/><text class="s" x="168" y="378">line, faces E</text>
+<circle class="act" cx="100" cy="472" r="2.5"/><text class="s" x="92" y="466">fire</text>
+<rect class="fur" x="120" y="459.6" width="3" height="14.4"/><line class="sight" x1="120" y1="463" x2="110" y2="463"/><text class="s" x="124" y="458">easel, faces W</text>
+<line class="fur" x1="70" y1="474" x2="74" y2="462" stroke-width="2"/><text class="s" x="52" y="456">canvases face the rock</text>
+<line class="sight" x1="110" y1="461" x2="220" y2="338"/><text class="s" x="176" y="376">deck line, about 35 deg down</text>
+<text class="s" x="24" y="496">The deck sees the floor; no painted face points to it.</text>
+
+<!-- legend -->
+<text class="h" x="330" y="336">Legend</text>
+<rect class="act" x="330" y="342" width="5" height="3"/><text class="s" x="338" y="345">place, stand or interaction</text>
+<rect class="fur" x="330" y="349" width="5" height="3"/><text class="s" x="338" y="352">solid prop, yaw 0/90/180/270 or mesh-local box</text>
+<line class="water" x1="330" y1="357" x2="336" y2="357"/><text class="s" x="338" y="358">creek water, no collider</text>
+<line class="trail" x1="330" y1="363" x2="336" y2="363"/><text class="s" x="338" y="364">trail</text>
+<line class="spur" x1="330" y1="369" x2="336" y2="369"/><text class="s" x="338" y="370">rim spur (new trail)</text>
+<line class="steps" x1="330" y1="375" x2="336" y2="375"/><text class="s" x="338" y="376">log steps, ramp collider</text>
+<rect class="plank" x="330" y="380" width="5" height="3"/><text class="s" x="338" y="383">plank span</text>
+<circle class="evt" cx="333" cy="389" r="1.6"/><text class="s" x="338" y="390">Snag line peg or dam point</text>
+<line class="gone" x1="330" y1="395" x2="336" y2="395"/><text class="s" x="338" y="396">removed (R)</text>
+<line class="keep" x1="330" y1="401" x2="336" y2="401"/><text class="s" x="338" y="402">keep-out (K)</text>
+<line class="sight" x1="330" y1="407" x2="336" y2="407"/><text class="s" x="338" y="408">sight line or facing</text>
+<circle class="warp" cx="333" cy="413" r="1.6"/><text class="s" x="338" y="414">dev warp</text>
+<circle class="trap" cx="333" cy="419" r="1.6"/><text class="s" x="338" y="420">trap spot, held</text>
+</svg>
