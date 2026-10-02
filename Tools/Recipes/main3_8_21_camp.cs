@@ -164,7 +164,7 @@ foreach (var s in spots)
 }
 
 // ---- 6. the rune post to the shelf's uphill side, a rim rock between it and the deck
-const float runeUphill = 2f, runeScreenAt = 2.6f, runeScreenOver = 1f, runeScreenWide = 1.8f;
+const float runeUphill = 2f, runeScreenAt = 2.2f, runeScreenOver = 1.5f, runeScreenWide = 3.2f;   // the pack rock tapers: 1.8 m wide and 1 m over left the post showing at its shoulders from 44 of 128 deck eyes
 var ward = kit.Root("Ward"); var post = ward != null ? ward.transform.Find("Climb/RunePost") : null; float postTop = 0f; UnityEngine.GameObject screen = null;
 if (post == null) notes.Add("no Ward/Climb/RunePost");
 else
@@ -182,7 +182,9 @@ else
     screen = kit.Spawn(PlaceKit.BK + "Rocks/BigBoulders_2", climb);
     if (screen != null)
     {
-        screen.name = "RuneScreen"; PlaceKit.StripColliders(screen); screen.transform.rotation = UnityEngine.Quaternion.LookRotation(toDeck); screen.transform.localScale = UnityEngine.Vector3.one;
+        screen.name = "RuneScreen"; PlaceKit.StripColliders(screen);
+        // LOD 0 only: the pack rock's LODGroup culls it at the deck's 125 m, and the post showed past it (pixel check, 2026-10-02)
+        var lodG = screen.GetComponentInChildren<UnityEngine.LODGroup>(); if (lodG != null) { var lods = lodG.GetLODs(); var keep = new System.Collections.Generic.HashSet<UnityEngine.Renderer>(lods.Length > 0 ? lods[0].renderers : new UnityEngine.Renderer[0]); foreach (var r in screen.GetComponentsInChildren<UnityEngine.Renderer>()) if (!keep.Contains(r)) r.enabled = false; UnityEngine.Object.DestroyImmediate(lodG); } screen.transform.rotation = UnityEngine.Quaternion.LookRotation(toDeck); screen.transform.localScale = UnityEngine.Vector3.one;
         var b = PlaceKit.MeshBounds(screen); float wantH = postTop + runeScreenOver - sg + 0.3f;   // 0.3 m buried
         float wide = UnityEngine.Mathf.Max(b.size.x, b.size.z);
         screen.transform.localScale = V(runeScreenWide / wide, wantH / b.size.y, runeScreenWide / wide);

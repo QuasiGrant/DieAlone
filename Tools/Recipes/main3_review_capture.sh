@@ -45,6 +45,12 @@ job() {   # $1 = file; prints the result text
 }
 unity command editor_play >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "playing"' && break; sleep 2; done
+# the GPU Resident Drawer off while the capture and the pixel check render (Wren 2026-10-02: Camera.Render into a texture skipped every
+# resident object, so the sheets showed bare terrain); in memory only, never saved, restored below
+URPA='((UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline)'
+GRD=$(unity command eval --code "var a = $URPA; var was = a.gpuResidentDrawerMode; a.gpuResidentDrawerMode = UnityEngine.Rendering.GPUResidentDrawerMode.Disabled; return was.ToString();" --result-only 2>/dev/null | sed -n 's/.*"result": "\([A-Za-z]*\)".*/\1/p')
+[ -n "$GRD" ] || { echo "FAIL could not turn the GPU Resident Drawer off"; unity command editor_stop >/dev/null 2>&1; exit 1; }
+echo "GPU Resident Drawer was $GRD; off for the capture"
 rc=0
 # the area's own Play checks run first, before the capture moves the player (main3_8_21_camp_check.cs reads the wake spot Play starts at)
 EARLYMD=""; erc=0
@@ -113,6 +119,8 @@ if [ $rc -eq 0 ]; then
 fi
 unity command editor_stop >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "stopped"' && break; sleep 2; done
+unity command eval --code "var a = $URPA; a.gpuResidentDrawerMode = UnityEngine.Rendering.GPUResidentDrawerMode.$GRD; return \"GPU Resident Drawer restored to \" + a.gpuResidentDrawerMode;" --result-only 2>/dev/null | sed -n 's/.*"result": "\(.*\)".*/\1/p'
+echo "Render pipeline asset changes (should be none): $(git status --porcelain Assets/Settings/PC_RPAsset.asset | tr '\n' ' ')"
 unity command eval --code 'UnityEngine.Application.runInBackground = false; return "runInBackground " + UnityEngine.Application.runInBackground;' --result-only 2>/dev/null
 rm -f Temp/main3_review_capture_day.cs Temp/main3_review_capture_night.cs Temp/main3_review_capture_daytwo.cs
 echo "ProjectSettings changes (should be none): $(git status --porcelain ProjectSettings | tr '\n' ' ')"

@@ -3,6 +3,8 @@
 // asset from this file, so change areas here, not in the Inspector). Bounds are Rook's drafts from Valley.md 1 and Main3_map.svg (warp
 // and place positions as built); Sable confirms an area's bounds and writes its deck list when the area starts, until then
 // deckListWritten is false and the check prints "no deck list". Camp's deck list is CampLayout.md draft 2 section 5.
+// Wren 2026-10-02: the woodpile is off the deck must-see list (the cabin roof hides it); the Ward stones are proven by land rays (W-1),
+// so the pixel check stays only where trees are the cover (the ruin) or the rune post screen.
 // A place or deck point with y = G (-999) stands on the ground: the check uses the ground under it plus 1 m.
 const float G = -999f;
 const string path = "Assets/Settings/Main3Areas.asset";
@@ -36,10 +38,10 @@ var camp = new Main3AreaSet.Area { id = "camp", task = "8.21", title = "Keeper's
     places = new[] { P("Cabin door", 178f, G, 165f), P("Fire pit", 172f, G, 163f), P("Generator", 183f, G, 173f), P("Privy", 176.5f, G, 178f), P("Woodpile", 182.5f, G, 168f), P("Tower stair foot", 164f, G, 160f), P("Forage patch B", 141f, G, 167f) },
     playChecks = new[] { "main3_8_21_camp_check.cs", "main3_tower_stairs_check.cs" },
     inventory = new[] { "Lanterns and lamps", "Cabin", "Tower", "Fire pit", "Generator", "Privy", "Stump", "Woodpile", "Rune post", "Rune post screen" }, deckListWritten = true,
-    deckSee = new[] { D("cabin roof", 178f, 19.5f, 168f), D("fire pit", 172f, 15.6f, 163f), D("woodpile", 182f, 16.5f, 168f), D("lake, mid water", 190f, -5.4f, 60f),
+    deckSee = new[] { D("cabin roof", 178f, 19.5f, 168f), D("fire pit", 172f, 15.6f, 163f), D("lake, mid water", 190f, -5.4f, 60f),
         D("Camp 1 spar top", 284f, 29f, 240f), D("Camp 2 stack top (over its tent)", 292f, 26f, 108f), D("Camp 3 Snag line (top)", 96f, 54f, 146.5f), D("office west door", 341f, 4.2f, 199f),
         D("cat step (boathouse)", 240f, -3.3f, 56f), D("verge tree", 419f, 25f, 139f), D("lot centre", 358f, 3.1f, 170f), D("highway", 430f, G, 185f) },
-    deckHide = new[] { D("Ward stones", -3f, 66f, 224f, "Ward/Stones"), D("rune post", 57f, 36f, 246f, "Ward/Climb/RunePost"), D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"),
+    deckHide = new[] { D("Ward stones, tops (W-1, land rays)", -3f, 70f, 224f), D("rune post (behind its rim rock)", 55.1f, 36.5f, 246.1f, "Ward/Climb/RunePost"), D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"),
         D("far fire front, z 40", -240f, 105f, 40f), D("far fire front, z 170", -240f, 105f, 170f), D("far fire front, z 300", -240f, 105f, 300f), D("day-one sheet top", -500f, 110f, 170f), D("cave mouth", 52f, -4f, 37f) } };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,

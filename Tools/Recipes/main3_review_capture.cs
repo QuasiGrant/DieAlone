@@ -533,8 +533,9 @@ try
         {
             var deckFrames = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3, string)>();
             UnityEngine.Vector3 Aim(UnityEngine.Vector3 p) => p.y <= -900f ? new UnityEngine.Vector3(p.x, terrain.SampleHeight(p) + terrain.transform.position.y + 1f, p.z) : p;
-            foreach (var t in areaSel.deckSee) deckFrames.Add((deckEye, Aim(t.point), "MUST SEE: " + t.label.ToUpperInvariant()));
-            foreach (var t in areaSel.deckHide) deckFrames.Add((deckEye, Aim(t.point), "MUST HIDE: " + t.label.ToUpperInvariant()));
+            UnityEngine.Vector3 Walkway(UnityEngine.Vector3 at) { var d = new UnityEngine.Vector3(at.x - deckEye.x, 0f, at.z - deckEye.z).normalized; return deckEye + d * compassOut; }   // on the walkway on the target's side, outside the cab (as the compass views)
+            foreach (var t in areaSel.deckSee) deckFrames.Add((Walkway(Aim(t.point)), Aim(t.point), "MUST SEE: " + t.label.ToUpperInvariant()));
+            foreach (var t in areaSel.deckHide) deckFrames.Add((Walkway(Aim(t.point)), Aim(t.point), "MUST HIDE: " + t.label.ToUpperInvariant()));
             Sheet("Deck_" + areaSel.id + ".jpg", "From the tower deck toward " + areaSel.title + " (" + areaSel.task + "): every target of its deck list", deckFrames, pairDiv, 3);
         }
     }
