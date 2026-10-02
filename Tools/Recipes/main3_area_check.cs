@@ -4,7 +4,8 @@
 // FLOOD (Marlow's method, Breaks_2026-10-01.md): standing places on a floodCell grid keyed by a floodLevel height band, seeded from the
 //   area's warps and trail points, each expanded by floodHeadings headings x (walk, sprint-jump) moves of floodMoveTime s with the real
 //   mover (PlayerController.Step, dt 0.02), inside the bounds plus floodMargin m (a place past that is an exit and is not expanded).
-//   FAIL on a place inside a closed zone (Valley.md 8 thicket) or fellUnder m under the terrain.
+//   FAIL on a place inside a closed zone (Valley.md 8 thicket), fellUnder m under the terrain, or standing on a stop (stopRoots or the
+//   Ignore Raycast layer: an escape over a stop, wherever it leads; 8.22 round 2).
 // TRAPS: a reverse search from the seeds and exits finds the places with no way back; each group is retested from its first place with
 //   escapeHeadings headings x (walk, sprint, sprint-jump) for escapeTime s; a trap is 0 escapes (an escape ends on a place with a way
 //   back, or 4 m or more away on ground the flood never stood on).
@@ -90,8 +91,20 @@ try
             q.Enqueue(ek);
         }
     }
-    bool floodOk = leaks.Count == 0 && fell.Count == 0; if (!floodOk) fails++;
-    sb.Append((floodOk ? "PASS" : "FAIL") + " FLOOD: " + pos.Count + " standing places from " + seeds + " seeds, " + moves + " moves; closed-zone leaks " + leaks.Count + ", fell through " + fell.Count + "\n");
+    // a place standing on a stop is an escape over it (8.22 round 2, Marlow 1), wherever it leads
+    var onStop = new System.Collections.Generic.List<string>();
+    foreach (var kv in pos)
+    {
+        var p = kv.Value; foreach (var h in UnityEngine.Physics.RaycastAll(p + UnityEngine.Vector3.up * 0.3f, UnityEngine.Vector3.down, 0.6f, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
+        {
+            var ht = h.collider.transform; if (ht.IsChildOf(pc.transform) || h.collider is UnityEngine.TerrainCollider) continue; var path = WalkIns.PathOf(ht); bool stop = ht.gameObject.layer == 2;
+            if (set.stopRoots != null) foreach (var sr in set.stopRoots) if (path.StartsWith(sr)) stop = true;
+            if (stop) { onStop.Add(P3(p) + " on " + path); break; }
+        }
+    }
+    bool floodOk = leaks.Count == 0 && fell.Count == 0 && onStop.Count == 0; if (!floodOk) fails++;
+    sb.Append((floodOk ? "PASS" : "FAIL") + " FLOOD: " + pos.Count + " standing places from " + seeds + " seeds, " + moves + " moves; closed-zone leaks " + leaks.Count + ", fell through " + fell.Count + ", standing on a stop " + onStop.Count + "\n");
+    foreach (var l in onStop) sb.Append("  ON STOP " + l + "\n");
     foreach (var l in leaks) sb.Append("  LEAK " + l + "\n"); foreach (var l in fell) sb.Append("  FELL " + l + "\n");
     // ---- TRAPS
     var ok = new System.Collections.Generic.HashSet<long>(good); var rq = new System.Collections.Generic.Queue<long>(good);

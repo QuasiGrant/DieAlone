@@ -31,6 +31,10 @@
 //    removed and listed.
 // 8. Warps (doc 5.2): Gate_Booth to (392, 162.5) facing north. The PlayerInteractor's mask in Player.prefab leaves out Ignore Raycast
 //    (doc 4.1), so IW1, IW3 and the hedge boxes never take the eye ray.
+// 9. Round 2 (8.22 gate, Wren's list): brush on every face of both brush bands, the boxes 2.0 m and on Ignore Raycast; a store Door
+//    into the built interior, a store ceiling, canopy and porch roof colliders; the Closed_Campground warp on the spur facing the chain and
+//    the ring; an octagon stop sign; the porch lamp off when shut and white when open; the tower lectern on the walkway's north-east
+//    corner; the detail plants cleared from the first sight of the lot.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -206,16 +210,22 @@ if (porch != null)
     if (sign != null) { const float signLen = 1.9f, signY = 2.1f; sign.position = V(344f - 0.04f, oFloor + signY, oZ + 0.2f + signLen * 0.5f); sign.localScale = V(signLen, sign.localScale.y, sign.localScale.z); kit.Label(sign, "RANGER STATION", Hex("#EDE3CF"), 40); }
 }
 // the porch lamp over the west door, lit only while the door stands open (doc 2.7: from the deck the open and shut frames did not
-// differ clearly, 16 percent of the opening's pixels in binoculars, 2026-10-02); DoorLamp shows its glow and light with the door
-const float lampW = 1.2f, lampH = 0.25f, lampD = 0.12f, lampY = 2.33f, lampRange = 6f;   // a lit bar the door's width over its head (0.45 m read as a few pixels through the filter)
+// differ clearly, 16 percent of the opening's pixels in binoculars, 2026-10-02); DoorLamp shows its glow and light with the door.
+// 8.22 round 2 (Vesper 9, Wren 5): shut, the lamp is fully off (a dark housing, no glow, no light); open, its face is white at the cab
+// lamp bulb's strength, so it clips near white through the filter
+const float lampW = 1.2f, lampH = 0.25f, lampD = 0.12f, lampY = 2.33f, lampRange = 6f, housing = 0.04f;   // a lit bar the door's width over its head (0.45 m read as a few pixels through the filter)
+var lampGlow = kit.Glow("Places_DoorLampGlow", UnityEngine.Color.white, kit.Look.cabLampBulbIntensity);
 if (porch != null && westDoor != null)
 {
     PlaceKit.Remove(porch.Find("DoorLamp")); var host = new UnityEngine.GameObject("DoorLamp"); host.transform.SetParent(porch, false); host.transform.position = V(344f - lampD * 0.5f - 0.01f, oFloor + lampY, oZ + 2.75f);
+    kit.Slab("Housing", host.transform, V(housing * 0.5f, 0f, 0f), V(lampD, lampH + 2f * housing, lampW + 2f * housing), steel);
     var lampG = new UnityEngine.GameObject("Lamp"); lampG.transform.SetParent(host.transform, false);
-    kit.Slab("Glow", lampG.transform, UnityEngine.Vector3.zero, V(lampD, lampH, lampW), signGlow);
+    kit.Slab("Glow", lampG.transform, V(-housing, 0f, 0f), V(lampD, lampH, lampW), lampGlow);
     kit.Practical("DoorLampLight", lampG.transform, V(-0.3f, -0.1f, 0f), lampRange, PracticalLight.Kind.Lamp, PracticalLight.ByDay.Dimmed);
     var dl = host.AddComponent<DoorLamp>(); var so = new UnityEditor.SerializedObject(dl); so.FindProperty("door").objectReferenceValue = westDoor.GetComponent<Door>(); so.FindProperty("lamp").objectReferenceValue = lampG; so.ApplyModifiedPropertiesWithoutUndo();
 }
+// the porch roof takes a collider (8.22 round 2, Marlow 5: a jump onto the porch bench put the eye inside it)
+if (porch != null) { var pr = porch.Find("PorchRoof"); if (pr != null && pr.GetComponent<UnityEngine.Collider>() == null) pr.gameObject.AddComponent<UnityEngine.BoxCollider>(); }
 var fr = Need(office, "FrontRoom"); var br = Need(office, "BackRoom");
 var lay = kit.Fresh("Layout822", office, office.position, 0f);
 if (fr != null && br != null)
@@ -282,7 +292,7 @@ if (shell != null)
     foreach (UnityEngine.Transform c in shell)
     {
         if (UnityEngine.Mathf.Abs(c.position.z - sFaceZ) > 0.3f) continue; var b = PlaceKit.MeshBounds(c.gameObject); float cx = b.center.x;
-        if (c.name.StartsWith("Wall_Small_Door_Small")) { c.position = V(dPivot, c.position.y, c.position.z); c.localScale = V(sc, 1f, 1f); }
+        if (c.name.StartsWith("Wall_Small_Door_Small")) { c.position = V(dPivot, c.position.y, c.position.z); c.localScale = V(sc, 1f, 1f); foreach (var mc in c.GetComponentsInChildren<UnityEngine.MeshCollider>()) mc.convex = false; }   // its pack collider was a convex hull that filled the doorway (round 2: the walk in stopped at the wall)
         else if (c.name.StartsWith("Wall_Small_Window_Large") && cx > 362f && cx < 364.5f) { c.position = V(westEnd, c.position.y, c.position.z); c.localScale = V(wScale, 1f, 1f); }
         else if (c.name.StartsWith("Wall_Small_Window_Large") && cx > 365.5f && cx < 368f) { c.position = V(368f, c.position.y, c.position.z); c.localScale = V(eScale, 1f, 1f); }
     }
@@ -443,6 +453,85 @@ if (forest != null)
     }
 }
 
+// ================= 9. ROUND 2 (8.22 gate, Wren's list 2026-10-02) =================
+// 9a. The brush bands are seen stops (doc 4.3; Marlow 2: both boxes drew nothing): Campsite brush along every face of both boxes, every
+// brushStep m, bushLow to bushHigh m tall, no colliders; the boxes stand bandH m over the ground, out of a jump from anything near (Marlow
+// 1: from a hollow log, top 0.91 m, a sprint-jump reached the 1.4 m box top and walked off it west), on Ignore Raycast like the hedges
+const float bandH = 2.0f, brushStep = 1.4f, bushLow = 2.0f, bushHigh = 2.5f, bushIn = 0.3f, bandSpurX = 385.5f;
+string[] bushNames = { "CS_Bush_Large_1", "CS_Bush_Large_1_1", "CS_Bush_Large_1_2", "CS_Bush_Large_1_3", "CS_Bush_Large_1_4", "CS_Bush_Large_2", "CS_Bush_Large_2_1", "CS_Bush_Large_2_2", "CS_Bush_Large_2_3", "CS_Bush_Large_2_4" };
+var bandsRoot = Need(fz, "BrushBands"); int bandBush = 0;
+if (bandsRoot != null)
+{
+    PlaceKit.Remove(bandsRoot.Find("Brush822")); var dress = kit.Group("Brush822", bandsRoot, bandsRoot.position, 0f); var brng = new System.Random(8222);
+    foreach (UnityEngine.Transform band in bandsRoot)
+    {
+        if (band.name != "Brush") continue; var bc = band.GetComponent<UnityEngine.BoxCollider>(); if (bc == null) continue;
+        float x0 = band.position.x - band.localScale.x * 0.5f, x1 = band.position.x + band.localScale.x * 0.5f, z0 = band.position.z - band.localScale.z * 0.5f, z1 = band.position.z + band.localScale.z * 0.5f;
+        float gMax = UnityEngine.Mathf.Max(kit.H(x0, z0), kit.H(x1, z0), kit.H(x0, z1), kit.H(x1, z1), kit.H((x0 + x1) * 0.5f, (z0 + z1) * 0.5f)), bottom = band.position.y - band.localScale.y * 0.5f;
+        band.localScale = V(band.localScale.x, gMax + bandH - bottom, band.localScale.z); band.position = V(band.position.x, bottom + band.localScale.y * 0.5f, band.position.z); band.gameObject.layer = 2;
+        var faces = new System.Collections.Generic.List<(UnityEngine.Vector2 a, UnityEngine.Vector2 b, UnityEngine.Vector2 inward)> {
+            (V2(x0, z0), V2(x1, z0), V2(0f, 1f)), (V2(x0, z1), V2(x1, z1), V2(0f, -1f)), (V2(x0, z0), V2(x0, z1), V2(1f, 0f)), (V2(x1, z0), V2(x1, z1), V2(-1f, 0f)) };
+        foreach (var (a, b, inward) in faces)
+        {
+            float len = (b - a).magnitude; int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(len / brushStep));
+            for (int i = 0; i <= n; i++)
+            {
+                var q = UnityEngine.Vector2.Lerp(a, b, i / (float)n) + inward * bushIn; if (q.x > bandSpurX) continue;   // the spur gap stays open (IW3)
+                var g = kit.Spawn(PlaceKit.CS + "Vegetation/" + bushNames[brng.Next(bushNames.Length)], dress); if (g == null) continue; PlaceKit.StripColliders(g);
+                g.transform.rotation = UnityEngine.Quaternion.Euler(0f, (float)brng.NextDouble() * 360f, 0f); var mb = PlaceKit.MeshBounds(g); float want = bushLow + (float)brng.NextDouble() * (bushHigh - bushLow);
+                g.transform.localScale *= want / UnityEngine.Mathf.Max(0.2f, mb.size.y); mb = PlaceKit.MeshBounds(g); g.transform.position += V(q.x - mb.center.x, kit.H(q.x, q.y) - 0.1f - mb.min.y, q.y - mb.center.z); bandBush++;
+            }
+        }
+    }
+}
+// 9b. The store door opens into the built interior (Sable: the store level's first room): a Door, hinged at the west jamb, swinging in;
+// a ceiling collider at the walls' top (Marlow 7: on the counter the head went into the roof); the canopy takes a collider (Marlow 6: the
+// body stood up through it from the propane cage and the ice chest)
+const float sWallTop = 2.7f, ceilT = 0.1f, sDoorH = 2.1f, sDoorT = 0.06f;
+if (shell != null)
+{
+    foreach (var t in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(shell))) if (t.name == "Door_GlassPanel") UnityEngine.Object.DestroyImmediate(t.gameObject);
+    PlaceKit.Remove(store.Find("StoreDoor")); var sd = kit.Door(store, store.InverseTransformPoint(V(doorX0, G, sFaceZ + 0.1f)), 0f, V(doorX1 - doorX0, sDoorH, sDoorT), PlaceKit.CE + "Building_Parts/Door_GlassPanel");
+    if (sd != null) { sd.name = "StoreDoor"; var so = new UnityEditor.SerializedObject(sd.GetComponent<Door>()); so.FindProperty("fixedSwing").boolValue = true; so.FindProperty("fixedSide").floatValue = -1f; so.ApplyModifiedPropertiesWithoutUndo(); }
+    // the pack glass door is thin along its own x: refit its visual turned 90 degrees, as 8.17 did (kit.Door fills at 0)
+    if (sd != null) { foreach (UnityEngine.Transform c in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(sd.transform))) if (c.name.StartsWith("Door_GlassPanel")) UnityEngine.Object.DestroyImmediate(c.gameObject); kit.Fill(PlaceKit.CE + "Building_Parts/Door_GlassPanel", sd.transform, V((doorX1 - doorX0) * 0.5f, 0f, 0f), V(doorX1 - doorX0, sDoorH, sDoorT), 90f, false); }
+    PlaceKit.Remove(store.Find("Ceiling")); kit.Blocker("Ceiling", store, store.InverseTransformPoint(V(366f, G + sWallTop + ceilT * 0.5f, 200f)), V(12f, ceilT, 9f));
+}
+if (canopy != null) { var dk = canopy.Find("Deck"); if (dk != null && dk.GetComponent<UnityEngine.Collider>() == null) dk.gameObject.AddComponent<UnityEngine.BoxCollider>(); }
+// 9c. The Closed_Campground warp on the spur south of the chain, facing north up the road to the chain and the ring (Marlow 4)
+const float ccWarpZ = 228f;
+var ccw = warpsRoot.Find("Closed_Campground"); if (ccw != null) { ccw.position = V(390f, G + 0.2f, ccWarpZ); ccw.rotation = UnityEngine.Quaternion.identity; } else notes.Add("no DevWarps/Closed_Campground");
+// 9d. The stop sign an octagon (Pim 3): two squares of its side, one turned 45 degrees in its face, facing the cars leaving (west), STOP
+var stopSq = gT != null ? gT.Find("StopSign") : null;
+if (stopSq != null)
+{
+    PlaceKit.Remove(gT.Find("StopSign_Oct")); foreach (var t in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(gT))) if (t.name == "Label") UnityEngine.Object.DestroyImmediate(t.gameObject);
+    stopSq.rotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f);
+    var oct = UnityEngine.Object.Instantiate(stopSq.gameObject, gT); oct.name = "StopSign_Oct"; oct.transform.position = stopSq.position; oct.transform.rotation = stopSq.rotation * UnityEngine.Quaternion.Euler(0f, 0f, 45f);
+    kit.Label(stopSq, "STOP", Hex("#EDE3CF"), 40);
+}
+else notes.Add("no GateT/StopSign");
+// 9e. The tower lectern to the cab's east side (Wren's call 2026-10-02, TowerCheck 7.5: from the north side the cab's east sill hid the
+// office door). Inside the cab no spot can see it: the walkway's outer east rail (1.1 m, 2.2 m out) cuts any look 16 degrees down, so the lectern
+// stands on the walkway's north-east corner outside the cab's east side, against the outer rail; its top, the tower sheet and the reader
+// face east. Cab-local: the lectern at (lecternX, lecternZ), the reader at (readerX, readerZ)
+const float lecternX = 4.1f, lecternTopX = 4.0f, lecternZ = 2.6f, readerX = 3.3f, readerZ = 2.9f;
+var cabT = kit.Root("Camp") != null ? kit.Root("Camp").transform.Find("Tower/Cab") : null; UnityEngine.Vector3 readerAt = UnityEngine.Vector3.zero;
+if (cabT != null)
+{
+    var lec = cabT.Find("Lectern"); var lecTop = cabT.Find("LecternTop"); var sheet = cabT.Find("CabDressing/CITW_Book_5");
+    if (lec != null) { lec.localPosition = V(lecternX, lec.localPosition.y, lecternZ); lec.localRotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f); }
+    if (lecTop != null) { lecTop.localPosition = V(lecternTopX, lecTop.localPosition.y, lecternZ); lecTop.localRotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f) * UnityEngine.Quaternion.Euler(-15f, 0f, 0f); }
+    if (sheet != null) { var sp = cabT.InverseTransformPoint(sheet.position); if (UnityEngine.Mathf.Abs(sp.x) < 0.3f && UnityEngine.Mathf.Abs(sp.z - 1.2f) < 0.3f) sheet.rotation = UnityEngine.Quaternion.Euler(0f, 90f, 0f) * sheet.rotation; sheet.position = cabT.TransformPoint(V(lecternTopX, sp.y, lecternZ)); }   // once: from its north-side spot
+    readerAt = cabT.TransformPoint(V(readerX, 0.03f, readerZ));
+}
+else notes.Add("no Camp/Tower/Cab");
+
+// 9f. First sight of the lot clear of brush (Pim 2): the terrain's detail plants on the first 6 m of the look from (327, 168) toward the
+// lot centre go (a sapling stood in front of the eye); the hedge brush either side is a stop and stays
+const float fsClearR = 1.5f; int fsCells = 0;
+foreach (var c in new[] { V(328.5f, G, 168.2f), V(330.5f, G, 168.5f), V(332.5f, G, 168.8f) }) fsCells += kit.ClearDetail(c, fsClearR);
+
 // ================= 8. WARPS AND THE INTERACTOR MASK =================
 var wb = warpsRoot.Find("Gate_Booth"); if (wb != null) { wb.position = V(392f, G + 0.2f, 162.5f); wb.rotation = UnityEngine.Quaternion.Euler(0f, 0f, 0f); } else notes.Add("no DevWarps/Gate_Booth");
 int maskWas = 0, maskNow = 0;
@@ -459,4 +548,4 @@ return "saved=" + saved + " | booth x " + F(bX0) + " to " + F(bX1) + ", z " + F(
     " | IW1 z " + (iw1 != null ? F(iw1.GetComponent<UnityEngine.BoxCollider>().bounds.min.z) + " to " + F(iw1.GetComponent<UnityEngine.BoxCollider>().bounds.max.z) : "-") + " | IW3 " + (iw3 != null ? "SpurWall, off" : "MISSING") +
     " | stops " + stops.childCount + " | office west door " + (westDoor != null ? "open in, no prompt" : "MISSING") + " | snapped top max x " + F(snappedMaxX) + " | reflector pieces off the drive mouth " + reflGone +
     " | campground pieces moved " + moved + ", removed " + removedCg + (cgList.Count > 0 ? " (" + string.Join("; ", cgList) + ")" : "") +
-    " | interactor mask " + maskWas + " -> " + maskNow + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    " | interactor mask " + maskWas + " -> " + maskNow + " | round 2: band brush " + bandBush + ", store door " + (store.Find("StoreDoor") != null) + ", first-sight detail cells " + fsCells + ", lectern reader at (" + F(readerAt.x) + ", " + F(readerAt.z) + ")" + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

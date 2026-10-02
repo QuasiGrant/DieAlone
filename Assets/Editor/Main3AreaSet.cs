@@ -120,6 +120,7 @@ public class Main3AreaSet : ScriptableObject
     [Tooltip("Escape headings per move kind in the trap retest (Marlow: 16 x walk, sprint, sprint-jump = 48).")] public int escapeHeadings = 16;
     [Tooltip("Seconds per escape try.")] public float escapeTime = 3f;
     [Tooltip("Ground closed by thicket (Valley.md 8): a reached place inside one is a leak.")] public Rect[] closedZones;
+    [Tooltip("Stops (8.22 round 2, Marlow 1: a jump onto the brush band and off its far side): a flood place standing on a collider under one of these scene paths, or on the Ignore Raycast layer (hedge boxes, invisible walls), is an escape over a stop and fails.")] public string[] stopRoots = { "FrontZone/BrushBands", "FrontZone/ShiftWalls", "FrontZone/Gate/PlayerBlocker", "Ground815/Stops", "Fence" };
 
     [Header("Reach and found (Pim, Wren 2026-10-02)")]
     [Tooltip("A place counts as reached when a flood place lies within this many metres (xz) of its point.")] public float reachRadius = 4f;

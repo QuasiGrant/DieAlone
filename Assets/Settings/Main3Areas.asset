@@ -31,6 +31,12 @@ MonoBehaviour:
     y: -10
     width: 107
     height: 35
+  stopRoots:
+  - FrontZone/BrushBands
+  - FrontZone/ShiftWalls
+  - FrontZone/Gate/PlayerBlocker
+  - Ground815/Stops
+  - Fence
   reachRadius: 4
   reachRise: 3
   foundReach: 30
@@ -168,7 +174,7 @@ MonoBehaviour:
     path: FrontZone/Office
     kind: renderers
     name: 
-    expected: 217
+    expected: 218
   - label: Store
     path: FrontZone/Store
     kind: renderers
@@ -392,7 +398,7 @@ MonoBehaviour:
       approach: {x: 182, y: -999, z: 164.4}
     - label: lectern
       path: Camp/Tower/Cab/Lectern
-      approach: {x: 164, y: 56.03, z: 166.3}
+      approach: {x: 167.3, y: 56.03, z: 168.9}
     frames:
     - label: WAKE, FACING 245 (DOOR LEFT, DESK AND WINDOW CENTRE, STOVE RIGHT)
       eye: {x: 179.9, y: 16.63, z: 168.95}
@@ -453,9 +459,9 @@ MonoBehaviour:
       height: 2.15
       objectPath: FrontZone/Office
     - label: Store door
-      point: {x: 365, y: -999, z: 195.5}
+      point: {x: 365, y: -999, z: 195.6}
       height: 2.1
-      objectPath: FrontZone/Store/Shell/Door_GlassPanel
+      objectPath: FrontZone/Store/StoreDoor
     - label: Booth door
       point: {x: 391.9, y: -999, z: 164.2}
       height: 2.5
@@ -589,6 +595,8 @@ MonoBehaviour:
       look: {x: 372, y: 4, z: 262}
     playChecks:
     - main3_8_22_front_check.cs
+    - main3_8_22_deck_frames.cs?look=Day_one
+    - main3_8_22_deck_frames.cs?look=Night
   - walkLines: []
     id: lake
     task: 8.23
@@ -967,9 +975,9 @@ MonoBehaviour:
       height: 2.15
       objectPath: FrontZone/Office
     - label: Store door
-      point: {x: 365, y: -999, z: 195.5}
+      point: {x: 365, y: -999, z: 195.6}
       height: 2.1
-      objectPath: FrontZone/Store/Shell/Door_GlassPanel
+      objectPath: FrontZone/Store/StoreDoor
     - label: Booth door
       point: {x: 391.9, y: -999, z: 164.2}
       height: 2.5

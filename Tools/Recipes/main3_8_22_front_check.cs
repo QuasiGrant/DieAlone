@@ -2,10 +2,10 @@
 // alone. Never saves; restores the player, the doors, IW3, the camera and the GPU Resident Drawer. Frames go to outDir at Grant's size.
 // DOOR (doc O1): the office west door stands open into the room at Play start, offers no prompt, shuts when held (an Office CHECK), stays
 //   shut through a wake while held, and opens again when let go and at the next wake.
-// DECK DOOR FRAMES (doc 2.7): from the lectern, eye and binoculars (binoFov degrees vertical, TowerCheck.md 7.2), the door open and shut,
-//   in the current look; in the binocular frame, open against shut (the largest RGB channel change), the share of the opening's pixels that change by doorDiffGrey or more
-//   must be doorDiffShare or more, or else (doc 2.7: the porch lamp over the door, lit only while it is open) the lamp's pixels must change
-//   by doorLampGrey on average ("differ clearly"). From the lectern eye, or, when the cab hides the door from it, the nearest deck eye.
+// The deck door frames and the porch lamp are main3_8_22_deck_frames.cs (once per look). FRAMES (8.22 gate round 2, Wren 6): the chain
+//   from chainBack m on the spur; P1, P4 and P8 from the ring facing the pad; the ring join with static car boxes on P1 to P3; the store
+//   door from the lot centre; first sight of the lot from (327, 168) toward it; every front place's Found frame at full size with a magenta
+//   target ball (Main3AreaSet.Found, the area check's rule: trails plus the area's walk lines, colliders and the drawn trees block).
 // GATE (doc 2.1, 2.2, 4.1, 4.2): the arm down with a collider; post to booth 1.2 m; IW1 flush with the gate posts; IW1 and IW3 on
 //   Ignore Raycast and left out of the PlayerInteractor's mask; IW3 off with no car, on from CarAdmitted to CarParked.
 // SWEPT PATHS (doc 2.2): a carL x carW car box, from carLow to carHigh over the ground, every sweepStep m: ADMIT from the gate stop
@@ -34,7 +34,7 @@ var cam = UnityEngine.Camera.main; var camLocal = cam.transform.localPosition; v
 var start = pc.transform.position; var startRot = pc.transform.rotation; bool pcWas = pc.enabled; pc.enabled = false;
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y;
 var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Settings/PlayerTuning.asset");
-const float dt = 0.02f, arrive = 0.5f, legTime = 60f, eyeH = 1.6f, binoFov = 15f, doorDiffGrey = 16f, doorDiffShare = 0.5f, doorLampGrey = 32f;
+const float dt = 0.02f, arrive = 0.5f, legTime = 60f, eyeH = 1.6f, chainBack = 8f, ballR = 0.25f;
 const float carL = 4.5f, carW = 1.8f, carLow = 0.3f, carHigh = 1.5f, sweepStep = 0.5f, turnR = 5.5f, refuseBack = 14f, ringCX = 372f, ringCZ = 262f, ringR = 17.5f;
 const float placeSlack = 0.3f, gapLow = 0.6f, gapHigh = 1.0f, gapTol = 0.005f, bodyLow = 0.3f, bodyHigh = 1.8f, reachLow = 0.5f, gapNear = 1.0f;
 const int shotW = 3840, shotH = 1976;
@@ -107,56 +107,6 @@ try
         westDoor.HoldShut(false, true); bool reopened = westDoor.IsOpen && westDoor.CurrentAngle > 0f;
         WakeSignal.Raise(); bool wakeOpen = westDoor.IsOpen && westDoor.CurrentAngle > 0f;
         Line(startOk && noPrompt && shut && heldThroughWake && reopened && wakeOpen, "DOOR: at Play start open " + startOk + " (angle " + F1(westDoor.CurrentAngle) + ", leaf centre x " + F(inside) + ", inside the room), no prompt " + noPrompt + "; held shut " + shut + ", still shut after a wake " + heldThroughWake + ", let go opens " + reopened + ", open after a wake " + wakeOpen);
-    }
-    // ================= DECK DOOR FRAMES =================
-    if (westDoor != null)
-    {
-        var set = Main3AreaSet.Load(); var campA = set != null ? set.Find("camp") : null; UnityEngine.Vector3 stand = V(164f, 56.03f, 166.3f);
-        if (campA != null && campA.interactions != null) foreach (var ia in campA.interactions) if (ia.label == "lectern") stand = ia.approach;
-        var lecternEye = stand + UnityEngine.Vector3.up * eyeH; var opening = V(344.0f, 4.3f, 199.0f);
-        var corners = new[] { V(344.0f, 3.05f, 198.4f), V(344.0f, 3.05f, 199.6f), V(344.0f, 5.5f, 198.4f), V(344.0f, 5.5f, 199.6f) };   // the opening and the porch lamp over it
-        // the lectern eye first; when the cab hides the door from it, the nearest deck eye (the area check's grid) that sees the opening
-        // past every drawn mesh, the tower included
-        var tower = Root("Camp").transform.Find("Tower"); float deckTop = tower.Find("Cab").position.y;
-        var cands = new System.Collections.Generic.List<UnityEngine.Vector3> { lecternEye };
-        if (set != null) for (float gx = -set.deckHalf; gx <= set.deckHalf + 0.01f; gx += set.deckGrid) for (float gz = -set.deckHalf; gz <= set.deckHalf + 0.01f; gz += set.deckGrid) cands.Add(V(tower.position.x + gx, deckTop + set.deckEye, tower.position.z + gz));
-        var dsegs = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3)>(); foreach (var c in cands) dsegs.Add((c, opening)); MeshBlockers(dsegs);
-        string lecternBlock = FirstBlock(lecternEye, opening, westDoorT); var eye = lecternEye; float bestD = float.MaxValue;
-        if (lecternBlock != null) foreach (var c in cands) { if (FirstBlock(c, opening, westDoorT) != null) continue; float d = UnityEngine.Vector3.Distance(c, lecternEye); if (d < bestD) { bestD = d; eye = c; } }
-        foreach (var t in temps) if (t != null) UnityEngine.Object.DestroyImmediate(t); temps.Clear(); UnityEngine.Physics.SyncTransforms();
-        if (lecternBlock != null) { cam.fieldOfView = camFov; Pose(lecternEye, opening); Shoot("DeckDoor_Lectern_Eye.png"); }
-        sb.Append("NOTE DECK DOOR EYE: from the lectern stand (" + F1(stand.x) + ", " + F1(stand.z) + ") the opening is " + (lecternBlock == null ? "clear" : "hidden by " + lecternBlock + " (DeckDoor_Lectern_Eye.png); the frames below are from the nearest clear deck eye (" + F1(eye.x) + ", " + F1(eye.y) + ", " + F1(eye.z) + "), " + (bestD == float.MaxValue ? "NONE CLEAR" : F1(bestD) + " m from it")) + "\n");
-        UnityEngine.Color32[] binoOpen = null, binoShut = null, binoShut2 = null; UnityEngine.Rect binoRect = default, eyeRect = default;
-        foreach (var state in new[] { "Open", "Shut" })
-        {
-            westDoor.HoldShut(state == "Shut", true); foreach (var dl in UnityEngine.Object.FindObjectsByType<DoorLamp>(UnityEngine.FindObjectsSortMode.None)) dl.Sync();
-            foreach (var bino in new[] { false, true })
-            {
-                cam.fieldOfView = bino ? binoFov : camFov; Pose(eye, opening);
-                var r = ScreenRect(corners); if (bino) binoRect = r; else eyeRect = r;
-                var px = Shoot("DeckDoor_" + state + (bino ? "_Binoculars" : "_Eye") + ".png");
-                if (bino) { if (state == "Open") binoOpen = px; else { binoShut = px; binoShut2 = Shoot(null); } }   // a second shut frame: the render noise between two frames of one state
-            }
-        }
-        westDoor.HoldShut(false, true); foreach (var dl in UnityEngine.Object.FindObjectsByType<DoorLamp>(UnityEngine.FindObjectsSortMode.None)) dl.Sync(); cam.fieldOfView = camFov;
-        (float share, float mean, int n) Diff(UnityEngine.Rect rr, UnityEngine.Color32[] pa, UnityEngine.Color32[] pb)
-        {
-            int total = 0, changed = 0; float sum = 0f;
-            for (int y = UnityEngine.Mathf.Max(0, UnityEngine.Mathf.FloorToInt(rr.yMin)); y <= UnityEngine.Mathf.Min(shotH - 1, UnityEngine.Mathf.CeilToInt(rr.yMax)); y++)
-                for (int x = UnityEngine.Mathf.Max(0, UnityEngine.Mathf.FloorToInt(rr.xMin)); x <= UnityEngine.Mathf.Min(shotW - 1, UnityEngine.Mathf.CeilToInt(rr.xMax)); x++)
-                {
-                    var a = pa[y * shotW + x]; var b = pb[y * shotW + x]; float d = UnityEngine.Mathf.Max(UnityEngine.Mathf.Abs(a.r - b.r), UnityEngine.Mathf.Max(UnityEngine.Mathf.Abs(a.g - b.g), UnityEngine.Mathf.Abs(a.b - b.b)));   // the largest channel change: the lamp is a hue change as much as a grey one
-                    total++; sum += d; if (d >= doorDiffGrey) changed++;
-                }
-            return (total > 0 ? changed / (float)total : 0f, total > 0 ? sum / total : 0f, total);
-        }
-        // the opening alone, and the porch lamp's glow over it (doc 2.7's fallback when the opening does not differ clearly)
-        cam.fieldOfView = binoFov; Pose(eye, opening); var openRect = ScreenRect(new[] { corners[0], corners[1], V(344.0f, 5.2f, 198.4f), V(344.0f, 5.2f, 199.6f) });
-        var lampT = office.Find("Porch/DoorLamp/Lamp/Glow"); UnityEngine.Rect lampRect = default; if (lampT != null) { var lb = lampT.GetComponent<UnityEngine.Renderer>().bounds; lampRect = ScreenRect(new[] { lb.min, lb.max, V(lb.min.x, lb.min.y, lb.max.z), V(lb.max.x, lb.max.y, lb.min.z) }); }
-        cam.fieldOfView = camFov;
-        var dOpen = Diff(openRect, binoOpen, binoShut); var dNoise = Diff(openRect, binoShut2, binoShut); (float share, float mean, int n) dLamp = lampT != null ? Diff(lampRect, binoOpen, binoShut) : (0f, 0f, 0); (float share, float mean, int n) lNoise = lampT != null ? Diff(lampRect, binoShut2, binoShut) : (0f, 0f, 0);
-        var pv = UnityEngine.Object.FindFirstObjectByType<LookPreview>();
-        Line(dOpen.share - dNoise.share >= doorDiffShare || dLamp.mean - lNoise.mean >= doorLampGrey, "DECK DOOR FRAMES (" + (pv != null ? pv.CurrentLabel : "?") + " look, deck eye " + F1(eye.x) + ", " + F1(eye.y) + ", " + F1(eye.z) + ", " + F1(UnityEngine.Vector3.Distance(eye, opening)) + " m): the opening is " + F1(eyeRect.width) + " x " + F1(eyeRect.height) + " px by eye, " + F1(binoRect.width) + " x " + F1(binoRect.height) + " px with the lamp in binoculars; open against shut in binoculars, the opening " + (dOpen.share * 100f).ToString("F0", inv) + " percent of " + dOpen.n + " px change by " + F1(doorDiffGrey) + " levels or more in a channel (bar " + (doorDiffShare * 100f).ToString("F0", inv) + "), mean " + F1(dOpen.mean) + ", against render noise between two shut frames " + (dNoise.share * 100f).ToString("F0", inv) + " percent, mean " + F1(dNoise.mean) + "; the porch lamp's " + dLamp.n + " px change by " + F1(dLamp.mean) + " levels on average, noise " + F1(lNoise.mean) + " (bar " + F1(doorLampGrey) + " over the noise) | DeckDoor_Open_Eye.png, _Binoculars.png, DeckDoor_Shut_Eye.png, _Binoculars.png");
     }
     // ================= GATE =================
     {
@@ -282,6 +232,51 @@ try
         }
         Line(bands.Count == 0, "GAPS: " + built.Count + " built front-zone pieces and their neighbours, slots of " + F1(gapLow) + " to " + F1(gapHigh) + " m: " + bands.Count + (bands.Count > 0 ? "\n  " + string.Join("\n  ", bands) : ""));
     }
+    // ================= FRAMES =================
+    {
+        var stopsT = fz.Find("CarStops"); cam.fieldOfView = camFov; var shots = new System.Collections.Generic.List<string>();
+        UnityEngine.Material Unlit(UnityEngine.Color c) { var m = new UnityEngine.Material(UnityEngine.Shader.Find("Universal Render Pipeline/Unlit")); m.SetColor("_BaseColor", c); return m; }
+        UnityEngine.Vector3 Eye(float x, float z) => V(x, H(x, z) + eyeH, z);
+        // the chain from chainBack m down the spur
+        var chainC = fz.Find("Chain/Chain"); if (chainC != null) { var cp = chainC.position; Pose(Eye(cp.x, cp.z - chainBack), cp); Shoot("Chain_8m.png"); shots.Add("Chain_8m.png"); }
+        // P1, P4 and P8 from the ring centreline, facing the pad
+        foreach (var i in new[] { 1, 4, 8 })
+        {
+            var t = stopsT != null ? stopsT.Find("P" + i) : null; if (t == null) continue; float a = UnityEngine.Mathf.Atan2(t.position.z - ringCZ, t.position.x - ringCX);
+            var rp = V(ringCX + ringR * UnityEngine.Mathf.Cos(a), 0f, ringCZ + ringR * UnityEngine.Mathf.Sin(a)); Pose(Eye(rp.x, rp.z), V(t.position.x, H(t.position.x, t.position.z) + 0.5f, t.position.z)); Shoot("Pitch_P" + i + ".png"); shots.Add("Pitch_P" + i + ".png");
+        }
+        // the ring join with static car boxes nose-in on P1 to P3
+        var carMat = Unlit(new UnityEngine.Color(0.32f, 0.33f, 0.36f, 1f)); var cars = new System.Collections.Generic.List<UnityEngine.GameObject>(); var centroid = UnityEngine.Vector3.zero;
+        for (int i = 1; i <= 3; i++) { var t = stopsT != null ? stopsT.Find("P" + i) : null; if (t == null) continue; var c = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Cube); UnityEngine.Object.DestroyImmediate(c.GetComponent<UnityEngine.Collider>()); c.transform.SetPositionAndRotation(V(t.position.x, H(t.position.x, t.position.z) + 0.75f, t.position.z), t.rotation); c.transform.localScale = V(carW, 1.5f, carL); c.GetComponent<UnityEngine.Renderer>().sharedMaterial = carMat; cars.Add(c); drawn.Add(c); centroid += t.position; }
+        if (cars.Count > 0) { centroid /= cars.Count; Pose(Eye(387.5f, 250f), V(centroid.x, H(centroid.x, centroid.z) + 0.8f, centroid.z)); Shoot("Join_CarsP1toP3.png"); shots.Add("Join_CarsP1toP3.png"); }
+        foreach (var c in cars) { drawn.Remove(c); UnityEngine.Object.DestroyImmediate(c); }
+        // the store door from the lot centre; first sight of the lot
+        Pose(Eye(358f, 178f), V(365f, H(365f, 195.5f) + 1.1f, 195.5f)); Shoot("StoreDoor_LotCentre.png"); shots.Add("StoreDoor_LotCentre.png");
+        Pose(Eye(327f, 168f), V(358f, H(358f, 172f) + 1f, 172f)); Shoot("FirstSight_Lot.png"); shots.Add("FirstSight_Lot.png");
+        // every place's Found frame at full size with a target ball (the area check's rule)
+        var set = Main3AreaSet.Load(); var A = set.Find("front"); var legs = new System.Collections.Generic.List<(string leg, System.Collections.Generic.List<UnityEngine.Vector3> pts)>();
+        foreach (UnityEngine.Transform leg in Root("Trails").transform) { var lp = new System.Collections.Generic.List<UnityEngine.Vector3>(); UnityEngine.Vector3? prev = null; foreach (UnityEngine.Transform pt in leg) { var q = pt.position; if (prev.HasValue) { int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(UnityEngine.Vector3.Distance(prev.Value, q) / 2f)); for (int i = 1; i <= n; i++) lp.Add(UnityEngine.Vector3.Lerp(prev.Value, q, i / (float)n)); } else lp.Add(q); prev = q; } legs.Add((leg.name, lp)); }
+        if (A.walkLines != null) foreach (var wl in A.walkLines) { var lp = new System.Collections.Generic.List<UnityEngine.Vector3>(); for (int k = 0; k < wl.points.Length; k++) { var q = V(wl.points[k].x, H(wl.points[k].x, wl.points[k].z), wl.points[k].z); if (k > 0) { var pq = V(wl.points[k - 1].x, H(wl.points[k - 1].x, wl.points[k - 1].z), wl.points[k - 1].z); int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(UnityEngine.Vector3.Distance(pq, q) / 2f)); for (int i = 1; i <= n; i++) lp.Add(UnityEngine.Vector3.Lerp(pq, q, i / (float)n)); } else lp.Add(q); } legs.Add(("walk: " + wl.label, lp)); }
+        foreach (var rootName in new[] { "Forest", "SliceLook", "Ground815" }) { var rg = Root(rootName); if (rg == null) continue; foreach (var lod in rg.GetComponentsInChildren<UnityEngine.LODGroup>()) { var lods = lod.GetLODs(); if (lods.Length == 0) continue; foreach (var r in lods[0].renderers) { var mf = r != null ? r.GetComponent<UnityEngine.MeshFilter>() : null; if (mf == null || mf.sharedMesh == null || r.GetComponent<UnityEngine.Collider>() != null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; temps.Add(mc); } } }
+        UnityEngine.Physics.SyncTransforms();
+        var ballMat = Unlit(new UnityEngine.Color(1f, 0f, 1f, 1f)); int k2 = 0, notFound = 0;
+        foreach (var pl in A.places)
+        {
+            k2++; var obj = string.IsNullOrEmpty(pl.objectPath) ? null : Main3AreaSet.At(scene, pl.objectPath);
+            bool ClearTo(UnityEngine.Vector3 a, UnityEngine.Vector3 b)
+            {
+                var d = b - a; float len = d.magnitude - (obj != null ? 0.05f : set.rayEndSkip); if (len <= 0f) return true; float fo = float.MaxValue, fw = float.MaxValue;
+                foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, len, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) { if (h.collider.transform.IsChildOf(pc.transform)) continue; if (obj != null && h.collider.transform.IsChildOf(obj)) fw = UnityEngine.Mathf.Min(fw, h.distance); else fo = UnityEngine.Mathf.Min(fo, h.distance); }
+                return fo == float.MaxValue || fw < fo;
+            }
+            var fr = set.Found(pl, legs, (x, z) => H(x, z), ClearTo); if (!fr.found) { notFound++; continue; }
+            var ball = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere); UnityEngine.Object.DestroyImmediate(ball.GetComponent<UnityEngine.Collider>()); ball.transform.position = fr.aim; ball.transform.localScale = UnityEngine.Vector3.one * 2f * ballR; ball.GetComponent<UnityEngine.Renderer>().sharedMaterial = ballMat; drawn.Add(ball);
+            string file = "Found_" + k2.ToString("00") + "_" + System.Text.RegularExpressions.Regex.Replace(pl.label, "[^A-Za-z0-9]+", "_") + ".png";
+            Pose(fr.eye, fr.aim); Shoot(file); shots.Add(file + " (" + fr.leg + ", " + F1(fr.dist) + " m)"); drawn.Remove(ball); UnityEngine.Object.DestroyImmediate(ball);
+        }
+        foreach (var t in temps) if (t != null) UnityEngine.Object.DestroyImmediate(t); temps.Clear(); UnityEngine.Physics.SyncTransforms();
+        Line(notFound == 0, "FRAMES: " + string.Join("; ", shots) + (notFound > 0 ? "; " + notFound + " places not found" : ""));
+    }
     // ================= WALKS =================
     {
         void Put(UnityEngine.Vector3 p) { cc.enabled = false; pc.transform.position = V(p.x, H(p.x, p.z) + 0.1f, p.z); cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (int i = 0; i < 10; i++) pc.Step(UnityEngine.Vector3.zero, false, false, dt); }
@@ -291,6 +286,8 @@ try
             var e = pc.transform.position; left = new UnityEngine.Vector2(e.x - to.x, e.z - to.z).magnitude; return left <= arrive;
         }
         if (backPanel != null) backPanel.enabled = false;   // the back-room door stands open for the walk (the player opens it with Interact)
+        var storeDoorT = fz.Find("Store/StoreDoor"); UnityEngine.Collider storePanel = storeDoorT != null ? storeDoorT.GetComponentInChildren<UnityEngine.BoxCollider>() : null; if (storePanel != null) storePanel.enabled = false;   // the store door too
+        Line(storeDoorT != null && storeDoorT.GetComponent<Door>() != null, "STORE DOOR: a Door at the store front " + (storeDoorT != null ? "(hinge x " + F(storeDoorT.position.x) + ", opens into the store)" : "MISSING"));
         var legs = new (string name, UnityEngine.Vector3[] pts)[] {
             ("T board to store porch", new[] { V(339.5f, 0f, 171f), V(365f, 0f, 192.6f) }),
             ("store porch to west door", new[] { V(365f, 0f, 192.6f), V(343.0f, 0f, 192.4f), V(342.9f, 0f, 199.0f), V(344.6f, 0f, 199.0f) }),
@@ -302,6 +299,7 @@ try
             ("booth door to the chain", new[] { V(391.9f, 0f, 165.4f), V(391.9f, 0f, 163.5f), V(389.9f, 0f, 163.5f), V(388.6f, 0f, 165.6f), V(386.5f, 0f, 172.8f), V(385f, 0f, 176f), V(385f, 0f, 186f), V(390f, 0f, 196f), V(390f, 0f, 236.6f) }),
             ("round the chain's east post, the ring and back", RingWalk()),
             ("T board to the toilet, in", new[] { V(339.5f, 0f, 171f), V(342.6f, 0f, 174f), V(342.6f, 0f, 186f), V(341.3f, 0f, 186f) }),
+            ("store porch through the door to the coolers (Food)", new[] { V(365f, 0f, 193.5f), V(365f, 0f, 196.6f), V(365f, 0f, 199.0f), V(364.6f, 0f, 202.6f) }),
             ("west door to the toilet, in", new[] { V(344.6f, 0f, 199.0f), V(342.9f, 0f, 199.0f), V(342.7f, 0f, 192.4f), V(342.6f, 0f, 186f), V(341.3f, 0f, 186f) }) };
         UnityEngine.Vector3[] RingWalk() { var l = new System.Collections.Generic.List<UnityEngine.Vector3> { V(390f, 0f, 236.6f), V(393.9f, 0f, 236.6f), V(393.9f, 0f, 239.6f), V(387.5f, 0f, 252f) }; float a0 = UnityEngine.Mathf.Atan2(252f - ringCZ, 387.5f - ringCX); for (int k = 1; k <= 24; k++) { float a = a0 + k * UnityEngine.Mathf.PI * 2f / 24f; l.Add(V(ringCX + ringR * UnityEngine.Mathf.Cos(a), 0f, ringCZ + ringR * UnityEngine.Mathf.Sin(a))); } l.Add(V(393.9f, 0f, 239.6f)); l.Add(V(393.9f, 0f, 236.6f)); l.Add(V(390f, 0f, 236.6f)); return l.ToArray(); }
         float speed = tuning != null ? tuning.walkSpeed : 2.5f;
@@ -311,7 +309,7 @@ try
             for (int i = 1; i < pts.Length && ok; i++) if (!Walk(pts[i], ref time, out float left)) { ok = false; where = ", stops " + F(left) + " m short of (" + F1(pts[i].x) + ", " + F1(pts[i].z) + ") at (" + F1(pc.transform.position.x) + ", " + F1(pc.transform.position.z) + ")"; }
             Line(ok, "WALK: " + name + ", " + F1(len) + " m, " + F1(time) + " s at " + F1(speed) + " m/s" + where);
         }
-        if (backPanel != null) backPanel.enabled = true;
+        if (backPanel != null) backPanel.enabled = true; if (storePanel != null) storePanel.enabled = true;
     }
 }
 finally

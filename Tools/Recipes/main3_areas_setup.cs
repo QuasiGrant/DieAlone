@@ -6,6 +6,7 @@
 // Wren 2026-10-02: the woodpile is off the deck must-see list (the cabin roof hides it); the Ward stones are proven by land rays (W-1),
 // so the pixel check stays only where trees are the cover (the ruin) or the rune post screen.
 // 8.22 (FrontLayout.md draft 2): the front area as the doc; the closed campground moves from the cave to the front (Wren 2026-10-02).
+// 8.22 round 2: the lectern stands on the cab's east side (Wren 2026-10-02), on the walkway's north-east corner, so its reader stands at (167.3, 168.9) facing east.
 // A place or deck point with y = G (-999) stands on the ground: the check uses the ground under it plus 1 m.
 const float G = -999f;
 const string path = "Assets/Settings/Main3Areas.asset";
@@ -38,7 +39,7 @@ set.inventory = new[] {
     I("Generator", "Camp/GeneratorDressing", "renderers", "", 3), I("Privy", "Camp/Privy", "renderers", "", 2), I("Stump", "Camp/Cabin/Woodpile", "renderers", "CITW_Tree_Stump", 1),
     I("Woodpile", "Camp/Cabin/Woodpile", "renderers", "C", 6), I("Rune post", "Ward/Climb/RunePost", "renderers", "", 4), I("Rune post screen", "Ward/Climb/RuneScreen", "renderers", "", 5),
     // front (8.22)
-    I("Office", "FrontZone/Office", "renderers", "", 217), I("Store", "FrontZone/Store", "renderers", "", 151), I("Gate booth", "FrontZone/GateBooth", "renderers", "", 17),
+    I("Office", "FrontZone/Office", "renderers", "", 218), I("Store", "FrontZone/Store", "renderers", "", 151), I("Gate booth", "FrontZone/GateBooth", "renderers", "", 17),
     I("Barrier", "FrontZone/Gate/Barrier", "renderers", "", 8), I("Vault toilet", "FrontZone/VaultToilet", "renderers", "", 2), I("Resident car", "FrontZone/Resident_Car", "renderers", "", 2),
     I("Verge tree", "FrontZone/VergeTree", "renderers", "", 2), I("Chain", "FrontZone/Chain", "renderers", "", 3),
 };
@@ -55,7 +56,7 @@ var camp = new Main3AreaSet.Area { id = "camp", task = "8.21", title = "Keeper's
         PO("Tower stair foot", 164f, G, 160f, 2.5f, "Camp/Tower"), PO("Forage patch B", 141f, G, 167f, 1.0f, "") },
     interactions = new[] { IA("bunk", "Camp/Cabin/Bunk", 179.9f, campFloor, 168.85f), IA("stove", "Camp/Cabin/Stove", 175.8f, campFloor, 168.65f), IA("desk, report box and chair", "Camp/Cabin/Desk;Camp/Cabin/ReportBox;Camp/Cabin/Interior/CITW_Chair", 176.4f, campFloor, 168.0f),
         IA("door", "Camp/Cabin/Door/Panel", 178f, campFloor, 164.75f), IA("shelf and counter", "Camp/Cabin/Interior/Counter", 178f, campFloor, 169.15f),
-        IA("washstand", "Camp/Cabin/Interior/Washstand", 179.3f, campFloor, 166.85f), IA("stump", "Camp/Cabin/Woodpile/CITW_Tree_Stump", 182.0f, G, 164.4f), IA("lectern", "Camp/Tower/Cab/Lectern", 164f, deckFloor, 166.3f) },
+        IA("washstand", "Camp/Cabin/Interior/Washstand", 179.3f, campFloor, 166.85f), IA("stump", "Camp/Cabin/Woodpile/CITW_Tree_Stump", 182.0f, G, 164.4f), IA("lectern", "Camp/Tower/Cab/Lectern", 167.3f, deckFloor, 168.9f) },
     frames = new[] { FR("WAKE, FACING 245 (DOOR LEFT, DESK AND WINDOW CENTRE, STOVE RIGHT)", wakeEye, wakeEye + V(UnityEngine.Mathf.Sin(wakeYaw), 0f, UnityEngine.Mathf.Cos(wakeYaw)) * 10f),
         FR("WOODPILE AND STUMP FROM THE SOUTH, 4 M OUT", V(182.6f, G, 161.4f), V(182.3f, campFloor + 0.5f, 166.8f)),
         FR("SEATED AT THE DESK, FACING WEST TO THE WINDOW", V(176.1f, campFloor + 1.2f, 167.85f), V(170f, campFloor + 1.4f, 167.85f)),
@@ -73,7 +74,7 @@ var camp = new Main3AreaSet.Area { id = "camp", task = "8.21", title = "Keeper's
 const float frontG = 3.00f;
 var front = new Main3AreaSet.Area { id = "front", task = "8.22", title = "Front zone", bounds = new[] { R(318f, 128f, 448f, 290f) },
     warps = new[] { "Office", "Store", "Trailhead_T", "Lot_Highway", "Gate_Booth", "Closed_Campground" },
-    places = new[] { PO("Office west door", 344.1f, G, 199f, 2.15f, "FrontZone/Office"), PO("Store door", 365f, G, 195.5f, 2.1f, "FrontZone/Store/Shell/Door_GlassPanel"),
+    places = new[] { PO("Office west door", 344.1f, G, 199f, 2.15f, "FrontZone/Office"), PO("Store door", 365f, G, 195.6f, 2.1f, "FrontZone/Store/StoreDoor"),
         PO("Booth door", 391.9f, G, 164.2f, 2.5f, "FrontZone/GateBooth"), P("Lot centre", 358f, G, 170f), PO("Trailhead board", 338f, G, 172.5f, 2.1f, "Ground815/JunctionMarkers/Trailhead_Board"),
         P("First sight of the lot", 327f, G, 168f), PO("Ice chest", 368.8f, G, 194.9f, 0.85f, "FrontZone/Store/Front/Ice_Cream_Freezer"), PO("R6's car", 370f, G, 179.4f, 1.55f, "FrontZone/Resident_Car"),
         PO("Toilet door", 342f, G, 186f, 2.4f, "FrontZone/VaultToilet"), PO("Chain", 390f, G, 238f, 1.0f, "FrontZone/Chain") },
@@ -90,7 +91,7 @@ var front = new Main3AreaSet.Area { id = "front", task = "8.22", title = "Front 
     // the lot centre north, along the walk, up the spur to the chain)
     walkLines = new[] { WL("T east across the lot to the gate", V(340f, G, 170f), V(358f, G, 170f), V(373f, G, 170f), V(386f, G, 169f)), WL("lot centre north to the walk", V(358f, G, 170f), V(358f, G, 190.5f)),
         WL("the walk", V(343f, G, 191.75f), V(372f, G, 191.75f)), WL("spur to the chain", V(385f, G, 172.5f), V(385f, G, 186f), V(390f, G, 196f), V(390f, G, 236f)) },
-    playChecks = new[] { "main3_8_22_front_check.cs" },
+    playChecks = new[] { "main3_8_22_front_check.cs", "main3_8_22_deck_frames.cs?look=Day_one", "main3_8_22_deck_frames.cs?look=Night" },
     inventory = new[] { "Lanterns and lamps", "Office", "Store", "Gate booth", "Barrier", "Vault toilet", "Resident car", "Verge tree", "Chain" }, deckListWritten = true,
     deckSee = new[] { DH("office west door opening", 344.0f, 4.3f, 199f, "FrontZone/Office/WestDoor"), DH("verge tree", 419f, 25f, 139f, "FrontZone/VergeTree"),
         DL("store roof", 366f, 5.9f, 200f), DL("lot centre", 358f, 3.1f, 170f), DL("R6's car", 370f, 4.2f, 179.4f), DL("booth roof light", 391.9f, 5.8f, 165.4f),

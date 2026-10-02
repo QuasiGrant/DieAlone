@@ -56,7 +56,11 @@ rc=0
 EARLYMD=""; erc=0
 if [ -n "$AREA" ]; then
   for c in $(printf '%s' "$EXTRA" | tr ',' ' '); do
-    res=$(job "$R/$c")
+    # a check may name a look (8.22: "file.cs?look=Night", underscores for spaces): its `string look` line is set in a copy, and a
+    # "run again" (the look was just selected and needs a frame to apply) is retried
+    file=${c%%\?*}; look=""; case "$c" in *"?look="*) look=$(printf '%s' "${c#*\?look=}" | tr '_' ' ');; esac
+    src="$R/$file"; if [ -n "$look" ]; then sed -e "s|^string look = \"[^\"]*\";|string look = \"$look\";|" "$R/$file" > Temp/playcheck_run.cs; src="$(pwd)/Temp/playcheck_run.cs"; fi
+    for try in 1 2 3; do res=$(job "$src"); case "$res" in *"run again"*) sleep 3; continue;; esac; break; done
     EXTRARES="$EXTRARES$c: $(printf '%s' "$res" | sed 's/\\n.*//')"$'\n'
     EARLYMD="$EARLYMD"$'\n'"## $c"$'\n\n'"$(printf '%s\n' "$res" | sed 's/\\n/\n/g' | sed 's/^/    /')"$'\n'
     echo "$c: $(printf '%s' "$res" | sed 's/\n/ | /g')"
@@ -134,7 +138,7 @@ if [ -n "$AREA" ]; then
   printf '%s\n' "$LANDRES" | sed 's/\\n/\n/g' | head -1 | sed 's/^/WARP LANDING: /'
   printf '%s' "$PIXRES"
   [ -n "$AREA" ] && printf '%s' "$EXTRARES"
-  rm -f Temp/main3_area_check_run.cs Temp/main3_warp_landing_check_run.cs Temp/main3_inventory_check_run.cs
+  rm -f Temp/main3_area_check_run.cs Temp/main3_warp_landing_check_run.cs Temp/main3_inventory_check_run.cs Temp/playcheck_run.cs
 fi
 [ $erc -eq 0 ] || rc=1
 exit $rc
