@@ -31,7 +31,7 @@ var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.Sa
 const float dt = 0.02f, pushWalk = 25f, sideWalk = 20f, hopTime = 2.2f, pocketGain = 3f, pocketStep = 6f, trenchBack = 30f, trenchStep = 5f, trenchOut = 4f, trenchUp = 1.5f;
 const float spikeRise = 2f, spikeTopDrop = 1.5f, spikeTopReach = 3f, spikeOut = 4f, fenceX = 396f, fenceWalkX = 393f, fenceZ0 = 160f, fenceZ1 = 300f, fenceStep = 5f, fencePast = 0.5f;
 const int hopDirs = 12, spikeStarts = 16, stallSteps = 600, walkSteps = 8000, trapWays = 8;
-const float trapStep = 2.5f, trapSettle = 3f, trapTry = 10f, trapOut = 2f; var trapX = new UnityEngine.Vector2(-12f, 92f); var trapZ = new UnityEngine.Vector2(190f, 335f);
+const float trapStep = 2.5f, trapSettle = 3f, trapTry = 10f, trapOut = 2f, closedZ = 273.5f, closedX0 = 20f, closedX1 = 64f; var trapX = new UnityEngine.Vector2(-12f, 92f); var trapZ = new UnityEngine.Vector2(190f, 335f);
 var pocketX = new UnityEngine.Vector2(46f, 80f); var pocketZ = new UnityEngine.Vector2(165f, 200f);
 var spikes = new (UnityEngine.Vector2 c, float r)[] { (new UnityEngine.Vector2(90f, 146f), 12f), (new UnityEngine.Vector2(62f, 48f), 14f), (new UnityEngine.Vector2(118f, 66f), 10f) };   // 8.1 despike zones
 var pumpAt = new UnityEngine.Vector2(190f, 97f);
@@ -184,7 +184,8 @@ try
         {
             var g0 = Ground(x, z); if (Occupied(g0)) continue;   // a drop inside rock is no place a player can be
             Put(g0); for (float t = 0f; t < trapSettle; t += dt) pc.Step(UnityEngine.Vector3.zero, false, false, dt);
-            var e = pc.transform.position; long key = ((long)UnityEngine.Mathf.FloorToInt(e.x / trapStep) << 32) ^ (uint)UnityEngine.Mathf.FloorToInt(e.z / trapStep);
+            var e = pc.transform.position; if (e.z > closedZ && e.x > closedX0 && e.x < closedX1) continue;   // north of the 8.20 giant: closed to the player (main3_8_20_closure_check.cs)
+            long key = ((long)UnityEngine.Mathf.FloorToInt(e.x / trapStep) << 32) ^ (uint)UnityEngine.Mathf.FloorToInt(e.z / trapStep);
             if (settled.Add(key)) spots.Add(e);
         }
         int trapped = 0; var trapList = new System.Collections.Generic.List<string>();

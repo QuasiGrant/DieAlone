@@ -37,7 +37,8 @@ try
     // 2
     int held = 0, spots = 0; string firstHeld = "";
     var drops = new System.Collections.Generic.List<UnityEngine.Vector3>();
-    for (float x = 33f; x <= 38f; x += 0.5f) for (float z = 268f; z <= 271f; z += 0.5f) drops.Add(V(x, 0f, z));
+    for (float x = 33f; x <= 38f; x += 0.5f) for (float z = 268f; z <= 271f; z += 0.5f) drops.Add(V(x, 0f, z));   // the bench corner at the face foot
+    for (float x = 22f; x <= 28f; x += 0.5f) for (float z = 268f; z <= 271f; z += 0.5f) drops.Add(V(x, 0f, z));   // and leg 4 against the giant and the crest face
     var wp = UnityEngine.GameObject.Find("Ward/WardPath/Lookout"); var look = wp != null ? wp.transform.position : V(29.2f, 60f, 261.2f);
     for (float z = 262f; z <= 264f; z += 2f) drops.Add(V(31.8f, 0f, z));                     // off the lookout's east edge
     for (float x = 27f; x <= 31f; x += 2f) drops.Add(V(x, 0f, 264.8f));                       // off its north edge

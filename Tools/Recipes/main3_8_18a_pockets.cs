@@ -7,21 +7,24 @@
 //   cave mouth pit, between the entrance's east wall, the east jamb and the overhang (trap 2): top at the pit's east rim;
 //   pump trench south pocket by Hedge_Burn_2 and FaceRock BigBoulders_5 (3b): 0.5 m of floor;
 //   south of the camp between Hedge_Burn_1 and CS_Rock_3 (4): 2 to 3 m of floor, level with the ground the player came from;
-//   pump trench north pocket by Hedge_Burn_0 (3a, opened by the solid pass): 0.5 m of floor;
+//   pump trench north pocket by Hedge_Burn_0: 0.5 m of floor; and the trench's west pocket (3a): 1 m;
+//   along the knoll's step under Hedge_Burn_1 south of the camp (the crevice the step and the hedge box make, x 174 to 185): to the upper ground;
 //   forage patch B on the knoll's west flank among its bushes (5): 0.5 m of floor;
 //   the P1 hide west of P1 under the overhang (7d, ClimbRim): 0.5 m of floor.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 var kit = new PlaceKit(scene);
-var pockets = new (string n, float x, float z, float sx, float sz, float top, string rock)[]
+var pockets = new (string n, float x, float z, float sx, float sz, float top, string rock, float yaw)[]
 {
-    ("CaveMouthPit", 56f, 36.1f, 4f, 3.5f, -2.5f, "Boulder_4"),
-    ("TrenchSouth", 182.1f, 106.3f, 2f, 2f, 1.8f, "Boulder_2"),
-    ("CampSouth", 177f, 141.1f, 4f, 3f, 13.6f, "Boulder_3"),
-    ("TrenchNorth", 172.3f, 119.8f, 2f, 2f, 5.2f, "Boulder_0"),
-    ("ForageB", 140.6f, 167.8f, 2f, 2f, 8.4f, "Boulder_1"),
-    ("P1Hide", 47.6f, 213.4f, 2f, 2f, 29.8f, "Boulder_5"),
+    ("CaveMouthPit", 56f, 36.1f, 4f, 3.5f, -2.5f, "Boulder_4", 0f),
+    ("TrenchSouth", 182.1f, 106.3f, 2f, 2f, 1.8f, "Boulder_2", 0f),
+    ("CampSouth", 177f, 141.1f, 4f, 3f, 13.6f, "Boulder_3", 0f),
+    ("CampStep", 179.7f, 140.5f, 11.5f, 2.4f, 13.8f, "BigBoulders_3", 13.9f),   // the knoll's 4 m step under Hedge_Burn_1 (x 174 to 185): the crevice between them, along it
+    ("TrenchNorth", 172.3f, 119.8f, 2f, 2f, 5.2f, "Boulder_0", 0f),
+    ("TrenchWest", 171.7f, 115.8f, 2.2f, 5.5f, 4.6f, "BigBoulders_0", 0f),
+    ("ForageB", 140.6f, 167.8f, 2f, 2f, 8.4f, "Boulder_1", 0f),
+    ("P1Hide", 47.6f, 213.4f, 2f, 2f, 29.8f, "Boulder_5", 0f),
 };
 const float depth = 4f, rockSink = 0.15f;   // the box reaches depth m down from its top; the rock's top sits rockSink under the box top
 var root = kit.Root("Ground815"); if (root == null) return "run 8.15 first";
@@ -33,12 +36,12 @@ var group = new UnityEngine.GameObject("Pockets").transform; group.SetParent(roo
 var made = new System.Collections.Generic.List<string>();
 foreach (var p in pockets)
 {
-    var holder = new UnityEngine.GameObject(p.n); holder.transform.SetParent(p.n.StartsWith("Cave") ? caveGroup : group, false); holder.transform.position = new UnityEngine.Vector3(p.x, p.top - depth * 0.5f, p.z);
+    var holder = new UnityEngine.GameObject(p.n); holder.transform.SetParent(p.n.StartsWith("Cave") ? caveGroup : group, false); holder.transform.position = new UnityEngine.Vector3(p.x, p.top - depth * 0.5f, p.z); holder.transform.rotation = UnityEngine.Quaternion.Euler(0f, p.yaw, 0f);
     var box = holder.AddComponent<UnityEngine.BoxCollider>(); box.size = new UnityEngine.Vector3(p.sx, depth, p.sz);
     var rock = kit.Spawn(PlaceKit.BK + "Rocks/" + p.rock, holder.transform);
     if (rock != null)
     {
-        PlaceKit.StripColliders(rock); rock.transform.rotation = UnityEngine.Quaternion.Euler(0f, p.x * 37f, 0f); rock.transform.localScale = UnityEngine.Vector3.one;
+        PlaceKit.StripColliders(rock); rock.transform.rotation = UnityEngine.Quaternion.Euler(0f, p.yaw + p.x * 37f, 0f); rock.transform.localScale = UnityEngine.Vector3.one;
         var b = PlaceKit.MeshBounds(rock); float s = UnityEngine.Mathf.Max(p.sx, p.sz) / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b.size.x, b.size.z));
         rock.transform.localScale = UnityEngine.Vector3.one * s; b = PlaceKit.MeshBounds(rock);
         rock.transform.position += new UnityEngine.Vector3(p.x - b.center.x, p.top - rockSink - b.max.y, p.z - b.center.z);

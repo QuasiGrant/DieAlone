@@ -17,3 +17,15 @@ Camp3_Tent_FromWarp_Night|Night|74,-2.2,142|80.5,-3.3,153
 NorthRuin_FromLoopWarp|Day one|165.8,5.1,267.7|172,4.5,281
 NorthRuin_Close|Day one|168,5.1,274|172,4.5,281
 CaveCrack_FloorPatch|Night|88.8,-16.4,11.5|91.8,-18,11.5
+Beat0_Gate|Night|100,11.6,207.5|86,13.5,213
+Beat1_Draw|Night|72,21.8,214.2|56,30,216
+Beat2_Shelf|Night|54,31.6,226|55,36,244
+Beat3_StairFoot|Night|51,37,245|40,41,251
+Beat3_Landing1|Night|37,45.6,262.5|34,49,249
+Beat3_Landing2|Night|34.5,50.6,248|30,59,259
+Beat4_Lookout|Night|29,61.6,261|164,58,166
+Beat4_Throat|Night|18,61.8,262|4,62,265.5
+ShotA_Reveal|Night|4,63.6,257.3|-31.4,63.6,221.9
+ShotB_Drop|Night|-11.55,63.6,246|-25,55.8,246
+Day_StairFromBench|Day one|50,37.4,256|33,50,255
+Day_GiantFromBench|Day one|46,42.6,264|44,42,272

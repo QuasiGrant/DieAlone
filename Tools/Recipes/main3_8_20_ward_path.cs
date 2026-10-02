@@ -53,6 +53,7 @@ var l2sMin = P(30.4f, 244.6f); var l2sMax = P(35.5f, 246.2f);                   
 var f3A = P(31.5f, 246.2f); var f3B = P(29.6f, 260.3f); const float f3HA = 49f, f3HB = 60f;            // flight 3, timber stair, 37 degrees
 var lookMin = P(27f, 258.5f); var lookMax = P(31.2f, 264f);                                            // the lookout floor, flush with the ground
 var lookC = P(29.2f, 261.2f);
+var gullyMin = P(25.5f, 252.5f); var gullyMax = P(29.3f, 257.5f); const float gullyH = 55.5f;
 const float earthHalf = 1.25f, stairHalf = 1.0f, stairDepth = 0.35f, fillDeg = 60f, cutDeg = 70f, reshapeReach = 12f, rockDeg = 40f, lookKeep = 1f;
 // the draw's banks (WardPath 3, Marlow 22)
 const float drawX0 = 54f, drawX1 = 74f, drawHalf = 1.5f, bankH = 3.5f, bankRun = 6f, bankFallDeg = 42f;
@@ -100,6 +101,7 @@ var pieces = new System.Collections.Generic.List<(string n, UnityEngine.Vector2 
     ("Landing2", l2Min, l2Max, l2H, l2H, 0f, 0f, true),
     ("Landing2S", l2sMin, l2sMax, l2H, l2H, 0f, 0f, true),
     ("Flight3", f3A, f3B, f3HA, f3HB, stairHalf, stairDepth, false),
+    ("GullyFill", gullyMin, gullyMax, gullyH, gullyH, 0f, 0f, true),   // the old gully west of flight 3, which the stair's fill closed into a basin (hand walk TRAPS 2026-10-01): a shelf level with the flight's side
 };
 // distance outside a piece (0 inside) and its tread height there
 float Out(int i, UnityEngine.Vector2 p, out float tread)
@@ -134,7 +136,7 @@ for (int pass = 0; pass < 3; pass++)
             else if (pass == 1) { if (!keepLook) nh[z, x] = UnityEngine.Mathf.Min(nh[z, x], floor + d * tanCut); }
             else if (d < nearD) { nearD = d; nearI = i; nearT = floor; }
         }
-        if (pass == 2 && nearI >= 0 && nearD <= 0f) nh[z, x] = nearT;
+        if (pass == 2 && nearI >= 0 && nearD <= 0f && !(keepLook && pieces[nearI].depth > 0f)) nh[z, x] = nearT;   // the stair's top meets the lookout ground as it stands (a 0.35 m step down stalled the walk back, 2026-10-01)
     }
 // the lookout: flush with the ground (no reshape); objects standing on reshaped ground move with it (by the change since the last run)
 var outH = new float[hh, hw]; int reshaped = 0; for (int z = 0; z < hh; z++) for (int x = 0; x < hw; x++) { outH[z, x] = ToN(nh[z, x]); if (UnityEngine.Mathf.Abs(outH[z, x] - cur[z, x]) * size.y > 0.02f) reshaped++; }
@@ -330,13 +332,22 @@ foreach (var (n, dx) in new[] { ("SplitSnag_L", -0.6f), ("SplitSnag_R", 0.6f) })
 // the fallen giant across z 272 (WardPath 3.2, Marlow 16): broken in two where it struck the face. Run A across leg 4's tread (x 20.5 to
 // 31, root plate up at the crest face), run B on the bench (x 31.5 to 59.5, its butt buried in the face foot, its top on the valley rim).
 // Each run: a capsule giantR m round lying on the ground under its middle, so it stands 2 giantR - giantSink over the ground on both sides
-const float giantZ = 272f, giantR = 1.3f, giantColR = 1.5f, giantSink = 0.3f, benchEndX = 63f, tieX0 = 55.5f, tieX1 = 62f, rootX0 = 21.9f, rootX1 = 23.5f, tieHalfZ = 1.2f, tieOver = 1.4f, trunkBand = 0.03f, buryEnds = 2f;   // buryEnds: the drawn trunk runs this much further into the faces
+const float giantZ = 272f, giantR = 1.3f, giantColR = 1.5f, giantSink = 0.3f, benchEndX = 63f, tieX0 = 55.5f, tieX1 = 62f, leg4X0 = 22f, leg4X1 = 29f, tieHalfZ = 1.2f, tieOver = 1.4f, trunkBand = 0.03f, buryEnds = 2f;   // buryEnds: the drawn trunk runs this much further into the faces
 var giant = kit.Group("FallenGiant", wp, V(40f, 41f, giantZ), 0f); int giantRuns = 0;
 foreach (var (n, x0, x1, path) in new[] { ("RunLeg4", 20.5f, 31f, PlaceKit.BK + "Trees/Sequoia2"), ("RunBench", 31.5f, benchEndX, PlaceKit.BK + "Trees/Sequoia4") })
 {
     float gy = float.MaxValue; for (float x = x0 + 2f; x <= UnityEngine.Mathf.Min(x1, 58f) - 2f; x += 1f) gy = UnityEngine.Mathf.Min(gy, H(x, giantZ)); float cy = gy + giantColR - giantSink;   // the bench end runs on out over the east drop
     var run = kit.Group(n, giant, V((x0 + x1) * 0.5f, cy, giantZ), 0f);
-    var cap = run.gameObject.AddComponent<UnityEngine.CapsuleCollider>(); cap.direction = 0; cap.radius = giantColR; cap.height = x1 - x0;   // giantColR: its top 1.3 m over the shelf rim the player can stand on (closure check)
+    // the collider: on the bench a level capsule at cy; on leg 4 (the ground falls from the crest face to the tread and over the face edge)
+    // a capsule tilted along the ground line between its ends, so the face foot at x 22 never stands over it (hand walk 2026-10-01: a box
+    // at the root plate left a ledge on the trunk the player stuck on)
+    var colGo = new UnityEngine.GameObject("Collider"); colGo.transform.SetParent(run, false); var cap = colGo.AddComponent<UnityEngine.CapsuleCollider>(); cap.direction = 0; cap.radius = giantColR;
+    if (n == "RunLeg4")   // from the face foot to the tread's east edge
+    {
+        var ea = V(leg4X0, H(leg4X0, giantZ) + giantColR - giantSink, giantZ); var eb = V(leg4X1, H(leg4X1, giantZ) + giantColR - giantSink, giantZ);
+        colGo.transform.SetPositionAndRotation((ea + eb) * 0.5f, UnityEngine.Quaternion.FromToRotation(UnityEngine.Vector3.right, (eb - ea).normalized)); cap.height = UnityEngine.Vector3.Distance(ea, eb) + 2f * giantColR;
+    }
+    else cap.height = x1 - x0;   // giantColR: its top 1.3 m over the shelf rim the player can stand on (closure check)
     var tree = kit.Spawn(path, run); if (tree != null)
     {
         PlaceKit.StripColliders(tree); tree.transform.rotation = UnityEngine.Quaternion.identity; tree.transform.localScale = UnityEngine.Vector3.one;
@@ -364,7 +375,7 @@ void Tie(string name, float x0, float x1)
     }
     kit.Blocker(name, giant, giant.InverseTransformPoint(V((x0 + x1) * 0.5f, (low + top + tieOver) * 0.5f, giantZ)), V(x1 - x0, top + tieOver - low, 2f * tieHalfZ));
 }
-Tie("RimTie", tieX0, tieX1); Tie("RootPlate", rootX0, rootX1);
+Tie("RimTie", tieX0, tieX1);
 // the prow (WardPath 2.2, Marlow 14): a rock platform 2.2 m past the lip, top level with the ledge, a rail on its N, W and S sides joined
 // to the lip, the lip opened between them
 var prow = kit.Group("Prow", wp, V((prowX0 + prowX1) * 0.5f, ledgeY, 246f), 0f);

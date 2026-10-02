@@ -31,14 +31,14 @@ Every ray must hit the terrain (the W ridge and the Ward knob for the Ward, 8.9j
 
 | Check | Eyes and targets | Rays | Rays blocked | Blocked by | Hidden margin, all eyes | Hidden margin, deck centre |
 |---|---|---|---|---|---|---|
-| W-1 | eye | 1536 | 1536 | terrain | 25.2 | 25.9 |
-| W-1 | jump | 1536 | 1536 | terrain | 25.1 | 25.9 |
-| W-1 | +3 m, eye | 1536 | 1536 | terrain | 22.2 | 22.9 |
-| W-1 | +3 m, jump | 1536 | 1536 | terrain | 22.1 | 22.9 |
-| C-1 | eye | 256 | 256 | terrain | 9.2 | 9.8 |
-| C-1 | jump | 256 | 256 | terrain | 9.1 | 9.8 |
-| C-1 | +3 m, eye | 256 | 256 | terrain | 6.2 | 6.8 |
-| C-1 | +3 m, jump | 256 | 256 | terrain | 6.1 | 6.8 |
+| W-1 | eye | 1536 | 1536 | terrain | 22.9 | 23.0 |
+| W-1 | jump | 1536 | 1536 | terrain | 22.8 | 23.0 |
+| W-1 | +3 m, eye | 1536 | 1536 | terrain | 19.9 | 20.0 |
+| W-1 | +3 m, jump | 1536 | 1536 | terrain | 19.8 | 20.0 |
+| C-1 | eye | 256 | 256 | terrain | 9.1 | 9.3 |
+| C-1 | jump | 256 | 256 | terrain | 9.0 | 9.2 |
+| C-1 | +3 m, eye | 256 | 256 | terrain | 6.1 | 6.3 |
+| C-1 | +3 m, jump | 256 | 256 | terrain | 6.0 | 6.2 |
 
 ## F-1 (fire hidden by the land and solid rock; trees never count)
 
@@ -46,9 +46,9 @@ Targets read from the scene: 711 flame cards and 72 points on the day-one smoke 
 
 | Origins | Height | Count | Rays | Seen (card top, the pass) | Seen (highest lit point) | Hidden margin (card top) |
 |---|---|---|---|---|---|---|
-| place | eye | 25 | 19575 | 0 | 0 | 0.6 |
-| place | jump | 25 | 19575 | 0 | 0 | 0.1 |
-| place | jump +3 | 25 | 19575 | 0 | 0 | -2.9 |
+| place | eye | 25 | 19575 | 0 | 0 | 0.5 |
+| place | jump | 25 | 19575 | 0 | 0 | -0.1 |
+| place | jump +3 | 25 | 19575 | 0 | 0 | -3.1 |
 | trail | eye | 129 | 101007 | 0 | 0 | 13.0 |
 | trail | jump | 129 | 101007 | 0 | 0 | 13.4 |
 | trail | jump +3 | 129 | 101007 | 0 | 0 | 10.4 |
@@ -91,12 +91,12 @@ Hollow Giant crown to the deck-centre lines to the Camp 2 stack top and its edge
 
 - Places: Lake seen; Camp 1 seen; Camp 2 seen; Camp 3 seen; Office and lot seen; 
 - Ward hidden from every eye point (W-1, with +3 m): yes. Cave hidden (C-1, with +3 m): yes.
-- W-1 hidden margin 25.2 m (eye); W-1 +3 m jump 22.1 m; C-1 hidden margin 9.2 m (eye); C-1 +3 m jump 6.1 m; 
+- W-1 hidden margin 22.9 m (eye); W-1 +3 m jump 19.8 m; C-1 hidden margin 9.1 m (eye); C-1 +3 m jump 6.0 m; 
 - Cab from junctions: J yes (18); Jg yes (18); W1 yes (18); T yes (18); Pump yes (18); Camp 1 no (0); Camp 2 (stack foot) yes (10); Camp 3 floor yes (18); 
-- W-1 with eyes and targets raised 3 m keeps 22.1 m (needs 3): yes.
+- W-1 with eyes and targets raised 3 m keeps 19.8 m (needs 3): yes.
 - Next destination from the blind junctions: Pump (190, 97) 2/3; Camp 2, 8 m out toward the lake (286.5, 102.2) 3/3; Camp 3 floor (79, 145) 4/18; Camp 3 centre (78, 146) 18/18; all seen
 - Hollow Giant crown clearance to the Camp 2 lines: 3.5 m (needs 3): yes.
-- F-1 hidden: True, least margin -2.9 m, cards 711, sheet points 72, rock colliders 263, place eye 0/19575; place jump 0/19575; place jump +3 0/19575; trail eye 0/101007; trail jump 0/101007; trail jump +3 0/101007; section 7 eye 0/8613; section 7 jump 0/8613; section 7 jump +3 0/8613; deck eye 0/50112; deck jump 0/50112; deck jump +3 0/50112; crest low 82.28 at z 63, reveal first shows: eye (4.00, 258.50), 17.5 m from the dogleg's end, 6 tops; jump (4.00, 258.50), 17.5 m from the dogleg's end, 7 tops; on the ledge; 
+- F-1 hidden: True, least margin -3.1 m, cards 711, sheet points 72, rock colliders 15, place eye 0/19575; place jump 0/19575; place jump +3 0/19575; trail eye 0/101007; trail jump 0/101007; trail jump +3 0/101007; section 7 eye 0/8613; section 7 jump 0/8613; section 7 jump +3 0/8613; deck eye 0/50112; deck jump 0/50112; deck jump +3 0/50112; crest low 82.28 at z 63, reveal first shows: eye (4.00, 258.50), 17.5 m from the dogleg's end, 6 tops; jump (4.00, 258.50), 17.5 m from the dogleg's end, 7 tops; on the ledge; 
 
 ## R-1: the north ruin from the deck (trees on, Valley.md E11)
 
