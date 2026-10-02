@@ -107,3 +107,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: Lake: fishing from the empty boat slip inside the boathouse through a new boat door; the shallows behind a stake-and-rope line north of the house for the wading events; the cat (R4) has no Talk point.
 - 2026-10-02: The bowl and chair answer only from the step floor, so the shallows event point can stay where it is.
 - 2026-10-02: The tower lectern stands on the walkway's north-east corner just outside the cab, where the binoculars see the office door.
+- 2026-10-02: The lake's boat slip view has no sky (the ridge stands above it); accepted for layout.
