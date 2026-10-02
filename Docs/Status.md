@@ -97,3 +97,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: The deck need not see the camp under its own tower; camp items come off the deck must-see list. Must-hide still applies.
 - 2026-10-02: 8.21 ruling after round 2 (cap): layout passes; three small items (fire pit wedge, chair to stove gap, target marks on found frames) are fixed by Rook and proven by the area check, then Wren ticks without a third review round.
 - 2026-10-02: A gate shift starts when the player enters the booth (Main3 3.2.6), not when a car stops. The office door is the built west door (Valley.md).
+- 2026-10-02: The gate booth moves to the driver's side (south of the drive, x 390.6 to 393.2); a lift barrier does the check; the turning circle goes and refused cars reverse out. The front zone owns the closed campground.
