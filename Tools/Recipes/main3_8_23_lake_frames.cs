@@ -7,7 +7,7 @@
 //   crop of the step magnified cropScale times from each binocular frame, with the blanket's pixels that change by pixelStep levels or
 //   more (largest RGB channel) between on and off; whether it reads as a blanket is Vesper's call on the frames, so this is a NOTE.
 // DOCK EVENTS (Sable 823 4.1): from IntakeFixStand toward IntakeFixPoint, and from SampleStand toward SampleTarget, eye height.
-// FOUND (Vesper 823, Pim): the reeds rest and the beach from their found eye (Main3AreaSet.Found over the trails, colliders and the
+// FOUND (Vesper 823, Pim): the reeds rest, the beach, the water tank and the rowboat from their found eye (Main3AreaSet.Found over the trails, colliders and the
 //   drawn trees block, as main3_area_check.cs), at full size; a place not found gets no frame and fails.
 string look = "";
 string outDir = System.IO.Path.GetFullPath("Docs/Captures/Main3Review_lake");
@@ -145,7 +145,7 @@ try
             foreach (UnityEngine.Transform pt in leg) { var q = pt.position; if (prev.HasValue) { int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(UnityEngine.Vector3.Distance(prev.Value, q) / 2f)); for (int i = 1; i <= n; i++) lp.Add(UnityEngine.Vector3.Lerp(prev.Value, q, i / (float)n)); } else lp.Add(q); prev = q; }
             legs.Add((leg.name, lp));
         }
-        foreach (var label in new[] { "Reeds rest", "Beach" })
+        foreach (var label in new[] { "Reeds rest", "Beach", "Water tank", "Rowboat" })
         {
             Main3AreaSet.Place pl = default; bool have = false; foreach (var p in A.places) if (p.label == label) { pl = p; have = true; }
             if (!have) { Line(false, "FOUND: no lake place " + label); continue; }

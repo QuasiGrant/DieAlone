@@ -38,7 +38,7 @@ set.inventory = new[] {
     I("Smoke sheet, day one", "Ward/SmokeSheet", "quads", "Body", 689), I("Smoke lid, night", "Ward/SmokeSheet", "quads", "Lid", 171),
     I("Smoke columns, day two", "Ward/StandInFire/SmokeColumns", "quads", "", 128), I("Ward stones", "Ward/Stones", "renderers", "", 3),
     I("Camp 3 tent", "Campsites/Camp_3/Dressing", "renderers", "CS_Tent", 8), I("Camp 3 fire", "Campsites/Camp_3/Dressing/Fire", "renderers", "", 15),
-    I("Camp 3 easel", "Campsites/Camp_3/Dressing/Easel", "renderers", "", 13), I("North ruin", "Places/NorthRuin", "renderers", "", 44),
+    I("Camp 3 easel", "Campsites/Camp_3/Dressing/Easel", "renderers", "", 13), I("North ruin", "Places/NorthRuin", "renderers", "", 47),
     I("Cave lights", "Cave", "lights", "", 5), I("Lanterns and lamps", "", "practicals", "", 29),   // 8.23: the boathouse lamp goes
     // camp (8.21, Wren 2026-10-02)
     I("Cabin", "Camp/Cabin", "renderers", "", 106), I("Tower", "Camp/Tower", "renderers", "", 393), I("Fire pit", "Camp/FirePit", "renderers", "", 32),
@@ -119,18 +119,41 @@ var lakeArea = new Main3AreaSet.Area { id = "lake", task = "8.23", title = "Lake
         FR("THE SHALLOWS AND STAKE LINE FROM THE BEACH", V(244.5f, G, 57.5f), V(238f, -5.6f, 59f)),
         FR("THE BOATHOUSE FROM THE SHORE PATH, 20 M OUT", V(252f, G, 70f), V(240f, -3f, 54f)) },
     playChecks = new[] { "main3_8_23_lake_check.cs", "main3_8_23_lake_frames.cs?look=Day_one" },
-    inventory = new[] { "Lanterns and lamps" }, deckListWritten = true,
+    inventory = new[] { "Lanterns and lamps" }, deckListWritten = true, hardSeesTower = true,   // Wren 2026-10-02: the lake deck test counts the tower's rails and cab
     deckSee = new[] { DH("her blanket", 240.5f, -3.6f, 56.62f, "Lake/Boathouse/Dressing/Step/Blanket"), DH("her bowl", 241.2f, -3.7f, 56.5f, "Lake/Boathouse/Dressing/Step/CITW_Bowl_Small"),
         DL("boathouse roof", 240f, -1.0f, 52.4f), DL("pump", 190f, -3.6f, 94.8f), DL("dock end", 190f, -4.3f, 86.4f), DL("mid water", 190f, -5.4f, 60f), DL("reed bed", 241.5f, -4.6f, 62.2f),
         DL("stake line", 240f, -4.8f, 60.4f), DL("rowboat", 226.47f, G, 87.28f), DL("shore path east", 255f, G, 55f) },
     deckHide = new Main3AreaSet.DeckTarget[0] };
+// north (8.24; NorthLayout.md draft 2 section 5, Sable 2026-10-02): places on their objects; the spar top is the hard deck target (mesh
+// rays, as 8.22); the kid's table, tent and tripod loose; the ruin and SS1 to SS3 hidden by the pixel check with its 20 m control.
+// Interactions with no collider yet (R1's spot, forage C's shrubs, the cookfire pot) wait for their milestone; the report box has one.
+var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Camp 1 and the north loop", bounds = new[] { R(116f, 200f, 310f, 305f) }, warps = new[] { "Camp_1", "North_Loop_Ruin" },
+    places = new[] { P("Camp 1", 282f, G, 238f), PO("Spar", 284f, G, 240f, 24f, "Campsites/Camp_1/Dressing/Spar"), PO("Kid's table", 285.2f, G, 236.5f, 0.8f, "Campsites/Camp_1/Dressing/KidTable"),
+        P("R1's spot", 285f, G, 244f), PO("Tent", 271f, G, 234.5f, 3.0f, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), PO("Cookfire", 276f, G, 232f, 1.0f, "Campsites/Camp_1/Dressing/Cookfire"),
+        PO("Latrine shed", 264f, G, 207f, 2.2f, "PointsOfInterest/POI_Latrine_shed"), PO("Blaze stump", 271.7f, G, 247.3f, 1.4f, "Ground815/JunctionMarkers/Blaze_Camp1_Stump"),
+        PO("Forage C", 229.5f, G, 273.5f, 0.8f, "Places/ForageC"), PO("SS1", 251.6f, G, 272.0f, 0.3f, "Places/NorthLoop/SS1"), PO("SS2", 150.5f, G, 276.5f, 0.45f, "Places/NorthLoop/SS2"),
+        PO("SS3", 132.3f, G, 262.3f, 0.3f, "Places/NorthLoop/SS3"), PO("Fallen giant", 138.65f, G, 264.2f, 2.7f, "Places/NorthLoop/FallenGiant"), PO("North ruin", 172f, G, 281f, 3.0f, "Places/NorthRuin"),
+        PO("Ruin doorway", 169.88f, G, 278.88f, 2.15f, "Places/NorthRuin"), PO("Report post", 171.22f, G, 278.38f, 1.3f, "Places/NorthRuin/Layout824/ReportPost") },
+    interactions = new[] { IA("report box", "Places/NorthRuin/Layout824/ReportPost", 170.16f, G, 277.32f) },
+    frames = new[] { FR("F1 JG TRAIL INTO THE CLEARING, HEADING 31: TABLE, COOKFIRE, SPAR", V(276.5f, G, 221.5f), V(285.2f, 6.0f, 236.5f)),
+        FR("F2 THE KID'S TABLE HEADING NW: THE BLAZE", V(284.2f, G, 237.5f), V(271.7f, 5.5f, 247.3f)),
+        FR("F3 HEADING 298: FORAGE C, 14.9 M", V(239.8f, G, 261.5f), V(229.3f, 4.8f, 272.1f)),
+        FR("F4 THE STOVEPIPE OVER THE RUIN (N14)", V(192.7f, G, 276.6f), V(171.43f, 8.0f, 283.40f)),
+        FR("F5 SIDE-PATH MOUTH HEADING 9: DOORWAY AND REPORT BOX", V(168.1f, G, 267.1f), V(169.88f, 5.0f, 278.88f)),
+        FR("F6 SS1 FROM THE LOOP", V(263.5f, G, 253.4f), V(251.6f, 5.0f, 272.0f)),
+        FR("F7 SS2 FROM THE LOOP", V(161.2f, G, 269.4f), V(150.5f, 4.5f, 276.5f)),
+        FR("F8 THE GIANT'S SW END", V(142.9f, G, 260.7f), V(131.5f, 7.0f, 257.3f)),
+        FR("F9 SS3 BEHIND THE GIANT", V(130.5f, G, 259.5f), V(132.3f, 6.5f, 262.3f)),
+        FR("THE RUIN FROM ITS DOORWAY", V(169.6f, G, 278.6f), V(172.4f, 4.5f, 281.4f)) },
+    playChecks = new[] { "main3_8_24_north_check.cs" },
+    inventory = new[] { "North ruin" }, deckListWritten = true,
+    deckSee = new[] { DH("spar top", 284f, 29f, 240f, "Campsites/Camp_1/Dressing/Spar"), DL("kid's table", 285.2f, 5.8f, 236.5f), DL("tent", 271f, 6.5f, 234.5f), DL("tripod", 276f, 6.3f, 232f) },
+    deckHide = new[] { D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"), D("SS1", 251.6f, G, 272.0f, "Places/NorthLoop/SS1"), D("SS2", 150.5f, G, 276.5f, "Places/NorthLoop/SS2"), D("SS3", 132.3f, G, 262.3f, "Places/NorthLoop/SS3") } };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,
     front,
     lakeArea,
-    new Main3AreaSet.Area { id = "camp1", task = "8.24", title = "Camp 1 and the north loop", bounds = new[] { R(150f, 195f, 300f, 305f) }, warps = new[] { "Camp_1", "North_Loop_Ruin" },
-        places = new[] { P("Camp 1", 282f, G, 238f), P("Latrine shed", 264f, G, 207f), P("North ruin", 172f, G, 281f) },
-        inventory = new[] { "North ruin" }, deckSee = none, deckHide = none },
+    northArea,
     new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Camp 2", bounds = new[] { R(255f, 55f, 335f, 165f) }, warps = new[] { "Camp_2", "Camp_2_Top" },
         places = new[] { P("Camp 2", 292f, G, 104f), P("Stack top", 294.5f, 24f, 107.2f), P("Payphone", 298.5f, G, 99f), P("Food lockers", 317f, G, 136f), P("Phone pole", 273f, G, 72f) },
         inventory = new string[0], deckSee = none, deckHide = none },

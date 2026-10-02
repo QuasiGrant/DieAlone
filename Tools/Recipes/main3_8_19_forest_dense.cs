@@ -25,6 +25,7 @@
 //    per brushArea m2 in cores).
 // 6. Colliders (8.5): a trunk capsule (PlaceKit.PackTrunkCapsule, 8.16a's measure) on every new tree within colliderReach m of a trail; none
 //    farther out. Saplings, ferns and brush never collide; logs keep the pack log collider; stumps get their convex hull.
+// 7. Keep-out zones (8.24, KeepOuts.North): trees, saplings, floor pieces and understory inside one go after all the draws.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -244,6 +245,10 @@ foreach (var (path, perArea, count) in new[] { (PlaceKit.CI + "Vegetation/CITW_T
         n++; if (count == 0) stumps++; else if (count == 1) branches++; else if (count == 2) logs++; else brush++;
     }
 }
+// 8.24 (NorthLayout draft 2): every tree, sapling and floor piece standing in a keep-out zone (KeepOuts.North) goes, after all the draws, so
+// the random stream and every other piece are as before
+int keepOutTrees = 0;
+foreach (var grp in new[] { canopyGroup, saplingGroup, floorGroup }) foreach (var t in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(grp))) if (KeepOuts.Contains(P(t.position.x, t.position.z))) { UnityEngine.Object.DestroyImmediate(t.gameObject); keepOutTrees++; }
 // 4. understory as instanced detail: prefabs made here (olive bushes), prototypes appended after 8.15's, layers set each run
 const string denseDir = "Assets/Prefabs/Forest/Dense";
 if (!UnityEditor.AssetDatabase.IsValidFolder(denseDir)) UnityEditor.AssetDatabase.CreateFolder("Assets/Prefabs/Forest", "Dense");
@@ -274,11 +279,13 @@ data.detailPrototypes = protos.ToArray();
         float nt = NearTrunk(p, edgeBand); if (nt >= edgeBand) continue; float share = nt <= groveR ? 1f : 0.5f;
         for (int k = 0; k < understory.Count; k++) { double expect = understory[k].per100 / 100f * cellArea * share; if (rng.NextDouble() < expect) { maps[k][z, x] = 1; placed++; } }
     }
+    // 8.24 (NorthLayout draft 2): no understory in a keep-out zone; cleared after the draws, so the rest of the map is as before
+    int keepOutCells = 0; for (int z = 0; z < dres; z++) for (int x = 0; x < dres; x++) { var p = P(tOrg.x + (x + 0.5f) * dX, tOrg.z + (z + 0.5f) * dZ); if (!KeepOuts.Contains(p)) continue; for (int k = 0; k < maps.Length; k++) if (maps[k][z, x] != 0) { maps[k][z, x] = 0; keepOutCells++; } }
     for (int k = 0; k < understory.Count; k++) data.SetDetailLayer(0, 0, firstOurs + k, maps[k]);
     UnityEditor.EditorUtility.SetDirty(data);
     floorArea = UnityEngine.Mathf.Round(floorArea);
     UnityEditor.AssetDatabase.SaveAssets();
     UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
     bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-    return "saved=" + saved + " | existing trees " + existing + " (emergents " + emergents.Count + ") | canopy added " + canopyN + " (trail edge " + edgeN + "), saplings " + saplingN + ", trunk colliders " + collidersN + " | grove floor " + floorArea + " m2 | stumps " + stumps + ", branches " + branches + ", logs " + logs + " (skipped by a low stop " + logSkips + "), brush " + brush + " | understory instances " + placed + " | spots refused " + rejected + " | " + kit.Report();
+    return "saved=" + saved + " | keep-out zones: pieces " + keepOutTrees + ", detail cells " + keepOutCells + " | existing trees " + existing + " (emergents " + emergents.Count + ") | canopy added " + canopyN + " (trail edge " + edgeN + "), saplings " + saplingN + ", trunk colliders " + collidersN + " | grove floor " + floorArea + " m2 | stumps " + stumps + ", branches " + branches + ", logs " + logs + " (skipped by a low stop " + logSkips + "), brush " + brush + " | understory instances " + placed + " | spots refused " + rejected + " | " + kit.Report();
 }

@@ -5,6 +5,7 @@
 // and clear of any collider (buildings, stops, rock).
 // 1. Groves (section 10 table): giants 8 to 15 m apart, tops at most giantCap absolute (Style 5.8), firs and pines 8 to 20 m under
 //    them, and at each grove's foot 8 bushes, 12 ferns, 1 or 2 hollow logs, 2 leaf patches and branches.
+//    No foot piece stands in a keep-out zone (8.24, KeepOuts.North; dropped after its draws, so the random stream is unchanged).
 // 2. The north fir wall, x 90 to 300, z 285 to 310: 150 firs 8 to 24 m, ragged, front edge wandering, 5 giants breaking the top line,
 //    saplings and bushes in front, deadfall at the foot.
 // 3. Crests (looks only; RebuildSpecs 1.8): W belt clumps of 3 to 7 either side of the crest line, 15 to 40 m apart, a snag every second
@@ -161,7 +162,7 @@ UnityEngine.Material SufOlive(UnityEngine.Material src)
     m.shader = src.shader; if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", sufOlive); if (m.HasProperty("_Color")) m.SetColor("_Color", sufOlive); UnityEditor.EditorUtility.SetDirty(m); sufCache[src] = m; return m;
 }
 // a stop lower than lowStopTop m over the ground (brush bands, hedges, rims) within logStopGap m of p; trees and logs of the Forest do not count
-const float logStopGap = 4f, lowStopTop = 3f, logTrailClear = 1.5f; int logSkips = 0, logTrailSkips = 0;
+const float logStopGap = 4f, lowStopTop = 3f, logTrailClear = 1.5f; int logSkips = 0, logTrailSkips = 0, keepOutSkips = 0;
 bool NearLowStop(UnityEngine.Vector2 p)
 {
     float gy = H(p.x, p.y); var fr = forest;
@@ -188,6 +189,9 @@ void Foot(UnityEngine.Transform parent, string path, UnityEngine.Vector2 c, floa
             bool close = false; foreach (var t in trailPts) { float dx = UnityEngine.Mathf.Max(lb.min.x - t.x, 0f, t.x - lb.max.x), dz = UnityEngine.Mathf.Max(lb.min.z - t.y, 0f, t.y - lb.max.z); if (dx * dx + dz * dz < logTrailClear * logTrailClear) { close = true; break; } }
             if (close) { UnityEngine.Object.DestroyImmediate(g); logTrailSkips++; continue; }
         }
+        // 8.24 (NorthLayout draft 2): nothing stands in a keep-out zone (KeepOuts.North). The piece is dropped after its draws, so the random
+        // stream, and every other piece, is as before
+        if (KeepOuts.Contains(p)) { UnityEngine.Object.DestroyImmediate(g); keepOutSkips++; return; }
         footN++; return;
     }
 }
@@ -664,5 +668,5 @@ var emergentReport = new System.Text.StringBuilder(); int emergentN = 0, firsCle
 
 UnityEditor.AssetDatabase.SaveAssets();
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
-return "saved=" + saved + " | emergent groves " + emergentN + " (" + lineShifts + " moved off a shared view line), ring lowered " + ringLowered + " (others over it " + ringOthers + "), firs cleared " + firsCleared + ", other firs within " + firKeep + " m " + firsKept + ", shortest rest giant " + restTallMin.ToString("F1") + " m tall (" + emergentReport + ") | burn band " + burnBandSnags + " snags, " + burnBandLive + " live, past it " + burnOutSnags + " snags, fallen trunks off uneven ground " + fallenRejected + " | giants " + giantsN + ", firs and pines " + firsN + " (crests " + crestN + " in " + crestClumps + " clumps with " + crestSnags + " snags, bench brush " + benchBrushN + ", open-east clumps " + eastClumpsN + ", gap clumps " + gapClumps + ", gaps dressed " + gapDressed + ", open spots left " + gapLeft + "), beyond the road " + beyondN + " in " + beyondClumps + " clumps, back band silhouette " + silPoints + " points, burn deadwood " + snagsN + ", foot pieces " + footN + " (logs kept off low stops " + logSkips + ", off trails " + logTrailSkips + ")"
+return "saved=" + saved + " | emergent groves " + emergentN + " (" + lineShifts + " moved off a shared view line), ring lowered " + ringLowered + " (others over it " + ringOthers + "), firs cleared " + firsCleared + ", other firs within " + firKeep + " m " + firsKept + ", shortest rest giant " + restTallMin.ToString("F1") + " m tall (" + emergentReport + ") | burn band " + burnBandSnags + " snags, " + burnBandLive + " live, past it " + burnOutSnags + " snags, fallen trunks off uneven ground " + fallenRejected + " | giants " + giantsN + ", firs and pines " + firsN + " (crests " + crestN + " in " + crestClumps + " clumps with " + crestSnags + " snags, bench brush " + benchBrushN + ", open-east clumps " + eastClumpsN + ", gap clumps " + gapClumps + ", gaps dressed " + gapDressed + ", open spots left " + gapLeft + "), beyond the road " + beyondN + " in " + beyondClumps + " clumps, back band silhouette " + silPoints + " points, burn deadwood " + snagsN + ", foot pieces " + footN + " (logs kept off low stops " + logSkips + ", off trails " + logTrailSkips + ", in keep-out zones " + keepOutSkips + ")"
     + " | rejected: trail " + rejTrail + ", place " + rejPlace + ", slope " + rejSlope + ", collider " + rejCollider + ", spacing " + rejSpace + " | missing: " + (missing.Count == 0 ? "none" : string.Join(", ", missing));

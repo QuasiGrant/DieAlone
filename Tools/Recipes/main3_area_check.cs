@@ -18,7 +18,8 @@
 //   of rays clear (trees block). Must-hide by rays: 0 clear (land and colliders only; trees do not count, as F-1). Must-hide where trees
 //   or rock are the cover (treeCoverPath): listed here; the CampLayout pixel check itself is main3_deck_pixel_check.cs, which
 //   main3_review_capture.sh --area runs in batches and adds to the summary. Hard must-see targets (8.22, FrontLayout.md 5.4) are tested
-//   against every drawn mesh (temporary exact colliders on the meshes the deck rays cross); loose ones are reported, never failed.
+//   against every drawn mesh (temporary exact colliders on the meshes the deck rays cross), the tower's own when the area sets
+//   hardSeesTower (the lake, 8.23 round 2); loose ones are reported, never failed.
 //   An area with no deck list prints "no deck list" and does
 //   not pass.
 // INVENTORY: the area's items, expected and found; a zero fails.
@@ -288,7 +289,7 @@ try
             foreach (var lod in UnityEngine.Object.FindObjectsByType<UnityEngine.LODGroup>(UnityEngine.FindObjectsSortMode.None)) { var lods = lod.GetLODs(); for (int li = 1; li < lods.Length; li++) foreach (var r in lods[li].renderers) if (r != null) notLod0.Add(r); }
             foreach (var mr in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshRenderer>(UnityEngine.FindObjectsSortMode.None))
             {
-                if (!mr.enabled || !mr.gameObject.activeInHierarchy || notLod0.Contains(mr) || mr.GetComponent<UnityEngine.Collider>() != null || mr.transform.IsChildOf(pc.transform) || mr.transform.IsChildOf(tower) || mr.name.Contains("Glass")) continue;   // glass is seen through
+                if (!mr.enabled || !mr.gameObject.activeInHierarchy || notLod0.Contains(mr) || mr.GetComponent<UnityEngine.Collider>() != null || mr.transform.IsChildOf(pc.transform) || (!A.hardSeesTower && mr.transform.IsChildOf(tower)) || mr.name.Contains("Glass")) continue;   // glass is seen through
                 var b = mr.bounds; if (!b.Intersects(span)) continue; var mf = mr.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue;
                 bool crossed = false; for (int i = 0; i < hardSegs.Count && !crossed; i++) if (b.IntersectRay(hardSegs[i], out float dist) && dist <= hardLens[i]) crossed = true;
                 if (!crossed) continue; var mc = mr.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; temps.Add(mc); meshTemps++;
@@ -300,7 +301,7 @@ try
             var d = b - a; float len = d.magnitude - 0.05f; float firstOther = float.MaxValue, firstOwn = float.MaxValue;
             foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, len, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
             {
-                var ht = h.collider.transform; if (ht.IsChildOf(tower) || ht.IsChildOf(pc.transform) || ht.gameObject.layer == 2) continue;   // Ignore Raycast: invisible walls and hedge boxes
+                var ht = h.collider.transform; if ((!A.hardSeesTower && ht.IsChildOf(tower)) || ht.IsChildOf(pc.transform) || ht.gameObject.layer == 2) continue;   // Ignore Raycast: invisible walls and hedge boxes
                 if (own != null && ht.IsChildOf(own)) firstOwn = UnityEngine.Mathf.Min(firstOwn, h.distance); else firstOther = UnityEngine.Mathf.Min(firstOther, h.distance);
             }
             return firstOther == float.MaxValue || firstOwn < firstOther;
@@ -309,7 +310,7 @@ try
         {
             var d = b - a; UnityEngine.RaycastHit best = default; bool any = false;
             foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude - 0.05f, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
-            { var ht = h.collider.transform; if (ht.IsChildOf(tower) || ht.IsChildOf(pc.transform) || ht.gameObject.layer == 2 || (own != null && ht.IsChildOf(own))) continue; if (!any || h.distance < best.distance) { best = h; any = true; } }
+            { var ht = h.collider.transform; if ((!A.hardSeesTower && ht.IsChildOf(tower)) || ht.IsChildOf(pc.transform) || ht.gameObject.layer == 2 || (own != null && ht.IsChildOf(own))) continue; if (!any || h.distance < best.distance) { best = h; any = true; } }
             return any ? WalkIns.PathOf(best.collider.transform) + " at " + P3(best.point) + (temps.Contains(best.collider) ? " (drawn mesh)" : "") : "none";
         }
         if (hardSegs.Count > 0) deckLines.Append("  (hard must-see: " + meshTemps + " drawn meshes on the deck lines got temporary colliders)\n");

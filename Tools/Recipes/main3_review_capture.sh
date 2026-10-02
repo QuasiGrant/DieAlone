@@ -9,7 +9,7 @@
 # step "night" and the two checks as detached Editor jobs, leaves Play mode, sets runInBackground back to false and shows ProjectSettings changes.
 # It never stops a Play session it did not start: if the Editor is already playing it fails.
 # Area mode (PLAN 8.21 to 8.30): bash Tools/Recipes/main3_review_capture.sh --area <id> [outDir]   (ids in Assets/Settings/Main3Areas.asset:
-# camp, front, lake, camp1, camp2, camp3, cave, burn, ward, whole). Default outDir Docs/Captures/Main3Review_<id>. Captures only frames
+# camp, front, lake, north, camp2, camp3, cave, burn, ward, whole). Default outDir Docs/Captures/Main3Review_<id>. Captures only frames
 # standing in the area, the compass views and Deck_<id>.jpg, then runs main3_area_check.cs (flood, traps, walk-into, reach and found,
 # deck, inventory) and the warp landing check on the area's warps, and prints the area's PASS and FAIL lines last.
 set -u

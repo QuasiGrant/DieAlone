@@ -290,6 +290,7 @@ MonoBehaviour:
     - Rune post
     - Rune post screen
     deckListWritten: 1
+    hardSeesTower: 0
     deckSee:
     - label: lake, mid water
       point: {x: 190, y: -5.4, z: 60}
@@ -526,6 +527,7 @@ MonoBehaviour:
     - Verge tree
     - Chain
     deckListWritten: 1
+    hardSeesTower: 0
     deckSee:
     - label: office west door opening
       point: {x: 344, y: 4.3, z: 199}
@@ -679,6 +681,7 @@ MonoBehaviour:
     inventory:
     - Lanterns and lamps
     deckListWritten: 1
+    hardSeesTower: 1
     deckSee:
     - label: her blanket
       point: {x: 240.5, y: -3.6, z: 56.62}
@@ -771,15 +774,15 @@ MonoBehaviour:
     - main3_8_23_lake_check.cs
     - main3_8_23_lake_frames.cs?look=Day_one
   - walkLines: []
-    id: camp1
+    id: north
     task: 8.24
     title: Camp 1 and the north loop
     bounds:
     - serializedVersion: 2
-      x: 150
-      y: 195
-      width: 150
-      height: 110
+      x: 116
+      y: 200
+      width: 194
+      height: 105
     warps:
     - Camp_1
     - North_Loop_Ruin
@@ -788,22 +791,157 @@ MonoBehaviour:
       point: {x: 282, y: -999, z: 238}
       height: 0
       objectPath: 
+    - label: Spar
+      point: {x: 284, y: -999, z: 240}
+      height: 24
+      objectPath: Campsites/Camp_1/Dressing/Spar
+    - label: Kid's table
+      point: {x: 285.2, y: -999, z: 236.5}
+      height: 0.8
+      objectPath: Campsites/Camp_1/Dressing/KidTable
+    - label: R1's spot
+      point: {x: 285, y: -999, z: 244}
+      height: 0
+      objectPath: 
+    - label: Tent
+      point: {x: 271, y: -999, z: 234.5}
+      height: 3
+      objectPath: Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1
+    - label: Cookfire
+      point: {x: 276, y: -999, z: 232}
+      height: 1
+      objectPath: Campsites/Camp_1/Dressing/Cookfire
     - label: Latrine shed
       point: {x: 264, y: -999, z: 207}
-      height: 0
-      objectPath: 
+      height: 2.2
+      objectPath: PointsOfInterest/POI_Latrine_shed
+    - label: Blaze stump
+      point: {x: 271.7, y: -999, z: 247.3}
+      height: 1.4
+      objectPath: Ground815/JunctionMarkers/Blaze_Camp1_Stump
+    - label: Forage C
+      point: {x: 229.5, y: -999, z: 273.5}
+      height: 0.8
+      objectPath: Places/ForageC
+    - label: SS1
+      point: {x: 251.6, y: -999, z: 272}
+      height: 0.3
+      objectPath: Places/NorthLoop/SS1
+    - label: SS2
+      point: {x: 150.5, y: -999, z: 276.5}
+      height: 0.45
+      objectPath: Places/NorthLoop/SS2
+    - label: SS3
+      point: {x: 132.3, y: -999, z: 262.3}
+      height: 0.3
+      objectPath: Places/NorthLoop/SS3
+    - label: Fallen giant
+      point: {x: 138.65, y: -999, z: 264.2}
+      height: 2.7
+      objectPath: Places/NorthLoop/FallenGiant
     - label: North ruin
       point: {x: 172, y: -999, z: 281}
-      height: 0
-      objectPath: 
+      height: 3
+      objectPath: Places/NorthRuin
+    - label: Ruin doorway
+      point: {x: 169.88, y: -999, z: 278.88}
+      height: 2.15
+      objectPath: Places/NorthRuin
+    - label: Report post
+      point: {x: 171.22, y: -999, z: 278.38}
+      height: 1.3
+      objectPath: Places/NorthRuin/Layout824/ReportPost
     inventory:
     - North ruin
-    deckListWritten: 0
-    deckSee: []
-    deckHide: []
-    interactions: []
-    frames: []
-    playChecks: []
+    deckListWritten: 1
+    hardSeesTower: 0
+    deckSee:
+    - label: spar top
+      point: {x: 284, y: 29, z: 240}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: Campsites/Camp_1/Dressing/Spar
+    - label: kid's table
+      point: {x: 285.2, y: 5.8, z: 236.5}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: tent
+      point: {x: 271, y: 6.5, z: 234.5}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: tripod
+      point: {x: 276, y: 6.3, z: 232}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    deckHide:
+    - label: north ruin
+      point: {x: 172, y: 4, z: 281}
+      treeCoverPath: Places/NorthRuin
+      hard: 0
+      loose: 0
+      objectPath: 
+    - label: SS1
+      point: {x: 251.6, y: -999, z: 272}
+      treeCoverPath: Places/NorthLoop/SS1
+      hard: 0
+      loose: 0
+      objectPath: 
+    - label: SS2
+      point: {x: 150.5, y: -999, z: 276.5}
+      treeCoverPath: Places/NorthLoop/SS2
+      hard: 0
+      loose: 0
+      objectPath: 
+    - label: SS3
+      point: {x: 132.3, y: -999, z: 262.3}
+      treeCoverPath: Places/NorthLoop/SS3
+      hard: 0
+      loose: 0
+      objectPath: 
+    interactions:
+    - label: report box
+      path: Places/NorthRuin/Layout824/ReportPost
+      approach: {x: 170.16, y: -999, z: 277.32}
+    frames:
+    - label: 'F1 JG TRAIL INTO THE CLEARING, HEADING 31: TABLE, COOKFIRE, SPAR'
+      eye: {x: 276.5, y: -999, z: 221.5}
+      look: {x: 285.2, y: 6, z: 236.5}
+    - label: 'F2 THE KID''S TABLE HEADING NW: THE BLAZE'
+      eye: {x: 284.2, y: -999, z: 237.5}
+      look: {x: 271.7, y: 5.5, z: 247.3}
+    - label: 'F3 HEADING 298: FORAGE C, 14.9 M'
+      eye: {x: 239.8, y: -999, z: 261.5}
+      look: {x: 229.3, y: 4.8, z: 272.1}
+    - label: F4 THE STOVEPIPE OVER THE RUIN (N14)
+      eye: {x: 192.7, y: -999, z: 276.6}
+      look: {x: 171.43, y: 8, z: 283.4}
+    - label: 'F5 SIDE-PATH MOUTH HEADING 9: DOORWAY AND REPORT BOX'
+      eye: {x: 168.1, y: -999, z: 267.1}
+      look: {x: 169.88, y: 5, z: 278.88}
+    - label: F6 SS1 FROM THE LOOP
+      eye: {x: 263.5, y: -999, z: 253.4}
+      look: {x: 251.6, y: 5, z: 272}
+    - label: F7 SS2 FROM THE LOOP
+      eye: {x: 161.2, y: -999, z: 269.4}
+      look: {x: 150.5, y: 4.5, z: 276.5}
+    - label: F8 THE GIANT'S SW END
+      eye: {x: 142.9, y: -999, z: 260.7}
+      look: {x: 131.5, y: 7, z: 257.3}
+    - label: F9 SS3 BEHIND THE GIANT
+      eye: {x: 130.5, y: -999, z: 259.5}
+      look: {x: 132.3, y: 6.5, z: 262.3}
+    - label: THE RUIN FROM ITS DOORWAY
+      eye: {x: 169.6, y: -999, z: 278.6}
+      look: {x: 172.4, y: 4.5, z: 281.4}
+    playChecks:
+    - main3_8_24_north_check.cs
   - walkLines: []
     id: camp2
     task: 8.25
@@ -840,6 +978,7 @@ MonoBehaviour:
       objectPath: 
     inventory: []
     deckListWritten: 0
+    hardSeesTower: 0
     deckSee: []
     deckHide: []
     interactions: []
@@ -893,6 +1032,7 @@ MonoBehaviour:
     - Camp 3 fire
     - Camp 3 easel
     deckListWritten: 0
+    hardSeesTower: 0
     deckSee: []
     deckHide: []
     interactions: []
@@ -935,6 +1075,7 @@ MonoBehaviour:
     inventory:
     - Cave lights
     deckListWritten: 0
+    hardSeesTower: 0
     deckSee: []
     deckHide: []
     interactions: []
@@ -968,6 +1109,7 @@ MonoBehaviour:
       objectPath: 
     inventory: []
     deckListWritten: 0
+    hardSeesTower: 0
     deckSee: []
     deckHide: []
     interactions: []
@@ -1023,6 +1165,7 @@ MonoBehaviour:
     - Smoke columns, day two
     - Ward stones
     deckListWritten: 0
+    hardSeesTower: 0
     deckSee: []
     deckHide: []
     interactions: []
@@ -1186,14 +1329,66 @@ MonoBehaviour:
       point: {x: 282, y: -999, z: 238}
       height: 0
       objectPath: 
+    - label: Spar
+      point: {x: 284, y: -999, z: 240}
+      height: 24
+      objectPath: Campsites/Camp_1/Dressing/Spar
+    - label: Kid's table
+      point: {x: 285.2, y: -999, z: 236.5}
+      height: 0.8
+      objectPath: Campsites/Camp_1/Dressing/KidTable
+    - label: R1's spot
+      point: {x: 285, y: -999, z: 244}
+      height: 0
+      objectPath: 
+    - label: Tent
+      point: {x: 271, y: -999, z: 234.5}
+      height: 3
+      objectPath: Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1
+    - label: Cookfire
+      point: {x: 276, y: -999, z: 232}
+      height: 1
+      objectPath: Campsites/Camp_1/Dressing/Cookfire
     - label: Latrine shed
       point: {x: 264, y: -999, z: 207}
-      height: 0
-      objectPath: 
+      height: 2.2
+      objectPath: PointsOfInterest/POI_Latrine_shed
+    - label: Blaze stump
+      point: {x: 271.7, y: -999, z: 247.3}
+      height: 1.4
+      objectPath: Ground815/JunctionMarkers/Blaze_Camp1_Stump
+    - label: Forage C
+      point: {x: 229.5, y: -999, z: 273.5}
+      height: 0.8
+      objectPath: Places/ForageC
+    - label: SS1
+      point: {x: 251.6, y: -999, z: 272}
+      height: 0.3
+      objectPath: Places/NorthLoop/SS1
+    - label: SS2
+      point: {x: 150.5, y: -999, z: 276.5}
+      height: 0.45
+      objectPath: Places/NorthLoop/SS2
+    - label: SS3
+      point: {x: 132.3, y: -999, z: 262.3}
+      height: 0.3
+      objectPath: Places/NorthLoop/SS3
+    - label: Fallen giant
+      point: {x: 138.65, y: -999, z: 264.2}
+      height: 2.7
+      objectPath: Places/NorthLoop/FallenGiant
     - label: North ruin
       point: {x: 172, y: -999, z: 281}
-      height: 0
-      objectPath: 
+      height: 3
+      objectPath: Places/NorthRuin
+    - label: Ruin doorway
+      point: {x: 169.88, y: -999, z: 278.88}
+      height: 2.15
+      objectPath: Places/NorthRuin
+    - label: Report post
+      point: {x: 171.22, y: -999, z: 278.38}
+      height: 1.3
+      objectPath: Places/NorthRuin/Layout824/ReportPost
     - label: Camp 2
       point: {x: 292, y: -999, z: 104}
       height: 0
@@ -1331,6 +1526,7 @@ MonoBehaviour:
     - Verge tree
     - Chain
     deckListWritten: 0
+    hardSeesTower: 0
     deckSee: []
     deckHide: []
     interactions: []

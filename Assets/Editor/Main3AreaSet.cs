@@ -147,6 +147,8 @@ public class Main3AreaSet : ScriptableObject
         public string[] inventory;
         [Tooltip("False until Sable writes this area's deck list: the check prints \"no deck list\" and does not pass.")]
         public bool deckListWritten;
+        [Tooltip("Hard must-see deck lines meet the tower's own rails, floor and cab (8.23 round 2, Wren 2026-10-02: the lake read 128 of 128 eyes where Marlow saw the step from 6 of 9 south-deck eyes). Off: the tower is left out, as 8.21 and 8.22 were judged.")]
+        public bool hardSeesTower;
         public DeckTarget[] deckSee;
         public DeckTarget[] deckHide;
         [Tooltip("Interaction points measured for spacing (CampLayout_UI rule 1: centre and edge distances, the first eye-ray hit from the approach).")]
