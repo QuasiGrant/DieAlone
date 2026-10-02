@@ -184,7 +184,7 @@ data.SetAlphamaps(ax0, az0, alpha);
 UnityEditor.EditorUtility.SetDirty(data);
 
 // ---- 3. clear the old climb in every corridor
-const float clearMargin = 0.6f;
+const float clearMargin = 0.6f, routeTreeClear = 3.5f, routeClear = 1.2f;
 bool InCorridor(UnityEngine.Vector3 q, float extra) { var p = P(q.x, q.z); for (int i = 0; i < pieces.Count; i++) { float d = Out(i, p, out float tr); if (d <= clearMargin + extra && q.y > tr - 3f && q.y < tr + 6f) return true; } return p.x >= lookMin.x - extra && p.x <= lookMax.x + extra && p.y >= lookMin.y - extra && p.y <= lookMax.y + extra && q.y > 55f; }
 int trisCut = 0;
 UnityEngine.Mesh CutMesh(UnityEngine.Mesh m, UnityEngine.Transform t, System.Func<UnityEngine.Vector3, bool> drop, string assetPath)
@@ -217,6 +217,21 @@ void ClearUnder(UnityEngine.Transform root, float extra)
 if (ring != null) ClearUnder(ring.Find("RimBoulders"), 0.5f);
 var g815 = kit.Root("Ground815"); if (g815 != null) foreach (var n in new[] { "ClimbGrounds", "Stops", "TrailEdges" }) ClearUnder(g815.transform.Find(n), 0.5f);
 ClearUnder(kit.Root("Forest") != null ? kit.Root("Forest").transform : null, 1f);
+// along the whole new line (the shelf to the stair foot too; Proof Beat3_StairFoot 2026-10-01: 8.15's shelf firs stood on it): no tree
+// trunk within routeTreeClear m of it (crowns off the tread at eye height), no other dressing within routeClear m
+foreach (var rootName in new[] { "Ground815", "Forest" })
+{
+    var rt = kit.Root(rootName); if (rt == null) continue;
+    foreach (var t in rt.GetComponentsInChildren<UnityEngine.Transform>(true))
+    {
+        if (t == null || !UnityEditor.PrefabUtility.IsOutermostPrefabInstanceRoot(t.gameObject)) continue;
+        var src = UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(t.gameObject); string sn = src != null ? src.name : t.name;
+        bool tree = sn.StartsWith("RedFir") || sn.StartsWith("RedPine") || sn.StartsWith("Sequoia") || sn.StartsWith("Tree_Dead");
+        if (t.position.y < 20f || t.position.x > regX1 || t.position.z < regZ0) continue;
+        float d = float.MaxValue; var tp = P(t.position.x, t.position.z); for (int i = 1; i < route.Count; i++) d = UnityEngine.Mathf.Min(d, SegD(tp, P(route[i - 1].x, route[i - 1].z), P(route[i].x, route[i].z), out _));
+        if (d < (tree ? routeTreeClear : routeClear)) { UnityEngine.Object.DestroyImmediate(t.gameObject); removed++; }
+    }
+}
 int detailCleared = 0; foreach (var q in route) detailCleared += kit.ClearDetail(q, 2f);
 foreach (var n in new[] { "P2_RockRoof", "P3_RootPlate", "P1_Overhang_Old" }) { var t = wardGo.transform.Find("Climb/" + n); if (t != null) { PlaceKit.Remove(t); removed++; } }
 

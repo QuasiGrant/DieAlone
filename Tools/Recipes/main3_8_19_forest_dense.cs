@@ -6,7 +6,8 @@
 // (Wren 2026-10-01). Instanced terrain detail meshes take the pack's ThinFern, DeadLeaves and Bush prefabs (DetailPrototype.Validate
 // true) but not any LODGroup prefab (the firs): the understory is terrain detail, the trees are GameObjects.
 // 1. Canopy (8.2): on the forest floor (as main3_8_19_forest_check.cs: inside the fence, off the lake, the named clearings, the camps,
-//    the lot, the burn core and slopes over floorSlope, firstTrunk m or more off every trail), a scan on a jittered grid at each area's
+//    the lot, the burn core, the Ward path region and slopes over floorSlope, firstTrunk m or more off every trail, so crowns stay off the
+//    tread at eye height; saplings firstSapling m), a scan on a jittered grid at each area's
 //    mean spacing; each spot draws its own spacing (the mean, plus or minus spacingVary) and stands if no trunk is nearer; 60 percent of
 //    spots are clumps of clumpLow to clumpHigh (clumpR round, clumpGap apart), the rest single. Firs and pines firLow to firHigh m tall,
 //    lower within emergentKeep m of a giant over emergentTop (Style 5.8: no crown near an emergent's top). The open east takes clumps only,
@@ -40,7 +41,7 @@ var rng = new System.Random(8191); float R(float a, float b) => a + (float)rng.N
 const string BK = PlaceKit.BK, SUF = "suffercord/PSX Autumn Forest Asset Pack/Models/";
 
 // ---- numbers (ForestPlan 8, all P)
-const float floorSlope = 38f, firstTrunk = 2.5f, spacingVary = 0.5f, clumpShare = 0.6f, clumpR = 3.5f, clumpGap = 1.8f, firLow = 9f, firHigh = 22f;
+const float floorSlope = 38f, firstTrunk = 3.5f, firstSapling = 2.5f, spacingVary = 0.5f, clumpShare = 0.6f, clumpR = 3.5f, clumpGap = 1.8f, firLow = 9f, firHigh = 22f;
 const int clumpLow = 3, clumpHigh = 7;
 const float emergentTop = 45f, emergentKeep = 15f, emergentDrop = 20f, warpKeep = 8f, colliderClear = 1.2f, crownR = 3f, lineSlack = 0.5f, eastLineKeep = 10f;
 const float edgeStep = 10f, edgeNear0 = 2.5f, edgeNear1 = 6f, edgeIn0 = 3f, edgeIn1 = 5f, gapOpen = 7f, gapStep = 2f, gapSearch = 3f, gapMinGap = 3f, lakeSide = 25f; const int gapPasses = 2;
@@ -48,6 +49,7 @@ const float saplingLow = 2f, saplingHigh = 6f, saplingsPer100 = 1.5f, groveR = 6
 const float fernPer100 = 10f, leavesPer100 = 1f, bushPer100 = 2.5f, coverEdge = 1.8f, coverSlope = 35f;
 const float stumpArea = 200f, branchesPer100 = 2f, logArea = 300f, brushArea = 400f, logTrailClear = 1.5f, logStopGap = 4f, lowStopTop = 3f;
 const float colliderReach = 40f, treeSink = 0.3f, footR = 2.5f, footSlope = 42f, pieceTop = 2.5f;
+const float wardX = 62f, wardZ = 200f;   // the Ward path region left to 8.20 (Proof Beat3_StairFoot, 2026-10-01: dense firs filled the stair foot)
 const float lakeX = 190f, lakeZ = 60f, lakeA = 54.8f * 1.15f, lakeB = 27.6f * 1.15f, burnCore = 10f, fenceX = 392f;
 // area mean spacing (8.2): north groves 4 to 5, the north fir wall 4, west 5, lake south and SE 5 to 6, centre 6, the open east clumps
 float Spacing(UnityEngine.Vector2 p)
@@ -64,6 +66,7 @@ var front = new UnityEngine.Rect(330f, 140f, 66f, 80f);
 bool Floor(UnityEngine.Vector2 p)
 {
     if (p.x < 40f || p.x > fenceX || p.y < -25f || p.y > 330f) return false;
+    if (p.x < wardX && p.y > wardZ) return false;   // the Ward path (8.20) dresses its own beats: no forest wall on the bench, the stair or the shelf
     float ex = (p.x - lakeX) / lakeA, ez = (p.y - lakeZ) / lakeB; if (ex * ex + ez * ez < 1f) return false;
     foreach (var c in clearings) if (UnityEngine.Vector2.Distance(p, c.c) < c.r) return false;
     if (front.Contains(p) || ValleyShapes.BurnDepth(p) > burnCore || Slope(p.x, p.y) > floorSlope) return false;
@@ -206,7 +209,7 @@ for (float gx = 40.5f; gx <= fenceX; gx += 2f) for (float gz = -24.5f; gz <= 330
         var c = grovePts[rng.Next(grovePts.Count)] + P(R(-1f, 1f), R(-1f, 1f)); int n = rng.Next(3, 6);
         for (int k = 0; k < n && saplingN < want; k++)
         {
-            var p = c + P(R(-2f, 2f), R(-2f, 2f)); if (!Floor(p) || TrailD(p) < firstTrunk || NearTrunk(p, 1.2f) < 1.2f) continue;
+            var p = c + P(R(-2f, 2f), R(-2f, 2f)); if (!Floor(p) || TrailD(p) < firstSapling || NearTrunk(p, 1.2f) < 1.2f) continue;
             float tall = R(saplingLow, saplingHigh); if (!LineOk(p, H(p.x, p.y) + tall)) continue;
             if (Tree(saplingPaths[rng.Next(saplingPaths.Length)], saplingGroup, p, tall, true) != null) saplingN++;
         }

@@ -43,6 +43,7 @@ float SegD(UnityEngine.Vector2 p, UnityEngine.Vector2 a, UnityEngine.Vector2 b) 
 bool Floor(UnityEngine.Vector2 p)
 {
     if (p.x < 40f || p.x > 392f || p.y < -25f || p.y > 330f) return false;
+    if (p.x < 62f && p.y > 200f) return false;   // the Ward path region (8.20 dresses it)
     float ex = (p.x - lakeX) / lakeA, ez = (p.y - lakeZ) / lakeB; if (ex * ex + ez * ez < 1f) return false;
     foreach (var c in clearings) if (UnityEngine.Vector2.Distance(p, c.c) < c.r) return false;
     if (front.Contains(p) || ValleyShapes.BurnDepth(p) > burnCore || Slope(p.x, p.y) > floorSlope) return false;
