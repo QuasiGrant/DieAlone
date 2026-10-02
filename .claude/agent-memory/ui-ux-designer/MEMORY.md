@@ -1,1 +1,1 @@
-- [UI spec drafts and terms](project_ui_specs_2026-09-28.md) — UI drafts incl. Dialogue, Examine, Logbook event lines; CHECK ON FOOT terms; no Ward name before night 1; gates 8.14 to batch (10-01), 8.21 FAIL (10-02); Lake UI 8.23
+- [UI spec drafts and terms](project_ui_specs_2026-09-28.md) — UI drafts incl. Dialogue, Examine, Logbook event lines; CHECK ON FOOT terms; no Ward name before night 1; gates 8.14 to batch (10-01), 8.21, 8.22 FAIL (10-02); Lake UI 8.23
