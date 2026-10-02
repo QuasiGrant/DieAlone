@@ -20,6 +20,7 @@ WardNight still has [GAP: DailyLoop] items answered by DailyLoop.md 2 and 6 (bun
 2026-09-30 Gate 8.16a (Gate_816a_Pim.md): FAIL narrow. Gate.md 4 now holds both rules. Pass: night N1 (J to Ward 150 inside ring walls, exempt), Gate T sign, warps, dev panel. Open: Camp 2 to T fwd 0, W3 8. N2 moved to 8.18.
 2026-10-01 Gate 8.16b/8.17 (Gate_816b_817_Pim.md): FAIL. Camp 2 to T fwd 0 open (blaze unreadable, fwd 0 and Trail_Ends disagree). W3 7, or 4 if cleft frames (Climb 210 to 230) exempt (proposed, Wren/Grant). Ruin and Camp 3 not found from trails. Dev panel test not rerun after ruin row added (ruin is 15 presses, not a gate task).
 2026-10-01 Gate batch (Gate_batch_Pim.md): FAIL. Camp 2 to T fwd 0 unchanged, W3 7/4, ruin and Camp 3 tent not found, dev panel not rerun, N2 11 counted (ring 60-200 and cleft 210-230 exempt). Lamp 6 range 9; cairn flame card 0.14 m replaced 0.6 m glow (far N1 risk).
+2026-10-02 8.21: Docs/Design/CampLayout_UI.md (camp interaction points). Code facts: reach 2 m (PlayerTuning.interactReach), single eye ray first hit; lamp has no world point (no toggle); food/water in cabin are Examine only (no stockpile). Open: fire pit FirePit.cs prompt vs stove Warmth.
 
 **Why:** loop doc landed after the first drafts; terms changed under them.
 **How to apply:** grep UI specs for "[GAP:" and old words (NOT SAFE, Campsite) before any revision. Input facts: Esc is bound to Player/Pause and UI/Cancel; Interact E / pad Y; Crouch pad B; Tab, View, LB, RB unbound (proposed Logbook action).
