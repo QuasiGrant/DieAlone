@@ -167,7 +167,7 @@ var pairs = new (string n, float x, float z, float lx, float ly, float lz)[] {
     ("Camp 1 (Camp 1 warp)", 268f, 226f, 282f, float.NaN, 238f),
     ("Camp 3 (Camp 3 warp)", 74f, 142f, 90f, float.NaN, 158f),
     ("Lot facing the highway (Lot Highway warp)", 382f, 168f, 440f, float.NaN, 170f),
-    ("Camp (Keepers Camp warp)", 172f, 150f, 172f + 40f * UnityEngine.Mathf.Sin(333f * UnityEngine.Mathf.Deg2Rad), float.NaN, 150f + 40f * UnityEngine.Mathf.Cos(333f * UnityEngine.Mathf.Deg2Rad)),
+    ("Camp (Keepers Camp warp, 2 m north)", 172f, 152f, 172f + 40f * UnityEngine.Mathf.Sin(333f * UnityEngine.Mathf.Deg2Rad), float.NaN, 152f + 40f * UnityEngine.Mathf.Cos(333f * UnityEngine.Mathf.Deg2Rad)),   // 8.21 round 2: 2 m north, out of the clearing-edge firs
     ("S1 camp from the edge (LookSlice 6)", 156f, 148f, 178f, float.NaN, 168f),
     ("Office (Office warp)", 340f, 196f, 340f + 40f * UnityEngine.Mathf.Sin(68f * UnityEngine.Mathf.Deg2Rad), float.NaN, 196f + 40f * UnityEngine.Mathf.Cos(68f * UnityEngine.Mathf.Deg2Rad)),
     ("Lot centre looking north to office and store", 358f, 170f, 358f, float.NaN, 200f),
@@ -563,7 +563,24 @@ try
                 UnityEngine.Vector3 P3v(string s) { var v = s.Split(','); return new UnityEngine.Vector3(float.Parse(v[0], inv), float.Parse(v[1], inv), float.Parse(v[2], inv)); }
                 if (c[1] == "1") ff.Add((P3v(c[2]), P3v(c[3]), "FOUND: " + c[0].ToUpperInvariant() + " FROM " + c[4].ToUpperInvariant() + ", " + c[5] + " M"));
             }
-            if (ff.Count > 0) Sheet("Found_" + areaSel.id + ".jpg", "Places found from their trails (Pim's rule): " + areaSel.title, ff, pairDiv, 2);
+            // full size, one frame each, a magenta ball on the target's centre (8.21 round 2, Wren): markSize m across per metre out
+            if (ff.Count > 0)
+            {
+                const float markSize = 0.012f, markMin = 0.25f;
+                var markMat = new UnityEngine.Material(UnityEngine.Shader.Find("Universal Render Pipeline/Unlit")); markMat.SetColor("_BaseColor", UnityEngine.Color.magenta);
+                int tw = shotW, th = shotH; NewCanvas(tw + 2 * gap, headH + ff.Count * (labelH + th + gap) + gap);
+                string title = "Places found from their trails (Pim's rule): " + areaSel.title + ", the magenta ball on each target's centre"; Text(gap + 4, 12, title, 3, gold);
+                for (int i = 0; i < ff.Count; i++)
+                {
+                    var mark = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere); UnityEngine.Object.DestroyImmediate(mark.GetComponent<UnityEngine.Collider>());
+                    mark.GetComponent<UnityEngine.Renderer>().sharedMaterial = markMat; mark.transform.position = ff[i].Item2;
+                    mark.transform.localScale = UnityEngine.Vector3.one * UnityEngine.Mathf.Max(markMin, UnityEngine.Vector3.Distance(ff[i].Item1, ff[i].Item2) * markSize);
+                    int y = headH + i * (labelH + th + gap); Pose(ff[i].Item1, ff[i].Item2); Blit(Render(1), tw, th, gap, y + labelH); Text(gap + 2, y + 4, ff[i].Item3, 2, white);
+                    UnityEngine.Object.DestroyImmediate(mark);
+                }
+                UnityEngine.Object.DestroyImmediate(markMat);
+                SaveCanvas("Found_" + areaSel.id + ".jpg", title, ff.Count);
+            }
         }
     }
 

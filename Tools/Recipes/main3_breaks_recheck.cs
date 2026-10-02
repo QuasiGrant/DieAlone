@@ -28,6 +28,7 @@ var traps = new (string n, UnityEngine.Vector3 s, float hd, int mode, UnityEngin
     // 6 (Ward_P3) and climb traps 7a and 7b lie north of the 8.20 fallen giant, closed to the player (main3_8_20_closure_check.cs)
     ("7c climb rim", V(55.1f, 33f, 232.9f), 180f, 2, new[] { V(55.1f, 32.2f, 229.4f) }),
     ("7d climb rim", V(47.1f, 30.3f, 212.6f), 45f, 0, new[] { V(47.6f, 29.2f, 213.4f) }),
+    ("8 fire pit wedge (8.21 gate round 2, Marlow)", V(166.3f, 15.1f, 156f), 90f, 0, new[] { V(167.75f, 15.04f, 156f) }),
 };
 var sb = new System.Text.StringBuilder(); int held = 0;
 try

@@ -308,9 +308,16 @@ MonoBehaviour:
     - label: WOODPILE AND STUMP FROM THE SOUTH, 4 M OUT
       eye: {x: 182.6, y: -999, z: 161.4}
       look: {x: 182.3, y: 15.53, z: 166.8}
+    - label: SEATED AT THE DESK, FACING WEST TO THE WINDOW
+      eye: {x: 176.1, y: 16.23, z: 167.85}
+      look: {x: 170, y: 16.43, z: 167.85}
+    - label: PORCH TO THE STAIR FOOT
+      eye: {x: 178, y: 16.76, z: 162.8}
+      look: {x: 164, y: 15.83, z: 160.5}
     playChecks:
     - main3_8_21_camp_check.cs
     - main3_tower_stairs_check.cs
+    - main3_breaks_recheck.cs
   - id: front
     task: 8.22
     title: Front zone

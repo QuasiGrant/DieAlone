@@ -25,6 +25,10 @@ var pockets = new (string n, float x, float z, float sx, float sz, float top, st
     ("TrenchWest", 171.7f, 115.8f, 2.2f, 5.5f, 4.6f, "BigBoulders_0", 0f),
     ("ForageB", 140.6f, 167.8f, 2f, 2f, 8.4f, "Boulder_1", 0f),
     ("P1Hide", 47.6f, 213.4f, 2f, 2f, 29.8f, "Boulder_5", 0f),
+    // 8.21 camp area check (2026-10-02): two pockets under Hedge_Burn_0 south of the camp, reached by the flood, 0 of 48 escapes: floors to
+    // the ground the player came from (the knoll step south, 12.4; the north bank, 8.9)
+    ("HedgeSouthA", 173.7f, 133.4f, 4.6f, 3f, 12.4f, "Boulder_2", 0f),   // to the hedge box on the west (a 3 m fill left a pocket at x 172.2)
+    ("HedgeSouthB", 180.5f, 130.5f, 2f, 2f, 8.9f, "Boulder_0", 0f),
 };
 const float depth = 4f, rockSink = 0.15f;   // the box reaches depth m down from its top; the rock's top sits rockSink under the box top
 var root = kit.Root("Ground815"); if (root == null) return "run 8.15 first";
