@@ -116,3 +116,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: Camp 2: the empty setting is a third place at the table nobody sits in; the ring box stays in the tent; the phone cord reaches the table (Sable sets the distance).
 - 2026-10-02: Camp 2: the payphone stays in its booth with a 1.37 m armored cord to the table; the barrel offers water on about half the days (never beats the pump); the Lover sits on the stack top by day and at the table on hand days.
 - 2026-10-02: Camp 3: the easel canvas is the escape-room entry; the Snag line starts hung with his old sketches; the job form sits in camp, outside the painting. Whether the hollow floor is seen from the deck is Sable's to settle with the tower lines.
+- 2026-10-02: The Artist's job form is found inside the camp, not from the trail; it is exempt from the trail-find rule. The entry prompt reads "Study the painting" for now.
