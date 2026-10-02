@@ -95,3 +95,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: The woodpile need not be seen from the deck. The Ward stones are proven hidden by land rays (W-1); the pixel check applies only where trees are the cover.
 - 2026-10-02: "Found" means seen by meshes, within 45 degrees of the direction of travel, at least 1 degree tall, with a labelled frame (Pim); it replaces the 30 m line rule.
 - 2026-10-02: The deck need not see the camp under its own tower; camp items come off the deck must-see list. Must-hide still applies.
+- 2026-10-02: 8.21 ruling after round 2 (cap): layout passes; three small items (fire pit wedge, chair to stove gap, target marks on found frames) are fixed by Rook and proven by the area check, then Wren ticks without a third review round.
