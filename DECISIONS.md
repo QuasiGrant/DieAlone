@@ -194,3 +194,4 @@
 - 2026-09-30: Wren makes judgement calls and moves work forward without Grant; Grant reviews after. Checks, revisions and playtest fixes are forward work: finished tasks stay ticked and fixes become new tasks.
 - 2026-09-30: (Wren's call) At night the keeper carries a kerosene lamp: warm #FFA860, 6 to 8 m, no beam, on only at night, no toggle, no fuel. Scares may dim or put it out (JUMP-LANTERN, CHASE-LIGHT).
 - 2026-10-01: Milestone 8 is done only when Main3 is a fully complete layout that works, with a forest that feels like a forest. The team keeps building, checking and iterating until then.
+- 2026-10-02: Milestone 8 is layout, walkability and usability. It is worked and checked area by area (tasks 8.21 to 8.30). The ledge fire look, the night look, the remaining ugly spots and fine dressing move to Milestone 11.
