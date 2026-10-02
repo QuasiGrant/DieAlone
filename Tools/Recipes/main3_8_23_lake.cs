@@ -208,7 +208,7 @@ UnityEngine.Physics.SyncTransforms();
 var wade = lakeG.transform.Find("WadeLimit"); int ringGone = 0;
 if (wade != null) foreach (var t in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(wade))) if (t.name == "W93" || t.name == "W94" || t.name == "W95" || t.name.StartsWith("W93_") || t.name.StartsWith("W94_") || t.name.StartsWith("W95_")) { UnityEngine.Object.DestroyImmediate(t.gameObject); ringGone++; }
 var w0 = wade != null ? wade.Find("W0") : null; float lineX1 = w0 != null ? w0.GetComponent<UnityEngine.Collider>().bounds.center.x : 243.1f;
-const float lineZ = 60.4f, lineX0 = 236.8f, stakeStep = 2f, stakeTop = -4.7f, stakeG = 0.14f, boxT = 0.4f, boxTop = -4.0f, sag = 0.12f, ropeY = -4.85f;
+const float lineZ = 60.4f, lineX0 = 236.8f, stakeStep = 2f, stakeTop = -4.7f, stakeG = 0.14f, boxT = 0.4f, boxTop = -4.0f, sag = 0.12f, ropeY = -4.85f, wadeOver = 2f, wadeReach = 2.5f, wadeSample = 0.5f;
 var stakes = kit.Group("StakeLine", L, L.position, 0f); int stakeN = 0;
 var line = new[] { V(lineX1, 0f, lineZ), V(lineX0, 0f, lineZ), V(lineX0, 0f, bz1) };
 for (int s = 1; s < line.Length; s++)
@@ -221,9 +221,19 @@ for (int s = 1; s < line.Length; s++)
         var top = V(p.x, ropeY, p.z); if (k > 0) { var mid = (prev + top) * 0.5f + V(0f, -sag, 0f); foreach (var (u, v) in new[] { (prev, mid), (mid, top) }) { var d = v - u; var r = kit.Slab("Rope", stakes, stakes.InverseTransformPoint((u + v) * 0.5f), V(0.03f, 0.03f, d.magnitude), rope); r.transform.rotation = UnityEngine.Quaternion.LookRotation(d.normalized); } }
         prev = top;
     }
-    var box = new UnityEngine.GameObject("WadeBox"); box.transform.SetParent(stakes, false); box.layer = 2; var dirAB = (b - a).normalized;
-    box.transform.position = V((a.x + b.x) * 0.5f, (boxTop + skirtBottom) * 0.5f, (a.z + b.z) * 0.5f); box.transform.rotation = UnityEngine.Quaternion.LookRotation(dirAB);
-    box.AddComponent<UnityEngine.BoxCollider>().size = V(boxT, boxTop - skirtBottom, len + (s == 1 ? 0.6f : boxT));   // the east end runs into W0, the south end into the house corner
+    var dirAB = (b - a).normalized;
+    // its top: at least boxTop, and wadeOver m over the highest walkable surface within wadeReach m (the brush band method, 8.22 round 2;
+    // the lake flood stood on the west leg's -4.0 top from the house and step floor at -3.8)
+    float segTop = boxTop; UnityEngine.Physics.SyncTransforms(); var side = V(dirAB.z, 0f, -dirAB.x);
+    for (float u = -wadeReach; u <= len + wadeReach + 1e-3f; u += wadeSample) for (float v = -wadeReach; v <= wadeReach + 1e-3f; v += wadeSample)
+    {
+        var q = a + dirAB * u + side * v;
+        foreach (var hh in UnityEngine.Physics.RaycastAll(V(q.x, floorY + 6f, q.z), UnityEngine.Vector3.down, 20f, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
+        { if (hh.collider.gameObject.layer == 2 || hh.normal.y < 0.7071f || WalkIns.PathOf(hh.collider.transform).StartsWith("Forest") || hh.collider.name == "Roof" || hh.collider is UnityEngine.CapsuleCollider) continue; segTop = UnityEngine.Mathf.Max(segTop, hh.point.y + wadeOver); }
+    }
+    var box = new UnityEngine.GameObject("WadeBox"); box.transform.SetParent(stakes, false); box.layer = 2;
+    box.transform.position = V((a.x + b.x) * 0.5f, (segTop + skirtBottom) * 0.5f, (a.z + b.z) * 0.5f); box.transform.rotation = UnityEngine.Quaternion.LookRotation(dirAB);
+    box.AddComponent<UnityEngine.BoxCollider>().size = V(boxT, segTop - skirtBottom, len + (s == 1 ? 0.6f : boxT));   // the east end runs into W0, the south end into the house corner
 }
 // L13: the reeds in the water only (8.17's west reeds go), the reeds rest on the bank
 var oldReeds = bd.Find("Reeds"); if (oldReeds != null) UnityEngine.Object.DestroyImmediate(oldReeds.gameObject);

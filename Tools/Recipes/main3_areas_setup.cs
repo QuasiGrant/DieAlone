@@ -41,7 +41,7 @@ set.inventory = new[] {
     // front (8.22)
     I("Office", "FrontZone/Office", "renderers", "", 218), I("Store", "FrontZone/Store", "renderers", "", 151), I("Gate booth", "FrontZone/GateBooth", "renderers", "", 17),
     I("Barrier", "FrontZone/Gate/Barrier", "renderers", "", 8), I("Vault toilet", "FrontZone/VaultToilet", "renderers", "", 2), I("Resident car", "FrontZone/Resident_Car", "renderers", "", 2),
-    I("Verge tree", "FrontZone/VergeTree", "renderers", "", 2), I("Chain", "FrontZone/Chain", "renderers", "", 3),
+    I("Verge tree", "FrontZone/VergeTree", "renderers", "", 2), I("Chain", "FrontZone/Chain", "renderers", "", 8),   // 8.22 round 2: reflector bands and the CLOSED plate
 };
 string[] fireItems = { "Ridge fire cards, night", "Ridge fire cards, day", "Valley fire cards, night", "Valley fire cards, day", "Smoke sheet, day one", "Smoke lid, night", "Smoke columns, day two", "Ward stones" };
 var none = new Main3AreaSet.DeckTarget[0];
@@ -61,7 +61,7 @@ var camp = new Main3AreaSet.Area { id = "camp", task = "8.21", title = "Keeper's
         FR("WOODPILE AND STUMP FROM THE SOUTH, 4 M OUT", V(182.6f, G, 161.4f), V(182.3f, campFloor + 0.5f, 166.8f)),
         FR("SEATED AT THE DESK, FACING WEST TO THE WINDOW", V(176.1f, campFloor + 1.2f, 167.85f), V(170f, campFloor + 1.4f, 167.85f)),
         FR("PORCH TO THE STAIR FOOT", V(178f, campFloor + 0.13f + eyeH, 162.8f), V(164f, campFloor + 0.8f, 160.5f)) },
-    playChecks = new[] { "main3_8_21_camp_check.cs", "main3_tower_stairs_check.cs", "main3_breaks_recheck.cs" },
+    playChecks = new[] { "main3_8_21_camp_check.cs", "main3_tower_stairs_check.cs", "main3_breaks_recheck.cs", "main3_8_21b_stop_check.cs" },
     inventory = new[] { "Lanterns and lamps", "Cabin", "Tower", "Fire pit", "Generator", "Privy", "Stump", "Woodpile", "Rune post", "Rune post screen" }, deckListWritten = true,
     deckSee = new[] { D("lake, mid water", 190f, -5.4f, 60f),
         D("Camp 1 spar top", 284f, 29f, 240f), D("Camp 2 stack top (over its tent)", 292f, 26f, 108f), D("Camp 3 Snag line (top)", 96f, 54f, 146.5f), D("office west door", 341f, 4.2f, 199f),

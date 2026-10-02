@@ -6,7 +6,8 @@
 //   horizon that meet nothing within skyFar m (S2: sky in frame; S3: none by design).
 // SLIP AND STEP: nothing in the slip or on the step gives a step over a rail: no collider top between stepLow and stepHigh m over the
 //   floor within railNear m of a slip or step rail (the slip rest starts at 0.9).
-// PLACES ON OBJECTS (doc 5.2). GAPS: built lake pieces (Lake root), slots of 0.6 to 1.0 m with nothing else in them fail.
+// PLACES ON OBJECTS (doc 5.2). GAPS: the pieces 8.17 and 8.23 built (Boathouse/Dressing and Layout823) against anything, slots of 0.6
+//   to 1.0 m with nothing else in them fail; slots under the house floor, inside the skirts, are out of reach.
 // WALKS (doc 4): pump to the gangway foot (the trail), gangway foot to the step through the house, step to the slip stand, step off the
 //   open edge into the shallows and out by the beach to the reeds stand, gangway foot round the step skirt to the under-stilts point and
 //   back out, each arriving, with times (PlayerController.Step, dt 0.02, walk speed).
@@ -23,7 +24,8 @@ var cam = UnityEngine.Camera.main; var camLocal = cam.transform.localPosition; v
 var start = pc.transform.position; var startRot = pc.transform.rotation; bool pcWas = pc.enabled; pc.enabled = false;
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y;
 var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Settings/PlayerTuning.asset");
-const float dt = 0.02f, arrive = 0.5f, legTime = 90f, eyeH = 1.6f, skyFar = 400f, floorY = -3.8f, stepLow = 0.4f, stepHigh = 0.9f, railNear = 1.0f;
+float stepHigh = (tuning != null ? tuning.jumpHeight + tuning.stepOffset : 0.7f);   // the highest top a standing jump reaches (Marlow: the crate's 0.80 is out of it)
+const float dt = 0.02f, arrive = 0.5f, legTime = 90f, eyeH = 1.6f, skyFar = 400f, floorY = -3.8f, stepLow = 0.4f, railNear = 1.0f;
 const float placeSlack = 0.3f, gapLow = 0.6f, gapHigh = 1.0f, gapTol = 0.005f, bodyLow = 0.3f, reachLow = 0.5f, gapNear = 1.0f;
 const int shotW = 3840, shotH = 1976, skyRaysX = 24, skyRaysY = 12;
 var lake = Root("Lake").transform; var B = lake.Find("Boathouse");
@@ -115,7 +117,7 @@ try
         bool Body(UnityEngine.Bounds b) { float g = UnityEngine.Mathf.Max(H(b.center.x, b.center.z), b.center.y > floorY - 0.5f && b.center.x > 236f && b.center.x < 244f && b.center.z > 49f && b.center.z < 57.5f ? floorY : float.MinValue); return b.max.y > g + bodyLow && b.min.y < g + reachLow; }
         var groups = new System.Collections.Generic.Dictionary<UnityEngine.Transform, UnityEngine.Bounds>(); var ofGroup = new System.Collections.Generic.Dictionary<UnityEngine.Collider, UnityEngine.Transform>();
         void Add(UnityEngine.Collider c) { if (!c.enabled || c.isTrigger || c is UnityEngine.TerrainCollider || c.transform.IsChildOf(pc.transform)) return; var g = Grp(c); ofGroup[c] = g; var b = c.bounds; if (!Body(b)) return; if (groups.TryGetValue(g, out var gb)) { gb.Encapsulate(b); groups[g] = gb; } else groups[g] = b; }
-        var built = new System.Collections.Generic.HashSet<UnityEngine.Transform>(); foreach (var c in lake.GetComponentsInChildren<UnityEngine.Collider>()) { if (WalkIns.PathOf(c.transform).StartsWith("Lake/WadeLimit")) continue; Add(c); if (ofGroup.TryGetValue(c, out var g)) built.Add(g); }
+        var built = new System.Collections.Generic.HashSet<UnityEngine.Transform>(); foreach (var c in lake.GetComponentsInChildren<UnityEngine.Collider>()) { var cp = WalkIns.PathOf(c.transform); if (!(cp.StartsWith("Lake/Boathouse/Layout823") || cp.StartsWith("Lake/Boathouse/Dressing"))) continue; Add(c); if (ofGroup.TryGetValue(c, out var g)) built.Add(g); }   // the pieces 8.17 and 8.23 built; the 8.4 dock, pockets and ring were walked by Marlow (823 paper 11)
         var bands = new System.Collections.Generic.List<string>(); var seenPair = new System.Collections.Generic.HashSet<string>();
         foreach (var g in System.Linq.Enumerable.ToArray(built))
         {
@@ -130,7 +132,8 @@ try
                 var p1 = V(UnityEngine.Mathf.Clamp(ob.center.x, gb.min.x, gb.max.x), 0f, UnityEngine.Mathf.Clamp(ob.center.z, gb.min.z, gb.max.z)); var p2 = V(UnityEngine.Mathf.Clamp(p1.x, ob.min.x, ob.max.x), 0f, UnityEngine.Mathf.Clamp(p1.z, ob.min.z, ob.max.z));
                 var m = (p1 + p2) * 0.5f; m.y = UnityEngine.Mathf.Max(gb.min.y, ob.min.y) + 1f; bool other = false;
                 foreach (var c in UnityEngine.Physics.OverlapSphere(m, gap * 0.5f - 0.01f, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) { if (c is UnityEngine.TerrainCollider || !c.enabled) continue; var cg = ofGroup.TryGetValue(c, out var x) ? x : Grp(c); if (cg != g && cg != o) { other = true; break; } }
-                if (!other) bands.Add(F(gap) + " m between " + WalkIns.PathOf(g) + " and " + WalkIns.PathOf(o) + " at (" + F1(m.x) + ", " + F1(m.z) + ")");
+                bool underHouse = m.x > 236.8f && m.x < 243.2f && m.z > 49.6f && m.z < 55.2f && m.y < floorY + 0.8f;   // inside the skirts, under the floor
+                if (!other && !underHouse) bands.Add(F(gap) + " m between " + WalkIns.PathOf(g) + " and " + WalkIns.PathOf(o) + " at (" + F1(m.x) + ", " + F1(m.z) + ")");
             }
         }
         Line(bands.Count == 0, "GAPS: " + built.Count + " built lake pieces and their neighbours, slots of " + F1(gapLow) + " to " + F1(gapHigh) + " m: " + bands.Count + (bands.Count > 0 ? "\n  " + string.Join("\n  ", bands) : ""));
@@ -147,7 +150,7 @@ try
         UnityEngine.Vector3 G(float x, float z) => V(x, H(x, z), z); UnityEngine.Vector3 FL(float x, float z) => V(x, floorY, z);
         var legs = new System.Collections.Generic.List<(string, UnityEngine.Vector3[])>();
         if (trail.Count > 1) legs.Add(("pump to the gangway foot, the trail", trail.ToArray())); else Line(false, "WALK: no Trails/Pump to boathouse");
-        legs.Add(("gangway foot to the step, through the house", new[] { G(247.6f, 52.4f), FL(244.0f, 52.4f), FL(242.2f, 52.4f), FL(242.2f, 54.3f), FL(240.0f, 54.4f), FL(240.0f, 55.7f), FL(240.0f, 56.3f) }));
+        legs.Add(("gangway foot to the step, through the house", new[] { G(247.6f, 52.4f), FL(244.0f, 52.4f), FL(242.2f, 52.4f), FL(240.0f, 54.4f), FL(240.0f, 55.7f), FL(240.0f, 56.3f) }));
         legs.Add(("step to the slip stand", new[] { FL(240.0f, 56.3f), FL(240.0f, 54.4f), FL(241.3f, 54.2f), FL(241.3f, 52.4f) }));
         legs.Add(("off the step's open edge, out by the beach to the reeds stand", new[] { FL(240.0f, 56.3f), G(240.0f, 57.8f), G(242.5f, 58.6f), G(244.0f, 59.0f), G(245.8f, 59.6f), G(245.6f, 61.4f), G(244.1f, 62.0f) }));
         legs.Add(("gangway foot down the beach round the step skirt to the under-stilts point and back to the beach", new[] { G(247.6f, 52.4f), G(246.0f, 56.0f), G(243.5f, 58.3f), G(240.0f, 58.4f), G(238.4f, 58.0f), G(237.5f, 55.95f), G(238.4f, 58.0f), G(243.5f, 58.3f), G(246.0f, 57.0f) }));

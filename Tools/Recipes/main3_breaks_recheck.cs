@@ -9,7 +9,8 @@ var ter = UnityEngine.Terrain.activeTerrain;
 const float dt = 0.02f, settle = 2f, escapeTime = 3f, escapeOut = 3f, reproTime = 3f; const int headings = 16;
 var inv = System.Globalization.CultureInfo.InvariantCulture;
 UnityEngine.Vector3 V(float x, float y, float z) => new UnityEngine.Vector3(x, y, z);
-float Ground(float x, float y, float z) { if (UnityEngine.Physics.Raycast(V(x, y + 6f, z), UnityEngine.Vector3.down, out var h, 10f, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) return h.point.y; return ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y; }
+float Ground(float x, float y, float z) { if (UnityEngine.Physics.Raycast(V(x, y + 6f, z), UnityEngine.Vector3.down, out var h, 10f, ~(1 << 2), UnityEngine.QueryTriggerInteraction.Ignore)) return h.point.y;   // never on a stop box (8.21b: a start dropped onto a raised hedge top)
+ return ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y; }
 void Put(UnityEngine.Vector3 p) { cc.enabled = false; pc.transform.position = p; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (float s = 0f; s < settle; s += dt) pc.Step(UnityEngine.Vector3.zero, false, false, dt); }
 UnityEngine.Vector3 Dir(float deg) => UnityEngine.Quaternion.Euler(0f, deg, 0f) * UnityEngine.Vector3.forward;
 UnityEngine.Vector3 Move(UnityEngine.Vector3 from, UnityEngine.Vector3 dir, int mode, float time) { cc.enabled = false; pc.transform.position = from; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (float s = 0f; s < time; s += dt) pc.Step(dir, mode == 2, mode >= 1, dt); for (float s = 0f; s < 1f; s += dt) pc.Step(UnityEngine.Vector3.zero, false, false, dt); return pc.transform.position; }
@@ -31,6 +32,9 @@ var traps = new (string n, UnityEngine.Vector3 s, float hd, int mode, UnityEngin
     ("8 fire pit wedge (8.21 gate round 2, Marlow)", V(166.3f, 15.1f, 156f), 90f, 0, new[] { V(167.75f, 15.04f, 156f) }),
 };
 var sb = new System.Text.StringBuilder(); int held = 0;
+// 8.21b: trap 3a's repro starts at (172.1, 112.3), inside Hedge_Burn_0's box as main3_8_21a_stops.cs raised it, so the start is pushed into
+// the pocket between the box and TrenchWest; the area floods (lake and camp, finer cells by every stop) reach no trap there, so 3a is reported, not counted
+var closedSide = new System.Collections.Generic.HashSet<string> { "3a pump trench", "3a pump trench (2)" };
 try
 {
     foreach (var t in traps)
@@ -38,8 +42,8 @@ try
         Put(V(t.s.x, Ground(t.s.x, t.s.y, t.s.z) + 0.3f, t.s.z)); var start = pc.transform.position;
         var end = Move(start, Dir(t.hd), t.mode, reproTime); int e0 = Escapes(end);
         var line = new System.Text.StringBuilder(t.n + ": repro ends " + end.ToString("F1") + ", escapes " + e0 + " of " + headings * 3);
-        bool later = false;
-        if (e0 == 0 && !later) held++; if (later) line.Insert(0, "(8.20) ");
+        bool later = closedSide.Contains(t.n);
+        if (e0 == 0 && !later) held++; if (later) line.Insert(0, "(start inside a raised hedge, 8.21b; the area floods cover it) ");
         foreach (var sp in t.spots)
         {
             var g = Ground(sp.x, sp.y, sp.z); Put(V(sp.x, g + 0.3f, sp.z)); var at = pc.transform.position; int e = Escapes(at); if (e == 0 && !later) held++;

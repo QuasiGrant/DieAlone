@@ -34,7 +34,7 @@ var cam = UnityEngine.Camera.main; var camLocal = cam.transform.localPosition; v
 var start = pc.transform.position; var startRot = pc.transform.rotation; bool pcWas = pc.enabled; pc.enabled = false;
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y;
 var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Settings/PlayerTuning.asset");
-const float dt = 0.02f, arrive = 0.5f, legTime = 60f, eyeH = 1.6f, chainBack = 8f, ballR = 0.25f;
+const float dt = 0.02f, arrive = 0.5f, legTime = 60f, eyeH = 1.6f, chainBack = 8f, ballR = 0.25f, poleClear = 1.5f;
 const float carL = 4.5f, carW = 1.8f, carLow = 0.3f, carHigh = 1.5f, sweepStep = 0.5f, turnR = 5.5f, refuseBack = 14f, ringCX = 372f, ringCZ = 262f, ringR = 17.5f;
 const float placeSlack = 0.3f, gapLow = 0.6f, gapHigh = 1.0f, gapTol = 0.005f, bodyLow = 0.3f, bodyHigh = 1.8f, reachLow = 0.5f, gapNear = 1.0f;
 const int shotW = 3840, shotH = 1976;
@@ -260,6 +260,9 @@ try
         foreach (var rootName in new[] { "Forest", "SliceLook", "Ground815" }) { var rg = Root(rootName); if (rg == null) continue; foreach (var lod in rg.GetComponentsInChildren<UnityEngine.LODGroup>()) { var lods = lod.GetLODs(); if (lods.Length == 0) continue; foreach (var r in lods[0].renderers) { var mf = r != null ? r.GetComponent<UnityEngine.MeshFilter>() : null; if (mf == null || mf.sharedMesh == null || r.GetComponent<UnityEngine.Collider>() != null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; temps.Add(mc); } } }
         UnityEngine.Physics.SyncTransforms();
         var ballMat = Unlit(new UnityEngine.Color(1f, 0f, 1f, 1f)); int k2 = 0, notFound = 0;
+        // round 2 (Wren): Found frames keep clear of the lot light poles and heads (the ice chest stood behind one), the ball sits on the
+        // place's top, and first sight of the lot is shot from its own point toward the lot
+        var poles = new System.Collections.Generic.List<UnityEngine.Bounds>(); var lotLights = fz.Find("LotLights"); if (lotLights != null) foreach (var r in lotLights.GetComponentsInChildren<UnityEngine.Renderer>()) { var b = r.bounds; b.Expand(poleClear * 2f); poles.Add(b); }
         foreach (var pl in A.places)
         {
             k2++; var obj = string.IsNullOrEmpty(pl.objectPath) ? null : Main3AreaSet.At(scene, pl.objectPath);
@@ -267,10 +270,13 @@ try
             {
                 var d = b - a; float len = d.magnitude - (obj != null ? 0.05f : set.rayEndSkip); if (len <= 0f) return true; float fo = float.MaxValue, fw = float.MaxValue;
                 foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, len, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) { if (h.collider.transform.IsChildOf(pc.transform)) continue; if (obj != null && h.collider.transform.IsChildOf(obj)) fw = UnityEngine.Mathf.Min(fw, h.distance); else fo = UnityEngine.Mathf.Min(fo, h.distance); }
+                foreach (var pb in poles) if (pb.IntersectRay(new UnityEngine.Ray(a, d.normalized), out float pd) && pd <= d.magnitude) return false;
                 return fo == float.MaxValue || fw < fo;
             }
             var fr = set.Found(pl, legs, (x, z) => H(x, z), ClearTo); if (!fr.found) { notFound++; continue; }
-            var ball = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere); UnityEngine.Object.DestroyImmediate(ball.GetComponent<UnityEngine.Collider>()); ball.transform.position = fr.aim; ball.transform.localScale = UnityEngine.Vector3.one * 2f * ballR; ball.GetComponent<UnityEngine.Renderer>().sharedMaterial = ballMat; drawn.Add(ball);
+            float plH = pl.height > 0f ? pl.height : 2f; var ballAt = V(pl.point.x, (pl.point.y <= -900f ? H(pl.point.x, pl.point.z) : pl.point.y) + plH + ballR, pl.point.z);
+            if (pl.label == "First sight of the lot") { fr.eye = Eye(pl.point.x, pl.point.z); fr.aim = V(358f, H(358f, 170f) + 1f, 170f); ballAt = fr.aim + V(0f, ballR, 0f); fr.leg = "from its own point toward the lot centre"; fr.dist = UnityEngine.Vector3.Distance(fr.eye, fr.aim); }
+            var ball = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere); UnityEngine.Object.DestroyImmediate(ball.GetComponent<UnityEngine.Collider>()); ball.transform.position = ballAt; ball.transform.localScale = UnityEngine.Vector3.one * 2f * ballR; ball.GetComponent<UnityEngine.Renderer>().sharedMaterial = ballMat; drawn.Add(ball);
             string file = "Found_" + k2.ToString("00") + "_" + System.Text.RegularExpressions.Regex.Replace(pl.label, "[^A-Za-z0-9]+", "_") + ".png";
             Pose(fr.eye, fr.aim); Shoot(file); shots.Add(file + " (" + fr.leg + ", " + F1(fr.dist) + " m)"); drawn.Remove(ball); UnityEngine.Object.DestroyImmediate(ball);
         }

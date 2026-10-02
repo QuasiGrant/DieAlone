@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp-Editor::Main3AreaSet
   floodCell: 2
   floodLevel: 2
+  stopCell: 0.5
+  stopLevel: 0.5
+  stopNear: 2
   floodHeadings: 8
   floodMoveTime: 1
   floodMargin: 10
@@ -124,7 +127,7 @@ MonoBehaviour:
     path: 
     kind: practicals
     name: 
-    expected: 30
+    expected: 29
   - label: Cabin
     path: Camp/Cabin
     kind: renderers
@@ -209,7 +212,7 @@ MonoBehaviour:
     path: FrontZone/Chain
     kind: renderers
     name: 
-    expected: 3
+    expected: 8
   areas:
   - walkLines: []
     id: camp
@@ -416,6 +419,7 @@ MonoBehaviour:
     - main3_8_21_camp_check.cs
     - main3_tower_stairs_check.cs
     - main3_breaks_recheck.cs
+    - main3_8_21b_stop_check.cs
   - walkLines:
     - label: T east across the lot to the gate
       points:
@@ -603,45 +607,151 @@ MonoBehaviour:
     title: Lake
     bounds:
     - serializedVersion: 2
-      x: 150
+      x: 133
       y: 25
-      width: 112
+      width: 129
       height: 105
     warps:
     - Lake_Pump
     - Lake_Boathouse
     places:
     - label: Pump
-      point: {x: 190, y: -999, z: 97}
-      height: 0
-      objectPath: 
-    - label: Boathouse
-      point: {x: 244, y: -999, z: 52}
-      height: 0
-      objectPath: 
-    - label: Cat step
-      point: {x: 233, y: -999, z: 62}
-      height: 0
-      objectPath: 
-    - label: Dock end
-      point: {x: 190, y: -999, z: 88}
-      height: 0
-      objectPath: 
-    - label: Overturned rowboat
-      point: {x: 226, y: -999, z: 87}
-      height: 0
-      objectPath: 
+      point: {x: 190, y: -4.8, z: 94.8}
+      height: 1.3
+      objectPath: Lake/Dock/Pump
+    - label: Dock end rail
+      point: {x: 190, y: -4.8, z: 86.44}
+      height: 1
+      objectPath: Lake/Dock/RailEnd
+    - label: Rowboat
+      point: {x: 226.47, y: -999, z: 87.28}
+      height: 0.8
+      objectPath: PointsOfInterest/POI_Overturned_rowboat
     - label: Water tank
-      point: {x: 186, y: -999, z: 125}
+      point: {x: 186.34, y: -999, z: 124.53}
+      height: 3
+      objectPath: PointsOfInterest/POI_Water_tank
+    - label: East doorway
+      point: {x: 243.2, y: -3.8, z: 52.4}
+      height: 2
+      objectPath: Lake/Boathouse
+    - label: Step
+      point: {x: 240, y: -3.8, z: 56.1}
+      height: 1
+      objectPath: Lake/Boathouse/Dressing/Step
+    - label: Slip rest
+      point: {x: 240.85, y: -3.8, z: 52.4}
+      height: 1.3
+      objectPath: Lake/Boathouse/Layout823/SlipRest
+    - label: Reeds rest
+      point: {x: 243.6, y: -999, z: 62}
+      height: 1.3
+      objectPath: Lake/Boathouse/Layout823/ReedsRest
+    - label: Beach
+      point: {x: 243.6, y: -999, z: 57}
       height: 0
       objectPath: 
-    inventory: []
-    deckListWritten: 0
-    deckSee: []
+    - label: Stake line
+      point: {x: 240, y: -999, z: 60.4}
+      height: 1.3
+      objectPath: Lake/Boathouse/Layout823/StakeLine
+    - label: Soft ground
+      point: {x: 250, y: -999, z: 58.35}
+      height: 0.3
+      objectPath: Lake/Boathouse/Layout823/SoftGround
+    inventory:
+    - Lanterns and lamps
+    deckListWritten: 1
+    deckSee:
+    - label: her blanket
+      point: {x: 240.7, y: -3.6, z: 56.65}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: Lake/Boathouse/Dressing/Step/CITW_Blanket
+    - label: her bowl
+      point: {x: 241.2, y: -3.7, z: 56.5}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: Lake/Boathouse/Dressing/Step/CITW_Bowl_Small
+    - label: boathouse roof
+      point: {x: 240, y: -1, z: 52.4}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: pump
+      point: {x: 190, y: -3.6, z: 94.8}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: dock end
+      point: {x: 190, y: -4.3, z: 86.4}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: mid water
+      point: {x: 190, y: -5.4, z: 60}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: reed bed
+      point: {x: 241.5, y: -4.6, z: 62.2}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: stake line
+      point: {x: 240, y: -4.8, z: 60.4}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: rowboat
+      point: {x: 226.47, y: -999, z: 87.28}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: shore path east
+      point: {x: 255, y: -999, z: 55}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
     deckHide: []
-    interactions: []
-    frames: []
-    playChecks: []
+    interactions:
+    - label: pump
+      path: Lake/Dock/Pump
+      approach: {x: 190, y: -4.8, z: 96}
+    - label: slip rest
+      path: Lake/Boathouse/Layout823/SlipRest
+      approach: {x: 241.3, y: -3.8, z: 52.4}
+    - label: reeds rest
+      path: Lake/Boathouse/Layout823/ReedsRest
+      approach: {x: 244.1, y: -999, z: 62}
+    frames:
+    - label: THE PUMP FROM THE TRAIL END, FACING SOUTH
+      eye: {x: 190, y: -999, z: 96.5}
+      look: {x: 190, y: -3.7000003, z: 94.8}
+    - label: THE SLIP FROM THE EAST DOORWAY
+      eye: {x: 242.6, y: -2.1999998, z: 52.4}
+      look: {x: 238, y: -3.8, z: 52.4}
+    - label: THE STEP FROM THE NORTH DOORWAY
+      eye: {x: 240, y: -2.1999998, z: 54.6}
+      look: {x: 240, y: -3.5, z: 56.6}
+    - label: THE SHALLOWS AND STAKE LINE FROM THE BEACH
+      eye: {x: 244.5, y: -999, z: 57.5}
+      look: {x: 238, y: -5.6, z: 59}
+    - label: THE BOATHOUSE FROM THE SHORE PATH, 20 M OUT
+      eye: {x: 252, y: -999, z: 70}
+      look: {x: 240, y: -3, z: 54}
+    playChecks:
+    - main3_8_23_lake_check.cs
   - walkLines: []
     id: camp1
     task: 8.24
@@ -1011,29 +1121,49 @@ MonoBehaviour:
       height: 1
       objectPath: FrontZone/Chain
     - label: Pump
-      point: {x: 190, y: -999, z: 97}
-      height: 0
-      objectPath: 
-    - label: Boathouse
-      point: {x: 244, y: -999, z: 52}
-      height: 0
-      objectPath: 
-    - label: Cat step
-      point: {x: 233, y: -999, z: 62}
-      height: 0
-      objectPath: 
-    - label: Dock end
-      point: {x: 190, y: -999, z: 88}
-      height: 0
-      objectPath: 
-    - label: Overturned rowboat
-      point: {x: 226, y: -999, z: 87}
-      height: 0
-      objectPath: 
+      point: {x: 190, y: -4.8, z: 94.8}
+      height: 1.3
+      objectPath: Lake/Dock/Pump
+    - label: Dock end rail
+      point: {x: 190, y: -4.8, z: 86.44}
+      height: 1
+      objectPath: Lake/Dock/RailEnd
+    - label: Rowboat
+      point: {x: 226.47, y: -999, z: 87.28}
+      height: 0.8
+      objectPath: PointsOfInterest/POI_Overturned_rowboat
     - label: Water tank
-      point: {x: 186, y: -999, z: 125}
+      point: {x: 186.34, y: -999, z: 124.53}
+      height: 3
+      objectPath: PointsOfInterest/POI_Water_tank
+    - label: East doorway
+      point: {x: 243.2, y: -3.8, z: 52.4}
+      height: 2
+      objectPath: Lake/Boathouse
+    - label: Step
+      point: {x: 240, y: -3.8, z: 56.1}
+      height: 1
+      objectPath: Lake/Boathouse/Dressing/Step
+    - label: Slip rest
+      point: {x: 240.85, y: -3.8, z: 52.4}
+      height: 1.3
+      objectPath: Lake/Boathouse/Layout823/SlipRest
+    - label: Reeds rest
+      point: {x: 243.6, y: -999, z: 62}
+      height: 1.3
+      objectPath: Lake/Boathouse/Layout823/ReedsRest
+    - label: Beach
+      point: {x: 243.6, y: -999, z: 57}
       height: 0
       objectPath: 
+    - label: Stake line
+      point: {x: 240, y: -999, z: 60.4}
+      height: 1.3
+      objectPath: Lake/Boathouse/Layout823/StakeLine
+    - label: Soft ground
+      point: {x: 250, y: -999, z: 58.35}
+      height: 0.3
+      objectPath: Lake/Boathouse/Layout823/SoftGround
     - label: Camp 1
       point: {x: 282, y: -999, z: 238}
       height: 0

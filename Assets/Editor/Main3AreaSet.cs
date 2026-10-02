@@ -113,6 +113,7 @@ public class Main3AreaSet : ScriptableObject
     [Header("Flood and traps (Marlow's method, Breaks_2026-10-01.md)")]
     [Tooltip("Grid cell, metres.")] public float floodCell = 2f;
     [Tooltip("Height band that keys a standing place, metres (floors above one another are separate places).")] public float floodLevel = 2f;
+    [Tooltip("Within stopNear m of a stop (stopRoots or Ignore Raycast) the flood keys places on these finer cells and levels (8.21b, Marlow round 2: 2 m cells never sampled a 0.1 m step from a pocket fill onto a hedge top).")] public float stopCell = 0.5f, stopLevel = 0.5f, stopNear = 2f;
     [Tooltip("Headings per move kind.")] public int floodHeadings = 8;
     [Tooltip("Seconds per flood move.")] public float floodMoveTime = 1f;
     [Tooltip("Metres the flood reaches past the area's bounds before it stops expanding.")] public float floodMargin = 10f;
@@ -120,7 +121,7 @@ public class Main3AreaSet : ScriptableObject
     [Tooltip("Escape headings per move kind in the trap retest (Marlow: 16 x walk, sprint, sprint-jump = 48).")] public int escapeHeadings = 16;
     [Tooltip("Seconds per escape try.")] public float escapeTime = 3f;
     [Tooltip("Ground closed by thicket (Valley.md 8): a reached place inside one is a leak.")] public Rect[] closedZones;
-    [Tooltip("Stops (8.22 round 2, Marlow 1: a jump onto the brush band and off its far side): a flood place standing on a collider under one of these scene paths, or on the Ignore Raycast layer (hedge boxes, invisible walls), is an escape over a stop and fails.")] public string[] stopRoots = { "FrontZone/BrushBands", "FrontZone/ShiftWalls", "FrontZone/Gate/PlayerBlocker", "Ground815/Stops", "Fence" };
+    [Tooltip("Stops (8.22 round 2, Marlow 1: a jump onto the brush band and off its far side): a flood place standing on a collider under one of these scene paths, or on the Ignore Raycast layer (hedge boxes, invisible walls), is an escape over a stop and fails.")] public string[] stopRoots = { "FrontZone/BrushBands", "FrontZone/ShiftWalls", "FrontZone/Gate/PlayerBlocker", "Ground815/Stops", "Fence", "Lake/WadeLimit", "Lake/Boathouse/Layout823/StakeLine" };
 
     [Header("Reach and found (Pim, Wren 2026-10-02)")]
     [Tooltip("A place counts as reached when a flood place lies within this many metres (xz) of its point.")] public float reachRadius = 4f;

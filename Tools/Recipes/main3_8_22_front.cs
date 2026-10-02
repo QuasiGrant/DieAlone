@@ -190,6 +190,32 @@ if (iw3 != null)
 else notes.Add("no ShiftWalls/IW3_SpurGap");
 const float chainH = 0.8f;
 var chainG = Need(fz, "Chain"); if (chainG != null) { var ch = chainG.Find("Chain"); if (ch != null) ch.position = V(ch.position.x, G + chainH, ch.position.z); }
+// the chain reads at 8 m (8.22 round 2, Wren): white posts with amber reflector bands, an amber chain chainT thick, a CLOSED plate on it;
+// forest pieces drawn on the lines from the Closed_Campground warp and from 8 m down the spur to the posts and chain are moved off
+// them (drawn trees count, temporary colliders on their first LOD, as 8.21's deck lines)
+const float chainT = 0.08f, postBand = 0.12f, plateW = 0.6f, plateH = 0.25f, chainView = 8f;
+int chainCleared = 0;
+if (chainG != null)
+{
+    foreach (UnityEngine.Transform c in chainG) { var r = c.GetComponent<UnityEngine.Renderer>(); if (r == null) continue; if (c.name == "Post") r.sharedMaterial = paint; if (c.name == "Chain") { r.sharedMaterial = refl; c.localScale = V(c.localScale.x, chainT, chainT); } }
+    PlaceKit.Remove(chainG.Find("ChainDress")); var cd = kit.Group("ChainDress", chainG, chainG.position, 0f);
+    foreach (UnityEngine.Transform c in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(chainG))) if (c.name == "Post") foreach (var y in new[] { 0.55f, 0.85f }) kit.Slab("Reflector", cd, cd.InverseTransformPoint(V(c.position.x, G + y, c.position.z)), V(c.lossyScale.x + 0.02f, postBand, c.lossyScale.z + 0.02f), refl);
+    var chainT2 = chainG.Find("Chain"); if (chainT2 != null) { var plate = kit.Slab("ClosedPlate", cd, cd.InverseTransformPoint(chainT2.position + V(0f, -plateH * 0.5f - chainT * 0.5f, -0.02f)), V(plateW, plateH, 0.02f), paint); kit.Label(plate.transform, "CLOSED", Hex("#2A1E14"), 40); }
+    // the lines: from the warp eye and from chainView m down the spur, to each post top and the chain's ends and middle
+    var forestR = kit.Root("Forest"); var ccWarp = kit.Root("DevWarps").transform.Find("Closed_Campground");
+    if (forestR != null && chainT2 != null)
+    {
+        var eyes = new System.Collections.Generic.List<UnityEngine.Vector3> { V(390f, G + 1.6f, chainT2.position.z - chainView) }; if (ccWarp != null) eyes.Add(V(ccWarp.position.x, G + 1.6f, ccWarp.position.z));
+        var targets = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform c in chainG) if (c.name == "Post") targets.Add(V(c.position.x, G + 0.9f, c.position.z)); targets.Add(chainT2.position); targets.Add(chainT2.position + V(-1.5f, 0f, 0f)); targets.Add(chainT2.position + V(1.5f, 0f, 0f));
+        var tempsC = new System.Collections.Generic.List<UnityEngine.Collider>();
+        foreach (var lod in forestR.GetComponentsInChildren<UnityEngine.LODGroup>()) { var lods = lod.GetLODs(); if (lods.Length == 0) continue; foreach (var r in lods[0].renderers) { var mf = r != null ? r.GetComponent<UnityEngine.MeshFilter>() : null; if (mf == null || mf.sharedMesh == null || r.GetComponent<UnityEngine.Collider>() != null) continue; if ((r.bounds.center - chainT2.position).magnitude > 30f) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; tempsC.Add(mc); } }
+        UnityEngine.Physics.SyncTransforms(); var gone = new System.Collections.Generic.HashSet<UnityEngine.GameObject>();
+        foreach (var e in eyes) foreach (var t in targets) { var d = t - e; foreach (var h in UnityEngine.Physics.RaycastAll(e, d.normalized, d.magnitude - 0.3f, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) { if (!h.collider.transform.IsChildOf(forestR.transform)) continue; var root = UnityEditor.PrefabUtility.GetOutermostPrefabInstanceRoot(h.collider.gameObject); gone.Add(root != null ? root : h.collider.gameObject); } }
+        foreach (var t in tempsC) if (t != null) UnityEngine.Object.DestroyImmediate(t);
+        foreach (var g in gone) if (g != null) { UnityEngine.Object.DestroyImmediate(g); chainCleared++; }
+        UnityEngine.Physics.SyncTransforms();
+    }
+}
 
 // ================= 3. OFFICE =================
 // doc local metres: origin the inside south-west corner (344.25, 196.25), X east, Z north
@@ -316,6 +342,10 @@ if (sInside != null)
 {
     float wallIn = sFaceZ + 0.23f; var cc = sInside.Find("Checkout_Counter"); var reg = sInside.Find("Cash_Register");
     if (cc != null) { float dz = wallIn + 0.01f - PlaceKit.MeshBounds(cc.gameObject).min.z; cc.position += V(0f, 0f, dz); if (reg != null) reg.position += V(0f, 0f, dz); }
+    // one box for the counter, from the floor to its top (8.22 round 2, Marlow 4: the pack's part colliders took a sprint-jump to the
+    // east end at 0.87 m, wedged under the new ceiling); the register on it has none
+    if (cc != null) { foreach (var c in cc.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c); var lb = PlaceKit.LocalBounds(cc.gameObject, cc); var bx = cc.gameObject.AddComponent<UnityEngine.BoxCollider>(); bx.center = lb.center; bx.size = lb.size; }
+    if (reg != null) foreach (var c in reg.GetComponentsInChildren<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
 }
 // the canopy x 360.5 to 371.9 over the porch z 193.5 to 195.5, posts at (360.7, 193.8) and (371.9, 193.8)
 const float cnX0 = 360.5f, cnX1 = 371.9f, cnZ0 = 193.5f, canopyH = 2.55f, postW = 0.12f;
@@ -546,6 +576,6 @@ UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " | booth x " + F(bX0) + " to " + F(bX1) + ", z " + F(bZ0) + " to " + F(bZ1) + ", cover pieces cleared " + coverGone + ", detail cells " + detailGone + " | barrier at (" + F(postX) + ", " + F(postZ) + ")" +
     " | IW1 z " + (iw1 != null ? F(iw1.GetComponent<UnityEngine.BoxCollider>().bounds.min.z) + " to " + F(iw1.GetComponent<UnityEngine.BoxCollider>().bounds.max.z) : "-") + " | IW3 " + (iw3 != null ? "SpurWall, off" : "MISSING") +
-    " | stops " + stops.childCount + " | office west door " + (westDoor != null ? "open in, no prompt" : "MISSING") + " | snapped top max x " + F(snappedMaxX) + " | reflector pieces off the drive mouth " + reflGone +
+    " | stops " + stops.childCount + " | office west door " + (westDoor != null ? "open in, no prompt" : "MISSING") + " | snapped top max x " + F(snappedMaxX) + " | reflector pieces off the drive mouth " + reflGone + " | chain lines cleared of " + chainCleared +
     " | campground pieces moved " + moved + ", removed " + removedCg + (cgList.Count > 0 ? " (" + string.Join("; ", cgList) + ")" : "") +
     " | interactor mask " + maskWas + " -> " + maskNow + " | round 2: band brush " + bandBush + ", store door " + (store.Find("StoreDoor") != null) + ", first-sight detail cells " + fsCells + ", lectern reader at (" + F(readerAt.x) + ", " + F(readerAt.z) + ")" + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

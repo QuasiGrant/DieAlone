@@ -4,7 +4,7 @@
 // FLOOD (Marlow's method, Breaks_2026-10-01.md): standing places on a floodCell grid keyed by a floodLevel height band, seeded from the
 //   area's warps and trail points, each expanded by floodHeadings headings x (walk, sprint-jump) moves of floodMoveTime s with the real
 //   mover (PlayerController.Step, dt 0.02), inside the bounds plus floodMargin m (a place past that is an exit and is not expanded); a
-//   move ends where the body lands, never mid-fall (8.21a).
+//   move ends where the body lands, never mid-fall (8.21a). Within stopNear m of a stop the cells are stopCell m and stopLevel m (8.21b).
 //   FAIL on a place inside a closed zone (Valley.md 8 thicket), fellUnder m under the terrain, or standing on a stop (stopRoots or the
 //   Ignore Raycast layer: an escape over a stop, wherever it leads; 8.22 round 2).
 // TRAPS: a reverse search from the seeds and exits finds the places with no way back; each group is retested from its first place with
@@ -40,7 +40,22 @@ const int landSteps = 10, settleSteps = 3, fallSteps = 500, shotW = 3840, shotH 
 UnityEngine.Vector3 Pt(UnityEngine.Vector3 p) => p.y <= groundY ? new UnityEngine.Vector3(p.x, H(p.x, p.z) + 1f, p.z) : p;   // y -999: the ground plus 1 m
 bool InRegion(UnityEngine.Vector3 p) { foreach (var r in A.bounds) { var e = new UnityEngine.Rect(r.x - set.floodMargin, r.y - set.floodMargin, r.width + 2f * set.floodMargin, r.height + 2f * set.floodMargin); if (e.Contains(new UnityEngine.Vector2(p.x, p.z))) return true; } return false; }
 bool Closed(UnityEngine.Vector3 p) { if (set.closedZones != null) foreach (var r in set.closedZones) if (r.Contains(new UnityEngine.Vector2(p.x, p.z))) return true; return false; }
-long Key(UnityEngine.Vector3 p) { long i = UnityEngine.Mathf.FloorToInt(p.x / set.floodCell) + 10000, j = UnityEngine.Mathf.FloorToInt(p.z / set.floodCell) + 10000, k = UnityEngine.Mathf.FloorToInt(p.y / set.floodLevel) + 1000; return (i * 20000L + j) * 4000L + k; }
+// finer keys near stops (8.21b): the coarse cells within stopNear m of a stop collider's bounds; a place there keys on stopCell cells and
+// stopLevel levels (negative keys), so a short step from a raised fill onto a stop's top is its own place
+var nearStop = new System.Collections.Generic.HashSet<long>();
+long Coarse(float x, float z) => (UnityEngine.Mathf.FloorToInt(x / set.floodCell) + 10000L) * 20000L + (UnityEngine.Mathf.FloorToInt(z / set.floodCell) + 10000L);
+foreach (var c in UnityEngine.Object.FindObjectsByType<UnityEngine.Collider>(UnityEngine.FindObjectsSortMode.None))
+{
+    if (!c.enabled || c.isTrigger || c is UnityEngine.TerrainCollider) continue; bool stop = c.gameObject.layer == 2;
+    if (!stop && set.stopRoots != null) { var path = WalkIns.PathOf(c.transform); foreach (var sr in set.stopRoots) if (path.StartsWith(sr)) { stop = true; break; } }
+    if (!stop) continue; var b = c.bounds; if (b.size.x > 200f || b.size.z > 200f) continue;
+    for (float x = b.min.x - set.stopNear; x <= b.max.x + set.stopNear + set.floodCell; x += set.floodCell) for (float z = b.min.z - set.stopNear; z <= b.max.z + set.stopNear + set.floodCell; z += set.floodCell) nearStop.Add(Coarse(x, z));
+}
+long Key(UnityEngine.Vector3 p)
+{
+    if (nearStop.Contains(Coarse(p.x, p.z))) { long fi = UnityEngine.Mathf.FloorToInt(p.x / set.stopCell) + 100000, fj = UnityEngine.Mathf.FloorToInt(p.z / set.stopCell) + 100000, fk = UnityEngine.Mathf.FloorToInt(p.y / set.stopLevel) + 10000; return -((fi * 200000L + fj) * 20000L + fk) - 1; }
+    long i = UnityEngine.Mathf.FloorToInt(p.x / set.floodCell) + 10000, j = UnityEngine.Mathf.FloorToInt(p.z / set.floodCell) + 10000, k = UnityEngine.Mathf.FloorToInt(p.y / set.floodLevel) + 1000; return (i * 20000L + j) * 4000L + k;
+}
 void Put(UnityEngine.Vector3 p) { cc.enabled = false; pc.transform.position = p; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (int s = 0; s < settleSteps; s++) pc.Step(UnityEngine.Vector3.zero, false, false, dt); }
 UnityEngine.Vector3 Move(UnityEngine.Vector3 from, UnityEngine.Vector3 dir, bool jump, bool sprint, float time)
 {
