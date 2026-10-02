@@ -13,3 +13,4 @@ Tully reviews at each commit review. A line whose fix now lives in an agent file
 - 2026-10-01 Marlow, Rook, Wren: two agents shared the Editor and one stopped the other's Play session / Marlow enters Play only when Wren says Rook is idle / pending: playtester.md line
 - 2026-10-01 Rook: 465 walk-into meshes had no collider and no check caught it / a collider check on walk-into meshes over 0.5 m / pending: capture
 - 2026-10-02 Rook: a pixel check rendered about 1,100 full-size frames in one Editor frame and crashed the GPU (second D3D12 crash from batch rendering) / render in small batches across jobs / main3_deck_pixel_check.cs
+- 2026-10-02 Rook, Wren: since the GPU Resident Drawer went on, every capture sheet left out the cabin, tower and forest, so look and forest grades rested on frames missing them / capture with the drawer off in memory / pending: main3_review_capture.cs
