@@ -3,7 +3,8 @@
 // numbers: Assets/Settings/Main3Areas.asset (main3_areas_setup.cs). Never saves; restores the player and runInBackground.
 // FLOOD (Marlow's method, Breaks_2026-10-01.md): standing places on a floodCell grid keyed by a floodLevel height band, seeded from the
 //   area's warps and trail points, each expanded by floodHeadings headings x (walk, sprint-jump) moves of floodMoveTime s with the real
-//   mover (PlayerController.Step, dt 0.02), inside the bounds plus floodMargin m (a place past that is an exit and is not expanded).
+//   mover (PlayerController.Step, dt 0.02), inside the bounds plus floodMargin m (a place past that is an exit and is not expanded); a
+//   move ends where the body lands, never mid-fall (8.21a).
 //   FAIL on a place inside a closed zone (Valley.md 8 thicket), fellUnder m under the terrain, or standing on a stop (stopRoots or the
 //   Ignore Raycast layer: an escape over a stop, wherever it leads; 8.22 round 2).
 // TRAPS: a reverse search from the seeds and exits finds the places with no way back; each group is retested from its first place with
@@ -35,7 +36,7 @@ string P3(UnityEngine.Vector3 p) => "(" + F1(p.x) + ", " + F1(p.y) + ", " + F1(p
 var pc = UnityEngine.Object.FindFirstObjectByType<PlayerController>(); var cc = pc.GetComponent<UnityEngine.CharacterController>(); bool pcWas = pc.enabled; pc.enabled = false;
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(new UnityEngine.Vector3(x, 0f, z)) + ter.transform.position.y;
 const float dt = 0.02f, groundY = -900f, raise = 20f, escapeAway = 4f, trailStep = 4f, eyeH = 1.6f;
-const int landSteps = 10, settleSteps = 3, shotW = 3840, shotH = 1976;
+const int landSteps = 10, settleSteps = 3, fallSteps = 500, shotW = 3840, shotH = 1976;
 UnityEngine.Vector3 Pt(UnityEngine.Vector3 p) => p.y <= groundY ? new UnityEngine.Vector3(p.x, H(p.x, p.z) + 1f, p.z) : p;   // y -999: the ground plus 1 m
 bool InRegion(UnityEngine.Vector3 p) { foreach (var r in A.bounds) { var e = new UnityEngine.Rect(r.x - set.floodMargin, r.y - set.floodMargin, r.width + 2f * set.floodMargin, r.height + 2f * set.floodMargin); if (e.Contains(new UnityEngine.Vector2(p.x, p.z))) return true; } return false; }
 bool Closed(UnityEngine.Vector3 p) { if (set.closedZones != null) foreach (var r in set.closedZones) if (r.Contains(new UnityEngine.Vector2(p.x, p.z))) return true; return false; }
@@ -45,6 +46,7 @@ UnityEngine.Vector3 Move(UnityEngine.Vector3 from, UnityEngine.Vector3 dir, bool
 {
     Put(from); for (float t = 0f; t < time; t += dt) pc.Step(dir, jump, sprint, dt);
     for (int s = 0; s < landSteps; s++) pc.Step(UnityEngine.Vector3.zero, false, false, dt);
+    for (int s = 0; s < fallSteps && !cc.isGrounded; s++) pc.Step(UnityEngine.Vector3.zero, false, false, dt);   // a move ends where the body lands (8.21a: places recorded mid-fall off the tower deck were jumped from again, a second jump in the air)
     return pc.transform.position;
 }
 UnityEngine.Vector3 Dir(int k, int n) => UnityEngine.Quaternion.Euler(0f, k * 360f / n, 0f) * UnityEngine.Vector3.forward;
