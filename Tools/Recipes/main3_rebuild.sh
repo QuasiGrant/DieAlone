@@ -54,6 +54,7 @@ run main3_warp_seat.cs "saved=True" "no ground under: none"
 run main3_8_9_sightlines.cs "all seen: True" "Ward hidden: True, cave hidden: True" "Ruin hidden: True" "ok True | next:" "all True" "ok True | cab from" "F-1 hidden: True"
 run main3_e1_edges.cs "E-1 pass: True" "grazing rays ok True"
 run main3_topdown.cs "wrote"
+run main3_inventory_check.cs "ALL PASS"   # Vesper 2026-10-02: expected and found count per place and effect; stops on any zero
 # the Play checks: the warp landing check (Grant 2026-10-01: warps that fell through the map), the tower stairs on foot and Marlow's
 # breaks recheck (8.18a)
 unity command editor_play >/dev/null 2>&1

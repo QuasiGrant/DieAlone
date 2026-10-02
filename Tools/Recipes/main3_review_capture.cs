@@ -578,7 +578,7 @@ try
     }
 
     // 3d. Marlow's hand-walk views (Gate_8_14_Marlow.md 13): P4 east, round the fin with flame tops in sight, the pump trench, east from the front
-    var flameCardShader = UnityEngine.Shader.Find("DieAlone/FlameCard"); var fireRootC = UnityEngine.GameObject.Find("Ward/StandInFire")?.transform;
+    var flameCardShader = UnityEngine.Shader.Find("DieAlone/FlameCard"); UnityEngine.Transform fireRootC = null; foreach (var r in scene.GetRootGameObjects()) if (r.name == "Ward") fireRootC = r.transform.Find("StandInFire");   // the root Ward, not the DevWarps/Ward warp
     var flameTops = new System.Collections.Generic.List<(UnityEngine.Vector3 top, string group)>();
     foreach (var mf in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshFilter>(UnityEngine.FindObjectsSortMode.None))
     {

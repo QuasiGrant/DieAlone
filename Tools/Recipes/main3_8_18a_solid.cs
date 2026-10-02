@@ -107,7 +107,8 @@ for (; pass < maxPasses; pass++)
     foreach (var w in WalkIns.Find(tuning.capsuleRadius, tuning.standHeight))
     {
         bool later = false; foreach (var lr in laterRoots) if (w.Path.StartsWith(lr)) later = true; if (later) continue;
-        left++; if (Solid(w.Renderer)) now++;
+        if (RimRoot(w.Renderer.transform) || IsLowWalkable(w.Renderer.transform) || skip.Contains(w.Renderer)) continue;   // stop visuals, walk-decked and in-tread meshes get no hull by rule (the walk-into check lists them apart), so they are not "left"
+        left++; if (Solid(w.Renderer)) now++; else if (skip.Contains(w.Renderer)) left--;   // drawn into a tread: listed above, not "left"
     }
     if (now == 0) break;
 }

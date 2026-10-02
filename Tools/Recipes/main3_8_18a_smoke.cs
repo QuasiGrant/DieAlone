@@ -15,7 +15,9 @@
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
-var wardGo = UnityEngine.GameObject.Find("Ward"); if (wardGo == null) return "run 8.7 first";
+// the root Ward (DevWarps/Ward, the 8.1 warp, shares the name, so GameObject.Find("Ward") can return the warp)
+UnityEngine.GameObject wardGo = null; foreach (var r in scene.GetRootGameObjects()) if (r.name == "Ward") wardGo = r;
+if (wardGo == null) return "run 8.7 first";
 var ward = wardGo.transform; var fire = ward.Find("StandInFire"); if (fire == null) return "no Ward/StandInFire";
 var smokeSh = UnityEngine.Shader.Find("DieAlone/Smoke"); if (smokeSh == null) return "DieAlone/Smoke shader not found";
 var dayTwoVis = UnityEditor.AssetDatabase.LoadAssetAtPath<LookTuning>("Assets/Settings/LookTuning_DayTwo.asset"); if (dayTwoVis == null) return "no LookTuning_DayTwo";

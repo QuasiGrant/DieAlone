@@ -15,6 +15,10 @@ OUT="${1:-Docs/Captures/Main3Review}"
 unity status 2>/dev/null | grep -q "ready" || { echo "FAIL no Editor in state ready (unity status)"; exit 1; }
 unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "stopped"' || { echo "FAIL Editor is in Play mode or busy; wait for it to stop"; exit 1; }
 mkdir -p Temp
+# Vesper 2026-10-02: no capture of a build that dropped a place or effect (expected and found count per item; stops on any zero)
+INV=$(unity command eval_file --file "$R/main3_inventory_check.cs" --result-only 2>/dev/null | sed -n 's/.*"result": "\(.*\)".*/\1/p' | head -1)
+printf '%s\n' "$INV" | sed 's/\\n/\n/g'
+case "$INV" in *"ALL PASS"*|*"FAIL "*" differ"*) ;; *) echo "FAIL inventory (main3_inventory_check.cs): fix the build before capturing"; exit 1;; esac
 for step in day night daytwo; do
   sed -e "s|string step = \"day\";|string step = \"$step\";|" -e "s|\"Docs/Captures/Main3Review\"|\"$OUT\"|" "$R/main3_review_capture.cs" > "Temp/main3_review_capture_$step.cs"
 done
