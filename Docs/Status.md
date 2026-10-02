@@ -109,3 +109,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: The tower lectern stands on the walkway's north-east corner just outside the cab, where the binoculars see the office door.
 - 2026-10-02: The lake's boat slip view has no sky (the ridge stands above it); accepted for layout.
 - 2026-10-02: 8.22 ruling after round 2: Rook fixes the chain visibility, Found_06 and Found_07, and the store counter wedge, proven by the area check; then Wren ticks without a third review round.
+- 2026-10-02: Breaks recheck trap 3a is exempt; its start now sits inside the raised hedge, and the lake flood finds 0 traps in that trench.
