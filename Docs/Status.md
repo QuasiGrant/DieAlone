@@ -101,3 +101,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: IW3 is on whenever an admitted car is on the campground spur, not tied to the gate shift (DECISIONS 2026-09-29).
 - 2026-10-02: IW3 always shows "You can't abandon your post." when it stops the player, shift or not, so no invisible wall is silent. The booth is an open doorway.
 - 2026-10-02: The tower check is done from anywhere on the deck, so the office door counts as seen from the deck's east side; it need not be seen from the lectern.
+- 2026-10-02: The fishing eat point is the boathouse step chair (Valley and the build), not a pump dock chair. Stilts rest and the step door are Sable's to settle in LakeLayout.
