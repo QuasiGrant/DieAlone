@@ -90,3 +90,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: Warmth comes from the cabin stove: split wood at the woodpile, then light the stove. The outdoor fire pit loses its prompt and stays as camp dressing.
 - 2026-10-02: Cabin interior swaps bunk and stove (bunk north-east sees door, desk and stove); the fire pit moves off the door-to-tower line and stays cold.
 - 2026-10-02: The Ward path may be seen from the deck as a trail; the rune post and Ward stones may not. The ruin and rune post get a render pixel check, since tree crowns have no colliders.
+- 2026-10-02: CampLayout draft 2 goes to build without a third paper round (two-round cap); the 8.21 area check verifies overlaps on the built scene.
