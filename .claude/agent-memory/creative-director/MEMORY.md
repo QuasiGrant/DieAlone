@@ -22,4 +22,5 @@
 - [WardPath review](project_wardpath_review.md) — 2026-10-01 Sable draft 1: grades, night-one sheet not columns, no ledge day grade
 - [Gate 8.21 camp](project_gate_8_21.md) — 2026-10-02 R1 FAIL deck; R2 PASS d9dcab7; owed seated desk and porch-stair frames
 - [Gate 8.22 front](project_gate_8_22.md) — 2026-10-02 R1, R2 FAIL; R2 open: chain unseen, Found_06 and Found_07 not by eye
+- [Gate 8.23 lake](project_gate_8_23.md) — 2026-10-02 R1 FAIL; dock unread, deck blanket/bowl need binocular pair
 - [Main2 rework verdict](project_main2_rework.md) — 2026-09-28 Grant wants total rework; my diagnosis, keep list, open decisions
