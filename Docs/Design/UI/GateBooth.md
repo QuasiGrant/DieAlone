@@ -1,6 +1,6 @@
 # Gate booth: the window, papers and stamps
 
-**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-29: gate minigame option B (a booth just inside the gate; admitted cars drive up a gravel spur inside the fence to a closed campground loop behind a chain; refused cars turn and leave; the Wardkeeper stays inside the fence); cars keep arriving until the office resident's storyline ends (completed, or he dies), and do not thin out as WARD falls; talking to the office resident counts as Social and starts his minigame, the booth itself does not count as Social; how many cars and days is set by playtest and must not last the whole game; during a shift, trying to follow a car hits an invisible wall with the message "You can't abandon your post." Also 2026-09-29: nothing forces the player to act; no time budget for the day. Terms follow the other UI specs: stamp words in capitals, the word never colour alone (TowerCheck.md 5). Colours and type per Style.md 7 and Fonts.md. Logbook layout is Logbook.md; the on-screen line is Objective.md 3. Revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Overpass for forms, dialogue and warnings; Patrick Hand for logbook handwriting): section 6.8.
+**DRAFT, 2026-09-29, Pim. Nothing here is decided.** Binding inputs: DECISIONS.md 2026-09-29: gate minigame option B (a booth just inside the gate; admitted cars drive up a gravel spur inside the fence to a closed campground loop behind a chain; refused cars turn and leave; the Wardkeeper stays inside the fence); cars keep arriving until the office resident's storyline ends (completed, or he dies), and do not thin out as WARD falls; talking to the office resident counts as Social and starts his minigame, the booth itself does not count as Social; how many cars and days is set by playtest and must not last the whole game; during a shift, trying to follow a car hits an invisible wall with the message "You can't abandon your post." Also 2026-09-29: nothing forces the player to act; no time budget for the day. Terms follow the other UI specs: stamp words in capitals, the word never colour alone (TowerCheck.md 5). Colours and type per Style.md 7 and Fonts.md. Logbook layout is Logbook.md; the on-screen line is Objective.md 3. Revised 2026-09-29 to DECISIONS 2026-09-29 (UI text is TextMeshPro; Overpass for forms, dialogue and warnings; Patrick Hand for logbook handwriting): section 6.8. Revised 2026-10-02 to FrontLayout.md draft 2 (booth south of the drive, lift barrier, refused cars reverse onto the apron, shift starts on entering the booth per Wren, IW3 on while an admitted car is on the spur): sections 2, 5, 7.2, 9, 11, 12, 13.
 
 ## 1. Purpose
 
@@ -10,13 +10,14 @@ The office resident's minigame. The player works the booth window: reads a car's
 
 | Term | Meaning |
 |---|---|
-| Booth | The hut just inside the gate. One window faces the gate lane. |
+| Booth | The hut just inside the gate, south of the drive. Window on the north face, onto the lane; door on the south face. |
+| Barrier | The lift arm across the lane by the booth. Cars stop at it. |
 | Window | The interact point inside the booth. Using it enters the counter view. |
 | Counter view | The fixed first-person view at the window. |
 | Papers | What a driver hands over. One to three sheets per car. |
 | Rule sheet | The day's rules, pinned at the left of the counter. |
 | ADMIT, REFUSE | The two stamps, and the verdict words in every record. |
-| Shift | From a car stopping at the gate until that car has left (behind the chain, or out of sight down the road). |
+| Shift | From the player entering the booth until the day's last car has gone, or until the player leaves the booth with no car waiting (Wren, 2026-10-02). |
 | Gate active | From the day the office resident starts his minigame until his storyline ends. |
 
 ## 3. When the booth works
@@ -39,8 +40,8 @@ The office resident's minigame. The player works the booth window: reads a car's
 
 All in the world first. One screen line, once a day.
 
-1. Sound: engine and tyres on the road, then gravel as it pulls up to the gate. Audible across the lot (Hollis to set the distance).
-2. Light: headlights on against the sunset, pointed at the booth.
+1. Sound: engine and tyres on the road, then gravel as it pulls up to the barrier. Audible across the lot (Hollis to set the distance).
+2. Light: headlights on against the sunset, lighting the lane by the booth.
 3. If the booth is empty 10 s after the car stops: one horn. Repeats every 90 s, at most three horns per car, then the car idles without horning. It waits until served or until the report is filed (nothing forces the player).
 4. The first car each day posts the on-screen line `Logbook: a car at the gate.` through the Objective.md queue. Later cars that day post nothing.
 5. From the tower the waiting car is visible at the gate (DECISIONS 2026-09-29: the tower sees more of the office and lot). It is not a tower stamp and is not on the tower sheet.
@@ -105,7 +106,7 @@ Two steps, so a stamp is never made by a stray press.
 2. Choose a paper (on the counter or lifted): the stamp comes down on it. Thump sound (Hollis). The print shows on that paper.
 3. Back with a stamp in hand: the stamp goes back on its pad. Nothing is stamped.
 4. One stamp decides the car. Stamping any one of its papers is the verdict. The other stamp is then locked (dimmed on its pad) for that car.
-5. No undo. 0.5 s after the stamp, the papers slide back out of the window. The car goes: ADMIT, the gate swings open, the car drives in and up the spur behind the chain, the gate closes; REFUSE, the car turns in the lane and leaves down the road.
+5. No undo. 0.5 s after the stamp, the papers slide back out of the window. The car goes: ADMIT, the arm lifts, the car turns north up the spur, the chain drops for it, and it parks on the next empty pitch; REFUSE, the car reverses out through the gate onto the apron, turns, and leaves down the road.
 6. The player stays in the counter view while the car goes. The papers slot is empty until the next car.
 7. What happens after a wrong verdict, and whether the player is told, is content **[GAP: Tully]**. This spec shows nothing on screen about right or wrong.
 
@@ -131,17 +132,17 @@ Allowed. A player can stamp without lifting a paper. The game does not stop them
 
 ### 9.2 Leaving between cars
 
-1. With no car at the gate, the player may leave the window and the booth and go anywhere. There is no shift, so no wall.
+1. With no car waiting, leaving the booth ends the shift. The player may go anywhere, except past IW3 while an admitted car is still on the spur (9.3).
 2. The next car arrives whether or not the player is there, and signals as in section 5.
 
 ### 9.3 The invisible wall
 
-1. During a shift, walls block the gate opening and the mouth of the gravel spur. They exist only for the length of the shift.
-2. Touching a wall shows the line `You can't abandon your post.`
+1. IW1 blocks the gate opening at all times (player only). IW3 crosses the spur at z 210 from the arm lifting for an admitted car until that car is parked, shift or not.
+2. Touching IW1 during a shift, or IW3 while it is on, shows the line `You can't abandon your post.`
 3. Style: exactly the Objective.md 3 line. Top left, 5 percent safe margin, same font (Overpass), colour and 1 px shadow, fade in 0.3 s, hold 3 s, fade out 0.5 s. No `Logbook:` prefix, because the logbook does not change. No pencil sound (that sound means the logbook changed). Sound, if any: Hollis.
 4. It jumps the Objective queue: it shows at once, and any queued logbook line waits until it fades.
 5. It does not repeat while it is on screen, and not again until 5 s after it fades, however often the player pushes the wall.
-6. Outside a shift, the spur is closed by its chain and the gate by its chain, as world objects. No message.
+6. Outside a shift, IW1 still blocks the gate, silently. With IW3 off, the spur chain is a world object the player can walk round by its east post. No message.
 
 ## 10. What the Logbook records
 
@@ -181,7 +182,8 @@ The booth is not Social (DECISIONS 2026-09-29). It never ticks Social on the Tod
 | Sheet lifted | Sheet full size, rule sheet at the left. |
 | Stamp in hand | Stamp over the counter; other stamp still on its pad. |
 | Stamped | Print on the paper, other stamp dimmed, papers slide out after 0.5 s, car leaves. |
-| Shift, player walking | Walls on the gate and spur mouth; touching one shows the line. |
+| Shift, player walking | Touching IW1 shows the line. |
+| Admitted car on the spur | IW3 on; touching it shows the line, shift or not. |
 | Report filed | Shutter down. A waiting car drives off unserved. |
 | Event ends the day at the window | Counter view closes at once (0.3 s fade), nothing stamped. Event sequence, then WardNight.md 2.4. |
 | Paused | Pause menu over the counter view. Resume returns to the same state, stamp still in hand if it was. |
@@ -213,14 +215,14 @@ Requirements for Rook (flagged):
 3. **Crouch on exit.** Crouch is hold. If `B` is still held when the Player map comes back on, the player could exit crouched. Re-enable the Player map only after `B` is released, or confirm the Input System does not start a Button action that is already held when its map is enabled (unverified).
 4. The same press that leaves must not also re-enter: ignore Interact for 0.3 s after leaving (the fade).
 5. Counter component in GamePause's gameplay list.
-6. Wall volumes on the gate opening and spur mouth, on only during a shift. The message goes through the Objective line component with a priority flag and a 5 s cooldown (section 9.3).
+6. IW1 always on, speaking only during a shift; IW3 on from the arm lifting for an admitted car until it is parked. Both off PlayerInteractor's mask. The message goes through the Objective line component with a priority flag and a 5 s cooldown (section 9.3).
 7. Forced close API for events, as the book (Logbook.md 8.3).
 
 ## 13. Open questions
 
 1. Rules, papers, driver lines, and what a wrong verdict does: Tully and Quill.
-2. Where the car stops so its driver's window meets the booth window at the fence line: Marlow and Tully on the blockout.
-3. Can the player walk up the spur outside a shift, past the chain? Draft: no, the chain is a barrier.
+2. Where the car stops: FrontLayout draft 2 puts the driver's door 1.2 m off the window, at the barrier. Rook proves the swept paths.
+3. Can the player walk up the spur, past the chain? FrontLayout draft 2: yes, round the east post, when IW3 is off.
 4. Should an unserved car count as REFUSE? Draft: no, not counted.
 5. Cars per day and days: playtest.
 
