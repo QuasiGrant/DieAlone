@@ -8,6 +8,7 @@ if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 UnityEngine.GameObject warps = null; foreach (var r in scene.GetRootGameObjects()) if (r.name == "DevWarps") warps = r; if (warps == null) return "no DevWarps root";
+UnityEngine.GameObject player = null; foreach (var r in scene.GetRootGameObjects()) if (r.name == "Player") player = r;
 const float seatLift = 0.2f, probeUp = 2f, probeDown = 12f, moveNote = 0.05f;
 // warps moved off places later recipes closed (8.1 places them first; 8.15 stamps its hedges clear of them where they stood): name, x, z,
 // and the point it faces. Old_Burn (Marlow 2026-10-01): at (230, 166) the burn hedges sealed it in a 9 x 10 m pocket; now on Camp to Jg.
@@ -18,7 +19,12 @@ var moved = new System.Collections.Generic.List<string>(); var none = new System
 foreach (UnityEngine.Transform w in warps.transform)
 {
     n++; var from = w.position + UnityEngine.Vector3.up * probeUp;
-    if (!UnityEngine.Physics.Raycast(from, UnityEngine.Vector3.down, out var hit, probeUp + probeDown, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) { none.Add(w.name); continue; }
+    // the first collider down that is not the player's (8.22: the player stands on the Cabin warp at the wake spot, and the warp was
+    // seated on its capsule, 1.7 m over the floor)
+    UnityEngine.RaycastHit hit = default; bool got = false;
+    foreach (var h in UnityEngine.Physics.RaycastAll(from, UnityEngine.Vector3.down, probeUp + probeDown, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
+        if ((player == null || !h.collider.transform.IsChildOf(player.transform)) && (!got || h.distance < hit.distance)) { hit = h; got = true; }
+    if (!got) { none.Add(w.name); continue; }
     float y = hit.point.y + seatLift; if (UnityEngine.Mathf.Abs(y - w.position.y) < moveNote) continue;
     moved.Add(w.name + " " + w.position.y.ToString("F2") + " to " + y.ToString("F2") + " on " + hit.collider.name);
     w.position = new UnityEngine.Vector3(w.position.x, y, w.position.z);

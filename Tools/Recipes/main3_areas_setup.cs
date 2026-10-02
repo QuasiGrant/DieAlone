@@ -5,6 +5,7 @@
 // deckListWritten is false and the check prints "no deck list". Camp's deck list is CampLayout.md draft 2 section 5.
 // Wren 2026-10-02: the woodpile is off the deck must-see list (the cabin roof hides it); the Ward stones are proven by land rays (W-1),
 // so the pixel check stays only where trees are the cover (the ruin) or the rune post screen.
+// 8.22 (FrontLayout.md draft 2): the front area as the doc; the closed campground moves from the cave to the front (Wren 2026-10-02).
 // A place or deck point with y = G (-999) stands on the ground: the check uses the ground under it plus 1 m.
 const float G = -999f;
 const string path = "Assets/Settings/Main3Areas.asset";
@@ -17,6 +18,9 @@ Main3AreaSet.Place PO(string l, float x, float y, float z, float h, string obj) 
 Main3AreaSet.Interaction IA(string l, string p, float x, float y, float z) => new Main3AreaSet.Interaction { label = l, path = p, approach = V(x, y, z) };
 Main3AreaSet.Frame FR(string l, UnityEngine.Vector3 eye, UnityEngine.Vector3 look) => new Main3AreaSet.Frame { label = l, eye = eye, look = look };
 Main3AreaSet.DeckTarget D(string l, float x, float y, float z, string cover = "") => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), treeCoverPath = cover };
+Main3AreaSet.DeckTarget DH(string l, float x, float y, float z, string obj) => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), hard = true, objectPath = obj };   // hard must-see, every mesh (8.22)
+Main3AreaSet.DeckTarget DL(string l, float x, float y, float z) => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), loose = true };   // loose must-see, reported only (8.22)
+Main3AreaSet.WalkLine WL(string l, params UnityEngine.Vector3[] pts) => new Main3AreaSet.WalkLine { label = l, points = pts };
 Main3AreaSet.InventoryItem I(string l, string p, string k, string n, int e) => new Main3AreaSet.InventoryItem { label = l, path = p, kind = k, name = n, expected = e };
 // ground Valley.md 8 closes with thicket (as main3_reach_check_8_16a.cs)
 set.closedZones = new[] { R(346f, -10f, 395f, 99f), R(141f, -10f, 248f, 25f) };
@@ -28,11 +32,15 @@ set.inventory = new[] {
     I("Smoke columns, day two", "Ward/StandInFire/SmokeColumns", "quads", "", 128), I("Ward stones", "Ward/Stones", "renderers", "", 3),
     I("Camp 3 tent", "Campsites/Camp_3/Dressing", "renderers", "CS_Tent", 8), I("Camp 3 fire", "Campsites/Camp_3/Dressing/Fire", "renderers", "", 15),
     I("Camp 3 easel", "Campsites/Camp_3/Dressing/Easel", "renderers", "", 13), I("North ruin", "Places/NorthRuin", "renderers", "", 44),
-    I("Cave lights", "Cave", "lights", "", 5), I("Lanterns and lamps", "", "practicals", "", 28),
+    I("Cave lights", "Cave", "lights", "", 5), I("Lanterns and lamps", "", "practicals", "", 30),
     // camp (8.21, Wren 2026-10-02)
     I("Cabin", "Camp/Cabin", "renderers", "", 106), I("Tower", "Camp/Tower", "renderers", "", 393), I("Fire pit", "Camp/FirePit", "renderers", "", 32),
     I("Generator", "Camp/GeneratorDressing", "renderers", "", 3), I("Privy", "Camp/Privy", "renderers", "", 2), I("Stump", "Camp/Cabin/Woodpile", "renderers", "CITW_Tree_Stump", 1),
     I("Woodpile", "Camp/Cabin/Woodpile", "renderers", "C", 6), I("Rune post", "Ward/Climb/RunePost", "renderers", "", 4), I("Rune post screen", "Ward/Climb/RuneScreen", "renderers", "", 5),
+    // front (8.22)
+    I("Office", "FrontZone/Office", "renderers", "", 217), I("Store", "FrontZone/Store", "renderers", "", 151), I("Gate booth", "FrontZone/GateBooth", "renderers", "", 17),
+    I("Barrier", "FrontZone/Gate/Barrier", "renderers", "", 8), I("Vault toilet", "FrontZone/VaultToilet", "renderers", "", 2), I("Resident car", "FrontZone/Resident_Car", "renderers", "", 2),
+    I("Verge tree", "FrontZone/VergeTree", "renderers", "", 2), I("Chain", "FrontZone/Chain", "renderers", "", 3),
 };
 string[] fireItems = { "Ridge fire cards, night", "Ridge fire cards, day", "Valley fire cards, night", "Valley fire cards, day", "Smoke sheet, day one", "Smoke lid, night", "Smoke columns, day two", "Ward stones" };
 var none = new Main3AreaSet.DeckTarget[0];
@@ -59,11 +67,38 @@ var camp = new Main3AreaSet.Area { id = "camp", task = "8.21", title = "Keeper's
         D("cat step (boathouse)", 240f, -3.3f, 56f), D("verge tree", 419f, 25f, 139f), D("lot centre", 358f, 3.1f, 170f), D("highway", 430f, G, 185f) },
     deckHide = new[] { D("Ward stones, tops (W-1, land rays)", -3f, 70f, 224f), D("rune post (behind its rim rock)", 55.1f, 36.5f, 246.1f, "Ward/Climb/RunePost"), D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"),
         D("far fire front, z 40", -240f, 105f, 40f), D("far fire front, z 170", -240f, 105f, 170f), D("far fire front, z 300", -240f, 105f, 300f), D("day-one sheet top", -500f, 110f, 170f), D("cave mouth", 52f, -4f, 37f) } };
+// front (8.22; FrontLayout.md draft 2 section 5, Sable 2026-10-02): bounds, warps and places as the doc; places on their objects' own
+// transforms (Marlow 8.22 paper 10); deck must-see hard: the office west door opening and the verge tree, tested against every drawn mesh
+// (Marlow 8.22 paper 15); the rest loose; must-hide none. The ground is 3.00 over the whole zone.
+const float frontG = 3.00f;
+var front = new Main3AreaSet.Area { id = "front", task = "8.22", title = "Front zone", bounds = new[] { R(318f, 128f, 448f, 290f) },
+    warps = new[] { "Office", "Store", "Trailhead_T", "Lot_Highway", "Gate_Booth", "Closed_Campground" },
+    places = new[] { PO("Office west door", 344.1f, G, 199f, 2.15f, "FrontZone/Office"), PO("Store door", 365f, G, 195.5f, 2.1f, "FrontZone/Store/Shell/Door_GlassPanel"),
+        PO("Booth door", 391.9f, G, 164.2f, 2.5f, "FrontZone/GateBooth"), P("Lot centre", 358f, G, 170f), PO("Trailhead board", 338f, G, 172.5f, 2.1f, "Ground815/JunctionMarkers/Trailhead_Board"),
+        P("First sight of the lot", 327f, G, 168f), PO("Ice chest", 368.8f, G, 194.9f, 0.85f, "FrontZone/Store/Front/Ice_Cream_Freezer"), PO("R6's car", 370f, G, 179.4f, 1.55f, "FrontZone/Resident_Car"),
+        PO("Toilet door", 342f, G, 186f, 2.4f, "FrontZone/VaultToilet"), PO("Chain", 390f, G, 238f, 1.0f, "FrontZone/Chain") },
+    interactions = new[] { IA("booth window counter", "FrontZone/GateBooth/Counter", 391.9f, frontG, 165.2f), IA("back-room door", "FrontZone/Office/BackDoor", 351.1f, frontG + 0.05f, 201.0f),
+        IA("trailhead board", "Ground815/JunctionMarkers/Trailhead_Board", 339.5f, G, 172.5f) },
+    frames = new[] { FR("THE BOOTH FROM THE LOT'S EAST EDGE, THE BARRIER AND THE GATE", V(373f, G, 170f), V(392f, frontG + 1.5f, 166f)),
+        FR("INSIDE THE BOOTH AT THE WINDOW, THE LANE", V(391.9f, frontG + eyeH, 165.0f), V(391.9f, frontG + 1.2f, 172f)),
+        FR("THE OFFICE WEST DOOR FROM THE PORCH STEP", V(341.0f, G, 199.0f), V(345.5f, frontG + 1.4f, 199.0f)),
+        FR("THE STORE DOOR AND THE ICE CHEST FROM THE WALK", V(365f, G, 190.5f), V(366.5f, frontG + 1.2f, 195.5f)),
+        FR("THE TOILET FROM THE LOT", V(346f, G, 186f), V(341.2f, frontG + 1.2f, 186f)),
+        FR("THE CHAIN FROM THE SPUR", V(390f, G, 228f), V(390f, frontG + 0.8f, 238f)),
+        FR("THE CAMPGROUND RING FROM THE JOIN", V(387.5f, G, 250f), V(372f, frontG + 1f, 262f)) },
+    // walk lines where no trail runs, for the found rule (FrontLayout_UI.md 3 and 4: from the T east across the lot to the booth, from
+    // the lot centre north, along the walk, up the spur to the chain)
+    walkLines = new[] { WL("T east across the lot to the gate", V(340f, G, 170f), V(358f, G, 170f), V(373f, G, 170f), V(386f, G, 169f)), WL("lot centre north to the walk", V(358f, G, 170f), V(358f, G, 190.5f)),
+        WL("the walk", V(343f, G, 191.75f), V(372f, G, 191.75f)), WL("spur to the chain", V(385f, G, 172.5f), V(385f, G, 186f), V(390f, G, 196f), V(390f, G, 236f)) },
+    playChecks = new[] { "main3_8_22_front_check.cs" },
+    inventory = new[] { "Lanterns and lamps", "Office", "Store", "Gate booth", "Barrier", "Vault toilet", "Resident car", "Verge tree", "Chain" }, deckListWritten = true,
+    deckSee = new[] { DH("office west door opening", 344.0f, 4.3f, 199f, "FrontZone/Office/WestDoor"), DH("verge tree", 419f, 25f, 139f, "FrontZone/VergeTree"),
+        DL("store roof", 366f, 5.9f, 200f), DL("lot centre", 358f, 3.1f, 170f), DL("R6's car", 370f, 4.2f, 179.4f), DL("booth roof light", 391.9f, 5.8f, 165.4f),
+        DL("barrier arm", 389.3f, 4.0f, 169.5f), DL("highway", 430f, G, 185f), DL("gate T stop sign", 423.05f, 5.3f, 166f) },
+    deckHide = new Main3AreaSet.DeckTarget[0] };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,
-    new Main3AreaSet.Area { id = "front", task = "8.22", title = "Front zone", bounds = new[] { R(318f, 140f, 448f, 270f) }, warps = new[] { "Office", "Store", "Gate_Booth", "Trailhead_T", "Lot_Highway" },
-        places = new[] { P("Office west door", 341f, G, 199f), P("Store door", 366f, G, 194f), P("Gate booth", 392f, G, 176f), P("Lot", 358f, G, 170f), P("The T", 337f, G, 170f), P("First sight of the lot", 327f, G, 168f) },
-        inventory = new string[0], deckSee = none, deckHide = none },
+    front,
     new Main3AreaSet.Area { id = "lake", task = "8.23", title = "Lake", bounds = new[] { R(150f, 25f, 262f, 130f) }, warps = new[] { "Lake_Pump", "Lake_Boathouse" },
         places = new[] { P("Pump", 190f, G, 97f), P("Boathouse", 244f, G, 52f), P("Cat step", 233f, G, 62f), P("Dock end", 190f, G, 88f), P("Overturned rowboat", 226f, G, 87f), P("Water tank", 186f, G, 125f) },
         inventory = new string[0], deckSee = none, deckHide = none },
@@ -76,8 +111,8 @@ var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Camp 3 and the west trails", bounds = new[] { R(55f, 60f, 160f, 180f) }, warps = new[] { "Camp_3", "Camp_3_Rim", "Junction_W1" },
         places = new[] { P("Camp 3", 78f, G, 146f), P("Easel", 83.5f, G, 149f), P("Rim", 100f, G, 148f), P("Camper trailer", 89f, G, 112f), P("Stepping stones", 132f, G, 73f), P("Footbridge", 115f, G, 85f), P("Washed-out truck", 156f, G, 92f) },
         inventory = new[] { "Camp 3 tent", "Camp 3 fire", "Camp 3 easel" }, deckSee = none, deckHide = none },
-    new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave and ravine", bounds = new[] { R(20f, -20f, 120f, 65f), R(365f, 215f, 405f, 265f) }, warps = new[] { "Cave_Mouth", "Cave_Chamber", "Closed_Campground" },
-        places = new[] { P("Cave mouth", 52f, G, 40f), P("Chamber", 80f, -18f, 12f), P("Side room", 94f, -18f, 12f), P("Rope handrail", 107f, G, 58f), P("Coloured bulbs", 83f, G, 49f), P("Closed campground", 385f, G, 232f) },
+    new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave and ravine", bounds = new[] { R(20f, -20f, 120f, 65f) }, warps = new[] { "Cave_Mouth", "Cave_Chamber" },   // the closed campground is the front's (8.22, Wren 2026-10-02)
+        places = new[] { P("Cave mouth", 52f, G, 40f), P("Chamber", 80f, -18f, 12f), P("Side room", 94f, -18f, 12f), P("Rope handrail", 107f, G, 58f), P("Coloured bulbs", 83f, G, 49f) },
         inventory = new[] { "Cave lights" }, deckSee = none, deckHide = none },
     new Main3AreaSet.Area { id = "burn", task = "8.28", title = "Old burn and forage", bounds = new[] { R(205f, 140f, 335f, 200f) }, warps = new[] { "Old_Burn", "Junction_Jg" },
         places = new[] { P("Old burn", 240f, G, 160f), P("Forage patch A", 240f, G, 163f), P("Jg", 262f, G, 170f) },

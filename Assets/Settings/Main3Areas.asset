@@ -118,7 +118,7 @@ MonoBehaviour:
     path: 
     kind: practicals
     name: 
-    expected: 28
+    expected: 30
   - label: Cabin
     path: Camp/Cabin
     kind: renderers
@@ -164,8 +164,49 @@ MonoBehaviour:
     kind: renderers
     name: 
     expected: 5
+  - label: Office
+    path: FrontZone/Office
+    kind: renderers
+    name: 
+    expected: 217
+  - label: Store
+    path: FrontZone/Store
+    kind: renderers
+    name: 
+    expected: 151
+  - label: Gate booth
+    path: FrontZone/GateBooth
+    kind: renderers
+    name: 
+    expected: 17
+  - label: Barrier
+    path: FrontZone/Gate/Barrier
+    kind: renderers
+    name: 
+    expected: 8
+  - label: Vault toilet
+    path: FrontZone/VaultToilet
+    kind: renderers
+    name: 
+    expected: 2
+  - label: Resident car
+    path: FrontZone/Resident_Car
+    kind: renderers
+    name: 
+    expected: 2
+  - label: Verge tree
+    path: FrontZone/VergeTree
+    kind: renderers
+    name: 
+    expected: 2
+  - label: Chain
+    path: FrontZone/Chain
+    kind: renderers
+    name: 
+    expected: 3
   areas:
-  - id: camp
+  - walkLines: []
+    id: camp
     task: 8.21
     title: Keeper's camp, cabin and tower
     bounds:
@@ -227,55 +268,106 @@ MonoBehaviour:
     - label: lake, mid water
       point: {x: 190, y: -5.4, z: 60}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: Camp 1 spar top
       point: {x: 284, y: 29, z: 240}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: Camp 2 stack top (over its tent)
       point: {x: 292, y: 26, z: 108}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: Camp 3 Snag line (top)
       point: {x: 96, y: 54, z: 146.5}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: office west door
       point: {x: 341, y: 4.2, z: 199}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: cat step (boathouse)
       point: {x: 240, y: -3.3, z: 56}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: verge tree
       point: {x: 419, y: 25, z: 139}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: lot centre
       point: {x: 358, y: 3.1, z: 170}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: highway
       point: {x: 430, y: -999, z: 185}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     deckHide:
     - label: Ward stones, tops (W-1, land rays)
       point: {x: -3, y: 70, z: 224}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: rune post (behind its rim rock)
       point: {x: 55.1, y: 36.5, z: 246.1}
       treeCoverPath: Ward/Climb/RunePost
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: north ruin
       point: {x: 172, y: 4, z: 281}
       treeCoverPath: Places/NorthRuin
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: far fire front, z 40
       point: {x: -240, y: 105, z: 40}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: far fire front, z 170
       point: {x: -240, y: 105, z: 170}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: far fire front, z 300
       point: {x: -240, y: 105, z: 300}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: day-one sheet top
       point: {x: -500, y: 110, z: 170}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     - label: cave mouth
       point: {x: 52, y: -4, z: 37}
       treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
     interactions:
     - label: bunk
       path: Camp/Cabin/Bunk
@@ -318,54 +410,187 @@ MonoBehaviour:
     - main3_8_21_camp_check.cs
     - main3_tower_stairs_check.cs
     - main3_breaks_recheck.cs
-  - id: front
+  - walkLines:
+    - label: T east across the lot to the gate
+      points:
+      - {x: 340, y: -999, z: 170}
+      - {x: 358, y: -999, z: 170}
+      - {x: 373, y: -999, z: 170}
+      - {x: 386, y: -999, z: 169}
+    - label: lot centre north to the walk
+      points:
+      - {x: 358, y: -999, z: 170}
+      - {x: 358, y: -999, z: 190.5}
+    - label: the walk
+      points:
+      - {x: 343, y: -999, z: 191.75}
+      - {x: 372, y: -999, z: 191.75}
+    - label: spur to the chain
+      points:
+      - {x: 385, y: -999, z: 172.5}
+      - {x: 385, y: -999, z: 186}
+      - {x: 390, y: -999, z: 196}
+      - {x: 390, y: -999, z: 236}
+    id: front
     task: 8.22
     title: Front zone
     bounds:
     - serializedVersion: 2
       x: 318
-      y: 140
+      y: 128
       width: 130
-      height: 130
+      height: 162
     warps:
     - Office
     - Store
-    - Gate_Booth
     - Trailhead_T
     - Lot_Highway
+    - Gate_Booth
+    - Closed_Campground
     places:
     - label: Office west door
-      point: {x: 341, y: -999, z: 199}
-      height: 0
-      objectPath: 
+      point: {x: 344.1, y: -999, z: 199}
+      height: 2.15
+      objectPath: FrontZone/Office
     - label: Store door
-      point: {x: 366, y: -999, z: 194}
-      height: 0
-      objectPath: 
-    - label: Gate booth
-      point: {x: 392, y: -999, z: 176}
-      height: 0
-      objectPath: 
-    - label: Lot
+      point: {x: 365, y: -999, z: 195.5}
+      height: 2.1
+      objectPath: FrontZone/Store/Shell/Door_GlassPanel
+    - label: Booth door
+      point: {x: 391.9, y: -999, z: 164.2}
+      height: 2.5
+      objectPath: FrontZone/GateBooth
+    - label: Lot centre
       point: {x: 358, y: -999, z: 170}
       height: 0
       objectPath: 
-    - label: The T
-      point: {x: 337, y: -999, z: 170}
-      height: 0
-      objectPath: 
+    - label: Trailhead board
+      point: {x: 338, y: -999, z: 172.5}
+      height: 2.1
+      objectPath: Ground815/JunctionMarkers/Trailhead_Board
     - label: First sight of the lot
       point: {x: 327, y: -999, z: 168}
       height: 0
       objectPath: 
-    inventory: []
-    deckListWritten: 0
-    deckSee: []
+    - label: Ice chest
+      point: {x: 368.8, y: -999, z: 194.9}
+      height: 0.85
+      objectPath: FrontZone/Store/Front/Ice_Cream_Freezer
+    - label: R6's car
+      point: {x: 370, y: -999, z: 179.4}
+      height: 1.55
+      objectPath: FrontZone/Resident_Car
+    - label: Toilet door
+      point: {x: 342, y: -999, z: 186}
+      height: 2.4
+      objectPath: FrontZone/VaultToilet
+    - label: Chain
+      point: {x: 390, y: -999, z: 238}
+      height: 1
+      objectPath: FrontZone/Chain
+    inventory:
+    - Lanterns and lamps
+    - Office
+    - Store
+    - Gate booth
+    - Barrier
+    - Vault toilet
+    - Resident car
+    - Verge tree
+    - Chain
+    deckListWritten: 1
+    deckSee:
+    - label: office west door opening
+      point: {x: 344, y: 4.3, z: 199}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: FrontZone/Office/WestDoor
+    - label: verge tree
+      point: {x: 419, y: 25, z: 139}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: FrontZone/VergeTree
+    - label: store roof
+      point: {x: 366, y: 5.9, z: 200}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: lot centre
+      point: {x: 358, y: 3.1, z: 170}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: R6's car
+      point: {x: 370, y: 4.2, z: 179.4}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: booth roof light
+      point: {x: 391.9, y: 5.8, z: 165.4}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: barrier arm
+      point: {x: 389.3, y: 4, z: 169.5}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: highway
+      point: {x: 430, y: -999, z: 185}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+    - label: gate T stop sign
+      point: {x: 423.05, y: 5.3, z: 166}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
     deckHide: []
-    interactions: []
-    frames: []
-    playChecks: []
-  - id: lake
+    interactions:
+    - label: booth window counter
+      path: FrontZone/GateBooth/Counter
+      approach: {x: 391.9, y: 3, z: 165.2}
+    - label: back-room door
+      path: FrontZone/Office/BackDoor
+      approach: {x: 351.1, y: 3.05, z: 201}
+    - label: trailhead board
+      path: Ground815/JunctionMarkers/Trailhead_Board
+      approach: {x: 339.5, y: -999, z: 172.5}
+    frames:
+    - label: THE BOOTH FROM THE LOT'S EAST EDGE, THE BARRIER AND THE GATE
+      eye: {x: 373, y: -999, z: 170}
+      look: {x: 392, y: 4.5, z: 166}
+    - label: INSIDE THE BOOTH AT THE WINDOW, THE LANE
+      eye: {x: 391.9, y: 4.6, z: 165}
+      look: {x: 391.9, y: 4.2, z: 172}
+    - label: THE OFFICE WEST DOOR FROM THE PORCH STEP
+      eye: {x: 341, y: -999, z: 199}
+      look: {x: 345.5, y: 4.4, z: 199}
+    - label: THE STORE DOOR AND THE ICE CHEST FROM THE WALK
+      eye: {x: 365, y: -999, z: 190.5}
+      look: {x: 366.5, y: 4.2, z: 195.5}
+    - label: THE TOILET FROM THE LOT
+      eye: {x: 346, y: -999, z: 186}
+      look: {x: 341.2, y: 4.2, z: 186}
+    - label: THE CHAIN FROM THE SPUR
+      eye: {x: 390, y: -999, z: 228}
+      look: {x: 390, y: 3.8, z: 238}
+    - label: THE CAMPGROUND RING FROM THE JOIN
+      eye: {x: 387.5, y: -999, z: 250}
+      look: {x: 372, y: 4, z: 262}
+    playChecks:
+    - main3_8_22_front_check.cs
+  - walkLines: []
+    id: lake
     task: 8.23
     title: Lake
     bounds:
@@ -409,7 +634,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - id: camp1
+  - walkLines: []
+    id: camp1
     task: 8.24
     title: Camp 1 and the north loop
     bounds:
@@ -442,7 +668,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - id: camp2
+  - walkLines: []
+    id: camp2
     task: 8.25
     title: Camp 2
     bounds:
@@ -482,7 +709,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - id: camp3
+  - walkLines: []
+    id: camp3
     task: 8.26
     title: Camp 3 and the west trails
     bounds:
@@ -534,7 +762,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - id: cave
+  - walkLines: []
+    id: cave
     task: 8.27
     title: Cave and ravine
     bounds:
@@ -543,15 +772,9 @@ MonoBehaviour:
       y: -20
       width: 100
       height: 85
-    - serializedVersion: 2
-      x: 365
-      y: 215
-      width: 40
-      height: 50
     warps:
     - Cave_Mouth
     - Cave_Chamber
-    - Closed_Campground
     places:
     - label: Cave mouth
       point: {x: 52, y: -999, z: 40}
@@ -573,10 +796,6 @@ MonoBehaviour:
       point: {x: 83, y: -999, z: 49}
       height: 0
       objectPath: 
-    - label: Closed campground
-      point: {x: 385, y: -999, z: 232}
-      height: 0
-      objectPath: 
     inventory:
     - Cave lights
     deckListWritten: 0
@@ -585,7 +804,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - id: burn
+  - walkLines: []
+    id: burn
     task: 8.28
     title: Old burn and forage
     bounds:
@@ -617,7 +837,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - id: ward
+  - walkLines: []
+    id: ward
     task: 8.29
     title: Ward path and ledge
     bounds:
@@ -671,7 +892,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - id: whole
+  - walkLines: []
+    id: whole
     task: 8.30
     title: Whole map
     bounds:
@@ -686,9 +908,10 @@ MonoBehaviour:
     - Tower_Deck
     - Office
     - Store
-    - Gate_Booth
     - Trailhead_T
     - Lot_Highway
+    - Gate_Booth
+    - Closed_Campground
     - Lake_Pump
     - Lake_Boathouse
     - Camp_1
@@ -700,7 +923,6 @@ MonoBehaviour:
     - Junction_W1
     - Cave_Mouth
     - Cave_Chamber
-    - Closed_Campground
     - Old_Burn
     - Junction_Jg
     - Junction_J
@@ -741,29 +963,45 @@ MonoBehaviour:
       height: 1
       objectPath: 
     - label: Office west door
-      point: {x: 341, y: -999, z: 199}
-      height: 0
-      objectPath: 
+      point: {x: 344.1, y: -999, z: 199}
+      height: 2.15
+      objectPath: FrontZone/Office
     - label: Store door
-      point: {x: 366, y: -999, z: 194}
-      height: 0
-      objectPath: 
-    - label: Gate booth
-      point: {x: 392, y: -999, z: 176}
-      height: 0
-      objectPath: 
-    - label: Lot
+      point: {x: 365, y: -999, z: 195.5}
+      height: 2.1
+      objectPath: FrontZone/Store/Shell/Door_GlassPanel
+    - label: Booth door
+      point: {x: 391.9, y: -999, z: 164.2}
+      height: 2.5
+      objectPath: FrontZone/GateBooth
+    - label: Lot centre
       point: {x: 358, y: -999, z: 170}
       height: 0
       objectPath: 
-    - label: The T
-      point: {x: 337, y: -999, z: 170}
-      height: 0
-      objectPath: 
+    - label: Trailhead board
+      point: {x: 338, y: -999, z: 172.5}
+      height: 2.1
+      objectPath: Ground815/JunctionMarkers/Trailhead_Board
     - label: First sight of the lot
       point: {x: 327, y: -999, z: 168}
       height: 0
       objectPath: 
+    - label: Ice chest
+      point: {x: 368.8, y: -999, z: 194.9}
+      height: 0.85
+      objectPath: FrontZone/Store/Front/Ice_Cream_Freezer
+    - label: R6's car
+      point: {x: 370, y: -999, z: 179.4}
+      height: 1.55
+      objectPath: FrontZone/Resident_Car
+    - label: Toilet door
+      point: {x: 342, y: -999, z: 186}
+      height: 2.4
+      objectPath: FrontZone/VaultToilet
+    - label: Chain
+      point: {x: 390, y: -999, z: 238}
+      height: 1
+      objectPath: FrontZone/Chain
     - label: Pump
       point: {x: 190, y: -999, z: 97}
       height: 0
@@ -866,10 +1104,6 @@ MonoBehaviour:
       objectPath: 
     - label: Coloured bulbs
       point: {x: 83, y: -999, z: 49}
-      height: 0
-      objectPath: 
-    - label: Closed campground
-      point: {x: 385, y: -999, z: 232}
       height: 0
       objectPath: 
     - label: Old burn
@@ -932,6 +1166,14 @@ MonoBehaviour:
     - Woodpile
     - Rune post
     - Rune post screen
+    - Office
+    - Store
+    - Gate booth
+    - Barrier
+    - Vault toilet
+    - Resident car
+    - Verge tree
+    - Chain
     deckListWritten: 0
     deckSee: []
     deckHide: []

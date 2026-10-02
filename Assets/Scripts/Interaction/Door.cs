@@ -5,6 +5,8 @@ using UnityEngine;
 /// pushing when the player is in the way, so it can never shove or trap them.
 /// startOpen (CampLayout.md 4.5): the scene pose is the closed pose; the door opens at load
 /// and again at every wake (WakeSignal), so the keeper always wakes to it standing open.
+/// noPrompt (FrontLayout.md O1, the office west door): the player cannot use it; only the world
+/// shuts it (HoldShut, for an Office CHECK) and opens it again when it lets go.
 public class Door : Interactable
 {
     [SerializeField] private PlayerTuning tuning;
@@ -16,8 +18,11 @@ public class Door : Interactable
     [SerializeField] private bool fixedSwing;
     [Tooltip("With fixedSwing: +1 swings toward the hinge's back (against its forward), -1 toward its forward.")]
     [SerializeField] private float fixedSide = -1f;
+    [Tooltip("No prompt and no Interact: only the world opens or shuts it (HoldShut).")]
+    [SerializeField] private bool noPrompt;
 
     private bool isOpen;
+    private bool heldShut;
     private float currentAngle;
     private float targetAngle;
     private Quaternion closedRotation = Quaternion.identity;   // hinge's own local rotation when shut, so doors on any wall swing from where they stand
@@ -28,12 +33,14 @@ public class Door : Interactable
         if (startOpen) OpenNow();
     }
 
-    private void OnEnable() { if (startOpen) WakeSignal.Woke += OpenNow; }
-    private void OnDisable() { WakeSignal.Woke -= OpenNow; }
+    private void OnEnable() { if (startOpen) WakeSignal.Woke += OnWake; }
+    private void OnDisable() { WakeSignal.Woke -= OnWake; }
 
     public bool IsOpen => isOpen;
+    public bool IsHeldShut => heldShut;
     public float CurrentAngle => currentAngle;
     public override string Prompt => isOpen ? "Close" : "Open";
+    public override bool CanUse(PlayerInteractor user) => !noPrompt;
 
     public override void Use(PlayerInteractor user)
     {
@@ -46,11 +53,37 @@ public class Door : Interactable
         targetAngle = OpenAngle(user.transform.position);
     }
 
+    /// The world shuts the door (true) or lets it go (false), for a state such as an Office CHECK. Let go, a
+    /// startOpen door opens again; a held door stays shut through a wake. instant skips the swing (nobody in the doorway).
+    public void HoldShut(bool shut, bool instant = false)
+    {
+        heldShut = shut;
+        if (shut)
+        {
+            isOpen = false;
+            targetAngle = 0f;
+            if (instant) SetAngle(0f);
+            return;
+        }
+        if (!startOpen) return;
+        if (instant) { OpenNow(); return; }
+        isOpen = true;
+        targetAngle = OpenAngle(transform.position - transform.forward);
+    }
+
+    private void OnWake() { if (!heldShut) OpenNow(); }
+
     /// Opens at once, without the swing (load and wake: nobody stands in the doorway then).
     private void OpenNow()
     {
         isOpen = true;
-        targetAngle = currentAngle = OpenAngle(transform.position - transform.forward);
+        targetAngle = OpenAngle(transform.position - transform.forward);
+        SetAngle(targetAngle);
+    }
+
+    private void SetAngle(float angle)
+    {
+        currentAngle = angle;
         transform.localRotation = closedRotation * Quaternion.Euler(0f, currentAngle, 0f);
     }
 

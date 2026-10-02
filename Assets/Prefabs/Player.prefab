@@ -94,7 +94,7 @@ MonoBehaviour:
   eye: {fileID: 4782230812090573341}
   mask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294967291
   promptUI: {fileID: 0}
 --- !u!114 &1115392942464160258
 MonoBehaviour:

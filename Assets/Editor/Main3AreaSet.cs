@@ -60,11 +60,27 @@ public class Main3AreaSet : ScriptableObject
         public Vector3 point;
         [Tooltip("Trees are the cover (the ruin, the rune post): must-hide is a render pixel count of this object, not rays.")]
         public string treeCoverPath;
+        [Tooltip("Must-see only (FrontLayout.md 5.4): a hard target is tested against every drawn mesh, not colliders and trees only.")]
+        public bool hard;
+        [Tooltip("Must-see only (FrontLayout.md 5.4): a loose target is reported, never failed.")]
+        public bool loose;
+        [Tooltip("Hard must-see: scene path of the target's own object; a ray that reaches it counts as clear.")]
+        public string objectPath;
+    }
+
+    [System.Serializable]
+    public struct WalkLine
+    {
+        public string label;
+        [Tooltip("Where people walk where no trail runs (the front zone's lot, walk and spur; FrontLayout_UI.md found targets): points in order, world metres, y -999 is the ground.")]
+        public Vector3[] points;
     }
 
     [System.Serializable]
     public class Area
     {
+        [Tooltip("Extra walking lines for the found rule, beside the Trails (8.22).")]
+        public WalkLine[] walkLines;
         public string id;
         public string task;
         public string title;
@@ -118,8 +134,7 @@ public class Main3AreaSet : ScriptableObject
     [Tooltip("Eye grid spacing over the deck, metres.")] public float deckGrid = 1f;
     [Tooltip("Half the deck's side, metres.")] public float deckHalf = 3.5f;
     [Tooltip("Eye and jump heights over the deck floor.")] public float deckEye = 1.6f, deckJump = 2.2f;
-    [Tooltip("Must-see passes when this share of rays is clear (Wren 2026-10-02: 25 percent).")] public float mustSeeShare = 0.25f;
-    [Tooltip("A ray stops this short of its target, so the target's own collider never blocks it.")] public float rayEndSkip = 1.5f;
+    [Tooltip("Must-see passes when this share of rays is clear (Wren 2026-10-02: 25 percent).")] public float mustSeeShare = 0.25f;    [Tooltip("A ray stops this short of its target, so the target's own collider never blocks it.")] public float rayEndSkip = 1.5f;
     [Tooltip("Tree-cover test: frame size and field of view toward the target, and the pixel change that counts as seen.")] public int pixelSize = 512;
     public float pixelFov = 10f;
     public int pixelTolerance = 4;

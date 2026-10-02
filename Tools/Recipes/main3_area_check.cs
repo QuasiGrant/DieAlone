@@ -15,7 +15,9 @@
 // DECK (Valley.md 7, CampLayout.md 5): eyes on a deckGrid m grid over the deck at eye and jump height. Must-see: at least mustSeeShare
 //   of rays clear (trees block). Must-hide by rays: 0 clear (land and colliders only; trees do not count, as F-1). Must-hide where trees
 //   or rock are the cover (treeCoverPath): listed here; the CampLayout pixel check itself is main3_deck_pixel_check.cs, which
-//   main3_review_capture.sh --area runs in batches and adds to the summary. An area with no deck list prints "no deck list" and does
+//   main3_review_capture.sh --area runs in batches and adds to the summary. Hard must-see targets (8.22, FrontLayout.md 5.4) are tested
+//   against every drawn mesh (temporary exact colliders on the meshes the deck rays cross); loose ones are reported, never failed.
+//   An area with no deck list prints "no deck list" and does
 //   not pass.
 // INVENTORY: the area's items, expected and found; a zero fails.
 string area = "camp";
@@ -166,6 +168,13 @@ try
         foreach (UnityEngine.Transform pt in leg) { var qq = pt.position; if (prev.HasValue) { int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(UnityEngine.Vector3.Distance(prev.Value, qq) / 2f)); for (int i = 1; i <= n; i++) lp.Add(UnityEngine.Vector3.Lerp(prev.Value, qq, i / (float)n)); } else lp.Add(qq); prev = qq; }
         legsOrdered.Add((leg.name, lp));
     }
+    // the area's walk lines where no trail runs (8.22: the front zone's lot, walk and spur, FrontLayout_UI.md found targets)
+    if (A.walkLines != null) foreach (var wl in A.walkLines)
+    {
+        var lp = new System.Collections.Generic.List<UnityEngine.Vector3>();
+        for (int k = 0; k < wl.points.Length; k++) { var qq = Pt(wl.points[k]); if (k > 0) { var pv = Pt(wl.points[k - 1]); int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(UnityEngine.Vector3.Distance(pv, qq) / 2f)); for (int i = 1; i <= n; i++) lp.Add(UnityEngine.Vector3.Lerp(pv, qq, i / (float)n)); } else lp.Add(qq); }
+        legsOrdered.Add(("walk: " + wl.label, lp));
+    }
     int rfFail = 0; var rfLines = new System.Text.StringBuilder(); var foundFile = new System.Text.StringBuilder();
     foreach (var pl in A.places)
     {
@@ -223,11 +232,53 @@ try
     // ---- DECK must-see (trees block) and the pixel check
     if (A.deckListWritten)
     {
+        // hard must-see (FrontLayout.md 5.4; Marlow 8.22 paper 15: the verge tree has no collider, so a collider-only ray reads clear
+        // whatever stands in the way): every drawn mesh blocks. Each enabled LOD0 or plain MeshRenderer with no collider whose bounds a
+        // deck ray to a hard target crosses gets a temporary exact MeshCollider (removed in finally); a hit on the target's own object
+        // (objectPath) reaches it
+        var hardSegs = new System.Collections.Generic.List<UnityEngine.Ray>(); var hardLens = new System.Collections.Generic.List<float>();
+        foreach (var t in A.deckSee) if (t.hard) { var p = Pt(t.point); foreach (var e in eyes) { var d = p - e; hardSegs.Add(new UnityEngine.Ray(e, d.normalized)); hardLens.Add(d.magnitude); } }
+        int meshTemps = 0;
+        if (hardSegs.Count > 0)
+        {
+            var span = new UnityEngine.Bounds(hardSegs[0].origin, UnityEngine.Vector3.zero); for (int i = 0; i < hardSegs.Count; i++) { span.Encapsulate(hardSegs[i].origin); span.Encapsulate(hardSegs[i].GetPoint(hardLens[i])); }
+            var notLod0 = new System.Collections.Generic.HashSet<UnityEngine.Renderer>();
+            foreach (var lod in UnityEngine.Object.FindObjectsByType<UnityEngine.LODGroup>(UnityEngine.FindObjectsSortMode.None)) { var lods = lod.GetLODs(); for (int li = 1; li < lods.Length; li++) foreach (var r in lods[li].renderers) if (r != null) notLod0.Add(r); }
+            foreach (var mr in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshRenderer>(UnityEngine.FindObjectsSortMode.None))
+            {
+                if (!mr.enabled || !mr.gameObject.activeInHierarchy || notLod0.Contains(mr) || mr.GetComponent<UnityEngine.Collider>() != null || mr.transform.IsChildOf(pc.transform) || mr.transform.IsChildOf(tower) || mr.name.Contains("Glass")) continue;   // glass is seen through
+                var b = mr.bounds; if (!b.Intersects(span)) continue; var mf = mr.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue;
+                bool crossed = false; for (int i = 0; i < hardSegs.Count && !crossed; i++) if (b.IntersectRay(hardSegs[i], out float dist) && dist <= hardLens[i]) crossed = true;
+                if (!crossed) continue; var mc = mr.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; temps.Add(mc); meshTemps++;
+            }
+            UnityEngine.Physics.SyncTransforms();
+        }
+        bool ClearHard(UnityEngine.Vector3 a, UnityEngine.Vector3 b, UnityEngine.Transform own)
+        {
+            var d = b - a; float len = d.magnitude - 0.05f; float firstOther = float.MaxValue, firstOwn = float.MaxValue;
+            foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, len, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
+            {
+                var ht = h.collider.transform; if (ht.IsChildOf(tower) || ht.IsChildOf(pc.transform) || ht.gameObject.layer == 2) continue;   // Ignore Raycast: invisible walls and hedge boxes
+                if (own != null && ht.IsChildOf(own)) firstOwn = UnityEngine.Mathf.Min(firstOwn, h.distance); else firstOther = UnityEngine.Mathf.Min(firstOther, h.distance);
+            }
+            return firstOther == float.MaxValue || firstOwn < firstOther;
+        }
+        string HardBlocker(UnityEngine.Vector3 a, UnityEngine.Vector3 b, UnityEngine.Transform own)
+        {
+            var d = b - a; UnityEngine.RaycastHit best = default; bool any = false;
+            foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude - 0.05f, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
+            { var ht = h.collider.transform; if (ht.IsChildOf(tower) || ht.IsChildOf(pc.transform) || ht.gameObject.layer == 2 || (own != null && ht.IsChildOf(own))) continue; if (!any || h.distance < best.distance) { best = h; any = true; } }
+            return any ? WalkIns.PathOf(best.collider.transform) + " at " + P3(best.point) + (temps.Contains(best.collider) ? " (drawn mesh)" : "") : "none";
+        }
+        if (hardSegs.Count > 0) deckLines.Append("  (hard must-see: " + meshTemps + " drawn meshes on the deck lines got temporary colliders)\n");
         foreach (var t in A.deckSee)
         {
-            var p = Pt(t.point); int clear = 0; foreach (var e in eyes) if (Clear(e, p, tower)) clear++;
-            float share = clear / (float)eyes.Count; bool pass = share >= set.mustSeeShare; if (!pass) deckFails++;
-            deckLines.Append("  " + (pass ? "ok   " : "HIDDEN ") + "see " + t.label + " " + P3(p) + ": " + clear + " of " + eyes.Count + " rays clear (" + (share * 100f).ToString("F0", inv) + " percent, bar " + (set.mustSeeShare * 100f).ToString("F0", inv) + ")" + (pass ? "" : "; from the deck centre the first block is " + Blocker(new UnityEngine.Vector3(tower.position.x, deckTop + set.deckEye, tower.position.z), p, tower)) + "\n");
+            var p = Pt(t.point); var own = string.IsNullOrEmpty(t.objectPath) ? null : Main3AreaSet.At(scene, t.objectPath);
+            if (t.hard && !string.IsNullOrEmpty(t.objectPath) && own == null) { deckFails++; deckLines.Append("  HIDDEN see " + t.label + ": no object " + t.objectPath + "\n"); continue; }
+            int clear = 0; foreach (var e in eyes) if (t.hard ? ClearHard(e, p, own) : Clear(e, p, tower)) clear++;
+            float share = clear / (float)eyes.Count; bool pass = share >= set.mustSeeShare; if (!pass && !t.loose) deckFails++;
+            var centreEye = new UnityEngine.Vector3(tower.position.x, deckTop + set.deckEye, tower.position.z);
+            deckLines.Append("  " + (pass ? "ok   " : t.loose ? "low  " : "HIDDEN ") + "see " + (t.loose ? "(loose) " : t.hard ? "(hard, every mesh) " : "") + t.label + " " + P3(p) + ": " + clear + " of " + eyes.Count + " rays clear (" + (share * 100f).ToString("F0", inv) + " percent, bar " + (set.mustSeeShare * 100f).ToString("F0", inv) + ")" + (pass ? "" : "; from the deck centre the first block is " + (t.hard ? HardBlocker(centreEye, p, own) : Blocker(centreEye, p, tower))) + "\n");
         }
         // the pixel check runs in main3_deck_pixel_check.cs, a batch of eyes per job (one job of every render ran the GPU out of memory);
         // main3_review_capture.sh --area adds its PIXEL lines under this one
