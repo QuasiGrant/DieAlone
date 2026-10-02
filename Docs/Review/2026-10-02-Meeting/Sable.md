@@ -1,0 +1,6 @@
+# Meeting input: Sable (game design), 2026-10-02
+1. Done: Valley rev 8 (8.13, reviewed and fixed), ForestPlan density adopted, WardPath draft 2 (five beats, stair on the face, fallen-giant closure, prow, two night shots, nightly-change table) built in 8.20; Rook's commit reports the walk, trap, closure and sight checks pass. I have not yet read the built eye-height frames, so I do not sign it.
+2. Left, design side: my sign-off from screenshots every 20 m on each route and every beat of the Ward walk; camp to prow timed on the built mesh (ceiling 150 s); lookout view of cab, cabin window and lot lights confirmed; runes as the WARD gauge (Grant); the by-day lock on the Ward path; every minigame and event site from Check1 reachable and marked (ruin, payphone, boathouse step land in 8.17); then Grant's walk (8.10).
+3. Biggest risk: "done" has no fixed bar, so every gate finds new look items and M8 never closes, while the thing that decides whether a trip is worth taking (needs, events, WARD falling) cannot be felt until Milestone 10.
+4. Change: Grant confirms one frozen M8 exit list now (the hard constraints, the gate, the items above); anything a gate finds outside it becomes a Milestone 11 task, not another 8.x fix pass.
+Sable

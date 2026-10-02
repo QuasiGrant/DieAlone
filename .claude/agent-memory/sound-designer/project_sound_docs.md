@@ -18,6 +18,8 @@ Roulette (RouletteSound.md): the rave is his pulse; music cuts on the beat when 
 
 Valley rev 10 (2026-09-30) folded in: Sound/Valley.md rev 2 (items 1, 3, 4, 6, 7 rewritten, item 8 = climb landmarks per leg) and Locations 2, 9.1, 10, 12 to 15 updated. Road row x 428 (12 emitters), fire row on the W crest x 12 y 82, ledge roar = 10-emitter fan on the fire gated to the Ward zone, Ward snapshot at the cleft dogleg every night, DN 7.5 night-2 check PASS (18 m+ under crest). Written 2026-09-30 without a shell; commit status unknown, check git.
 
+2026-10-02: WardPath.md draft 2 (Sable, built in 8.20) replaced the 4-leg climb: draw, shelf, 3-flight stair, lookout (car trigger), throat, ledge prow at (-12, 246); old cwm/leg 4/P4 behind a fallen giant. Its WARD table moves the insect-cut line and fire-heard point downhill as WARD falls. Sound/Valley.md item 8 and item 4 mute rule are stale; rev 3 due after Milestone 11 (sound is postponed until then).
+
 Keeper's kerosene lamp (DECISIONS 2026-09-30): DN 16 owns the lamp set (world_lamp_*), World 3D on the hand, 12 dB under footsteps. Ordinary nightfall light has a match strike; scare relights have none (the tell). JUMP-LANTERN = gutter + blowout (air at arm's length); CHASE-LIGHT = gutter only, no blowout.
 
 **Why:** Locations.md flagged DN 8, DN 3.7 and Mixer Ward snapshot conflicts; Main3 rev 13 also moved the Ward approach (climb 138 m), not yet re-checked against LOC 12 and 14.
