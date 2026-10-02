@@ -28,3 +28,23 @@
 - Deck hides (Ward stones, fire fronts, sheet, cave) read hidden in Deck_camp.jpg; rune post and ruin not rechecked by me.
 
 Marlow
+
+## Round 2
+2026-10-02, Marlow. **PASS** on the eight re-checked items; one new hurts item (13) and one new cosmetic (14). Main3 at d9dcab7 (later 54702e5, 65ef95a are docs only). One Play session I entered and stopped; PlayerController.Step as round 1; detached jobs; look restored to Day one. Nothing saved.
+
+### Re-checked
+- Item 1, wake: PASS. Play starts at (179.90, 15.11, 168.95) facing 245, settles at y 15.07 on Floor (15.03), eye 1.64 m over the floor, capsule overlaps nothing. CITW_Bed is fitted to the Bunk box (178.90 to 180.90, z 169.35 to 170.25) with no collider of its own; capsule edge 0.05 m off the box. Walk porch, door, wake spot arrives.
+- Item 9, Cabin warp: PASS. DevMenu.Warp (called by reflection) on DevWarps/Cabin lands (179.90, 15.23, 168.95) facing 245, settles on Floor, eye 1.64.
+- Item 3, stove top: PASS. Stove box now 15.00 to 17.00 (renderer off), 0.70 m under the Roof box. The round 1 repro (NW sprint-jump from the stove front) ends on the floor. Cabin grid: 62 starts x 16 headings x walk and sprint-jump, 1,984 pushes, 325 end on something raised (desk 15.79, wood box 15.88, bunk 15.64, washstand 15.87, edge contacts), 0 with no walk-out, 0 hard.
+- Item 5, porch roof: PASS. PorchRoof has a BoxCollider matching its mesh (tilted 7.3 degrees). 16,947 eye samples under it from standing jumps and sprint-jumps on a 0.4 m porch grid in 4 headings: least gap eye to underside 0.21 m (near clip 0.05), eye never above it.
+- Item 6, door: PASS. Open leaf x 177.42 to 177.50, opening 177.50 to 178.50, clear 1.000. A 1.0 m body (r 0.499) swept z 165.0 to 166.8 through the doorway touches nothing.
+- Item 7, desk to south wall: PASS. Desk now z 167.40 to 168.60 (on the window), 1.65 m off S_West. See item 14 for the gap the move made.
+- Item 10, fire pit cold: PASS. FirePit component gone, no Interactable under Camp/FirePit, FX_Flames_Short and FirePitLight inactive, no LookVisibility drives either, no light or particles within 4 m. The ember meshes (CS_Ash_Ember, emission on) read dark ash by eye in Day one and in Night.
+- Clearing edge: PASS. 10 pieces (RedFir2 to 7, all with trunk or root capsules). 1,0 m and 0.5 m grids within 3.5 m of each: 818 drops and 3,376 walk and sprint-jump pushes, each end tried 8 ways; 0 pockets from the new pieces. Nothing new walks into a mesh without a collider. The one stuck end is item 13, not an edge piece.
+- Deck: PASS (must-see far valley only, Status 2026-10-02). 364 standable eyes (0.5 m grid over the cab and walkway, capsule fits, eye 1.6 and 2.2). Must-see by meshes (temporary MeshColliders on every LOD0 mesh in the line corridor, crowns counted solid): lake 68, Camp 1 spar 145, Camp 2 stack 126, Camp 3 Snag line 248, office west door 92, cat step 101, verge tree 168, lot centre 84, highway 114 eyes clear; the rest blocked by the cab, rails and deck edge, not by land or trees. Deck_camp.jpg frames agree. Must-hide: Ward stones, three fire fronts, day-one sheet, cave 0 of 364 by land rays; rune post 0 of 364 (its rim rock); north ruin 0 of 364 by meshes (95 by land alone: trees are its cover; Rook's pixel check with control, 0 of 128, agrees).
+
+### New
+13. **Fire pit wedge: walk-proof soft trap.** Hurts. At (167.75 to 167.80, 15.04, 155.86 to 156.25), between Camp/FirePit's box (x from 168.15), PitDressing/CS_Log_Large_Seat_2 and CS_Log_Large_Seat_1. 18 of 376 approaches from a 0.5 m grid within 4 m end there (17 sprint-jumps, 1 drop); from there, walks in 16 headings for 3 s move 0.20 to 0.41 m; a sprint-jump gets out. Same kind as round 1 item 3. Not from d9dcab7 (round 1's outside grid started at x 169.5). Repro: sprint-jump from (164.25, 15.05, 157.7) toward (167.75, 156.2), then try to walk out.
+14. **Chair to stove 0.88 m (rule 2 band).** Cosmetic. New with the desk move: CITW_Chair z to 168.22, Stove box from 169.10, overlapping in x (175.83 to 176.15); desk end to stove 0.50 (fine). A 0.88 m nook open to the east between chair, desk end and stove. Wood box to stove reads exactly 1.000.
+
+Marlow
