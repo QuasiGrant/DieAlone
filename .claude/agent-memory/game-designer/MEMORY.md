@@ -1,4 +1,5 @@
 - [Grant on event pacing](grant_event_pacing.md) — pacing is Sable's call via playtest; vary events; Tuesday's timer is event-proof
 - [Grant reads drawings](user_reads_drawings.md) — map and space designs go to Grant as SVG plan plus section; check sightlines on every bearing
 - [Play over sightlines](feedback_play_over_sightlines.md) — 2026-09-30 walk: optimize maps for play and readability first; sightlines are a loose check
+- [Scene read without shell](reference_scene_read_no_shell.md) — Grep Main3.unity prefab overrides for real positions; pack guids need explicit pack path
 - [Measure ground first](feedback_measure_ground_first.md) — get sampled heights before drawing routes; no soft locks; mover already stops steep hops (a23ff06)
