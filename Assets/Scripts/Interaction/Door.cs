@@ -1,13 +1,21 @@
 using UnityEngine;
 
 /// Hinged door. This object is the hinge; the panel is a child collider.
-/// Opens away from whoever used it, and waits instead of pushing when the
-/// player is in the way, so it can never shove or trap them.
+/// Opens away from whoever used it, or to one set side (fixedSwing), and waits instead of
+/// pushing when the player is in the way, so it can never shove or trap them.
+/// startOpen (CampLayout.md 4.5): the scene pose is the closed pose; the door opens at load
+/// and again at every wake (WakeSignal), so the keeper always wakes to it standing open.
 public class Door : Interactable
 {
     [SerializeField] private PlayerTuning tuning;
     [SerializeField] private BoxCollider panel;
     [SerializeField] private LayerMask blockers = ~0;
+    [Tooltip("Open at load and at every wake; the scene pose is the closed pose.")]
+    [SerializeField] private bool startOpen;
+    [Tooltip("Always open to the same side, whoever uses it.")]
+    [SerializeField] private bool fixedSwing;
+    [Tooltip("With fixedSwing: +1 swings toward the hinge's back (against its forward), -1 toward its forward.")]
+    [SerializeField] private float fixedSide = -1f;
 
     private bool isOpen;
     private float currentAngle;
@@ -17,7 +25,11 @@ public class Door : Interactable
     private void Awake()
     {
         closedRotation = transform.localRotation;
+        if (startOpen) OpenNow();
     }
+
+    private void OnEnable() { if (startOpen) WakeSignal.Woke += OpenNow; }
+    private void OnDisable() { WakeSignal.Woke -= OpenNow; }
 
     public bool IsOpen => isOpen;
     public float CurrentAngle => currentAngle;
@@ -31,11 +43,24 @@ public class Door : Interactable
             targetAngle = 0f;
             return;
         }
+        targetAngle = OpenAngle(user.transform.position);
+    }
 
+    /// Opens at once, without the swing (load and wake: nobody stands in the doorway then).
+    private void OpenNow()
+    {
+        isOpen = true;
+        targetAngle = currentAngle = OpenAngle(transform.position - transform.forward);
+        transform.localRotation = closedRotation * Quaternion.Euler(0f, currentAngle, 0f);
+    }
+
+    private float OpenAngle(Vector3 userPosition)
+    {
+        if (fixedSwing) return Mathf.Sign(fixedSide) * tuning.doorOpenAngle;
         // Swing away from the user. The hinge forward is the closed panel normal.
-        Vector3 toUser = user.transform.position - transform.position;
+        Vector3 toUser = userPosition - transform.position;
         float side = Vector3.Dot(transform.forward, toUser);
-        targetAngle = side >= 0f ? tuning.doorOpenAngle : -tuning.doorOpenAngle;
+        return side >= 0f ? tuning.doorOpenAngle : -tuning.doorOpenAngle;
     }
 
     private void Update()

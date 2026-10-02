@@ -24,15 +24,20 @@ set.inventory = new[] {
     I("Camp 3 tent", "Campsites/Camp_3/Dressing", "renderers", "CS_Tent", 8), I("Camp 3 fire", "Campsites/Camp_3/Dressing/Fire", "renderers", "", 15),
     I("Camp 3 easel", "Campsites/Camp_3/Dressing/Easel", "renderers", "", 13), I("North ruin", "Places/NorthRuin", "renderers", "", 44),
     I("Cave lights", "Cave", "lights", "", 5), I("Lanterns and lamps", "", "practicals", "", 28),
+    // camp (8.21, Wren 2026-10-02)
+    I("Cabin", "Camp/Cabin", "renderers", "", 106), I("Tower", "Camp/Tower", "renderers", "", 393), I("Fire pit", "Camp/FirePit", "renderers", "", 32),
+    I("Generator", "Camp/GeneratorDressing", "renderers", "", 3), I("Privy", "Camp/Privy", "renderers", "", 2), I("Stump", "Camp/Cabin/Woodpile", "renderers", "CITW_Tree_Stump", 1),
+    I("Woodpile", "Camp/Cabin/Woodpile", "renderers", "C", 6), I("Rune post", "Ward/Climb/RunePost", "renderers", "", 4), I("Rune post screen", "Ward/Climb/RuneScreen", "renderers", "", 5),
 };
 string[] fireItems = { "Ridge fire cards, night", "Ridge fire cards, day", "Valley fire cards, night", "Valley fire cards, day", "Smoke sheet, day one", "Smoke lid, night", "Smoke columns, day two", "Ward stones" };
 var none = new Main3AreaSet.DeckTarget[0];
 var camp = new Main3AreaSet.Area { id = "camp", task = "8.21", title = "Keeper's camp, cabin and tower", bounds = new[] { R(138f, 130f, 208f, 192f) },
     warps = new[] { "Keepers_Camp", "Cabin", "Tower_Deck" },
     places = new[] { P("Cabin door", 178f, G, 165f), P("Fire pit", 172f, G, 163f), P("Generator", 183f, G, 173f), P("Privy", 176.5f, G, 178f), P("Woodpile", 182.5f, G, 168f), P("Tower stair foot", 164f, G, 160f), P("Forage patch B", 141f, G, 167f) },
-    inventory = new[] { "Lanterns and lamps" }, deckListWritten = true,
+    playChecks = new[] { "main3_8_21_camp_check.cs", "main3_tower_stairs_check.cs" },
+    inventory = new[] { "Lanterns and lamps", "Cabin", "Tower", "Fire pit", "Generator", "Privy", "Stump", "Woodpile", "Rune post", "Rune post screen" }, deckListWritten = true,
     deckSee = new[] { D("cabin roof", 178f, 19.5f, 168f), D("fire pit", 172f, 15.6f, 163f), D("woodpile", 182f, 16.5f, 168f), D("lake, mid water", 190f, -5.4f, 60f),
-        D("Camp 1 spar top", 284f, 29f, 240f), D("Camp 2 stack top", 292f, 24.2f, 108f), D("Camp 3 Snag line (top)", 96f, 54f, 146.5f), D("office west door", 341f, 4.2f, 199f),
+        D("Camp 1 spar top", 284f, 29f, 240f), D("Camp 2 stack top (over its tent)", 292f, 26f, 108f), D("Camp 3 Snag line (top)", 96f, 54f, 146.5f), D("office west door", 341f, 4.2f, 199f),
         D("cat step (boathouse)", 240f, -3.3f, 56f), D("verge tree", 419f, 25f, 139f), D("lot centre", 358f, 3.1f, 170f), D("highway", 430f, G, 185f) },
     deckHide = new[] { D("Ward stones", -3f, 66f, 224f, "Ward/Stones"), D("rune post", 57f, 36f, 246f, "Ward/Climb/RunePost"), D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"),
         D("far fire front, z 40", -240f, 105f, 40f), D("far fire front, z 170", -240f, 105f, 170f), D("far fire front, z 300", -240f, 105f, 300f), D("day-one sheet top", -500f, 110f, 170f), D("cave mouth", 52f, -4f, 37f) } };

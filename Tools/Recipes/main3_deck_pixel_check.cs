@@ -8,7 +8,7 @@
 // must show from at least one eye or the check is VOID). The first eye also renders the off frame twice: that noise must be 0.
 // Returns "PIXEL <target> raised <0|1> eyes <from>-<to>: seen <eyes> worst <px> noise <px>".
 string area = "camp"; int target = 0; int eyeFrom = 0; int raised = 0;
-const int eyeBatch = 16;   // eyes per job (32 readbacks, about 1 GB of staging buffers at 3840 x 1976)
+const int eyeBatch = 16;   // eyes per job (3 renders each plus one: 49 readbacks, about 1.5 GB of staging buffers at 3840 x 1976)
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -27,7 +27,8 @@ int eyeTo = UnityEngine.Mathf.Min(eyes.Count, eyeFrom + eyeBatch);
 var ter = UnityEngine.Terrain.activeTerrain;
 var aim = T.point.y <= -900f ? new UnityEngine.Vector3(T.point.x, ter.SampleHeight(T.point) + ter.transform.position.y + 1f, T.point.z) : T.point;
 if (raised == 1) aim += UnityEngine.Vector3.up * raise;
-var rends = new System.Collections.Generic.List<UnityEngine.Renderer>(); foreach (var r in obj.GetComponentsInChildren<UnityEngine.Renderer>()) if (r.enabled) rends.Add(r);
+// every renderer under the target, drawn or not (the Ward stones are built with their renderers off): painted and drawn for the test
+var rends = new System.Collections.Generic.List<UnityEngine.Renderer>(); var wasOn = new System.Collections.Generic.List<bool>(); foreach (var r in obj.GetComponentsInChildren<UnityEngine.Renderer>()) { rends.Add(r); wasOn.Add(r.enabled); }
 var mats = new System.Collections.Generic.List<UnityEngine.Material[]>();
 var cam = UnityEngine.Camera.main; var camParent = cam.transform.parent; var camPos = cam.transform.localPosition; var camRot = cam.transform.localRotation;
 var home = obj.position; UnityEngine.RenderTexture rt = null; UnityEngine.Texture2D shot = null; UnityEngine.Material flat = null;
@@ -35,6 +36,7 @@ int seen = 0, worst = 0, noise = 0;
 try
 {
     flat = new UnityEngine.Material(UnityEngine.Shader.Find("Universal Render Pipeline/Unlit")); flat.SetColor("_BaseColor", UnityEngine.Color.magenta);
+    foreach (var r in rends) r.enabled = true;
     foreach (var r in rends) { mats.Add(r.sharedMaterials); var m = new UnityEngine.Material[r.sharedMaterials.Length]; for (int i = 0; i < m.Length; i++) m[i] = flat; r.sharedMaterials = m; }
     if (raised == 1) obj.position = home + UnityEngine.Vector3.up * raise;
     rt = new UnityEngine.RenderTexture(shotW, shotH, 24); shot = new UnityEngine.Texture2D(shotW, shotH, UnityEngine.TextureFormat.RGB24, false);
@@ -48,6 +50,7 @@ try
     int Diff(UnityEngine.Color32[] a, UnityEngine.Color32[] b) { int n = 0; for (int i = 0; i < a.Length; i++) if (System.Math.Abs(a[i].r - b[i].r) > set.pixelTolerance || System.Math.Abs(a[i].g - b[i].g) > set.pixelTolerance || System.Math.Abs(a[i].b - b[i].b) > set.pixelTolerance) n++; return n; }
     for (int e = eyeFrom; e < eyeTo; e++)
     {
+        Shoot(eyes[e]);   // the first render after the camera moves carries the last view's history (837,204 px on a target with nothing drawn); discard it
         foreach (var r in rends) r.forceRenderingOff = false; var on = Shoot(eyes[e]);
         foreach (var r in rends) r.forceRenderingOff = true; var off = Shoot(eyes[e]);
         if (e == eyeFrom && eyeFrom == 0) noise = Diff(off, Shoot(eyes[e]));
@@ -56,7 +59,7 @@ try
 }
 finally
 {
-    for (int i = 0; i < rends.Count; i++) { rends[i].forceRenderingOff = false; if (i < mats.Count) rends[i].sharedMaterials = mats[i]; }
+    for (int i = 0; i < rends.Count; i++) { rends[i].forceRenderingOff = false; rends[i].enabled = wasOn[i]; if (i < mats.Count) rends[i].sharedMaterials = mats[i]; }
     obj.position = home;
     cam.targetTexture = null; cam.transform.SetParent(camParent, false); cam.transform.localPosition = camPos; cam.transform.localRotation = camRot;
     if (rt != null) { rt.Release(); UnityEngine.Object.DestroyImmediate(rt); } if (shot != null) UnityEngine.Object.DestroyImmediate(shot); if (flat != null) UnityEngine.Object.DestroyImmediate(flat);

@@ -55,6 +55,8 @@ public class Main3AreaSet : ScriptableObject
         public bool deckListWritten;
         public DeckTarget[] deckSee;
         public DeckTarget[] deckHide;
+        [Tooltip("Play-mode check recipes (Tools/Recipes) the area capture also runs; each must return ALL PASS.")]
+        public string[] playChecks;
 
         public bool Contains(Vector3 p)
         {

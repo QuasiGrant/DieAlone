@@ -115,6 +115,51 @@ MonoBehaviour:
     kind: practicals
     name: 
     expected: 28
+  - label: Cabin
+    path: Camp/Cabin
+    kind: renderers
+    name: 
+    expected: 106
+  - label: Tower
+    path: Camp/Tower
+    kind: renderers
+    name: 
+    expected: 393
+  - label: Fire pit
+    path: Camp/FirePit
+    kind: renderers
+    name: 
+    expected: 32
+  - label: Generator
+    path: Camp/GeneratorDressing
+    kind: renderers
+    name: 
+    expected: 3
+  - label: Privy
+    path: Camp/Privy
+    kind: renderers
+    name: 
+    expected: 2
+  - label: Stump
+    path: Camp/Cabin/Woodpile
+    kind: renderers
+    name: CITW_Tree_Stump
+    expected: 1
+  - label: Woodpile
+    path: Camp/Cabin/Woodpile
+    kind: renderers
+    name: C
+    expected: 6
+  - label: Rune post
+    path: Ward/Climb/RunePost
+    kind: renderers
+    name: 
+    expected: 4
+  - label: Rune post screen
+    path: Ward/Climb/RuneScreen
+    kind: renderers
+    name: 
+    expected: 5
   areas:
   - id: camp
     task: 8.21
@@ -146,6 +191,15 @@ MonoBehaviour:
       point: {x: 141, y: -999, z: 167}
     inventory:
     - Lanterns and lamps
+    - Cabin
+    - Tower
+    - Fire pit
+    - Generator
+    - Privy
+    - Stump
+    - Woodpile
+    - Rune post
+    - Rune post screen
     deckListWritten: 1
     deckSee:
     - label: cabin roof
@@ -163,8 +217,8 @@ MonoBehaviour:
     - label: Camp 1 spar top
       point: {x: 284, y: 29, z: 240}
       treeCoverPath: 
-    - label: Camp 2 stack top
-      point: {x: 292, y: 24.2, z: 108}
+    - label: Camp 2 stack top (over its tent)
+      point: {x: 292, y: 26, z: 108}
       treeCoverPath: 
     - label: Camp 3 Snag line (top)
       point: {x: 96, y: 54, z: 146.5}
@@ -209,6 +263,9 @@ MonoBehaviour:
     - label: cave mouth
       point: {x: 52, y: -4, z: 37}
       treeCoverPath: 
+    playChecks:
+    - main3_8_21_camp_check.cs
+    - main3_tower_stairs_check.cs
   - id: front
     task: 8.22
     title: Front zone
@@ -241,6 +298,7 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    playChecks: []
   - id: lake
     task: 8.23
     title: Lake
@@ -270,6 +328,7 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    playChecks: []
   - id: camp1
     task: 8.24
     title: Camp 1 and the north loop
@@ -294,6 +353,7 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    playChecks: []
   - id: camp2
     task: 8.25
     title: Camp 2
@@ -321,6 +381,7 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    playChecks: []
   - id: camp3
     task: 8.26
     title: Camp 3 and the west trails
@@ -356,6 +417,7 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    playChecks: []
   - id: cave
     task: 8.27
     title: Cave and ravine
@@ -392,6 +454,7 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    playChecks: []
   - id: burn
     task: 8.28
     title: Old burn and forage
@@ -415,6 +478,7 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    playChecks: []
   - id: ward
     task: 8.29
     title: Ward path and ledge
@@ -454,6 +518,7 @@ MonoBehaviour:
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    playChecks: []
   - id: whole
     task: 8.30
     title: Whole map
@@ -604,6 +669,16 @@ MonoBehaviour:
     - North ruin
     - Cave lights
     - Lanterns and lamps
+    - Cabin
+    - Tower
+    - Fire pit
+    - Generator
+    - Privy
+    - Stump
+    - Woodpile
+    - Rune post
+    - Rune post screen
     deckListWritten: 0
     deckSee: []
     deckHide: []
+    playChecks: []

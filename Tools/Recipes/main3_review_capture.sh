@@ -15,7 +15,7 @@
 set -u
 cd "$(dirname "$0")/../.." || exit 1
 R="$(pwd)/Tools/Recipes"
-AREA=""; AREARES=""; LANDRES=""; PIXRES=""
+AREA=""; AREARES=""; LANDRES=""; PIXRES=""; EXTRARES=""
 if [ "${1:-}" = "--area" ]; then AREA="${2:-}"; [ -n "$AREA" ] || { echo "FAIL --area needs an id"; exit 1; }; shift 2; fi
 if [ -n "$AREA" ]; then OUT="${1:-Docs/Captures/Main3Review_$AREA}"; else OUT="${1:-Docs/Captures/Main3Review}"; fi
 unity status 2>/dev/null | grep -q "ready" || { echo "FAIL no Editor in state ready (unity status)"; exit 1; }
@@ -29,8 +29,9 @@ area_copy main3_inventory_check.cs Temp/main3_inventory_check_run.cs
 INV=$(unity command eval_file --file "$(pwd)/Temp/main3_inventory_check_run.cs" --result-only 2>/dev/null | sed -n 's/.*"result": "\(.*\)".*/\1/p' | head -1)
 printf '%s\n' "$INV" | sed 's/\n/\n/g'
 case "$INV" in *"ALL PASS"*|*"FAIL "*" differ"*) ;; *) echo "FAIL inventory (main3_inventory_check.cs): fix the build before capturing"; exit 1;; esac
-WARPS=""
+WARPS=""; EXTRA=""
 if [ -n "$AREA" ]; then
+  EXTRA=$(unity command eval --code "var a = Main3AreaSet.Load()?.Find(\"$AREA\"); return a == null || a.playChecks == null ? \"\" : string.Join(\",\", a.playChecks);" --result-only 2>/dev/null | sed -n 's/.*"result": "\(.*\)".*/\1/p' | head -1)
   WARPS=$(unity command eval --code "var a = Main3AreaSet.Load()?.Find(\"$AREA\"); return a == null ? \"NOAREA\" : string.Join(\",\", a.warps);" --result-only 2>/dev/null | sed -n 's/.*"result": "\(.*\)".*/\1/p' | head -1)
   case "$WARPS" in ""|NOAREA) echo "FAIL no area $AREA in Assets/Settings/Main3Areas.asset"; exit 1;; esac
 fi
@@ -45,6 +46,17 @@ job() {   # $1 = file; prints the result text
 unity command editor_play >/dev/null 2>&1
 for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "playing"' && break; sleep 2; done
 rc=0
+# the area's own Play checks run first, before the capture moves the player (main3_8_21_camp_check.cs reads the wake spot Play starts at)
+EARLYMD=""; erc=0
+if [ -n "$AREA" ]; then
+  for c in $(printf '%s' "$EXTRA" | tr ',' ' '); do
+    res=$(job "$R/$c")
+    EXTRARES="$EXTRARES$c: $(printf '%s' "$res" | sed 's/\\n.*//')"$'\n'
+    EARLYMD="$EARLYMD"$'\n'"## $c"$'\n\n'"$(printf '%s\n' "$res" | sed 's/\\n/\n/g' | sed 's/^/    /')"$'\n'
+    echo "$c: $(printf '%s' "$res" | sed 's/\n/ | /g')"
+    case "$res" in *"ALL PASS"*) ;; *) erc=1;; esac
+  done
+fi
 for step in day night daytwo; do
   for try in 1 2 3; do
     res=$(job "$(pwd)/Temp/main3_review_capture_$step.cs")
@@ -56,6 +68,7 @@ for step in day night daytwo; do
 done
 if [ $rc -eq 0 ]; then
   { echo "# Main3 scripted Play checks"; echo; echo "From Tools/Recipes/main3_review_capture.sh, $(date '+%Y-%m-%d %H:%M'). Every move is PlayerController.Step; see each recipe's header for the method."; }  > "$OUT/Checks.md"
+  printf '%s' "$EARLYMD" >> "$OUT/Checks.md"
   if [ -n "$AREA" ]; then   # area mode: the area's hard checks only
     area_copy main3_area_check.cs Temp/main3_area_check_run.cs
     sed -e "s|^string onlyWarps = \"\";|string onlyWarps = \"$WARPS\";|" "$R/main3_warp_landing_check.cs" > Temp/main3_warp_landing_check_run.cs
@@ -67,7 +80,7 @@ if [ $rc -eq 0 ]; then
   for path in $CHECKS; do
     check=$(basename "$path" | sed 's/_run\.cs$/.cs/')
     res=$(job "$path")
-    case "$check" in main3_area_check.cs) AREARES="$res";; main3_warp_landing_check.cs) LANDRES="$res";; esac
+    case "$check" in main3_area_check.cs) AREARES="$res";; main3_warp_landing_check.cs) LANDRES="$res";; *) [ -n "$AREA" ] && EXTRARES="$EXTRARES$check: $(printf '%s' "$res" | sed 's/\\n.*//')"$'\n';; esac
     { echo; echo "## $check"; echo; printf '%s\n' "$res" | sed 's/\n/\n/g' | sed 's/^/    /'; } >> "$OUT/Checks.md"
     echo "$check: $(printf '%s' "$res" | sed 's/\n/ | /g')"
     case "$res" in *"ALL PASS"*) ;; *) rc=1;; esac
@@ -108,6 +121,8 @@ if [ -n "$AREA" ]; then
   printf '%s\n' "$AREARES" | sed 's/\\n/\n/g' | grep -E "^(ALL PASS|FAILS|INCOMPLETE|PASS|FAIL|----)"
   printf '%s\n' "$LANDRES" | sed 's/\\n/\n/g' | head -1 | sed 's/^/WARP LANDING: /'
   printf '%s' "$PIXRES"
+  [ -n "$AREA" ] && printf '%s' "$EXTRARES"
   rm -f Temp/main3_area_check_run.cs Temp/main3_warp_landing_check_run.cs Temp/main3_inventory_check_run.cs
 fi
+[ $erc -eq 0 ] || rc=1
 exit $rc

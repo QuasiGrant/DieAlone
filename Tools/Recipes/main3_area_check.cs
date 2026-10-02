@@ -135,6 +135,13 @@ try
             if ((ignore == null || !h.collider.transform.IsChildOf(ignore)) && !h.collider.transform.IsChildOf(pc.transform)) return false;
         return true;
     }
+    string Blocker(UnityEngine.Vector3 a, UnityEngine.Vector3 b, UnityEngine.Transform ignore)   // the nearest blocking collider, for the report
+    {
+        var d = b - a; float len = d.magnitude - set.rayEndSkip; UnityEngine.RaycastHit best = default; bool any = false;
+        foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, len, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore))
+            if ((ignore == null || !h.collider.transform.IsChildOf(ignore)) && !h.collider.transform.IsChildOf(pc.transform) && (!any || h.distance < best.distance)) { best = h; any = true; }
+        return any ? WalkIns.PathOf(best.collider.transform) + " at " + P3(best.point) + (temps.Contains(best.collider) ? " (drawn tree)" : "") : "none";
+    }
     // DECK must-hide by rays first: land and colliders only (trees do not count, as F-1)
     var deckLines = new System.Text.StringBuilder(); int deckFails = 0;
     if (!A.deckListWritten) { incomplete = true; sb.Append("---- DECK: no deck list (Sable writes it when the area starts)\n"); }
@@ -170,7 +177,7 @@ try
         {
             var p = Pt(t.point); int clear = 0; foreach (var e in eyes) if (Clear(e, p, tower)) clear++;
             float share = clear / (float)eyes.Count; bool pass = share >= set.mustSeeShare; if (!pass) deckFails++;
-            deckLines.Append("  " + (pass ? "ok   " : "HIDDEN ") + "see " + t.label + " " + P3(p) + ": " + clear + " of " + eyes.Count + " rays clear (" + (share * 100f).ToString("F0", inv) + " percent, bar " + (set.mustSeeShare * 100f).ToString("F0", inv) + ")\n");
+            deckLines.Append("  " + (pass ? "ok   " : "HIDDEN ") + "see " + t.label + " " + P3(p) + ": " + clear + " of " + eyes.Count + " rays clear (" + (share * 100f).ToString("F0", inv) + " percent, bar " + (set.mustSeeShare * 100f).ToString("F0", inv) + ")" + (pass ? "" : "; from the deck centre the first block is " + Blocker(new UnityEngine.Vector3(tower.position.x, deckTop + set.deckEye, tower.position.z), p, tower)) + "\n");
         }
         // the pixel check runs in main3_deck_pixel_check.cs, a batch of eyes per job (one job of every render ran the GPU out of memory);
         // main3_review_capture.sh --area adds its PIXEL lines under this one
