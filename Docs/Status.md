@@ -93,3 +93,4 @@ Docs/Private holds the story bible, minigames, events, scares and dialogue draft
 - 2026-10-02: CampLayout draft 2 goes to build without a third paper round (two-round cap); the 8.21 area check verifies overlaps on the built scene.
 - 2026-10-02: Captures turn the GPU Resident Drawer off in memory while rendering and restore it after, because Camera.Render skips its objects (cabin, tower, forest); every capture since 8.16 missed them.
 - 2026-10-02: The woodpile need not be seen from the deck. The Ward stones are proven hidden by land rays (W-1); the pixel check applies only where trees are the cover.
+- 2026-10-02: "Found" means seen by meshes, within 45 degrees of the direction of travel, at least 1 degree tall, with a labelled frame (Pim); it replaces the 30 m line rule.
