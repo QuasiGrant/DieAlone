@@ -9,4 +9,5 @@ Without a shell, real object positions come from Assets/Scenes/Main3.unity with 
 - Trail points: transforms whose m_Father is the trail's Transform fileID (e.g. "Camp 1 to J").
 - guid to prefab: pack folders are gitignored, so Grep skips them unless `path` points inside the pack folder (BK/PureNature_Redwood, suffercord, Revolving Pizza Games).
 Limits found in Marlow's 824 check: this read misses Forest/Dense trunks (unpacked), and PlaceKit boxes are often far larger than meshes (ruin walls 2.3 thick, stump 3.98, tent 7.32, table 1.6). Ask for collider sizes, never assume mesh size; name every tree removed and give 8.19 keep-out zones.
-Used for NorthLayout.md draft 1 (2026-10-02). Marlow still samples ground and colliders; see [[feedback-measure-ground-first]].
+Main3.unity line numbers shift while Rook saves: Grep with -A context, never Read by an older line number. Place recipes (Tools/Recipes/main3_8_5_campsites.cs, main3_8_17_*.cs) give built geometry faster than the scene.
+Used for NorthLayout.md draft 1 and Camp2Layout.md draft 1 (2026-10-02). Marlow still samples ground and colliders; see [[feedback-measure-ground-first]].

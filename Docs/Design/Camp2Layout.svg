@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680mm" height="600mm" viewBox="0 0 680 600" font-family="Arial, sans-serif">
+<style>
+ .t{font-size:3.2px;fill:#222}
+ .s{font-size:2.6px;fill:#333}
+ .h{font-size:5px;font-weight:bold;fill:#111}
+ .rock{fill:#b8b2a6;stroke:#555;stroke-width:0.5}
+ .top{fill:#d6d0c4;stroke:#555;stroke-width:0.4}
+ .fur{fill:#d9d2c3;stroke:#333;stroke-width:0.4}
+ .booth{fill:#cfd8e0;stroke:#2a4a6a;stroke-width:0.6}
+ .act{fill:#f2c98a;stroke:#7a4a10;stroke-width:0.5}
+ .evt{fill:#e8a0c8;stroke:#8a2a6a;stroke-width:0.5}
+ .ramp{fill:#c9a97a;stroke:#6e5a44;stroke-width:0.4}
+ .rail{fill:none;stroke:#6e5a44;stroke-width:1.2}
+ .skirt{fill:none;stroke:#7a4a10;stroke-width:1.2;stroke-dasharray:2 0.8}
+ .trail{fill:none;stroke:#b07a3a;stroke-width:1.4}
+ .old{fill:none;stroke:#c0392b;stroke-width:0.6;stroke-dasharray:1.5 1}
+ .gone{fill:none;stroke:#c0392b;stroke-width:0.6}
+ .wire{fill:none;stroke:#222;stroke-width:0.4;stroke-dasharray:4 1}
+ .sight{fill:none;stroke:#8e44ad;stroke-width:0.5;stroke-dasharray:3 1.5}
+ .trap{fill:none;stroke:#c0392b;stroke-width:0.8}
+ .keep{fill:none;stroke:#3d5a2a;stroke-width:0.4;stroke-dasharray:1 1}
+ .frame{fill:none;stroke:#999;stroke-width:0.3}
+ .warp{fill:#2a7fd4;stroke:#123;stroke-width:0.3}
+</style>
+<rect x="0" y="0" width="680" height="600" fill="#fff"/>
+<text class="h" x="20" y="14">Camp2Layout.svg, draft 1, 2026-10-02, Sable. Plans: north up, world metres. Section: looking west. Nothing decided until DECISIONS.md.</text>
+
+<!-- PANEL A: core plan, 10 px per m, x 282 to 310, z 92 to 122 -->
+<rect class="frame" x="20" y="30" width="280" height="300"/>
+<text class="h" x="20" y="27">A. Camp 2 core plan (x 282 to 310, z 92 to 122), 10 px = 1 m</text>
+<text class="s" x="22" y="35">z 122</text><text class="s" x="22" y="328">z 92</text><text class="s" x="270" y="328">x 310</text>
+<!-- stack foot and top -->
+<circle class="rock" cx="120" cy="170" r="60"/>
+<circle class="top" cx="120" cy="170" r="48"/>
+<text class="t" x="70" y="200">GraniteStack, foot r 6, top r 4.8 at 24</text>
+<!-- C1 top rail ring with landing mouth (bearings 90 to 109) -->
+<path class="rail" d="M163.0,184.8 A45.5,45.5 0 1 1 165.5,170"/>
+<text class="s" x="70" y="128">C1 rope rail r 4.55, 1.05</text>
+<!-- tent, lamp, chair on top -->
+<rect class="fur" x="84" y="152" width="24" height="24"/><text class="s" x="85" y="166">tent, door E</text>
+<text class="s" x="85" y="180">ring box in it</text>
+<circle class="act" cx="116" cy="176" r="1.8"/><text class="s" x="110" y="184">lamp (hard deck)</text>
+<rect class="fur" x="146" y="143" width="6" height="6" transform="rotate(66 149 146)"/>
+<text class="s" x="152" y="142">his chair, faces 66 (the T)</text>
+<circle class="act" cx="139" cy="154" r="1.4"/><text class="s" x="124" y="158">stand</text>
+<!-- S1 sightline from chair heading 66 -->
+<line class="sight" x1="149" y1="146" x2="290" y2="83"/><text class="s" x="240" y="96">S1 to the T and highway</text>
+<!-- paper spots -->
+<circle class="evt" cx="76" cy="158.2" r="1.6"/><circle class="evt" cx="87.8" cy="137.8" r="1.6"/><circle class="evt" cx="57" cy="151" r="1.6"/>
+<text class="s" x="40" y="145">PS1 to PS3</text>
+<!-- stair footprint, lanes, landings -->
+<rect class="ramp" x="182" y="70" width="14" height="100"/><rect class="ramp" x="197" y="70" width="14" height="100"/>
+<rect class="ramp" x="182" y="55" width="29" height="15"/><rect class="ramp" x="155" y="170" width="56" height="15"/>
+<text class="s" x="184" y="120" transform="rotate(-90 186 120)">lane A: Ramp1, 3 north</text>
+<text class="s" x="199" y="120" transform="rotate(-90 201 120)">lane B: Ramp2, 4 south</text>
+<text class="s" x="157" y="191">LandingTop at 24 (LandingS1 at 14 below)</text>
+<!-- C3 landing north rail -->
+<line class="rail" x1="165.5" y1="170" x2="182" y2="170" stroke="#c0392b"/>
+<text class="s" x="160" y="166">C3 rail</text>
+<!-- C6 skirts -->
+<polyline class="skirt" points="164,130 182,130 182,55 211,55 211,185 196,185 196,170"/>
+<text class="s" x="213" y="60">C6 skirts, 3 m or to overhead</text>
+<circle class="trap" cx="186" cy="150" r="4"/><text class="s" x="168" y="146">T7 notch</text>
+<!-- trails: boathouse leg -->
+<polyline class="trail" points="150,319.3 140.8,293.1 137.2,271 151.4,237.2 165.9,222.1 188.6,186.9 189,172"/>
+<text class="t" x="118" y="312">Boathouse leg</text>
+<!-- old T leg end, removed -->
+<polyline class="old" points="189,172 203,179.2 207.2,157 202.1,127.3 197.1,100.7 200.5,82.7 215,73.9 237.7,70.3"/>
+<text class="s" x="215" y="140" fill="#c0392b">old T leg under the stair (T5), goes</text>
+<!-- new T leg end -->
+<polyline class="trail" points="189,172 204,197 224,190 236,155 240,110 237.7,70.3 261.3,65.9 278.8,55.5 286.4,37.4"/>
+<text class="t" x="244" y="130">C6 new T leg</text>
+<circle class="act" cx="189" cy="172" r="1.6"/><text class="s" x="168" y="208">ramp foot (298.9, 107.8)</text>
+<!-- blaze old and new -->
+<rect class="gone" x="218.8" y="123" width="2" height="2"/><rect class="act" x="243" y="185" width="2.4" height="2.4"/>
+<text class="s" x="246" y="190">blaze (304.4, 106.4)</text>
+<!-- booth and table cluster -->
+<rect class="booth" x="193.3" y="252.7" width="13.4" height="14.6"/>
+<rect class="fur" x="184.3" y="267.3" width="9" height="9"/>
+<rect class="fur" x="179.3" y="269.3" width="5" height="5" transform="rotate(45 181.8 271.8)"/>
+<rect class="act" x="186.3" y="276.3" width="5" height="5"/>
+<rect class="fur" x="193.3" y="269.3" width="5" height="5"/>
+<text class="t" x="210" y="258">C2 booth, open W</text><text class="t" x="200" y="290">table, 3 places (detail D)</text>
+<circle class="gone" cx="186.3" cy="256" r="1.2"/>
+<!-- boulders near booth -->
+<circle class="gone" cx="225.2" cy="272.6" r="9.5"/><circle class="rock" cx="237.9" cy="282" r="19"/><circle class="rock" cx="234" cy="271" r="9.5"/>
+<text class="s" x="226" y="306">C9 boulder moves into the big one</text>
+<!-- barrel -->
+<circle class="act" cx="114" cy="236" r="4.5"/><text class="t" x="80" y="234">C5 barrel</text>
+<circle class="act" cx="123" cy="246" r="1.2"/><text class="s" x="125" y="249">stand</text>
+<circle class="keep" cx="114" cy="236" r="25"/>
+<circle class="gone" cx="112.7" cy="248.9" r="1.2"/>
+<!-- ladder removed -->
+<line class="gone" x1="95" y1="226" x2="102" y2="232"/><line class="gone" x1="102" y1="226" x2="95" y2="232"/>
+<text class="s" x="62" y="222">C4 ladder removed</text>
+<!-- trap T1, T2 -->
+<circle class="trap" cx="99" cy="116" r="5"/><text class="s" x="62" y="108">T1, T2 talus pocket (held)</text>
+<!-- wire -->
+<line class="wire" x1="193.3" y1="252.7" x2="115.4" y2="330"/><text class="s" x="112" y="296">C8 wire to the pole</text>
+<circle class="trap" cx="147.5" cy="311" r="1.5"/>
+<!-- warps -->
+<circle class="warp" cx="143" cy="300" r="1.8"/><line class="sight" x1="143" y1="300" x2="159.4" y2="288.5"/><text class="s" x="146" y="304">Camp_2 warp, facing 55</text>
+<circle class="gone" cx="91.6" cy="248" r="1.8"/><text class="s" x="62" y="256">old warp</text>
+<circle class="warp" cx="145" cy="178" r="1.8"/><text class="s" x="128" y="176">Camp_2_Top</text>
+<!-- F3 -->
+<line class="sight" x1="240" y1="110" x2="200" y2="260"/><text class="s" x="243" y="112">F3</text>
+
+<!-- PANEL B: area overview, 2 px per m, x 262 to 345, z 56 to 172 = bounds -->
+<rect class="frame" x="330" y="30" width="166" height="232"/>
+<text class="h" x="330" y="27">B. Area bounds x 262 to 345, z 56 to 172, 2 px = 1 m</text>
+<circle class="keep" cx="456" cy="174" r="28"/><text class="s" x="440" y="206">Grove Camp2E</text>
+<polyline class="trail" points="335.9,257.6 341.6,258.8 349.5,255.5 353,246.2 354.4,241.4 356.4,237.6 359.2,234.7 361.1,230.9 362.4,226.6 363.7,222.4 365.5,218.8 368.5,216.3 372.7,214.9 378.2,214.3 395.5,211.8 398.9,208.9 400.4,204.7 400,199.4 398.3,193.6 396,187.9 394.2,182.6 393.4,178.2 396.3,171.4 399.2,168.4 403.7,161.4 403.8,158.4"/>
+<polyline class="trail" points="403.8,158.4 406.8,163.4 410.8,162 413.2,155 414,146 413.5,138.1 418.3,137.2 421.8,135.1 423.3,131.5 423.2,126.8 422.7,121.8 423.4,117.8 426.3,115.1 431.6,114 438.2,113.5 444.4,112.7 449,110.8 451.2,107.4 451.9,103.2 451.6,98.5 450.8,93.6 450.1,88.7 450.1,84.4 451.4,80.6 454.3,77.7 458.6,75.5 464.1,73.7 470.2,72.2 476.3,70.6 481.6,68.6 485.7,66 488.1,62.6 489,58.5 488.5,53.9 487.3,49 486,44.1 485.3,39.5 485.6,35.3"/>
+<circle class="rock" cx="390" cy="158" r="12"/>
+<rect class="booth" x="404.7" y="174.5" width="2.7" height="2.9"/>
+<line class="wire" x1="351.6" y1="230" x2="406" y2="176"/>
+<circle class="act" cx="351.6" cy="230" r="1.8"/><text class="s" x="333" y="225">phone pole, 41 m</text>
+<circle class="trap" cx="364.6" cy="217.6" r="1.6"/><text class="s" x="368" y="224">line-down crossing</text>
+<rect class="act" x="438.4" y="100" width="4" height="4"/><text class="s" x="430" y="96">food lockers, 45 m</text>
+<line class="sight" x1="395.8" y1="153.2" x2="496" y2="108.4"/><text class="s" x="460" y="128">S1 to the T</text>
+<text class="t" x="336" y="250">Boathouse to Camp 2, 95 m</text>
+<text class="t" x="455" y="45">Camp 2 to T, 94 m</text>
+<text class="s" x="470" y="38">to T (339.8, 169.4)</text>
+
+<!-- PANEL C: section through the stair, looking west, 6 px per m, z 96 to 124, y 0 to 28 -->
+<rect class="frame" x="20" y="400" width="180" height="150"/>
+<text class="h" x="20" y="396">C. Section, east face, looking west (z across, height up), 6 px = 1 m</text>
+<line class="frame" x1="20" y1="536" x2="200" y2="536" stroke="#333"/>
+<text class="s" x="22" y="545">ground 4.0</text><text class="s" x="160" y="545">z north</text>
+<polygon class="rock" points="56,536 128,536 120.8,416 63.2,416"/>
+<polyline class="ramp" points="92,536 152,506 161,506 152,506 92,476 83,476 92,476 152,446 161,446 152,446 92,416 83,416" fill="none" stroke="#6e5a44" stroke-width="1.2"/>
+<text class="s" x="132" y="500">Ramp1 to 4, 26.6 deg</text>
+<rect class="skirt" x="83" y="518" width="78" height="18"/><text class="s" x="132" y="530">C6 skirt 3 m</text>
+<line class="rail" x1="68.3" y1="416" x2="68.3" y2="409.7"/><line class="rail" x1="122.9" y1="416" x2="122.9" y2="409.7"/>
+<line class="rail" x1="68.3" y1="409.7" x2="122.9" y2="409.7"/>
+<text class="s" x="70" y="406">C1 rail 1.05 at 24 (top falls 20 m today, T3)</text>
+<rect class="fur" x="105" y="410.6" width="3.6" height="5.4"/><text class="s" x="110" y="414">his chair</text>
+<rect class="booth" x="33.6" y="520.4" width="8.8" height="15.6"/><rect class="fur" x="28.2" y="531.7" width="5.4" height="4.3"/>
+<text class="s" x="22" y="516">booth 2.6, table 0.72</text>
+<text class="s" x="22" y="430">stair rises 20 m in 58 m walked</text>
+
+<!-- PANEL D: table and booth detail, 40 px per m, x 297.6 to 300.9, z 96.4 to 100.0 -->
+<rect class="frame" x="510" y="290" width="160" height="160"/>
+<text class="h" x="510" y="286">D. Table and booth, 40 px = 1 m</text>
+<rect class="booth" x="589.2" y="310.8" width="53.6" height="58.4" fill-opacity="0.4"/>
+<rect class="fur" x="589.2" y="310.8" width="53.6" height="4.8"/><rect class="fur" x="589.2" y="364.4" width="53.6" height="4.8"/><rect class="fur" x="638" y="310.8" width="4.8" height="58.4"/>
+<text class="s" x="600" y="342">booth, open front W</text>
+<text class="s" x="600" y="348">door lane 1.22 m</text>
+<line class="sight" x1="540" y1="340" x2="589" y2="340"/>
+<circle class="act" cx="601.2" cy="364" r="2"/><text class="s" x="604" y="361">hook, 1.35 high</text>
+<circle class="keep" cx="601.2" cy="364" r="54.8"/><text class="s" x="612" y="420">54 in cord reach 1.37</text>
+<rect class="fur" x="553.2" y="369.2" width="36" height="36"/><text class="s" x="560" y="389">table 0.9, top 0.72</text>
+<rect class="fur" x="533.2" y="377.2" width="20" height="20" transform="rotate(45 543.2 387.2)"/><text class="s" x="512" y="372">his seat, yaw 45</text>
+<rect class="act" x="561.2" y="405.2" width="20" height="20"/><text class="s" x="560" y="433">your seat, faces N</text>
+<rect class="fur" x="589.2" y="377.2" width="20" height="20" stroke-dasharray="1 0.6"/><text class="s" x="611" y="384">third place, never sat in</text>
+<text class="s" x="512" y="446">gaps: table to booth 0, seats flush 0, third chair to booth 0.2</text>
+
+<!-- legend -->
+<text class="h" x="330" y="290">Legend</text>
+<rect class="act" x="330" y="296" width="5" height="3"/><text class="s" x="338" y="299">place, stand or interaction</text>
+<rect class="fur" x="330" y="303" width="5" height="3"/><text class="s" x="338" y="306">solid prop, collider fitted</text>
+<line class="skirt" x1="330" y1="311" x2="336" y2="311"/><text class="s" x="338" y="312">plank skirt, closes under the stair</text>
+<line class="rail" x1="330" y1="317" x2="336" y2="317"/><text class="s" x="338" y="318">rail 1.05</text>
+<line class="old" x1="330" y1="323" x2="336" y2="323"/><text class="s" x="338" y="324">removed or moved (R)</text>
+<circle class="trap" cx="333" cy="329" r="2"/><text class="s" x="338" y="330">trap spot, old or new</text>
+<line class="keep" x1="330" y1="335" x2="336" y2="335"/><text class="s" x="338" y="336">keep-out (K) or reach</text>
+<line class="sight" x1="330" y1="341" x2="336" y2="341"/><text class="s" x="338" y="342">sight or found line</text>
+<line class="wire" x1="330" y1="347" x2="336" y2="347"/><text class="s" x="338" y="348">phone wire, no collider</text>
+<circle class="warp" cx="333" cy="353" r="1.8"/><text class="s" x="338" y="354">dev warp</text>
+<circle class="evt" cx="333" cy="359" r="1.6"/><text class="s" x="338" y="360">paper spot (Quill 10)</text>
+<text class="s" x="330" y="372">Figures on paper; Marlow reads colliders, the stack mesh and trunks before the build.</text>
+</svg>
