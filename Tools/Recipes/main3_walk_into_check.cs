@@ -10,6 +10,7 @@ var fails = new System.Text.StringBuilder(); var later = new System.Text.StringB
 foreach (var w in all)
 {
     bool isLater = false; foreach (var lr in laterRoots) if (w.Path.StartsWith(lr)) isLater = true;
+    if (w.Path.StartsWith("Ground815/Stops/FaceRock") && new UnityEngine.Vector2(w.Renderer.transform.position.x - 78f, w.Renderer.transform.position.z - 146f).magnitude <= 14f) isLater = false;   // 8.26 T1: the FaceRock round the Camp 3 hollow is counted (main3_8_18a_solid.cs HollowRock)
     var line = w.Path + " at " + w.At.ToString("F1") + ", " + w.Stands + " stands\n";
     if (isLater) { later.Append(line); nLater++; } else if (WalkIns.MeshInTread(w.Renderer, treads)) { tread.Append(line); nTread++; } else { fails.Append(line); nFail++; }
 }

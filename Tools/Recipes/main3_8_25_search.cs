@@ -3,7 +3,7 @@
 //   bearings every chairStep degrees, not on the landing mouth's face nor by the tent): from today's chair and each spot, seated (eye seatEye
 //   over the top), the line to the T signpost's top past the terrain, every drawn collider and every drawn mesh (temporary exact colliders);
 //   the nearest clear spot by arc. HIGHWAY FROM THE TOP: stand spots on the top floor that see a highway point.
-// PS3: the talus within ps3Move m of PS3 (285.7, 109.9), every ps3Grid m, on the highest standable surface under it (no stack top, no
+// PS3: the talus within ps3Move m of PS3 (285.7, 109.9), every ps3Grid m, on the highest standable surface under it, a talus boulder's top rockOver m or more over the ground (gate round 2), (no stack top, no
 //   invisible box): the nearest spot found by Pim's rule (Main3AreaSet.Found) from a trail or a camp2 walk line, the paper's ps3H m tall.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
@@ -13,11 +13,11 @@ UnityEngine.Vector3 V(float x, float y, float z) => new UnityEngine.Vector3(x, y
 var inv = System.Globalization.CultureInfo.InvariantCulture; string F(float v) => v.ToString("F2", inv);
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y;
 const float sx = 292f, sz = 108f, topY = 24f, face = 4.18f, chairInset = 0.58f, chairStep = 2f, seatEye = 1.2f, highwayX = 430f;
-const float ps3X = 285.7f, ps3Z = 109.9f, ps3Move = 5f, ps3Grid = 0.5f, ps3H = 0.3f, stackTopMin = 20f;
+const float ps3X = 285.7f, ps3Z = 109.9f, ps3Move = 5f, ps3Grid = 0.25f, ps3H = 0.3f, stackTopMin = 20f, rockOver = 0.3f;
 var c2 = Root("Campsites").transform.Find("Camp_2"); var chair = c2.Find("StackTop/Layout825/HisChair"); var ps3 = c2.Find("Layout825/PaperSpots/PS3");
 if (chair == null || ps3 == null) return "run main3_8_25_camp2.cs first";
 var temps = new System.Collections.Generic.List<UnityEngine.Collider>(); var sb = new System.Text.StringBuilder();
-bool Drawn(UnityEngine.Collider c) => c is UnityEngine.TerrainCollider || c.GetComponent<UnityEngine.Renderer>() != null;
+bool Drawn(UnityEngine.Collider c) => c is UnityEngine.TerrainCollider || c.GetComponentInChildren<UnityEngine.Renderer>() != null;   // a prefab root's box over its drawn children counts (the talus boulders)
 try
 {
     // ---- S1 CHAIR (Wren 2026-10-03): the T line is judged to the top of the T signpost (Ground815/JunctionMarkers/Trailhead_Board, its
@@ -103,7 +103,7 @@ try
         float y = float.MinValue; UnityEngine.Vector3 nrm = UnityEngine.Vector3.up; string on = "";
         foreach (var h in UnityEngine.Physics.RaycastAll(V(x, topY + 5f, z), UnityEngine.Vector3.down, 40f, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
         { if (h.collider.isTrigger || h.collider.gameObject.layer == 2 || !Drawn(h.collider) || temps.Contains(h.collider) || h.collider.transform.IsChildOf(ps3)) continue; if (h.point.y > y) { y = h.point.y; nrm = h.normal; on = WalkIns.PathOf(h.collider.transform); } }
-        if (y == float.MinValue || y > stackTopMin || nrm.y < 0.7f) continue; tried++;
+        if (y == float.MinValue || y > stackTopMin || nrm.y < 0.7f || !on.Contains("Boulder") || y < H(x, z) + rockOver) continue; tried++;   // on a talus boulder's top, not the grass (gate round 2, Wren 5)
         var pl = new Main3AreaSet.Place { label = "PS3", point = V(x, y, z), height = ps3H };
         var fr = set.Found(pl, legs, (px, pz) => H(px, pz), ClearTo); if (!fr.found) continue; found++;
         if (dd < bestD) { bestD = dd; best = "(" + F(x) + ", " + F(y) + ", " + F(z) + ") on " + on + ", " + F(dd) + " m from today's, found from " + fr.leg + " " + F(fr.dist) + " m out, " + F(fr.angle) + " degrees off"; }

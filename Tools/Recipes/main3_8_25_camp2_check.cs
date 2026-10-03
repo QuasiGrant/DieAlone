@@ -1,7 +1,7 @@
 // Main3 8.25 Camp 2 check (Play mode, Main3; Camp2Layout.md draft 2). In main3_review_capture.sh --area camp2's Play checks; also runs
 // alone. Never saves; restores the player and the temporary colliders. Every move is PlayerController.Step (dt 0.02).
-// HOOK (C2): the interactor's ray (its mask, interactReach) from the booth mouth (299.6, G+1.6, 99.2) facing 180, pitch 17 down, meets the handset.
-// BARREL (C5): the interactor's ray from the stand (292.3, 100.4) toward the barrel's centre meets the barrel.
+// PROMPTS (gate round 2): from each stand the interactor's ray meets the usable with its word (hook "Lift the receiver", barrel "Take water",
+//   R2 at the table and on top "Talk", ring box "Examine"); HOOK LOOKS: from the booth stand, at least half the looks near the phone meet it.
 // TOP CHAIR: his chair on the top has box colliders only (no hull: a hulled seat is a perch over the rail; doc 4.2).
 // T3 TOP RAIL: from points on the top, on the landing and in front of his chair (and on its seat if a jump reaches it: TOP CHAIR SEAT), walking, sprinting and sprint-jumping out on every railHeadings
 //   heading for railTime s: none crosses the top rail (leaves the top for neither the top nor the stair); down the stair is no fall; runs that go
@@ -24,7 +24,7 @@ var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Set
 const float dt = 0.02f, arrive = 0.5f, legTime = 200f, eyeH = 1.6f, topY = 24f, railDrop = 0.5f, railTime = 3f, hookPitch = 17f; const int railHeadings = 24;
 var sb = new System.Text.StringBuilder(); int fails = 0; void Line(bool ok, string s) { if (!ok) fails++; sb.Append((ok ? "PASS " : "FAIL ") + s + "\n"); }
 var temps = new System.Collections.Generic.List<UnityEngine.Collider>();
-var c2 = Root("Campsites") != null ? Root("Campsites").transform.Find("Camp_2") : null; var L = c2 != null ? c2.Find("Layout825") : null; var LT = c2 != null ? c2.Find("StackTop/Layout825") : null;
+var c2 = Root("Campsites") != null ? Root("Campsites").transform.Find("Camp_2") : null; var L = c2 != null ? c2.Find("Layout825") : null; var LT = c2 != null ? c2.Find("StackTop/Layout825") : null; var cd2 = c2 != null ? c2.Find("Dressing") : null;
 void Put(UnityEngine.Vector3 p) { cc.enabled = false; pc.transform.position = p + V(0f, 0.1f, 0f); cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (int i = 0; i < 25; i++) pc.Step(UnityEngine.Vector3.zero, false, false, dt); }
 try
 {
@@ -37,20 +37,36 @@ try
         ok = false; if (!UnityEngine.Physics.Raycast(eye, dir.normalized, out var hit, reach, mask, UnityEngine.QueryTriggerInteraction.Ignore)) return "nothing within " + F1(reach) + " m";
         ok = hit.collider.transform.IsChildOf(want); return WalkIns.PathOf(hit.collider.transform) + " at " + F(hit.distance) + " m";
     }
-    // ---- HOOK
+    var chair = LT.Find("HisChair");
+    // ---- PROMPTS (gate round 2, Wren 3 and 4): from each stand, eye 1.6, the interactor's own test (its mask, triggers ignored,
+    // interactReach) aimed at the usable's collider centre meets an Interactable whose prompt is the doc's word
     {
-        var hs = L.Find("Handset"); var eye = V(299.6f, H(299.6f, 99.2f) + eyeH, 99.2f);
-        if (hs == null) Line(false, "HOOK: no Layout825/Handset");
-        else { var s = Meet(eye, UnityEngine.Quaternion.Euler(hookPitch, 180f, 0f) * UnityEngine.Vector3.forward, hs, out bool ok); Line(ok, "HOOK: from the booth mouth (299.6, 99.2) facing 180, " + F1(hookPitch) + " down, the interactor's ray meets " + s); }
-    }
-    // ---- BARREL
-    {
-        var b = L.Find("Barrel"); var eye = V(292.3f, H(292.3f, 100.4f) + eyeH, 100.4f);
-        if (b == null) Line(false, "BARREL: no Layout825/Barrel");
-        else { var aim = PlaceKit.MeshBounds(b.gameObject).center; var s = Meet(eye, aim - eye, b, out bool ok); var d = aim - eye; Line(ok, "BARREL: from the stand (292.3, 100.4), heading " + F1((UnityEngine.Mathf.Atan2(d.x, d.z) * UnityEngine.Mathf.Rad2Deg + 360f) % 360f) + " (doc 318), the interactor's ray meets " + s); }
+        var phone = cd2 != null ? cd2.Find("Payphone/Telephone_Booth/Handset") : null; var ring = LT.Find("RingBox"); var barrel = L.Find("Barrel"); var tableChair = L.Find("CardTable/HisChair");
+        foreach (var (label, t, x, z, floorY, word) in new[] { ("hook", phone, 299.65f, 99.05f, float.NaN, "Lift the receiver"), ("barrel", barrel, 292.3f, 100.4f, float.NaN, "Take water"),
+            ("R2 at the table", tableChair, 298.5f, 98.7f, float.NaN, "Talk"), ("R2 on top", chair, 293.8f, 109.5f, topY, "Talk"), ("ring box", ring, 290.3f, 108.0f, topY, "Examine") })
+        {
+            if (t == null) { Line(false, "PROMPT " + label + ": no object"); continue; }
+            var eye = V(x, (float.IsNaN(floorY) ? H(x, z) : floorY) + eyeH, z); var col = t.GetComponentInChildren<UnityEngine.Collider>(); var aim = col != null ? col.bounds.center : t.position;
+            string got = "nothing within " + F1(reach) + " m"; bool ok = false;
+            if (UnityEngine.Physics.Raycast(eye, (aim - eye).normalized, out var hit, reach, mask, UnityEngine.QueryTriggerInteraction.Ignore)) { var it = hit.collider.GetComponentInParent<Interactable>(); got = WalkIns.PathOf(hit.collider.transform) + " at " + F(hit.distance) + " m, prompt \"" + (it != null ? it.Prompt : "none") + "\""; ok = it != null && it.Prompt == word && hit.collider.transform.IsChildOf(t); }
+            Line(ok, "PROMPT " + label + " (\"" + word + "\"): from (" + F1(x) + ", " + F1(z) + ") the interactor's ray meets " + got);
+        }
+        // HOOK LOOKS (Marlow 825 gate 4: 0 to 6 of 1,224 looks met the old receiver): from the booth stand, looks within hookCone degrees of
+        // the phone's centre (every hookStep in yaw and pitch): the share whose first hit within reach is the phone
+        const float hookCone = 10f, hookStep = 2f, hookShare = 0.5f; int looks = 0, met = 0; var by = new System.Collections.Generic.SortedDictionary<string, int>();
+        if (phone != null)
+        {
+            var eye = V(299.65f, H(299.65f, 99.05f) + eyeH, 99.05f); var c = phone.GetComponent<UnityEngine.Collider>().bounds.center; var d0 = (c - eye).normalized; float y0 = UnityEngine.Mathf.Atan2(d0.x, d0.z) * UnityEngine.Mathf.Rad2Deg, p0 = -UnityEngine.Mathf.Asin(d0.y) * UnityEngine.Mathf.Rad2Deg;
+            for (float dy = -hookCone; dy <= hookCone + 1e-3f; dy += hookStep) for (float dp = -hookCone; dp <= hookCone + 1e-3f; dp += hookStep)
+            {
+                looks++; var dir = UnityEngine.Quaternion.Euler(p0 + dp, y0 + dy, 0f) * UnityEngine.Vector3.forward;
+                if (!UnityEngine.Physics.Raycast(eye, dir, out var hit, reach, mask, UnityEngine.QueryTriggerInteraction.Ignore)) { by["nothing"] = by.TryGetValue("nothing", out int a) ? a + 1 : 1; continue; }
+                if (hit.collider.transform.IsChildOf(phone)) met++; else { var k = hit.collider.name; by[k] = by.TryGetValue(k, out int b) ? b + 1 : 1; }
+            }
+        }
+        Line(looks > 0 && met >= hookShare * looks, "HOOK LOOKS: from the booth stand (299.65, 99.05), " + met + " of " + looks + " looks within " + F1(hookCone) + " degrees of the phone meet it first" + (by.Count > 0 ? "; the rest: " + string.Join(", ", System.Linq.Enumerable.Select(by, kv => kv.Key + " x" + kv.Value)) : ""));
     }
     // ---- TOP CHAIR
-    var chair = LT.Find("HisChair");
     {
         if (chair == null) Line(false, "TOP CHAIR: no StackTop/Layout825/HisChair");
         else

@@ -169,6 +169,7 @@ try
     foreach (var w in WalkIns.Find(tuning.capsuleRadius, tuning.standHeight))
     {
         if (!A.Contains(w.At)) continue; bool apart = false; foreach (var lr in laterRoots) if (w.Path.StartsWith(lr)) apart = true;
+        if (w.Path.StartsWith("Ground815/Stops/FaceRock") && new UnityEngine.Vector2(w.Renderer.transform.position.x - 78f, w.Renderer.transform.position.z - 146f).magnitude <= 14f) apart = false;   // 8.26 T1: the FaceRock round the Camp 3 hollow is counted (main3_8_18a_solid.cs HollowRock)
         if (apart || WalkIns.MeshInTread(w.Renderer, treads)) { wiApart++; continue; }
         wiFail++; wiLines.Append("  WALK-IN " + w.Path + " at " + P3(w.At) + ", " + w.Stands + " stands\n");
     }

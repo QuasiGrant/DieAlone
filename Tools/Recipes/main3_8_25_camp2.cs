@@ -34,9 +34,11 @@ var c2 = kit.Root("Campsites") != null ? kit.Root("Campsites").transform.Find("C
 if (cd == null || top == null || path2 == null || kit.Root("Forest") == null) return "run 8.5, 8.16 and 8.17 camp2 first (Campsites/Camp_2/Dressing, StackTop, StackPath, Forest)";
 UnityEngine.Physics.SyncTransforms();
 float G(float x, float z) => kit.H(x, z);
-const float sx = 292f, sz = 108f, topY = 24f, hookUp = 1.35f;
+const float sx = 292f, sz = 108f, topY = 24f; string phoneNote = "none";
 var rope = kit.Tinted("Places_Rope", "Assets/Materials/Planks023A_1.0x1.0.mat", Hex("#8C7A58"), UnityEngine.Vector2.one);
 var L = kit.Fresh("Layout825", c2, c2.position, 0f); var LT = kit.Fresh("Layout825", top, top.position, 0f);
+// the stand-in usable (8.5's ToggleColorInteractable, as forage C) with the doc's prompt word (Camp2Layout_UI.md; gate round 2, Wren 3)
+int uses = 0; void Use(UnityEngine.GameObject g, string prompt, UnityEngine.Renderer target) { if (g == null) return; var u = g.GetComponent<ToggleColorInteractable>() ?? g.AddComponent<ToggleColorInteractable>(); var so = new UnityEditor.SerializedObject(u); so.FindProperty("prompt").stringValue = prompt; so.FindProperty("target").objectReferenceValue = target != null ? target : g.GetComponentInChildren<UnityEngine.Renderer>(); so.ApplyModifiedPropertiesWithoutUndo(); uses++; }
 
 // ================= REMOVALS =================
 const float removeTol = 0.3f;
@@ -86,18 +88,21 @@ void RailRun(UnityEngine.Transform parent, UnityEngine.Vector3 a, UnityEngine.Ve
     var rs = path2.Find("LandingTop_RailS"); if (rs != null) { float x0 = 295.90f, x1 = 301.1f; rs.position = V((x0 + x1) * 0.5f, rs.position.y, rs.position.z); rs.localScale = V(x1 - x0, rs.localScale.y, rs.localScale.z); } else notes.Add("no LandingTop_RailS");
     // his chair at the east rail facing the T (66), a box from its mesh; his mug and thermos beside it
     var topD = top.Find("Dressing"); foreach (var n in new[] { "CS_Chair_2", "CS_Tent_Modern_2", "CS_Lantern_Modern", "LampCore", "CS_Drink_Thermos_1", "CS_Tableware_Mug_Metal_1" }) if (topD != null) PlaceKit.Remove(topD.Find(n));
-    var chair = kit.On(PlaceKit.CS + "CS_Chair_2", LT, LT.InverseTransformPoint(V(294.94f, topY, 110.30f)), 66f, 1f, false, null, true); if (chair != null) { chair.name = "HisChair"; PlaceKit.FitExact(chair); }
+    var chair = kit.On(PlaceKit.CS + "CS_Chair_2", LT, LT.InverseTransformPoint(V(294.94f, topY, 110.30f)), 66f, 1f, false, null, true); if (chair != null) { chair.name = "HisChair"; PlaceKit.FitExact(chair); Use(chair, "Talk", null); }
     kit.On(PlaceKit.CS + "Drinks/CS_Drink_Thermos_1", LT, LT.InverseTransformPoint(V(294.2f, topY, 110.9f)), 0f, 1f, false, null, true);
     kit.On(PlaceKit.CS + "Tableware/CS_Tableware_Mug_Metal_1", LT, LT.InverseTransformPoint(V(294.0f, topY, 110.6f)), 30f, 1f, false, null, true);
-    // the tent, door east (its door is on its own -z: yaw 270 faces it east), box from its fabric; the ring box inside it, by the door
+    // the tent, door east (its door is on its own -z: yaw 270 faces it east), box from its fabric; the ring box in its doorway, outside the
+    // fabric's box, a box of its own, reached from the door (290.3, 108.0) facing 270 (gate round 2, Wren 4)
     var tent = kit.On(PlaceKit.CS + "CS_Tent_Modern_2", LT, LT.InverseTransformPoint(V(288.86f, topY, 108.0f)), 270f, 1f, false, null, true); if (tent != null) { tent.name = "Tent"; PlaceKit.FitExact(tent, "Rope"); }
     var ringMat = kit.Tinted("Places_RingBox", "Assets/Materials/Concrete034_1.0x1.0.mat", Hex("#5A1E22"), UnityEngine.Vector2.one);
-    kit.Slab("RingBox", LT, LT.InverseTransformPoint(V(289.35f, topY + 0.035f, 108.0f)), V(0.07f, 0.07f, 0.07f), ringMat);
+    const float ringOut = 0.06f; float ringX = tent != null ? tent.GetComponent<UnityEngine.BoxCollider>().bounds.max.x + ringOut : 289.80f;   // just out of the fabric's box, in the doorway
+    var ringBox = kit.Slab("RingBox", LT, LT.InverseTransformPoint(V(ringX, topY + 0.035f, 108.0f)), V(0.07f, 0.07f, 0.07f), ringMat, default, true); Use(ringBox, "Examine", ringBox.GetComponent<UnityEngine.Renderer>());
     // the lamp on a 1.2 m pole 2.0 m east of the door, its cold core the deck's hard target
     const float poleH = 1.2f; var lamp = kit.Group("Lamp", LT, V(291.6f, topY, 107.4f), 0f);
     kit.Fill(PlaceKit.CI + "Building/CITW_Wood_Pillar", lamp, V(0f, 0f, 0f), V(0.09f, poleH, 0.09f)); kit.Blocker("PoleCollider", lamp, V(0f, poleH * 0.5f, 0f), V(0.09f, poleH, 0.09f));
     kit.On(PlaceKit.CS + "CS_Lantern_Modern", lamp, V(0f, poleH, 0f), 0f, 1.4f, false, null, true);
     var core = kit.Slab("LampCore", lamp, V(0f, poleH + 0.1f, 0f), V(0.12f, 0.18f, 0.12f), kit.Glow("Places_ColdLamp", Hex("#DDE6F0"), kit.Look.farMarkerIntensity)); core.GetComponent<UnityEngine.Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+    kit.Practical("LampLight", lamp, V(0f, poleH + 0.1f, 0f), 6f, PracticalLight.Kind.Lantern, PracticalLight.ByDay.Off);   // lit at night (gate round 2, Wren 6)
     // the letters under stones, by the tent's south side
     if (topD != null) { int k = 0; foreach (UnityEngine.Transform t in topD) if (t.name.StartsWith("Paper") || t.name.StartsWith("CS_Stone_")) { int slot = k / 2; t.position = V(288.4f + (slot % 3) * 0.35f, t.position.y, 106.75f - (slot / 3) * 0.3f + (t.name.StartsWith("CS_Stone_") ? 0.01f : 0f)); k++; } }
     var spot = top.Find("Resident_Camp2_Spot"); if (spot != null) { spot.position = V(294.94f, topY + 0.9f, 110.30f); spot.rotation = UnityEngine.Quaternion.Euler(0f, 66f, 0f); }
@@ -115,7 +120,7 @@ const float tblX0 = 298.10f, tblX1 = 299.01f, tblZ0 = 97.30f, tblZ1 = 98.21f;
     float tTop = tbl != null ? PlaceKit.LocalBounds(tbl, cards).max.y : 0.78f;
     // the three places, each flush to the table (centres from the doc's boxes), yaw 0, 90 or 270 so the boxes are true
     foreach (var (n, path, x, z, yaw) in new[] { ("HisChair", "CS_Chair_1", 299.40f, 97.76f, 270f), ("YourChair", "CS_Chair_4", 297.71f, 97.76f, 90f), ("ThirdPlace", "CS_Chair_1", 298.55f, 96.91f, 0f) })
-    { var ch = kit.On(PlaceKit.CS + path, cards, cards.InverseTransformPoint(V(x, G(x, z), z)), yaw, 1f, false, null, true); if (ch != null) { ch.name = n; PlaceKit.FitExact(ch); } }
+    { var ch = kit.On(PlaceKit.CS + path, cards, cards.InverseTransformPoint(V(x, G(x, z), z)), yaw, 1f, false, null, true); if (ch != null) { ch.name = n; PlaceKit.FitExact(ch); if (n == "HisChair") Use(ch, "Talk", null); } }
     // his hand fanned on his side (east), a hand dealt face down and squared by a clean upturned mug at the third place (south)
     for (int i = 0; i < 5; i++) kit.On(PlaceKit.CE + "Decoration_Home/Paper", cards, V(0.24f, tTop, -0.16f + i * 0.08f), 90f + i * 23f, 0.3f, false, null, true);
     for (int i = 0; i < 5; i++) kit.On(PlaceKit.CE + "Decoration_Home/Paper", cards, V(-0.05f + i * 0.002f, tTop + i * 0.003f, -0.28f), i * 2f, 0.3f, false, null, true);
@@ -123,18 +128,47 @@ const float tblX0 = 298.10f, tblX1 = 299.01f, tblZ0 = 97.30f, tblZ1 = 98.21f;
     kit.On(PlaceKit.CS + "CS_Lantern_Old", cards, V(0.32f, tTop, 0.3f), 0f, 1f, false, null, true);
     kit.On(PlaceKit.CE + "Decoration_Home/Ashtray", cards, V(0.32f, tTop, -0.36f), 0f, 1f, false, null, true);   // matches for a tally
     kit.On(PlaceKit.CS + "Bags/CS_Backpack_Old_2", cards, cards.InverseTransformPoint(V(300.1f, G(300.1f, 96.9f), 96.9f)), 60f, 1f, false, null, true);
-    // the handset (kitbash: no owned payphone), on the booth's south wall's inner face; its hook; a solid box so the eye ray can meet it
-    var phoneMat = kit.Tinted("Places_Handset", "Assets/Materials/Concrete034_1.0x1.0.mat", Hex("#1C1C1E"), UnityEngine.Vector2.one);
-    var hs = kit.Group("Handset", L, V(299.63f, G(299.63f, 98.40f) + hookUp, 98.40f), 0f);
-    kit.Slab("Hook", hs, V(0f, 0.08f, 0.02f), V(0.12f, 0.2f, 0.03f), phoneMat);
-    var rec = kit.Slab("Receiver", hs, V(0f, 0f, 0.05f), V(0.07f, 0.22f, 0.06f), phoneMat, default, true);
-    kit.Slab("Cord", hs, V(0f, -0.25f, 0.05f), V(0.015f, 0.3f, 0.015f), phoneMat);
+    // the live phone is the booth mesh's own (gate round 2, Pim and Wren 2: the back-wall phone reads as the phone, the kitbash on the
+    // south jamb did not): its body found from the booth mesh's vertices that stand phoneDepth m or less proud of the back wall's inner face
+    // and phoneLow to phoneHigh over the floor; a box over that body carries the stand-in usable; a dark receiver slab on its face is the
+    // usable's target. Approached from the booth mouth facing the back wall. It hangs under the booth mesh (its box covers that mesh's
+    // phone, so the collider-size rule measures it against the booth it stands on).
+    const float phoneDepth = 0.35f, phoneLow = 0.8f, phoneHigh = 2.4f, sideIn = 0.05f;
+    var booth = cd.Find("Payphone/Telephone_Booth"); var back = cd.Find("Payphone/BoothBack");
+    if (booth == null || back == null) notes.Add("no Payphone/Telephone_Booth or BoothBack");
+    else
+    {
+        var bb = back.GetComponent<UnityEngine.Collider>().bounds; var all = booth.GetComponent<UnityEngine.MeshRenderer>().bounds; float floorY = all.min.y;
+        bool backIsMaxX = bb.center.x > all.center.x; float face = backIsMaxX ? bb.min.x : bb.max.x;
+        var verts = booth.GetComponent<UnityEngine.MeshFilter>().sharedMesh.vertices; UnityEngine.Bounds ph = default; bool any = false; var xs = new System.Collections.Generic.List<float>(); var ys = new System.Collections.Generic.List<float>(); var zs = new System.Collections.Generic.List<float>();
+        foreach (var v in verts)
+        {
+            var w = booth.TransformPoint(v); float proud = backIsMaxX ? face - w.x : w.x - face; float up = w.y - floorY;
+            if (proud < 0.01f || proud > phoneDepth || up < phoneLow || up > phoneHigh || w.z < all.min.z + 0.12f + sideIn || w.z > all.max.z - 0.12f - sideIn) continue;
+            xs.Add(w.x); ys.Add(w.y); zs.Add(w.z); any = true;
+        }
+        // its body: the phoneTrim to 1 - phoneTrim spread of those vertices on each axis (the extremes are the wall's shelf edges)
+        const float phoneTrim = 0.05f; float Q(System.Collections.Generic.List<float> l, float q) { l.Sort(); return l[UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(q * (l.Count - 1)), 0, l.Count - 1)]; }
+        if (any) { var lo = V(Q(xs, phoneTrim), Q(ys, phoneTrim), Q(zs, phoneTrim)); var hi = V(Q(xs, 1f - phoneTrim), Q(ys, 1f - phoneTrim), Q(zs, 1f - phoneTrim)); ph = new UnityEngine.Bounds((lo + hi) * 0.5f, hi - lo); }
+        if (!any) notes.Add("no phone found on the booth's back wall");
+        else
+        {
+            var phoneMat = kit.Tinted("Places_Handset", "Assets/Materials/Concrete034_1.0x1.0.mat", Hex("#1C1C1E"), UnityEngine.Vector2.one);
+            PlaceKit.Remove(booth.Find("Handset")); var hs = kit.Group("Handset", booth, ph.center, 0f); hs.rotation = UnityEngine.Quaternion.identity; var bc = hs.gameObject.AddComponent<UnityEngine.BoxCollider>(); var ls = hs.lossyScale; UnityEngine.Vector3 Un(UnityEngine.Vector3 w) => V(w.x / ls.x, w.y / ls.y, w.z / ls.z); bc.size = Un(ph.size); bc.center = UnityEngine.Vector3.zero;
+            // the cover: a phone body over the mesh's own phone, the box's drawn mesh (gate round 2, Wren 2: hide or cover it)
+            var bodyMat = kit.Tinted("Places_PhoneBody", "Assets/Materials/Concrete034_1.0x1.0.mat", Hex("#3A3D40"), UnityEngine.Vector2.one); kit.Slab("PhoneBody", hs, UnityEngine.Vector3.zero, Un(ph.size), bodyMat);
+            float frontX = backIsMaxX ? ph.min.x - 0.035f : ph.max.x + 0.035f;
+            var rec = kit.Slab("Receiver", hs, hs.InverseTransformPoint(V(frontX, ph.center.y + ph.extents.y * 0.25f, ph.center.z)), Un(V(0.06f, 0.22f, 0.07f)), phoneMat);
+            Use(hs.gameObject, "Lift the receiver", rec.GetComponent<UnityEngine.Renderer>());
+            phoneNote = "x " + F(ph.min.x) + " to " + F(ph.max.x) + ", z " + F(ph.min.z) + " to " + F(ph.max.z) + ", " + F(ph.min.y - floorY) + " to " + F(ph.max.y - floorY) + " up";
+        }
+    }
 }
 
 // ================= C5: the barrel =================
 {
     var old = cd.Find("CITW_Barrel_3"); PlaceKit.Remove(old);
-    var b = kit.Ground(PlaceKit.CI + "Props/CITW_Barrel_3", L, 291.4f, 101.4f, 0f, 1.2f, false); if (b != null) { b.name = "Barrel"; PlaceKit.FitExact(b); }
+    var b = kit.Ground(PlaceKit.CI + "Props/CITW_Barrel_3", L, 291.4f, 101.4f, 0f, 1.2f, false); if (b != null) { b.name = "Barrel"; PlaceKit.FitExact(b); Use(b, "Take water", null); }
     kit.Marker("BarrelStand", L, L.InverseTransformPoint(V(292.3f, G(292.3f, 100.4f), 100.4f)), 318f);
 }
 
@@ -225,22 +259,32 @@ int newPts = 0, paintCells = 0, boardN = 0;
         var up = ramp.up; float rampTop = ramp.localScale.y * 0.5f, o = UnityEngine.Vector3.Dot(east.position - ramp.position, up), foot = o - east.localScale.y * 0.5f, head = rampTop + railH;
         east.localScale = V(east.localScale.x, head - foot, east.localScale.z); east.position += up * ((head + foot) * 0.5f - o);
     }
-    // plank screens on both sides of every ramp (Wren 2026-10-03: 13 downhill sprint-jumps still went over the raised rails): upright boards
-    // over a box each, on each rail's line, from the ramp's top screenH m plumb, every board pitch along the ramp
     const float screenH = 1.5f; int screenBoards = 0;
+    // post-and-rail screens on both sides of every ramp and on every landing rail (Wren 2026-10-03: 13 downhill sprint-jumps went over the
+    // raised rails; gate round 2, Vesper and Sable: solid planks read as walls and battlements, so open post-and-rail like the top rail):
+    // posts every screenPost m to screenH, rails at screenRails over the walking surface, and a box screenH tall every pitch along the line
+    const float screenPost = 2f, screenPostW = 0.08f; float[] screenRails = { 0.5f, 1.05f, 1.5f };
+    void PostAndRail(System.Collections.Generic.List<UnityEngine.Vector3> line)   // line: walking-surface points in order along the screen
+    {
+        if (line.Count < 2) return; float len = 0f; for (int i = 1; i < line.Count; i++) len += UnityEngine.Vector3.Distance(line[i - 1], line[i]);
+        int posts = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.CeilToInt(len / screenPost)); var tops = new System.Collections.Generic.List<UnityEngine.Vector3>();
+        for (int k = 0; k <= posts; k++) { float s = len * k / posts, acc = 0f; var q = line[line.Count - 1]; for (int i = 1; i < line.Count; i++) { float l = UnityEngine.Vector3.Distance(line[i - 1], line[i]); if (acc + l >= s) { q = UnityEngine.Vector3.Lerp(line[i - 1], line[i], (s - acc) / UnityEngine.Mathf.Max(1e-4f, l)); break; } acc += l; } tops.Add(q); kit.Fill(PlaceKit.CI + "Building/CITW_Wood_Pillar", sk, sk.InverseTransformPoint(q), V(screenPostW, screenH + 0.05f, screenPostW)); }
+        foreach (var h in screenRails) for (int k = 1; k < tops.Count; k++) { var p = tops[k - 1] + V(0f, h, 0f); var q = tops[k] + V(0f, h, 0f); var s = kit.Slab("Rail", sk, sk.InverseTransformPoint((p + q) * 0.5f), V(0.03f, 0.03f, UnityEngine.Vector3.Distance(p, q)), rope); s.transform.rotation = UnityEngine.Quaternion.LookRotation((q - p).normalized); }
+    }
     foreach (var rn in new[] { "Ramp1", "Ramp2", "Ramp3", "Ramp4" })
     {
         var ramp = path2.Find(rn); var rc = ramp != null ? ramp.GetComponent<UnityEngine.Collider>() : null; if (rc == null) { notes.Add("no " + rn + " collider"); continue; }
         foreach (UnityEngine.Transform rail in path2)
         {
             if (rail.name != rn + "_Rail") continue; float rx = rail.position.x, inward = rx < rc.bounds.center.x ? 0.1f : -0.1f;
-            float z0 = rc.bounds.min.z, z1 = rc.bounds.max.z; int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt((z1 - z0) / (boardW + boardGap))); float pitch = (z1 - z0) / n;
+            float z0 = rc.bounds.min.z, z1 = rc.bounds.max.z; var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(); int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt((z1 - z0) / (boardW + boardGap))); float pitch = (z1 - z0) / n;
             for (int k = 0; k < n; k++)
             {
                 float z = z0 + (k + 0.5f) * pitch; if (!rc.Raycast(new UnityEngine.Ray(V(rx + inward, rc.bounds.max.y + 1f, z), UnityEngine.Vector3.down), out var hit, 40f)) continue;
                 var c = V(rx, hit.point.y + screenH * 0.5f, z);
-                Board(c, screenH, false); kit.Blocker("Screen", sk, sk.InverseTransformPoint(c), V(0.1f, screenH, pitch)); screenBoards++;
+                pts.Add(V(rx, hit.point.y, z)); kit.Blocker("Screen", sk, sk.InverseTransformPoint(c), V(0.1f, screenH, pitch)); screenBoards++;
             }
+            PostAndRail(pts);
         }
     }
     // and on every landing rail (8.25 round 3: two sprint-jumps down Ramp4 went over LandingN2's 1.0 m rails onto the screens' stepped
@@ -248,12 +292,13 @@ int newPts = 0, paintCells = 0, boardN = 0;
     foreach (UnityEngine.Transform rail in path2)
     {
         if (!rail.name.StartsWith("Landing") || !rail.name.Contains("_Rail")) continue; var rb = rail.GetComponent<UnityEngine.Collider>() != null ? rail.GetComponent<UnityEngine.Collider>().bounds : new UnityEngine.Bounds(rail.position, UnityEngine.Vector3.zero);
-        bool alongX = rb.size.x >= rb.size.z; float len = alongX ? rb.size.x : rb.size.z; int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(len / (boardW + boardGap))); float pitch = len / n;
+        var lpts = new System.Collections.Generic.List<UnityEngine.Vector3>(); bool alongX = rb.size.x >= rb.size.z; float len = alongX ? rb.size.x : rb.size.z; int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(len / (boardW + boardGap))); float pitch = len / n;
         for (int k = 0; k < n; k++)
         {
             float u = -len * 0.5f + (k + 0.5f) * pitch; var c = V(rb.center.x + (alongX ? u : 0f), rb.min.y + screenH * 0.5f, rb.center.z + (alongX ? 0f : u));
-            Board(c, screenH, alongX); kit.Blocker("Screen", sk, sk.InverseTransformPoint(c), alongX ? V(pitch, screenH, 0.1f) : V(0.1f, screenH, pitch)); screenBoards++;
+            lpts.Add(c - V(0f, screenH * 0.5f, 0f)); kit.Blocker("Screen", sk, sk.InverseTransformPoint(c), alongX ? V(pitch, screenH, 0.1f) : V(0.1f, screenH, pitch)); screenBoards++;
         }
+        PostAndRail(lpts);
     }
     // the wedge between the stack and Ramp1, south of the z 112 skirt (Wren 2026-10-03, the 8.25 notch trap): a fill block of stack rock to
     // over the skirt's top, so nothing falls into it
@@ -273,7 +318,7 @@ int newPts = 0, paintCells = 0, boardN = 0;
 // ================= C7, C8, C9 =================
 {
     var ps = kit.Group("PaperSpots", L, L.position, 0f);
-    foreach (var (n, x, z) in new[] { ("PS1", 288.14f, 109.6f), ("PS2", 288.8f, 111.2f), ("PS3", 283.70f, 107.90f) })   // PS3 moved 2.83 m from the doc's (285.7, 109.9), which no trail or walk line found (main3_8_25_search.cs, Wren 2026-10-02)
+    foreach (var (n, x, z) in new[] { ("PS1", 288.14f, 109.6f), ("PS2", 288.8f, 111.2f), ("PS3", 284.95f, 107.40f) })   // PS3 on the talus top (BigBoulders_1, 4.43), 2.61 m from the doc's (285.7, 109.9), the nearest boulder top found from a trail (main3_8_25_search.cs; gate round 2, Wren 5)
     {
         float y = G(x, z); foreach (var h in UnityEngine.Physics.RaycastAll(V(x, topY + 3f, z), UnityEngine.Vector3.down, 30f, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) if (!h.collider.isTrigger && h.collider.gameObject.layer != 2) y = UnityEngine.Mathf.Max(y, h.point.y);
         var m = kit.Marker(n, ps, ps.InverseTransformPoint(V(x, y, z)), 0f); kit.On(PlaceKit.CE + "Decoration_Home/Paper", m, V(0f, 0.01f, 0f), 25f, 0.5f, false, null, true);
@@ -320,4 +365,4 @@ UnityEngine.Physics.SyncTransforms();
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " | removed by name " + namedGone + " of " + named.Length + (namedMissing.Count > 0 ? " (not found, likely gone already: " + string.Join(", ", namedMissing) + ")" : "") + ", in keep-out zones " + zoneGone
-    + " | rail runs " + railRuns + " | T leg points " + newPts + ", tread cells " + paintCells + ", skirt boards " + boardN + " | lockers refit " + lockersFixed + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    + " | rail runs " + railRuns + " | T leg points " + newPts + ", tread cells " + paintCells + ", skirt boards " + boardN + " | lockers refit " + lockersFixed + " | usables " + uses + " | phone " + phoneNote + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

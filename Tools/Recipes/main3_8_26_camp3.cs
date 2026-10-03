@@ -47,7 +47,7 @@ UnityEngine.Vector3 V(float x, float y, float z) => new UnityEngine.Vector3(x, y
 UnityEngine.Vector2 P(float x, float z) => new UnityEngine.Vector2(x, z);
 UnityEngine.Color Hex(string h) { UnityEngine.ColorUtility.TryParseHtmlString(h, out var c); return c; }
 var inv = System.Globalization.CultureInfo.InvariantCulture; string F(float v) => v.ToString("F2", inv);
-var notes = new System.Collections.Generic.List<string>();
+var notes = new System.Collections.Generic.List<string>(); string tentNote = "none";
 var c3 = kit.Root("Campsites") != null ? kit.Root("Campsites").transform.Find("Camp_3") : null; var d = c3 != null ? c3.Find("Dressing") : null;
 var poiRoot = kit.Root("PointsOfInterest") != null ? kit.Root("PointsOfInterest").transform : null; var trails = kit.Root("Trails") != null ? kit.Root("Trails").transform : null;
 if (d == null || poiRoot == null || trails == null || kit.Root("Forest") == null) return "run 8.3, 8.16 and 8.17 camp3 first (Campsites/Camp_3/Dressing, PointsOfInterest, Trails, Forest)";
@@ -140,7 +140,7 @@ UnityEngine.Physics.SyncTransforms();
         }
         if (float.IsNaN(pick)) { notes.Add("tent: no yaw with the long side east-west and the door north"); pick = 0f; }
         PlaceMeshCentre(tent, 75.0f, 140.7f, pick); PlaceKit.FitExact(tent.gameObject, "Rope");
-        var tb = tent.GetComponent<UnityEngine.BoxCollider>().bounds; notes.Add("tent yaw " + F(pick) + ", box x " + F(tb.min.x) + " to " + F(tb.max.x) + ", z " + F(tb.min.z) + " to " + F(tb.max.z) + ", top " + F(tb.max.y - tb.min.y));
+        var tb = tent.GetComponent<UnityEngine.BoxCollider>().bounds; tentNote = ("yaw " + F(pick) + ", box x " + F(tb.min.x) + " to " + F(tb.max.x) + ", z " + F(tb.min.z) + " to " + F(tb.max.z) + ", top " + F(tb.max.y - tb.min.y));
     }
     // the ground sheet at the door, no collider
     const float shX0 = 74.25f, shX1 = 75.75f, shZ0 = 141.77f, shZ1 = 143.27f; float shG = G((shX0 + shX1) * 0.5f, (shZ0 + shZ1) * 0.5f);
@@ -366,4 +366,4 @@ UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " | removed by name " + namedGone + " of " + named.Length + (namedMissing.Count > 0 ? " (not found: " + string.Join(", ", namedMissing) + ")" : "") + ", in keep-out zones " + zoneGone + (zoneNames.Count > 0 ? " (" + string.Join("; ", zoneNames) + ")" : "")
     + ", leftover props " + propsGone + ", footbridge " + (bridgeGone ? "gone" : "absent") + " | Snag line pieces " + pieceN + " | log steps " + logsMade + " | creek: upper " + upper.Count + " and lower " + lower.Count + " samples, cells cut " + carved + ", stones " + stonesN + ", cascade rocks " + rocksN
-    + (pushNotes.Count > 0 ? ", AT THE VALLEY EDGE: " + string.Join("; ", pushNotes) : "") + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    + (pushNotes.Count > 0 ? ", AT THE VALLEY EDGE: " + string.Join("; ", pushNotes) : "") + " | tent " + tentNote + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

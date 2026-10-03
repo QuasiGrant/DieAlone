@@ -42,7 +42,7 @@ set.inventory = new[] {
     I("Smoke columns, day two", "Ward/StandInFire/SmokeColumns", "quads", "", 128), I("Ward stones", "Ward/Stones", "renderers", "", 3),
     I("Camp 3 tent", "Campsites/Camp_3/Dressing", "renderers", "CS_Tent", 8), I("Camp 3 fire", "Campsites/Camp_3/Dressing/Fire", "renderers", "", 15),
     I("Camp 3 easel", "Campsites/Camp_3/Dressing/Easel", "renderers", "", 13), I("North ruin", "Places/NorthRuin", "renderers", "", 47),
-    I("Cave lights", "Cave", "lights", "", 5), I("Lanterns and lamps", "", "practicals", "", 29),   // 8.23: the boathouse lamp goes
+    I("Cave lights", "Cave", "lights", "", 5), I("Lanterns and lamps", "", "practicals", "", 30),   // 8.23: the boathouse lamp goes; 8.25 round 2: the Camp 2 top lamp is lit
     // camp (8.21, Wren 2026-10-02)
     I("Cabin", "Camp/Cabin", "renderers", "", 106), I("Tower", "Camp/Tower", "renderers", "", 393), I("Fire pit", "Camp/FirePit", "renderers", "", 32),
     I("Generator", "Camp/GeneratorDressing", "renderers", "", 3), I("Privy", "Camp/Privy", "renderers", "", 2), I("Stump", "Camp/Cabin/Woodpile", "renderers", "CITW_Tree_Stump", 1),
@@ -164,12 +164,12 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Ca
     places = new[] { P("Camp 2", 294.3f, G, 95.0f), PO("Granite stack (south face)", 292f, G, 101.6f, 20f, "Campsites/Camp_2/GraniteStack"), P("Ramp foot", 298.9f, G, 107.8f),
         PO("Landing top", 298.3f, c2Top, 107.25f, 1.05f, "Campsites/Camp_2/StackPath/LandingTop"), PO("His chair on top", 294.94f, c2Top, 110.30f, 1.2f, c2T + "HisChair"),
         PO("Tent", 288.86f, c2Top, 108.0f, 1.5f, c2T + "Tent"), PO("Lamp", 291.6f, c2Top, 107.4f, 1.9f, c2T + "Lamp"), PO("Payphone", 300f, G, 99f, 3.2f, "Campsites/Camp_2/Dressing/Payphone"),
-        PO("Hook", 299.63f, G, 98.40f, 1.5f, c2L + "Handset"), PO("Card table", 298.555f, G, 97.755f, 0.98f, c2L + "CardTable"),
+        PO("Hook", 299.63f, G, 98.40f, 1.5f, "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset"), PO("Card table", 298.555f, G, 97.755f, 0.98f, c2L + "CardTable"),
         PO("His seat at the table", 299.40f, G, 97.76f, 1.2f, c2L + "CardTable/HisChair"), PO("Your seat", 297.71f, G, 97.76f, 1.2f, c2L + "CardTable/YourChair"), PO("Third place", 298.55f, G, 96.91f, 1.2f, c2L + "CardTable/ThirdPlace"),
         PO("Barrel", 291.4f, G, 101.4f, 1.19f, c2L + "Barrel"), PO("Phone pole", 272.8f, G, 72f, 8f, "PointsOfInterest/POI_Phone_pole"), PO("Food lockers", 317.2f, G, 136.0f, 1.2f, "PointsOfInterest/POI_Food_lockers"),
         PO("Start blaze", 304.4f, G, 106.4f, 1.8f, "Campsites/Camp_2/Dressing/StartBlaze"), PO("PS1", 288.14f, c2Top + 1.05f, 109.6f, 0.3f, c2L + "PaperSpots/PS1"), PO("PS2", 288.8f, c2Top + 1.05f, 111.2f, 0.3f, c2L + "PaperSpots/PS2"),
-        PO("PS3", 283.70f, G, 107.90f, 0.3f, c2L + "PaperSpots/PS3") },
-    interactions = new[] { IA("hook", c2L + "Handset", 299.6f, G, 99.2f), IA("R2 at the table", c2L + "CardTable/HisChair", 298.5f, G, 98.7f),
+        PO("PS3", 284.95f, 4.43f, 107.40f, 0.3f, c2L + "PaperSpots/PS3") },
+    interactions = new[] { IA("hook", "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset", 299.65f, G, 99.05f), IA("ring box", c2T + "RingBox", 290.3f, c2Top, 108.0f), IA("R2 at the table", c2L + "CardTable/HisChair", 298.5f, G, 98.7f),
         IA("R2 on top", c2T + "HisChair", 293.8f, c2Top, 109.5f), IA("barrel", c2L + "Barrel", 292.3f, G, 100.4f) },
     frames = new[] { FR("F1 HEADING 7: TABLE 13.2 M, BOOTH 14.7 M", V(297.2f, G, 84.6f), Hd(V(297.2f, 0f, 84.6f), 7f, 5.0f)),
         FR("F2 HEADING 337: THE BARREL 12.15 M", V(296.1f, G, 90.2f), Hd(V(296.1f, 0f, 90.2f), 337f, 4.8f)),
@@ -177,7 +177,11 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Ca
         FR("F4 RAMP FOOT HEADING 104: THE BLAZE THROUGH THE OPEN BAY", V(298.9f, G, 107.8f), Hd(V(298.9f, 0f, 107.8f), 104f, 5.2f)),
         FR("F5 TOP LANDING HEADING 300: CHAIR, TENT, LAMP", c2F5, Hd(c2F5, 300f, c2Top + 0.8f)),
         FR("F6 THE PHONE POLE FROM THE BOATHOUSE LEG", V(278.22f, G, 73.70f), V(272.8f, 7.0f, 72.0f)),
-        FR("F7 THE FOOD LOCKERS FROM THE T LEG", V(310.15f, G, 129.43f), V(317.2f, 4.8f, 136.0f)) },
+        FR("F7 THE FOOD LOCKERS FROM THE T LEG", V(310.15f, G, 129.43f), V(317.2f, 4.8f, 136.0f)),
+        FR("THE PHONE FROM THE BOOTH MOUTH, FACING THE BACK WALL", V(299.65f, G, 99.05f), V(300.4f, 5.6f, 99.05f)),
+        FR("THE RING BOX FROM THE TENT DOOR, FACING 270", V(290.3f, c2Top + eyeH, 108.0f), V(289.8f, c2Top + 0.04f, 108.0f)),
+        FR("CAMP_2 WARP LANDING, FACING 55", V(294.3f, G, 95.0f), Hd(V(294.3f, 0f, 95.0f), 55f, 5.6f)),
+        FR("CAMP_2_TOP WARP LANDING, FACING 20", V(294.5f, c2Top + eyeH, 107.2f), Hd(V(294.5f, 0f, 107.2f), 20f, c2Top + eyeH)) },
     // walk lines where no trail runs, for the found rule (doc 4: the ramp foot up the stair to his chair; your seat to the booth door): the
     // stair, the top round inside its rail, the table to the booth mouth
     walkLines = new[] { WL("the stair to the top", V(298.9f, G, 107.8f), V(298.9f, 9f, 118.75f), V(300.4f, 9f, 118.75f), V(300.4f, 14f, 107.25f), V(298.9f, 14f, 107.25f), V(298.9f, 19f, 118.75f), V(300.4f, 19f, 118.75f), V(300.4f, c2Top, 107.25f), V(296.0f, c2Top, 107.25f)),
@@ -188,20 +192,49 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Ca
     // Wren 2026-10-03: the stand on the top rail box is the flood's teleport overlap (3424 flood moves from the top floor did not repeat it)
     acceptedStops = new[] { new Main3AreaSet.AcceptedStop { point = V(293.1f, 25.1f, 112.1f), radius = 0.5f, reason = "flood teleport overlap; 3424 flood-style moves from the top floor never stood there (Wren 2026-10-03)" } },
     spacingExceptions = new[] { new Main3AreaSet.SpacingException { a = "hook", b = "R2 at the table", reason = "he answers the phone from his seat (Camp2Layout C2, Wren 2026-10-02)", maxEdge = 0.5f } },
-    playChecks = new[] { "main3_8_25_camp2_check.cs" },
+    playChecks = new[] { "main3_8_25_camp2_check.cs", "main3_8_25_camp2_frames.cs?look=Day_one", "main3_8_25_camp2_frames.cs?look=Night" },
     inventory = new[] { "Lanterns and lamps" }, deckListWritten = true,
     deckSee = new[] { DH("lamp core", 291.6f, 25.3f, 107.4f, c2T + "Lamp"), DLO("top rail, west faces", 287.82f, 24.8f, 108.0f, c2T + "TopRail"), DLO("his chair on top", 294.94f, 24.8f, 110.30f, c2T + "HisChair"),
-        DLO("tent", 288.86f, 25.0f, 108.0f, c2T + "Tent"), DL("PS1", 288.14f, 24.1f, 109.6f), DL("PS2", 288.8f, 24.1f, 111.2f), DL("PS3", 283.70f, 4.5f, 107.90f), DL("booth hood light", 299.0f, 6.6f, 99.0f) },
+        DLO("tent", 288.86f, 25.0f, 108.0f, c2T + "Tent"), DL("PS1", 288.14f, 24.1f, 109.6f), DL("PS2", 288.8f, 24.1f, 111.2f), DL("PS3", 284.95f, 4.6f, 107.40f), DL("booth hood light", 299.0f, 6.6f, 99.0f) },
     deckHide = none };
+// camp 3 (8.26; Camp3Layout.md draft 2 section 6, Sable 2026-10-02): places on their objects, read from the scene where main3_8_26_camp3.cs
+// builds them (POn: the object's own x, z, ground y); interactions with a collider (R3's spot waits for its milestone, as R1's: no collider);
+// deck must-see hard: Snag line pieces 1 to 3 (every mesh); loose: piece 4, the Snag lantern, the hoist, the east rim spot, the fire, the
+// tent; must-hide by the pixel check with its 20 m control: the easel's painted face and the faced canvases' faces. The floor is about -4.0.
+const string c3D = "Campsites/Camp_3/Dressing/", c3L = "Campsites/Camp_3/Layout826/";
+Main3AreaSet.Place POn(string l, string obj, float h) { var t = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), obj); var p = t != null ? t.position : V(0f, G, 0f); return new Main3AreaSet.Place { label = l, point = V(p.x, G, p.z), height = h, objectPath = obj }; }
+var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Camp 3 and the west trails", bounds = new[] { R(50f, 62f, 160f, 207f) }, warps = new[] { "Camp_3", "Camp_3_Rim", "Junction_W1" },
+    places = new[] { P("Camp 3", 75.0f, G, 143.6f), PO("Fire", 76.0f, G, 150.5f, 0.6f, c3D + "Fire"), PO("Seat log", 73.8f, G, 150.2f, 0.45f, c3D + "CS_Log_Large_Long_Seat_1"),
+        PO("Tent", 75.0f, G, 140.7f, 1.65f, c3D + "CS_Tent_Old_2"), PO("Easel", 80.3f, G, 148.8f, 1.8f, c3D + "Easel"), PO("Table", 78.5f, G, 147.3f, 0.75f, c3L + "PlankTable"),
+        PO("Faced canvases", 70.3f, G, 145.95f, 1.3f, c3L + "FacedCanvases"), PO("Snag", 96f, G, 146.5f, 54f, "Giants/Heroes/Snag"),
+        PO("Piece 1", 92.8f, G, 149.8f, 3.5f, c3L + "SnagLine/Piece1"), PO("Piece 2", 89.6f, G, 153.1f, 3.5f, c3L + "SnagLine/Piece2"), PO("Piece 3", 86.4f, G, 156.4f, 3.5f, c3L + "SnagLine/Piece3"), PO("Piece 4", 83.2f, G, 159.7f, 3.5f, c3L + "SnagLine/Piece4"),
+        PO("Hoist cleat", 98.86f, G, 144.85f, 1.2f, c3L + "Hoist"), PO("Stake", 80f, G, 163f, 3.6f, c3L + "SnagLine/Stake"), P("East rim spot", 94f, G, 138.5f), P("Steps' top", 96.5f, G, 142.8f),
+        PO("Pool", 83.6f, G, 149.7f, 0.3f, c3L + "Creek/Pool"), PO("Sink", 83.6f, G, 148.45f, 0.2f, c3L + "Sink"), PO("Spring", 85.8f, G, 126.0f, 0.6f, c3L + "Spring"),
+        PO("W1 sign", 127.0f, G, 72.8f, 2.0f, c3L + "W1Sign"), POn("Blaze_W1_Camp3", "Ground815/JunctionMarkers/Blaze_W1_Camp3", 1.8f), POn("Camper trailer", "PointsOfInterest/POI_Camper_trailer", 2.4f),
+        POn("Stepping stones", "PointsOfInterest/POI_Stepping_stones", 0.3f), P("Lamppost spot", 58f, G, 150f) },
+    interactions = new[] { IA("fire", c3D + "Fire", 74.6f, G, 151.2f), IA("easel", c3D + "Easel", 79.0f, G, 149.9f), IA("form and table", c3L + "PlankTable;" + c3D + "JobForm", 78.6f, G, 148.4f), IA("sink", c3L + "Sink", 82.6f, G, 147.2f) },
+    frames = new[] { FR("F1 STEPS' TOP HEADING 270: FIRE, POOL, CANVASES", V(96.5f, G, 142.8f), Hd(V(96.5f, 0f, 142.8f), 270f, -3.5f)),
+        FR("F2 W1 ARRIVAL HEADING 342: FIRE, EASEL BACK", V(84f, G, 132f), Hd(V(84f, 0f, 132f), 342f, -3.0f)),
+        FR("F3 THE FLOOR HEADING 60: THE LINE'S BACKS", V(78f, G, 147f), Hd(V(78f, 0f, 147f), 60f, 2.0f)),
+        FR("F4 THE STONES HEADING 250: THE W1 SIGN", V(131.71f, G, 72.82f), Hd(V(131.71f, 0f, 72.82f), 250f, -3.0f)),
+        FR("F5 W1 HEADING 300: THE BLAZE", V(128f, G, 70f), Hd(V(128f, 0f, 70f), 300f, -3.0f)),
+        FR("F6 W1 LEG AT THE SPRING HEADING 20: WATER OUT OF THE ROCKS", V(84.43f, G, 122.24f), V(85.8f, -3.8f, 126.0f)),
+        FR("CAMP_3 WARP LANDING, FACING 30", V(75.0f, G, 143.6f), Hd(V(75.0f, 0f, 143.6f), 30f, -2.6f)),
+        FR("CAMP_3_RIM WARP LANDING, FACING 268", V(97.8f, G, 142.0f), Hd(V(97.8f, 0f, 142.0f), 268f, 2.0f)) },
+    walkLines = new[] { WL("the floor from the arrival", V(79.06f, G, 145.39f), V(78f, G, 147f), V(76f, G, 148.5f)) },
+    playChecks = new[] { "main3_8_26_camp3_check.cs" },
+    inventory = new[] { "Camp 3 tent", "Camp 3 fire", "Camp 3 easel" }, deckListWritten = true,
+    deckSee = new[] { DH("Snag line piece 1", 92.8f, 6.7f, 149.8f, c3L + "SnagLine/Piece1"), DH("Snag line piece 2", 89.6f, 6.8f, 153.1f, c3L + "SnagLine/Piece2"), DH("Snag line piece 3", 86.4f, 6.9f, 156.4f, c3L + "SnagLine/Piece3"),
+        DLO("Snag line piece 4", 83.2f, 7.0f, 159.7f, c3L + "SnagLine/Piece4"), DLO("Snag lantern", 96f, 7.3f, 146.5f, c3D + "SnagLantern"), DLO("hoist", 98.86f, 5.0f, 144.85f, c3L + "Hoist"),
+        DL("east rim spot", 94f, 4.5f, 138.5f), DLO("fire", 76.0f, -3.6f, 150.5f, c3D + "Fire"), DLO("tent", 75.0f, -3.2f, 140.7f, c3D + "CS_Tent_Old_2") },
+    deckHide = new[] { D("the easel's painted face", 80.3f, -2.8f, 148.8f, c3D + "Easel/TheCanvas/Painting"), D("the faced canvases' faces", 70.3f, -3.4f, 145.95f, c3L + "FacedCanvases") } };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,
     front,
     lakeArea,
     northArea,
     camp2Area,
-    new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Camp 3 and the west trails", bounds = new[] { R(55f, 60f, 160f, 180f) }, warps = new[] { "Camp_3", "Camp_3_Rim", "Junction_W1" },
-        places = new[] { P("Camp 3", 78f, G, 146f), P("Easel", 83.5f, G, 149f), P("Rim", 100f, G, 148f), P("Camper trailer", 89f, G, 112f), P("Stepping stones", 132f, G, 73f), P("Footbridge", 115f, G, 85f), P("Washed-out truck", 156f, G, 92f) },
-        inventory = new[] { "Camp 3 tent", "Camp 3 fire", "Camp 3 easel" }, deckSee = none, deckHide = none },
+    camp3Area,
     new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave and ravine", bounds = new[] { R(20f, -20f, 120f, 65f) }, warps = new[] { "Cave_Mouth", "Cave_Chamber" },   // the closed campground is the front's (8.22, Wren 2026-10-02)
         places = new[] { P("Cave mouth", 52f, G, 40f), P("Chamber", 80f, -18f, 12f), P("Side room", 94f, -18f, 12f), P("Rope handrail", 107f, G, 58f), P("Coloured bulbs", 83f, G, 49f) },
         inventory = new[] { "Cave lights" }, deckSee = none, deckHide = none },

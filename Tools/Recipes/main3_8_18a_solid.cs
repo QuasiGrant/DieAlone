@@ -27,7 +27,11 @@ int added = 0, exactN = 0; var groups = new System.Collections.Generic.SortedDic
 var treads = WalkIns.Treads(); var inTread = new System.Collections.Generic.List<string>(); var skip = new System.Collections.Generic.HashSet<UnityEngine.MeshRenderer>();
 string[] passRoots = { "Rock/BandScree", "Rock/KnobRock", "Ground815", "Campsites", "PointsOfInterest", "FrontZone", "Places", "Camp/", "Cave/ChamberDressing", "Cave/SideRoom" };   // where this pass adds hulls
 bool IsLowWalkable(UnityEngine.Transform t) { var p = WalkIns.PathOf(t); foreach (var r in lowWalkables) if (p.StartsWith(r)) return true; return false; }
-bool RimRoot(UnityEngine.Transform t) { var p = WalkIns.PathOf(t); foreach (var r in rimRoots) if (p.StartsWith(r)) return true; return false; }
+// 8.26 (Camp3Layout draft 2, T1): the FaceRock rocks within hollowR of the Camp 3 hollow's centre stand on the floor's edge, not on a stop
+// edge, so they are no rim roots: they get hulls, and the walk-into and area checks count them
+const float hollowX = 78f, hollowZ = 146f, hollowR = 14f;
+bool HollowRock(UnityEngine.Transform t) => WalkIns.PathOf(t).StartsWith("Ground815/Stops/FaceRock") && new UnityEngine.Vector2(t.position.x - hollowX, t.position.z - hollowZ).magnitude <= hollowR;
+bool RimRoot(UnityEngine.Transform t) { if (HollowRock(t)) return false; var p = WalkIns.PathOf(t); foreach (var r in rimRoots) if (p.StartsWith(r)) return true; return false; }
 bool PassRoot(UnityEngine.Transform t) { var p = WalkIns.PathOf(t); foreach (var r in passRoots) if (p.StartsWith(r)) return true; return false; }
 bool Solid(UnityEngine.MeshRenderer mr, bool flagged = true)
 {

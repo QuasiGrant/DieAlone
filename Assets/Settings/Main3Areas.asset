@@ -155,7 +155,7 @@ MonoBehaviour:
     path: 
     kind: practicals
     name: 
-    expected: 29
+    expected: 30
   - label: Cabin
     path: Camp/Cabin
     kind: renderers
@@ -1148,7 +1148,7 @@ MonoBehaviour:
     - label: Hook
       point: {x: 299.63, y: -999, z: 98.4}
       height: 1.5
-      objectPath: Campsites/Camp_2/Layout825/Handset
+      objectPath: Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset
     - label: Card table
       point: {x: 298.555, y: -999, z: 97.755}
       height: 0.98
@@ -1190,7 +1190,7 @@ MonoBehaviour:
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS2
     - label: PS3
-      point: {x: 283.7, y: -999, z: 107.9}
+      point: {x: 284.95, y: 4.43, z: 107.4}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS3
     inventory:
@@ -1247,7 +1247,7 @@ MonoBehaviour:
       controlRaise: 0
       anyEye: 0
     - label: PS3
-      point: {x: 283.7, y: 4.5, z: 107.9}
+      point: {x: 284.95, y: 4.6, z: 107.4}
       treeCoverPath: 
       hard: 0
       loose: 1
@@ -1265,8 +1265,11 @@ MonoBehaviour:
     deckHide: []
     interactions:
     - label: hook
-      path: Campsites/Camp_2/Layout825/Handset
-      approach: {x: 299.6, y: -999, z: 99.2}
+      path: Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset
+      approach: {x: 299.65, y: -999, z: 99.05}
+    - label: ring box
+      path: Campsites/Camp_2/StackTop/Layout825/RingBox
+      approach: {x: 290.3, y: 24, z: 108}
     - label: R2 at the table
       path: Campsites/Camp_2/Layout825/CardTable/HisChair
       approach: {x: 298.5, y: -999, z: 98.7}
@@ -1298,64 +1301,276 @@ MonoBehaviour:
     - label: F7 THE FOOD LOCKERS FROM THE T LEG
       eye: {x: 310.15, y: -999, z: 129.43}
       look: {x: 317.2, y: 4.8, z: 136}
+    - label: THE PHONE FROM THE BOOTH MOUTH, FACING THE BACK WALL
+      eye: {x: 299.65, y: -999, z: 99.05}
+      look: {x: 300.4, y: 5.6, z: 99.05}
+    - label: THE RING BOX FROM THE TENT DOOR, FACING 270
+      eye: {x: 290.3, y: 25.6, z: 108}
+      look: {x: 289.8, y: 24.04, z: 108}
+    - label: CAMP_2 WARP LANDING, FACING 55
+      eye: {x: 294.3, y: -999, z: 95}
+      look: {x: 302.49152, y: 5.6, z: 100.73576}
+    - label: CAMP_2_TOP WARP LANDING, FACING 20
+      eye: {x: 294.5, y: 25.6, z: 107.2}
+      look: {x: 297.9202, y: 25.6, z: 116.596924}
     playChecks:
     - main3_8_25_camp2_check.cs
+    - main3_8_25_camp2_frames.cs?look=Day_one
+    - main3_8_25_camp2_frames.cs?look=Night
   - acceptedStops: []
     spacingExceptions: []
-    walkLines: []
+    walkLines:
+    - label: the floor from the arrival
+      points:
+      - {x: 79.06, y: -999, z: 145.39}
+      - {x: 78, y: -999, z: 147}
+      - {x: 76, y: -999, z: 148.5}
     id: camp3
     task: 8.26
     title: Camp 3 and the west trails
     bounds:
     - serializedVersion: 2
-      x: 55
-      y: 60
-      width: 105
-      height: 120
+      x: 50
+      y: 62
+      width: 110
+      height: 145
     warps:
     - Camp_3
     - Camp_3_Rim
     - Junction_W1
     places:
     - label: Camp 3
-      point: {x: 78, y: -999, z: 146}
+      point: {x: 75, y: -999, z: 143.6}
       height: 0
       objectPath: 
+    - label: Fire
+      point: {x: 76, y: -999, z: 150.5}
+      height: 0.6
+      objectPath: Campsites/Camp_3/Dressing/Fire
+    - label: Seat log
+      point: {x: 73.8, y: -999, z: 150.2}
+      height: 0.45
+      objectPath: Campsites/Camp_3/Dressing/CS_Log_Large_Long_Seat_1
+    - label: Tent
+      point: {x: 75, y: -999, z: 140.7}
+      height: 1.65
+      objectPath: Campsites/Camp_3/Dressing/CS_Tent_Old_2
     - label: Easel
-      point: {x: 83.5, y: -999, z: 149}
+      point: {x: 80.3, y: -999, z: 148.8}
+      height: 1.8
+      objectPath: Campsites/Camp_3/Dressing/Easel
+    - label: Table
+      point: {x: 78.5, y: -999, z: 147.3}
+      height: 0.75
+      objectPath: Campsites/Camp_3/Layout826/PlankTable
+    - label: Faced canvases
+      point: {x: 70.3, y: -999, z: 145.95}
+      height: 1.3
+      objectPath: Campsites/Camp_3/Layout826/FacedCanvases
+    - label: Snag
+      point: {x: 96, y: -999, z: 146.5}
+      height: 54
+      objectPath: Giants/Heroes/Snag
+    - label: Piece 1
+      point: {x: 92.8, y: -999, z: 149.8}
+      height: 3.5
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece1
+    - label: Piece 2
+      point: {x: 89.6, y: -999, z: 153.1}
+      height: 3.5
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece2
+    - label: Piece 3
+      point: {x: 86.4, y: -999, z: 156.4}
+      height: 3.5
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece3
+    - label: Piece 4
+      point: {x: 83.2, y: -999, z: 159.7}
+      height: 3.5
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece4
+    - label: Hoist cleat
+      point: {x: 98.86, y: -999, z: 144.85}
+      height: 1.2
+      objectPath: Campsites/Camp_3/Layout826/Hoist
+    - label: Stake
+      point: {x: 80, y: -999, z: 163}
+      height: 3.6
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Stake
+    - label: East rim spot
+      point: {x: 94, y: -999, z: 138.5}
       height: 0
       objectPath: 
-    - label: Rim
-      point: {x: 100, y: -999, z: 148}
+    - label: Steps' top
+      point: {x: 96.5, y: -999, z: 142.8}
       height: 0
       objectPath: 
+    - label: Pool
+      point: {x: 83.6, y: -999, z: 149.7}
+      height: 0.3
+      objectPath: Campsites/Camp_3/Layout826/Creek/Pool
+    - label: Sink
+      point: {x: 83.6, y: -999, z: 148.45}
+      height: 0.2
+      objectPath: Campsites/Camp_3/Layout826/Sink
+    - label: Spring
+      point: {x: 85.8, y: -999, z: 126}
+      height: 0.6
+      objectPath: Campsites/Camp_3/Layout826/Spring
+    - label: W1 sign
+      point: {x: 127, y: -999, z: 72.8}
+      height: 2
+      objectPath: Campsites/Camp_3/Layout826/W1Sign
+    - label: Blaze_W1_Camp3
+      point: {x: 120.44989, y: -999, z: 72.9174}
+      height: 1.8
+      objectPath: Ground815/JunctionMarkers/Blaze_W1_Camp3
     - label: Camper trailer
-      point: {x: 89, y: -999, z: 112}
-      height: 0
-      objectPath: 
+      point: {x: 89.06148, y: -999, z: 112.119156}
+      height: 2.4
+      objectPath: PointsOfInterest/POI_Camper_trailer
     - label: Stepping stones
-      point: {x: 132, y: -999, z: 73}
-      height: 0
-      objectPath: 
-    - label: Footbridge
-      point: {x: 115, y: -999, z: 85}
-      height: 0
-      objectPath: 
-    - label: Washed-out truck
-      point: {x: 156, y: -999, z: 92}
+      point: {x: 131.71031, y: -999, z: 72.82208}
+      height: 0.3
+      objectPath: PointsOfInterest/POI_Stepping_stones
+    - label: Lamppost spot
+      point: {x: 58, y: -999, z: 150}
       height: 0
       objectPath: 
     inventory:
     - Camp 3 tent
     - Camp 3 fire
     - Camp 3 easel
-    deckListWritten: 0
+    deckListWritten: 1
     hardSeesTower: 0
-    deckSee: []
-    deckHide: []
-    interactions: []
-    frames: []
-    playChecks: []
+    deckSee:
+    - label: Snag line piece 1
+      point: {x: 92.8, y: 6.7, z: 149.8}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece1
+      controlRaise: 0
+      anyEye: 0
+    - label: Snag line piece 2
+      point: {x: 89.6, y: 6.8, z: 153.1}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece2
+      controlRaise: 0
+      anyEye: 0
+    - label: Snag line piece 3
+      point: {x: 86.4, y: 6.9, z: 156.4}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece3
+      controlRaise: 0
+      anyEye: 0
+    - label: Snag line piece 4
+      point: {x: 83.2, y: 7, z: 159.7}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece4
+      controlRaise: 0
+      anyEye: 0
+    - label: Snag lantern
+      point: {x: 96, y: 7.3, z: 146.5}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: Campsites/Camp_3/Dressing/SnagLantern
+      controlRaise: 0
+      anyEye: 0
+    - label: hoist
+      point: {x: 98.86, y: 5, z: 144.85}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: Campsites/Camp_3/Layout826/Hoist
+      controlRaise: 0
+      anyEye: 0
+    - label: east rim spot
+      point: {x: 94, y: 4.5, z: 138.5}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: fire
+      point: {x: 76, y: -3.6, z: 150.5}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: Campsites/Camp_3/Dressing/Fire
+      controlRaise: 0
+      anyEye: 0
+    - label: tent
+      point: {x: 75, y: -3.2, z: 140.7}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: Campsites/Camp_3/Dressing/CS_Tent_Old_2
+      controlRaise: 0
+      anyEye: 0
+    deckHide:
+    - label: the easel's painted face
+      point: {x: 80.3, y: -2.8, z: 148.8}
+      treeCoverPath: Campsites/Camp_3/Dressing/Easel/TheCanvas/Painting
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: the faced canvases' faces
+      point: {x: 70.3, y: -3.4, z: 145.95}
+      treeCoverPath: Campsites/Camp_3/Layout826/FacedCanvases
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    interactions:
+    - label: fire
+      path: Campsites/Camp_3/Dressing/Fire
+      approach: {x: 74.6, y: -999, z: 151.2}
+    - label: easel
+      path: Campsites/Camp_3/Dressing/Easel
+      approach: {x: 79, y: -999, z: 149.9}
+    - label: form and table
+      path: Campsites/Camp_3/Layout826/PlankTable;Campsites/Camp_3/Dressing/JobForm
+      approach: {x: 78.6, y: -999, z: 148.4}
+    - label: sink
+      path: Campsites/Camp_3/Layout826/Sink
+      approach: {x: 82.6, y: -999, z: 147.2}
+    frames:
+    - label: 'F1 STEPS'' TOP HEADING 270: FIRE, POOL, CANVASES'
+      eye: {x: 96.5, y: -999, z: 142.8}
+      look: {x: 86.5, y: -3.5, z: 142.8}
+    - label: 'F2 W1 ARRIVAL HEADING 342: FIRE, EASEL BACK'
+      eye: {x: 84, y: -999, z: 132}
+      look: {x: 80.90983, y: -3, z: 141.51056}
+    - label: 'F3 THE FLOOR HEADING 60: THE LINE''S BACKS'
+      eye: {x: 78, y: -999, z: 147}
+      look: {x: 86.660255, y: 2, z: 152}
+    - label: 'F4 THE STONES HEADING 250: THE W1 SIGN'
+      eye: {x: 131.71, y: -999, z: 72.82}
+      look: {x: 122.31308, y: -3, z: 69.399796}
+    - label: 'F5 W1 HEADING 300: THE BLAZE'
+      eye: {x: 128, y: -999, z: 70}
+      look: {x: 119.339745, y: -3, z: 75}
+    - label: 'F6 W1 LEG AT THE SPRING HEADING 20: WATER OUT OF THE ROCKS'
+      eye: {x: 84.43, y: -999, z: 122.24}
+      look: {x: 85.8, y: -3.8, z: 126}
+    - label: CAMP_3 WARP LANDING, FACING 30
+      eye: {x: 75, y: -999, z: 143.6}
+      look: {x: 80, y: -2.6, z: 152.26025}
+    - label: CAMP_3_RIM WARP LANDING, FACING 268
+      eye: {x: 97.8, y: -999, z: 142}
+      look: {x: 87.80609, y: 2, z: 141.651}
+    playChecks:
+    - main3_8_26_camp3_check.cs
   - acceptedStops: []
     spacingExceptions: []
     walkLines: []
@@ -1750,7 +1965,7 @@ MonoBehaviour:
     - label: Hook
       point: {x: 299.63, y: -999, z: 98.4}
       height: 1.5
-      objectPath: Campsites/Camp_2/Layout825/Handset
+      objectPath: Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset
     - label: Card table
       point: {x: 298.555, y: -999, z: 97.755}
       height: 0.98
@@ -1792,35 +2007,103 @@ MonoBehaviour:
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS2
     - label: PS3
-      point: {x: 283.7, y: -999, z: 107.9}
+      point: {x: 284.95, y: 4.43, z: 107.4}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS3
     - label: Camp 3
-      point: {x: 78, y: -999, z: 146}
+      point: {x: 75, y: -999, z: 143.6}
       height: 0
       objectPath: 
+    - label: Fire
+      point: {x: 76, y: -999, z: 150.5}
+      height: 0.6
+      objectPath: Campsites/Camp_3/Dressing/Fire
+    - label: Seat log
+      point: {x: 73.8, y: -999, z: 150.2}
+      height: 0.45
+      objectPath: Campsites/Camp_3/Dressing/CS_Log_Large_Long_Seat_1
+    - label: Tent
+      point: {x: 75, y: -999, z: 140.7}
+      height: 1.65
+      objectPath: Campsites/Camp_3/Dressing/CS_Tent_Old_2
     - label: Easel
-      point: {x: 83.5, y: -999, z: 149}
+      point: {x: 80.3, y: -999, z: 148.8}
+      height: 1.8
+      objectPath: Campsites/Camp_3/Dressing/Easel
+    - label: Table
+      point: {x: 78.5, y: -999, z: 147.3}
+      height: 0.75
+      objectPath: Campsites/Camp_3/Layout826/PlankTable
+    - label: Faced canvases
+      point: {x: 70.3, y: -999, z: 145.95}
+      height: 1.3
+      objectPath: Campsites/Camp_3/Layout826/FacedCanvases
+    - label: Snag
+      point: {x: 96, y: -999, z: 146.5}
+      height: 54
+      objectPath: Giants/Heroes/Snag
+    - label: Piece 1
+      point: {x: 92.8, y: -999, z: 149.8}
+      height: 3.5
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece1
+    - label: Piece 2
+      point: {x: 89.6, y: -999, z: 153.1}
+      height: 3.5
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece2
+    - label: Piece 3
+      point: {x: 86.4, y: -999, z: 156.4}
+      height: 3.5
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece3
+    - label: Piece 4
+      point: {x: 83.2, y: -999, z: 159.7}
+      height: 3.5
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece4
+    - label: Hoist cleat
+      point: {x: 98.86, y: -999, z: 144.85}
+      height: 1.2
+      objectPath: Campsites/Camp_3/Layout826/Hoist
+    - label: Stake
+      point: {x: 80, y: -999, z: 163}
+      height: 3.6
+      objectPath: Campsites/Camp_3/Layout826/SnagLine/Stake
+    - label: East rim spot
+      point: {x: 94, y: -999, z: 138.5}
       height: 0
       objectPath: 
-    - label: Rim
-      point: {x: 100, y: -999, z: 148}
+    - label: Steps' top
+      point: {x: 96.5, y: -999, z: 142.8}
       height: 0
       objectPath: 
+    - label: Pool
+      point: {x: 83.6, y: -999, z: 149.7}
+      height: 0.3
+      objectPath: Campsites/Camp_3/Layout826/Creek/Pool
+    - label: Sink
+      point: {x: 83.6, y: -999, z: 148.45}
+      height: 0.2
+      objectPath: Campsites/Camp_3/Layout826/Sink
+    - label: Spring
+      point: {x: 85.8, y: -999, z: 126}
+      height: 0.6
+      objectPath: Campsites/Camp_3/Layout826/Spring
+    - label: W1 sign
+      point: {x: 127, y: -999, z: 72.8}
+      height: 2
+      objectPath: Campsites/Camp_3/Layout826/W1Sign
+    - label: Blaze_W1_Camp3
+      point: {x: 120.44989, y: -999, z: 72.9174}
+      height: 1.8
+      objectPath: Ground815/JunctionMarkers/Blaze_W1_Camp3
     - label: Camper trailer
-      point: {x: 89, y: -999, z: 112}
-      height: 0
-      objectPath: 
+      point: {x: 89.06148, y: -999, z: 112.119156}
+      height: 2.4
+      objectPath: PointsOfInterest/POI_Camper_trailer
     - label: Stepping stones
-      point: {x: 132, y: -999, z: 73}
-      height: 0
-      objectPath: 
-    - label: Footbridge
-      point: {x: 115, y: -999, z: 85}
-      height: 0
-      objectPath: 
-    - label: Washed-out truck
-      point: {x: 156, y: -999, z: 92}
+      point: {x: 131.71031, y: -999, z: 72.82208}
+      height: 0.3
+      objectPath: PointsOfInterest/POI_Stepping_stones
+    - label: Lamppost spot
+      point: {x: 58, y: -999, z: 150}
       height: 0
       objectPath: 
     - label: Cave mouth
