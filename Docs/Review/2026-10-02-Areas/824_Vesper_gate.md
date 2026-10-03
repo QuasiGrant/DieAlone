@@ -28,3 +28,21 @@ Limit: the tall sheets reach me at about 1/5 (AreaFrames) and 1/8 (Found) scale.
 - Kid's table and tripod: rays clear; not readable by eye at sheet scale.
 
 Vesper
+
+## Round 2 (2026-10-02)
+
+Files: Docs/Captures/Main3Review_north, capture 21:42. Single 1920 x 988 files: Found_north_09 to 13, Deck_north_01. F3, F6, F7, F9 exist only on AreaFrames_north.jpg, which still reaches me at about 1/5 scale; my round 1 retake ask for them as single files is not met. Layout only, Style.md 10.
+
+**Verdict: FAIL.** Forage C, SS1 and SS2 still below C. SS3 lifts to C.
+
+| Place | Grade | Read at eye height | Change to lift it (below C only) |
+|---|---|---|---|
+| Forage C | D | Found_09 (24.9 m): the magenta ball sits at the tread edge on the bend, but around it is the same fern and brush band as both verges; no gap, no bare litter, no shrub group reads. F3 on the sheet: same fern wall. | Widen the bare litter to the trail side so the gap opens toward the walker (front 3 m of the keep-out cleared to tread height), then retake F3 as a single file. |
+| SS1 | D | Found_10 (28.2 m): no magenta ball and no log in frame by eye; target is occluded or off the bend. F6 on the sheet: a bright green shrub right of the trail leads, no hollow log reads. | Clear the shrub and ferns between the loop and the log face (log face in line of sight from the tread at 10 to 15 m), then retake F6 as a single file. |
+| SS2 | D | Found_11 (25.4 m): no magenta ball, no stump by eye. F7 on the sheet: a small pale object left of the trail may be the stump; not resolvable at sheet scale. | Retake F7 as a single file first; if the stump does not stand clear of the ferns, bare a 1.5 m ring of litter round it. |
+| SS3 | C | F9 on the sheet, reframed: the fallen giant's trunk crosses the near frame with its limbs; the far side of the log reads as a place behind a big log, even at sheet scale. This was the round 1 pass condition. Found_12 (16.2 m) does not show the giant, but F9 is the frame that grades it. | |
+
+- **Spar top deck frame (Deck_north_01), by eye:** a thin pale vertical pole at about (1625, 450 to 545) px stands above the lit Camp 1 ground and its bulbs, right of centre. That is probably the spar top. Not marked in the frame, so probable, not confirmed. Ask: magenta mark on the deck target, as on the found frames.
+- Found frames for SS1 and SS2 show no magenta ball. Either the ball is hidden behind growth (then the found test fails for them) or the target point is off. Rook to say which.
+
+Vesper
