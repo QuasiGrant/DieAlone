@@ -127,7 +127,7 @@ var lakeArea = new Main3AreaSet.Area { id = "lake", task = "8.23", title = "Lake
 // north (8.24; NorthLayout.md draft 2 section 5, Sable 2026-10-02): places on their objects; the spar top is the hard deck target (mesh
 // rays, as 8.22); the kid's table, tent and tripod loose; the ruin and SS1 to SS3 hidden by the pixel check with its 20 m control (SS1 60 m: it stands under fir and
 // giant crowns that hid a 20 and a 35 m control).
-// Interactions with no collider yet (R1's spot, forage C's shrubs, the cookfire pot) wait for their milestone; the report box has one.
+// Interactions with no collider yet (R1's spot, the cookfire pot) wait for their milestone; the report box and forage C's shrubs have them.
 var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Camp 1 and the north loop", bounds = new[] { R(116f, 200f, 310f, 305f) }, warps = new[] { "Camp_1", "North_Loop_Ruin" },
     places = new[] { P("Camp 1", 282f, G, 238f), PO("Spar", 284f, G, 240f, 24f, "Campsites/Camp_1/Dressing/Spar"), PO("Kid's table", 285.2f, G, 236.5f, 0.8f, "Campsites/Camp_1/Dressing/KidTable"),
         P("R1's spot", 285f, G, 244f), PO("Tent", 271f, G, 234.5f, 3.0f, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), PO("Cookfire", 276f, G, 232f, 1.0f, "Campsites/Camp_1/Dressing/Cookfire"),
@@ -135,7 +135,7 @@ var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Ca
         PO("Forage C", 229.5f, G, 273.5f, 0.8f, "Places/ForageC"), PO("SS1", 251.6f, G, 272.0f, 0.5f, "Places/NorthLoop/SS1"), PO("SS2", 150.5f, G, 276.5f, 0.45f, "Places/NorthLoop/SS2"),
         PO("SS3", 132.3f, G, 262.3f, 0.3f, "Places/NorthLoop/SS3"), PO("Fallen giant", 138.65f, G, 264.2f, 2.7f, "Places/NorthLoop/FallenGiant"), PO("North ruin", 172f, G, 281f, 3.0f, "Places/NorthRuin"),
         PO("Ruin doorway", 169.88f, G, 278.88f, 2.15f, "Places/NorthRuin"), PO("Report post", 171.22f, G, 278.38f, 1.3f, "Places/NorthRuin/Layout824/ReportPost") },
-    interactions = new[] { IA("report box", "Places/NorthRuin/Layout824/ReportPost", 170.16f, G, 277.32f) },
+    interactions = new[] { IA("report box", "Places/NorthRuin/Layout824/ReportPost", 170.16f, G, 277.32f), IA("forage C", "Places/ForageC", 229.2f, G, 270.6f) },   // forage C has solid shrubs since 8.24 (Pim, Wren)
     frames = new[] { FR("F1 JG TRAIL INTO THE CLEARING, HEADING 31: TABLE, COOKFIRE, SPAR", V(276.5f, G, 221.5f), V(285.2f, 6.0f, 236.5f)),
         FR("F2 THE KID'S TABLE HEADING NW: THE BLAZE", V(284.2f, G, 237.5f), V(271.7f, 5.5f, 247.3f)),
         FR("F3 HEADING 298: FORAGE C, 14.9 M", V(239.8f, G, 261.5f), V(229.3f, 4.8f, 272.1f)),

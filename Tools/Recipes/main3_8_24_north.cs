@@ -11,7 +11,8 @@
 // N4  the tent's box shrinks to its fabric (guy ropes left out, they carry "Rope"); a row of four taped boxes 0.5 m, 0.2 m apart, at
 //     tent local x 3.4 to 3.9.
 // N5  a bucket and a 20 L can at the cookfire, 0.55 m apart.
-// N8  forage C: five shrubs on r 1.4 round (229.5, 273.5) under Places/ForageC (named Bush_ForageC_1 to 5: WalkIns skips "Bush"), the
+// N8  forage C: five shrubs on r 1.0 round (229.5, 273.5) (BurnLayout draft tightens NorthLayout's 1.4) under Places/ForageC (named Bush_ForageC_1 to 5), each with a solid capsule and
+//     the "Forage" stand-in usable (the interact ray skips triggers); the
 //     stand marker facing 0.
 // N9, N10, N12  the search spots SS1 to SS3 under Places/NorthLoop: SS1 a low boulder at the fir foot, SS2 an owned stump at scale 0.3
 //     with its box fitted, SS3 a leaf bed behind the giant.
@@ -151,7 +152,7 @@ kit.Ground(PlaceKit.FT + "Canister", water, 277.7f, 230.6f, 110f, 1f, false);
 // ================= N8, N9, N10, N12, N11: forage C, the search spots, the fallen giant =================
 var olive = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Slice/Slice_Olive_Foliage512.mat"); if (olive == null) notes.Add("no Slice_Olive_Foliage512.mat");
 const string SUF = "suffercord/PSX Autumn Forest Asset Pack/Models/";
-const float forageX = 229.5f, forageZ = 273.5f, forageR = 1.4f, shrubLow = 0.6f, shrubHigh = 1.0f; const int shrubs = 5;
+const float forageX = 229.5f, forageZ = 273.5f, forageR = 1.0f, shrubLow = 0.6f, shrubHigh = 1.0f, shrubR = 0.3f; const int shrubs = 5;
 {
     var fc = kit.Fresh("ForageC", places.transform, V(forageX, G(forageX, forageZ), forageZ), 0f); var rng = new System.Random(8240);
     for (int i = 0; i < shrubs; i++)
@@ -161,6 +162,12 @@ const float forageX = 229.5f, forageZ = 273.5f, forageR = 1.4f, shrubLow = 0.6f,
         s.transform.rotation = UnityEngine.Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f); var b = PlaceKit.MeshBounds(s); s.transform.localScale = UnityEngine.Vector3.one * (h / UnityEngine.Mathf.Max(0.1f, b.size.y));
         b = PlaceKit.MeshBounds(s); s.transform.position += V(x - b.center.x, G(x, z) - b.min.y - 0.03f, z - b.center.z);
         if (olive != null) foreach (var r in s.GetComponentsInChildren<UnityEngine.Renderer>()) { var ms = r.sharedMaterials; for (int k = 0; k < ms.Length; k++) ms[k] = olive; r.sharedMaterials = ms; }
+        // 8.24 (Pim, Wren 2026-10-02): the interactor's ray skips triggers (PlayerInteractor: QueryTriggerInteraction.Ignore) and meets
+        // colliders only, so each shrub gets a solid capsule shrubR round, its own height, and the stand-in usable (8.5's
+        // ToggleColorInteractable) with the prompt "Forage" until the forage system exists; on r 1.0 (BurnLayout draft, Sable: the ring
+        // tightened from 1.4) the capsules stand 1.18 m apart, 0.58 m gaps, under the 0.6 to 1.0 band
+        b = PlaceKit.MeshBounds(s); float sk = s.transform.lossyScale.x; var col = s.AddComponent<UnityEngine.CapsuleCollider>(); col.radius = shrubR / sk; col.height = UnityEngine.Mathf.Max(b.size.y, 2f * shrubR) / sk; col.center = s.transform.InverseTransformPoint(b.center);
+        var use = s.AddComponent<ToggleColorInteractable>(); var so = new UnityEditor.SerializedObject(use); so.FindProperty("prompt").stringValue = "Forage"; so.FindProperty("target").objectReferenceValue = s.GetComponentInChildren<UnityEngine.Renderer>(); so.ApplyModifiedPropertiesWithoutUndo();
     }
     kit.Marker("ForageC_Stand", fc, fc.InverseTransformPoint(V(229.2f, G(229.2f, 270.6f), 270.6f)), 0f);
     kit.ClearDetail(V(forageX, 0f, forageZ), forageR + 0.8f);

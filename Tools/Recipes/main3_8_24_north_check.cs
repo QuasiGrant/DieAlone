@@ -3,6 +3,7 @@
 // RUIN ROOM (N13, Marlow 824 block 1): standing cells on a roomGrid m grid of the room floor (ruin local x -2.85 to 2.85, z -1.85 to
 //   1.85) where the capsule fits clear of every collider; the doorway step (the ground outside against the floor slab's top).
 // REPORT BOX: the interactor's ray (its mask, interactReach) from the stand (170.16, 277.32) toward the box meets the box or its post.
+// FORAGE: the interactor's ray from the forage stand toward the south shrub meets a usable with the prompt "Forage".
 // N14 STOVEPIPE: from the eye (192.7, G+1.6, 276.6) to the pipe's top, past every drawn mesh (temporary exact colliders, as 8.22): the
 //   first thing met is the pipe.
 // WALKS (doc 4): Jg to Camp 1 and Camp 1 to J along their trails; the side path from its mouth in at the doorway to the bunk, the
@@ -51,6 +52,27 @@ try
             string first = "nothing within " + F1(tuning.interactReach) + " m"; bool ok = false;
             if (UnityEngine.Physics.Raycast(eye, (aim - eye).normalized, out var hit, tuning.interactReach, mask, UnityEngine.QueryTriggerInteraction.Ignore)) { ok = hit.collider.transform.IsChildOf(post); first = WalkIns.PathOf(hit.collider.transform) + " at " + F(hit.distance) + " m"; }
             Line(ok, "REPORT BOX: from the stand (170.16, 277.32) the interactor's ray meets " + first);
+        }
+    }
+    // ---- FORAGE (Pim, Wren 2026-10-02): from the stand at the trail edge (229.2, 270.6), the interactor's own test (camera ray, its mask,
+    // triggers ignored, interactReach) toward the south shrub (229.3, 272.1) meets an Interactable whose prompt is "Forage"
+    {
+        var pi = UnityEngine.Object.FindFirstObjectByType<PlayerInteractor>(); var maskF = typeof(PlayerInteractor).GetField("mask", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+        var fc = Root("Places") != null ? Root("Places").transform.Find("ForageC") : null; UnityEngine.Transform south = null; float bestD = float.MaxValue;
+        if (fc != null) foreach (UnityEngine.Transform s in fc) { if (!s.name.StartsWith("Bush_ForageC_")) continue; float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(s.position.x, s.position.z), new UnityEngine.Vector2(229.3f, 272.1f)); if (d < bestD) { bestD = d; south = s; } }
+        if (pi == null || maskF == null || tuning == null || south == null) Line(false, "FORAGE: no PlayerInteractor, its mask, PlayerTuning or a Places/ForageC shrub");
+        else
+        {
+            int mask = ((UnityEngine.LayerMask)maskF.GetValue(pi)).value; var eye = V(229.2f, H(229.2f, 270.6f) + eyeH, 270.6f); var aim = PlaceKit.MeshBounds(south.gameObject).center;
+            string got = "nothing within " + F1(tuning.interactReach) + " m"; bool ok = false;
+            if (UnityEngine.Physics.Raycast(eye, (aim - eye).normalized, out var hit, tuning.interactReach, mask, UnityEngine.QueryTriggerInteraction.Ignore))
+            { var it = hit.collider.GetComponentInParent<Interactable>(); ok = it != null && it.Prompt == "Forage"; got = WalkIns.PathOf(hit.collider.transform) + " at " + F(hit.distance) + " m, prompt " + (it != null ? "\"" + it.Prompt + "\"" : "none"); }
+            Line(ok, "FORAGE: from the stand (229.2, 270.6) toward " + south.name + " the interactor's ray meets " + got);
+            // the gaps between the shrubs' colliders: none in the 0.6 to 1.0 m band (a slot the body cannot pass but a view says it can)
+            var caps = new System.Collections.Generic.List<UnityEngine.Bounds>(); foreach (UnityEngine.Transform s in fc) { var c = s.GetComponent<UnityEngine.Collider>(); if (c != null) caps.Add(c.bounds); }
+            float least = float.MaxValue; int band = 0;
+            for (int i = 0; i < caps.Count; i++) for (int j = i + 1; j < caps.Count; j++) { float gap = new UnityEngine.Vector2(caps[i].center.x - caps[j].center.x, caps[i].center.z - caps[j].center.z).magnitude - (caps[i].extents.x + caps[j].extents.x); least = UnityEngine.Mathf.Min(least, gap); if (gap >= 0.6f && gap < 1.0f) band++; }
+            Line(caps.Count == 5 && band == 0, "FORAGE GAPS: " + caps.Count + " shrub colliders, least gap " + F(least) + " m, gaps in the 0.6 to 1.0 m band " + band);
         }
     }
     // ---- N14 STOVEPIPE

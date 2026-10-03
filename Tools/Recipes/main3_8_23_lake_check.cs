@@ -5,7 +5,8 @@
 //   tower reaches it). S2 the reeds stand heading 290 and S3 the slip stand heading 270: frames, with the share of rays above the
 //   horizon that meet no drawn collider within skyFar m (the terrain or one with a renderer; S2: sky in frame; S3: none by design).
 // DOCK RAILS (8.23 round 2): Marlow's rail chain and a ring of jumps round the rail ends land on no rail and not in the closed lake.
-// BOWL (8.23 round 2): a wader in the shallows, off-step point included, standing or jumping, cannot reach the bowl with the interactor.
+// BOWL (8.23 round 2): how often a wader in the shallows, standing or jumping, reaches the bowl with the interactor, reported (Wren: the
+//   step-floor rule is Milestone 10); fails only if the step floor itself cannot reach it.
 // SLIP AND STEP: nothing in the slip or on the step gives a step over a rail: no collider top between stepLow and stepHigh m over the
 //   floor within railNear m of a slip or step rail (the slip rest starts at 0.9).
 // PLACES ON OBJECTS (doc 5.2). GAPS: the pieces 8.17 and 8.23 built (Boathouse/Dressing and Layout823) against anything, slots of 0.6
@@ -132,7 +133,7 @@ try
                 int a = Reaches(s + V(0f, eyeOver, 0f)), j = Reaches(s + V(0f, eyeOver + jumpH, 0f)); if (a > 0) standHits++; if (j > 0) jumpHits++; if ((a > 0 || j > 0) && worst == "") worst = " first at (" + F(s.x) + ", " + F(s.y) + ", " + F(s.z) + ")";
             }
             var ctl = Stand(V(240.8f, floorY, 56.0f)); int ctlHits = Reaches(ctl + V(0f, eyeOver, 0f));
-            Line(offStand == 0 && offJump == 0 && standHits == 0 && jumpHits == 0 && ctlHits > 0, "BOWL: from the off-step point, standing at (" + F(off.x) + ", " + F(off.y) + ", " + F(off.z) + "), the interactor's ray (reach " + F1(reach) + " m) meets the bowl on " + offStand + " of " + aims.Count + " aims, at a jump's top " + offJump + "; " + stands + " wader stands within " + F1(bowlNear) + " m: standing " + standHits + ", jumping " + jumpHits + worst + "; control from the step floor: " + ctlHits + " of " + aims.Count);
+            Line(ctlHits > 0, "BOWL (Wren 2026-10-02: a must-stand-on-the-step rule comes in Milestone 10, so only the step-floor control fails here): from the off-step point, standing at (" + F(off.x) + ", " + F(off.y) + ", " + F(off.z) + "), the interactor's ray (reach " + F1(reach) + " m) meets the bowl on " + offStand + " of " + aims.Count + " aims, at a jump's top " + offJump + "; " + stands + " wader stands within " + F1(bowlNear) + " m: standing " + standHits + ", jumping " + jumpHits + worst + "; control from the step floor: " + ctlHits + " of " + aims.Count);
         }
     }
     // ---- DOCK RAILS (8.23 round 2, Marlow 823 finding 1): his chain (sprint-jump 150 from the bank onto the east rail, 210 onto the end

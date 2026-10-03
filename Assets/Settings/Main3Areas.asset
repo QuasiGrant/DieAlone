@@ -957,6 +957,9 @@ MonoBehaviour:
     - label: report box
       path: Places/NorthRuin/Layout824/ReportPost
       approach: {x: 170.16, y: -999, z: 277.32}
+    - label: forage C
+      path: Places/ForageC
+      approach: {x: 229.2, y: -999, z: 270.6}
     frames:
     - label: 'F1 JG TRAIL INTO THE CLEARING, HEADING 31: TABLE, COOKFIRE, SPAR'
       eye: {x: 276.5, y: -999, z: 221.5}
