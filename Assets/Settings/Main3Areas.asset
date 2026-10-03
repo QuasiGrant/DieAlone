@@ -73,6 +73,9 @@ MonoBehaviour:
   spacingCentre: 1.2
   spacingEdge: 0.5
   approachRay: 2
+  slotLow: 0.6
+  slotHigh: 1
+  snagRadius: 2
   deckGrid: 1
   deckHalf: 3.5
   deckEye: 1.6
@@ -239,7 +242,8 @@ MonoBehaviour:
     name: 
     expected: 8
   areas:
-  - walkLines: []
+  - spacingExceptions: []
+    walkLines: []
     id: camp
     task: 8.21
     title: Keeper's camp, cabin and tower
@@ -480,7 +484,8 @@ MonoBehaviour:
     - main3_tower_stairs_check.cs
     - main3_breaks_recheck.cs
     - main3_8_21b_stop_check.cs
-  - walkLines:
+  - spacingExceptions: []
+    walkLines:
     - label: T east across the lot to the gate
       points:
       - {x: 340, y: -999, z: 170}
@@ -680,7 +685,8 @@ MonoBehaviour:
     - main3_8_22_front_check.cs
     - main3_8_22_deck_frames.cs?look=Day_one
     - main3_8_22_deck_frames.cs?look=Night
-  - walkLines: []
+  - spacingExceptions: []
+    walkLines: []
     id: lake
     task: 8.23
     title: Lake
@@ -853,7 +859,8 @@ MonoBehaviour:
     playChecks:
     - main3_8_23_lake_check.cs
     - main3_8_23_lake_frames.cs?look=Day_one
-  - walkLines:
+  - spacingExceptions: []
+    walkLines:
     - label: side path to the ruin
       points:
       - {x: 168.1, y: -999, z: 267.1}
@@ -1045,7 +1052,12 @@ MonoBehaviour:
       look: {x: 172.4, y: 4.5, z: 281.4}
     playChecks:
     - main3_8_24_north_check.cs
-  - walkLines:
+  - spacingExceptions:
+    - a: hook
+      b: R2 at the table
+      reason: he answers the phone from his seat (Camp2Layout C2, Wren 2026-10-02)
+      maxEdge: 0.5
+    walkLines:
     - label: the stair to the top
       points:
       - {x: 298.9, y: -999, z: 107.8}
@@ -1169,7 +1181,7 @@ MonoBehaviour:
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS2
     - label: PS3
-      point: {x: 285.7, y: -999, z: 109.9}
+      point: {x: 283.7, y: -999, z: 107.9}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS3
     inventory:
@@ -1226,7 +1238,7 @@ MonoBehaviour:
       controlRaise: 0
       anyEye: 0
     - label: PS3
-      point: {x: 285.7, y: 4.5, z: 109.9}
+      point: {x: 283.7, y: 4.5, z: 107.9}
       treeCoverPath: 
       hard: 0
       loose: 1
@@ -1279,7 +1291,8 @@ MonoBehaviour:
       look: {x: 317.2, y: 4.8, z: 136}
     playChecks:
     - main3_8_25_camp2_check.cs
-  - walkLines: []
+  - spacingExceptions: []
+    walkLines: []
     id: camp3
     task: 8.26
     title: Camp 3 and the west trails
@@ -1333,7 +1346,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - walkLines: []
+  - spacingExceptions: []
+    walkLines: []
     id: cave
     task: 8.27
     title: Cave and ravine
@@ -1376,7 +1390,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - walkLines: []
+  - spacingExceptions: []
+    walkLines: []
     id: burn
     task: 8.28
     title: Old burn and forage
@@ -1410,7 +1425,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - walkLines: []
+  - spacingExceptions: []
+    walkLines: []
     id: ward
     task: 8.29
     title: Ward path and ledge
@@ -1466,7 +1482,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - walkLines: []
+  - spacingExceptions: []
+    walkLines: []
     id: whole
     task: 8.30
     title: Whole map
@@ -1761,7 +1778,7 @@ MonoBehaviour:
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS2
     - label: PS3
-      point: {x: 285.7, y: -999, z: 109.9}
+      point: {x: 283.7, y: -999, z: 107.9}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS3
     - label: Camp 3

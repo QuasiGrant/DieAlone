@@ -17,7 +17,7 @@
 // C5  the barrel CITW_Barrel_3 at 1.2, yaw 0, at (291.4, 101.4); its stand (292.3, 100.4) facing 318.
 // C6  the T leg end: points P2 to P12 dropped, new points (300.4, 105.3), (302.4, 106.0), (303.6, 109.5), (304.0, 114.0) from the ramp foot
 //     to P14, every trailStep m, the tread painted (copied from the leg's own tread) and the old stretch repainted as floor; skirts (planks
-//     from the ground to whatever is overhead, cap skirtCap m) round the stair's ground, the way-in planks; StartBlaze by position (304.4, 106.4).
+//     from the ground to whatever is overhead, no cap (Wren 2026-10-02: the 3 m cap left standable tops); bareSkirt m where nothing is overhead) round the stair's ground, the way-in planks; StartBlaze by position (304.4, 106.4).
 // C7  the paper spots PS1 to PS3 (markers with a sheet each). C8 the phone wire from the pole's crossarm to a 1 m standoff on the booth
 //     roof, sag wireSag, no collider. C9 Boulder_1 to (303.4, 97.9).
 // WARPS: Camp_2 (294.3, 95.0) facing 55; Camp_2_Top (294.5, 24.2, 107.2) facing 20.
@@ -139,7 +139,7 @@ const float tblX0 = 298.10f, tblX1 = 299.01f, tblZ0 = 97.30f, tblZ1 = 98.21f;
 }
 
 // ================= C6: the T leg's end, the skirts, the blaze =================
-const float trailStep = 2f, treadPaint = 1.5f, skirtCap = 3f, boardW = 0.22f, boardGap = 0.06f, boardT = 0.05f;
+const float trailStep = 2f, treadPaint = 1.5f, bareSkirt = 3f, skirtReach = 30f, boardW = 0.22f, boardGap = 0.06f, boardT = 0.05f;
 int newPts = 0, paintCells = 0, boardN = 0;
 {
     var leg = kit.Root("Trails").transform.Find("Camp 2 to T"); if (leg == null) return "no Trails/Camp 2 to T";
@@ -178,27 +178,53 @@ int newPts = 0, paintCells = 0, boardN = 0;
         td.SetAlphamaps(i0, j0, am); UnityEditor.EditorUtility.SetDirty(td);
         for (int s = 1; s < route.Length; s++) for (float u = 0f; u <= 1f; u += 0.25f) { var q = UnityEngine.Vector2.Lerp(route[s - 1], route[s], u); kit.ClearDetail(V(q.x, 0f, q.y), treadPaint); }
     }
-    // skirts: upright boards over a box collider each, from the ground to whatever is overhead (capped), along the stair's ground
+    // skirts: upright boards over a box collider each, from the ground to whatever is overhead (no cap), along the stair's ground
     var sk = kit.Group("Skirts", L, L.position, 0f);
     void Board(UnityEngine.Vector3 c, float h, bool alongX)
     {
         var g = kit.Fill(PlaceKit.CC + "Props/C_Plank_A_Thick", sk, sk.InverseTransformPoint(c), alongX ? V(boardW, boardT, h) : V(h, boardT, boardW), alongX ? 0f : 90f); if (g == null) return;
         var mb = PlaceKit.MeshBounds(g); g.transform.RotateAround(mb.center, alongX ? UnityEngine.Vector3.right : UnityEngine.Vector3.forward, 90f); mb = PlaceKit.MeshBounds(g); g.transform.position += c - mb.center; boardN++;
     }
-    void Skirt(float x0, float z0, float x1, float z1)
+    void Skirt(float x0, float z0, float x1, float z1, bool bare = false)   // bare: bareSkirt m whatever is overhead (the way-in planks)
     {
         bool alongX = UnityEngine.Mathf.Abs(x1 - x0) >= UnityEngine.Mathf.Abs(z1 - z0); float len = alongX ? UnityEngine.Mathf.Abs(x1 - x0) : UnityEngine.Mathf.Abs(z1 - z0); if (len < 0.05f) return;
         int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(len / (boardW + boardGap))); float pitch = len / n;
         for (int k = 0; k < n; k++)
         {
-            float u = (k + 0.5f) / n; float x = UnityEngine.Mathf.Lerp(x0, x1, u), z = UnityEngine.Mathf.Lerp(z0, z1, u), gy = G(x, z), h = skirtCap;
-            foreach (var side in new[] { -0.1f, 0.1f }) { float ox = alongX ? 0f : side, oz = alongX ? side : 0f; foreach (var hit in UnityEngine.Physics.RaycastAll(V(x + ox, gy + 0.05f, z + oz), UnityEngine.Vector3.up, skirtCap, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) if (!hit.collider.transform.IsChildOf(sk)) h = UnityEngine.Mathf.Min(h, hit.distance + 0.05f); }   // both sides of the line: the overhead edge sits on it
+            float u = (k + 0.5f) / n; float x = UnityEngine.Mathf.Lerp(x0, x1, u), z = UnityEngine.Mathf.Lerp(z0, z1, u), gy = G(x, z), over = float.MaxValue;
+            foreach (var side in new[] { -0.1f, 0.1f }) { float ox = alongX ? 0f : side, oz = alongX ? side : 0f; foreach (var hit in UnityEngine.Physics.RaycastAll(V(x + ox, gy + 0.05f, z + oz), UnityEngine.Vector3.up, skirtReach, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) if (hit.collider.transform.IsChildOf(path2)) over = UnityEngine.Mathf.Min(over, hit.distance + 0.05f); }   // both sides of the line: the overhead edge sits on it; only the stair (StackPath) counts overhead: way-in planks run to the stack's overhang left a standable top at 12.4 (8.25 round 2)
+            float h = over < float.MaxValue && !bare ? over : bareSkirt;
             if (h < 0.1f) continue; var c = V(x, gy + h * 0.5f, z);
             Board(c, h, alongX); kit.Blocker("Board", sk, sk.InverseTransformPoint(c), alongX ? V(pitch, h, 0.1f) : V(0.1f, h, pitch));
         }
     }
     Skirt(301.1f, 108f, 301.1f, 119.5f); Skirt(298.2f, 119.5f, 301.1f, 119.5f); Skirt(298.2f, 112f, 298.2f, 119.5f); Skirt(296.28f, 112f, 298.2f, 112f); Skirt(299.6f, 108f, 301.1f, 108f);
-    Skirt(297.32f, 106.5f, 298.2f, 106.5f); Skirt(298.2f, 106.5f, 298.2f, 108f);   // the way-in planks (Marlow 11a, 11c)
+    Skirt(297.32f, 106.5f, 298.2f, 106.5f, true); Skirt(298.2f, 106.5f, 298.2f, 108f, true);   // the way-in planks (Marlow 11a, 11c), bareSkirt high: run up to LandingS1 they closed the notch under a stack ledge the stair's rails let a jump reach (8.25 round 2 trap at (297.4, 12.4, 106.9))
+    // the gap between Ramp1 and Ramp2 (Wren 2026-10-02, the 8.25 trap under Ramp2: a sprint-jump off Ramp1 over its east rail went under
+    // Ramp2): boards over a box each, in the gap (gapX), from Ramp1's top to Ramp2's underside, every board pitch along the ramps
+    var r1 = path2.Find("Ramp1") != null ? path2.Find("Ramp1").GetComponent<UnityEngine.Collider>() : null; var r2 = path2.Find("Ramp2") != null ? path2.Find("Ramp2").GetComponent<UnityEngine.Collider>() : null;
+    if (r1 == null || r2 == null) notes.Add("no Ramp1 or Ramp2 collider");
+    else
+    {
+        float gapX = (r1.bounds.max.x + r2.bounds.min.x) * 0.5f, z0 = UnityEngine.Mathf.Max(r1.bounds.min.z, r2.bounds.min.z), z1 = UnityEngine.Mathf.Min(r1.bounds.max.z, r2.bounds.max.z);
+        int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt((z1 - z0) / (boardW + boardGap))); float pitch = (z1 - z0) / n;
+        for (int k = 0; k < n; k++)
+        {
+            float z = z0 + (k + 0.5f) * pitch;
+            if (!r1.Raycast(new UnityEngine.Ray(V(r1.bounds.max.x - 0.05f, r1.bounds.max.y + 1f, z), UnityEngine.Vector3.down), out var lo, 40f) || !r2.Raycast(new UnityEngine.Ray(V(r2.bounds.min.x + 0.05f, r2.bounds.min.y - 1f, z), UnityEngine.Vector3.up), out var hi, 40f)) continue;
+            float b = lo.point.y, t = hi.point.y + 0.05f; if (t - b < 0.1f) continue; var c = V(gapX, (b + t) * 0.5f, z);
+            Board(c, t - b, false); kit.Blocker("RampGap", sk, sk.InverseTransformPoint(c), V(r2.bounds.min.x - r1.bounds.max.x + 0.04f, t - b, pitch));
+        }
+    }
+    // Ramp2's and Ramp4's east rails (the stair's outer side, Wren 2026-10-02): railH (1.05) over the ramp's top, measured square to the
+    // ramp; their feet stay where they are. The rails were 0.93 square to the ramp (1.04 plumb); 14 sprint-jumps went over them.
+    foreach (var rn in new[] { "Ramp2", "Ramp4" })
+    {
+        var ramp = path2.Find(rn); UnityEngine.Transform east = null; foreach (UnityEngine.Transform t in path2) if (t.name == rn + "_Rail" && (east == null || t.position.x > east.position.x)) east = t;
+        if (ramp == null || east == null) { notes.Add("no " + rn + " or its east rail"); continue; }
+        var up = ramp.up; float rampTop = ramp.localScale.y * 0.5f, o = UnityEngine.Vector3.Dot(east.position - ramp.position, up), foot = o - east.localScale.y * 0.5f, head = rampTop + railH;
+        east.localScale = V(east.localScale.x, head - foot, east.localScale.z); east.position += up * ((head + foot) * 0.5f - o);
+    }
     // the blaze by position, not child index (Marlow 825 2)
     var blaze = cd.Find("StartBlaze"); if (blaze != null) blaze.position = V(304.4f, G(304.4f, 106.4f), 106.4f); else notes.Add("no StartBlaze");
 }
@@ -206,7 +232,7 @@ int newPts = 0, paintCells = 0, boardN = 0;
 // ================= C7, C8, C9 =================
 {
     var ps = kit.Group("PaperSpots", L, L.position, 0f);
-    foreach (var (n, x, z) in new[] { ("PS1", 288.14f, 109.6f), ("PS2", 288.8f, 111.2f), ("PS3", 285.7f, 109.9f) })
+    foreach (var (n, x, z) in new[] { ("PS1", 288.14f, 109.6f), ("PS2", 288.8f, 111.2f), ("PS3", 283.70f, 107.90f) })   // PS3 moved 2.83 m from the doc's (285.7, 109.9), which no trail or walk line found (main3_8_25_search.cs, Wren 2026-10-02)
     {
         float y = G(x, z); foreach (var h in UnityEngine.Physics.RaycastAll(V(x, topY + 3f, z), UnityEngine.Vector3.down, 30f, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) if (!h.collider.isTrigger && h.collider.gameObject.layer != 2) y = UnityEngine.Mathf.Max(y, h.point.y);
         var m = kit.Marker(n, ps, ps.InverseTransformPoint(V(x, y, z)), 0f); kit.On(PlaceKit.CE + "Decoration_Home/Paper", m, V(0f, 0.01f, 0f), 25f, 0.5f, false, null, true);
@@ -229,6 +255,21 @@ int newPts = 0, paintCells = 0, boardN = 0;
     kit.ClearDetail(V(299.0f, 0f, 99.0f), 1.0f);   // the door lane
 }
 
+// ================= FOOD LOCKERS (forward fix, Wren 2026-10-02) =================
+// main3_8_3_trails_giants.cs fits each of the six crates to lockerSize but its Fit stretched them to 15 m bars (scale x 19.98) that cross
+// the T leg's tread; each Locker is set to lockerSize in its own axes from its mesh and given a box from that mesh (PlaceKit.FitExact)
+var lockerSize = V(1f, 1.2f, 0.8f); int lockersFixed = 0;
+{
+    var poi = kit.Root("PointsOfInterest") != null ? kit.Root("PointsOfInterest").transform.Find("POI_Food_lockers") : null;
+    if (poi == null) notes.Add("no POI_Food_lockers");
+    else foreach (UnityEngine.Transform t in poi)
+    {
+        var mf = t.GetComponent<UnityEngine.MeshFilter>(); if (t.name != "Locker" || mf == null || mf.sharedMesh == null) continue; var mb = mf.sharedMesh.bounds.size;
+        t.localScale = V(lockerSize.x / mb.x, lockerSize.y / mb.y, lockerSize.z / mb.z);
+        var wb = PlaceKit.MeshBounds(t.gameObject); t.position += V(0f, G(t.position.x, t.position.z) - wb.min.y, 0f); PlaceKit.FitExact(t.gameObject); lockersFixed++;
+    }
+}
+
 // ================= WARPS =================
 var warps = kit.Root("DevWarps").transform;
 foreach (var (n, x, y, z, yaw) in new[] { ("Camp_2", 294.3f, float.NaN, 95.0f, 55f), ("Camp_2_Top", 294.5f, topY + 0.2f, 107.2f, 20f) })
@@ -238,4 +279,4 @@ UnityEngine.Physics.SyncTransforms();
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " | removed by name " + namedGone + " of " + named.Length + (namedMissing.Count > 0 ? " (not found, likely gone already: " + string.Join(", ", namedMissing) + ")" : "") + ", in keep-out zones " + zoneGone
-    + " | rail runs " + railRuns + " | T leg points " + newPts + ", tread cells " + paintCells + ", skirt boards " + boardN + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    + " | rail runs " + railRuns + " | T leg points " + newPts + ", tread cells " + paintCells + ", skirt boards " + boardN + " | lockers refit " + lockersFixed + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

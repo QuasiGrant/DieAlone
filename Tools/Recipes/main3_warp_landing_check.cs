@@ -23,6 +23,11 @@ var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Set
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(new UnityEngine.Vector3(x, 0f, z)) + ter.transform.position.y;
 const float dt = 0.02f, settleTime = 3f, maxFall = 2f, groundReach = 0.5f, walkTry = 3f, walkTime = 4f, probeUp = 50f, outLeg = 6f, outDist = 10f;
 string[] sealedExempt = { "Cave_Chamber", "Cabin" };   // the cave (board) and the cabin (its closed door opens on Interact, which a walk does not press)
+// railed places reached by a stair (Wren 2026-10-02, 8.25: Camp_2_Top is the railed stack top, its way out the stair): SEALED passes when a
+// walking flood from the landing (reachCell m cells, 8 headings, reachMove s a move, within reachSpan m of the warp, at most reachPlaces)
+// reaches the given point (within reachNear m across and reachRise m up or down)
+var sealedReach = new System.Collections.Generic.Dictionary<string, UnityEngine.Vector3> { { "Camp_2_Top", new UnityEngine.Vector3(298.9f, 4f, 107.8f) } };   // the ramp foot
+const float reachCell = 0.5f, reachMove = 0.3f, reachSpan = 25f, reachNear = 1f, reachRise = 1.5f; const int reachPlaces = 8000;
 const float outDrop = 3f;   // or a walk that ends this far under the landing: down the tower stairs
 UnityEngine.Vector3 WalkFrom(UnityEngine.Vector3 p, UnityEngine.Vector3 dir, float len) { cc.enabled = false; pc.transform.position = p; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); for (float s = 0f; s < walkTime; s += dt) { pc.Step(dir, false, false, dt); var d = pc.transform.position - p; if (new UnityEngine.Vector2(d.x, d.z).magnitude >= len) break; } return pc.transform.position; }
 var inv = System.Globalization.CultureInfo.InvariantCulture;
@@ -46,7 +51,7 @@ try
     {
         if (only.Count > 0 && !only.Contains(w.name)) continue;
         n++; Warp(w); Settle();
-        var settled = pc.transform.position; var problems = new System.Collections.Generic.List<string>();
+        var settled = pc.transform.position; string notesExtra = ""; var problems = new System.Collections.Generic.List<string>();
         float fall = w.position.y - settled.y; if (fall > maxFall) problems.Add("FELL " + fall.ToString("F1", inv) + " m");
         var foot = Foot(); bool ground = UnityEngine.Physics.SphereCast(foot + UnityEngine.Vector3.up * (cc.radius + 0.05f), cc.radius * 0.9f, UnityEngine.Vector3.down, out var gh, groundReach + 0.05f, ~0, UnityEngine.QueryTriggerInteraction.Ignore) && !gh.collider.transform.IsChildOf(pc.transform);
         if (!ground) problems.Add("NO GROUND within " + groundReach + " m");
@@ -69,9 +74,28 @@ try
                 var e1 = WalkFrom(settled, UnityEngine.Quaternion.Euler(0f, a * 45f, 0f) * fwd, outLeg); var d1 = e1 - settled; far = UnityEngine.Mathf.Max(far, new UnityEngine.Vector2(d1.x, d1.z).magnitude); if (-d1.y >= outDrop) far = outDist;
                 for (int b2 = 0; b2 < 8 && far < outDist; b2++) { var e2 = WalkFrom(e1, UnityEngine.Quaternion.Euler(0f, b2 * 45f, 0f) * fwd, outLeg); var d2 = e2 - settled; far = UnityEngine.Mathf.Max(far, new UnityEngine.Vector2(d2.x, d2.z).magnitude); if (-d2.y >= outDrop) far = outDist; }
             }
+            if (far < outDist && sealedReach.TryGetValue(w.name, out var goal))
+            {
+                long Key(UnityEngine.Vector3 p) => ((long)UnityEngine.Mathf.RoundToInt(p.x / reachCell) * 100003L + UnityEngine.Mathf.RoundToInt(p.z / reachCell)) * 1009L + UnityEngine.Mathf.RoundToInt(p.y / reachCell);
+                var seen = new System.Collections.Generic.HashSet<long> { Key(settled) }; var fq = new System.Collections.Generic.Queue<UnityEngine.Vector3>(); fq.Enqueue(settled); bool got = false;
+                while (fq.Count > 0 && !got && seen.Count < reachPlaces)
+                {
+                    var from = fq.Dequeue();
+                    for (int a = 0; a < 8 && !got; a++)
+                    {
+                        cc.enabled = false; pc.transform.position = from; cc.enabled = true; UnityEngine.Physics.SyncTransforms(); var dir = UnityEngine.Quaternion.Euler(0f, a * 45f, 0f) * UnityEngine.Vector3.forward;
+                        for (float s = 0f; s < reachMove; s += dt) pc.Step(dir, false, false, dt); for (int s = 0; s < 10; s++) pc.Step(UnityEngine.Vector3.zero, false, false, dt);
+                        var e = pc.transform.position; var off = e - settled; if (new UnityEngine.Vector2(off.x, off.z).magnitude > reachSpan) continue;
+                        if (new UnityEngine.Vector2(e.x - goal.x, e.z - goal.z).magnitude <= reachNear && UnityEngine.Mathf.Abs(e.y - goal.y) <= reachRise) got = true;
+                        if (seen.Add(Key(e))) fq.Enqueue(e);
+                    }
+                }
+                if (got) { far = outDist; notesExtra = " (railed: the flood from it reaches " + goal.ToString("F1") + " in " + seen.Count + " places)"; }
+                else notesExtra = " (railed: the flood from it does not reach " + goal.ToString("F1") + " in " + seen.Count + " places)";
+            }
             if (far < outDist) problems.Add("SEALED (two rounds of walks reach " + far.ToString("F1", inv) + " m)");
         }
-        string notes = stuck.Count > 0 && stuck.Count < names.Length ? " (blocked: " + string.Join(", ", stuck) + " m)" : "";
+        string notes = (stuck.Count > 0 && stuck.Count < names.Length ? " (blocked: " + string.Join(", ", stuck) + " m)" : "") + notesExtra;
         if (problems.Count > 0) fails++;
         sb.Append((problems.Count == 0 ? "ok   " : "FAIL ") + w.name + " at " + w.position.ToString("F1") + ": " + (problems.Count == 0 ? "lands, fell " + UnityEngine.Mathf.Max(0f, fall).ToString("F2", inv) + " m" + notes : string.Join("; ", problems) + ", ends at " + settled.ToString("F1")) + " | " + Under(w.position) + "\n");
     }

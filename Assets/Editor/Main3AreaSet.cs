@@ -135,8 +135,18 @@ public class Main3AreaSet : ScriptableObject
     }
 
     [System.Serializable]
+    public struct SpacingException
+    {
+        [Tooltip("The two interaction labels, either order.")] public string a, b;
+        [Tooltip("Why they stand together (Wren's ruling).")] public string reason;
+        [Tooltip("The pair passes when its edge gap is at most this (they read as one unit), outside the 0.6 to 1.0 m slot band, and the flood finds no trap or stop stand within snagRadius m of either.")] public float maxEdge;
+    }
+
+    [System.Serializable]
     public class Area
     {
+        [Tooltip("Interaction pairs that stand together by design (8.25: the hook and his table chair).")]
+        public SpacingException[] spacingExceptions;
         [Tooltip("Extra walking lines for the found rule, beside the Trails (8.22).")]
         public WalkLine[] walkLines;
         public string id;
@@ -199,6 +209,8 @@ public class Main3AreaSet : ScriptableObject
     [Tooltip("Found: a walk point more than this many metres over the terrain (a stair, a stack top) puts the eye on the point, not the terrain.")] public float raisedWalk = 1f;
     [Header("Interaction spacing (CampLayout_UI rule 1)")]
     public float spacingCentre = 1.2f, spacingEdge = 0.5f, approachRay = 2f;
+    [Tooltip("Spacing: the 0.6 to 1.0 m band a gap may not fall in (a slot the body cannot pass but a view says it can), and how near a trap or stop stand may come to an excepted pair.")]
+    public float slotLow = 0.6f, slotHigh = 1.0f, snagRadius = 2f;
 
     [Header("Deck (Valley.md 7, CampLayout.md 5)")]
     [Tooltip("Eye grid spacing over the deck, metres.")] public float deckGrid = 1f;

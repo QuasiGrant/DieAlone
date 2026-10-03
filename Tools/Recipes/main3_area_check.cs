@@ -123,7 +123,7 @@ try
         }
     }
     // a place standing on a stop is an escape over it (8.22 round 2, Marlow 1), wherever it leads
-    var onStop = new System.Collections.Generic.List<string>();
+    var onStop = new System.Collections.Generic.List<string>(); var onStopPlaces = new System.Collections.Generic.List<UnityEngine.Vector3>();
     foreach (var kv in pos)
     {
         // only the surface the body stands on, the highest under it (8.23 round 2: ring boxes 0.2 m under the boathouse floor and the dock
@@ -134,7 +134,7 @@ try
         if (!any || top.collider is UnityEngine.TerrainCollider) continue;
         var ht = top.collider.transform; var path = WalkIns.PathOf(ht); bool stop = ht.gameObject.layer == 2;
         if (set.stopRoots != null) foreach (var sr in set.stopRoots) if (path.StartsWith(sr)) stop = true;
-        if (stop) onStop.Add(P3(p) + " on " + path);
+        if (stop) { onStop.Add(P3(p) + " on " + path); onStopPlaces.Add(p); }
     }
     bool floodOk = leaks.Count == 0 && fell.Count == 0 && onStop.Count == 0; if (!floodOk) fails++;
     sb.Append((floodOk ? "PASS" : "FAIL") + " FLOOD: " + pos.Count + " standing places from " + seeds + " seeds, " + moves + " moves; closed-zone leaks " + leaks.Count + ", fell through " + fell.Count + ", standing on a stop " + onStop.Count + (closedWater.Count > 0 ? "; closed water: " + string.Join(", ", System.Linq.Enumerable.Select(closedWater, w => w.label + " " + w.cells + " cells")) : "") + "\n");
@@ -146,7 +146,7 @@ try
     var cand = new System.Collections.Generic.List<long>(); foreach (var kv in pos) if (!ok.Contains(kv.Key) && A.Contains(kv.Value) && !Closed(kv.Value) && kv.Value.y >= H(kv.Value.x, kv.Value.z) - set.fellUnder) cand.Add(kv.Key);
     var groups = new System.Collections.Generic.List<System.Collections.Generic.List<UnityEngine.Vector3>>();
     foreach (var k in cand) { var p = pos[k]; System.Collections.Generic.List<UnityEngine.Vector3> into = null; foreach (var g in groups) foreach (var gp in g) if ((gp - p).magnitude < 3f * set.floodCell) { into = g; break; } if (into == null) { into = new System.Collections.Generic.List<UnityEngine.Vector3>(); groups.Add(into); } into.Add(p); }
-    int traps = 0; var trapLines = new System.Text.StringBuilder();
+    int traps = 0; var trapLines = new System.Text.StringBuilder(); var trapPlaces = new System.Collections.Generic.List<UnityEngine.Vector3>();
     foreach (var g in groups)
     {
         var p = g[0]; int esc = 0, tries = 0;
@@ -155,7 +155,7 @@ try
             tries++; var e = Move(p, Dir(h, set.escapeHeadings), jump, sprint, set.escapeTime); long ek = Key(e);
             if (ok.Contains(ek) || (!pos.ContainsKey(ek) && (e - p).magnitude >= escapeAway)) esc++;
         }
-        if (esc == 0) traps++;
+        if (esc == 0) { traps++; trapPlaces.AddRange(g); }
         trapLines.Append("  " + (esc == 0 ? "TRAP " : "no way back by flood, escapes ") + (esc == 0 ? "" : esc + " of " + tries + " ") + P3(p) + " (" + g.Count + " places)\n");
     }
     if (traps > 0) fails++;
@@ -277,8 +277,18 @@ try
             var a = bodies[i]; var c = bodies[j]; if (UnityEngine.Mathf.Abs(a.b.min.y - c.b.min.y) > 2f) continue;
             float centre = new UnityEngine.Vector2(a.b.center.x - c.b.center.x, a.b.center.z - c.b.center.z).magnitude; if (centre > 3f) continue;
             float gx = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(a.b.min.x - c.b.max.x, c.b.min.x - a.b.max.x)), gz = UnityEngine.Mathf.Max(0f, UnityEngine.Mathf.Max(a.b.min.z - c.b.max.z, c.b.min.z - a.b.max.z)); float edgeGap = UnityEngine.Mathf.Sqrt(gx * gx + gz * gz);
-            bool pairOk = centre >= set.spacingCentre - 0.01f && edgeGap >= set.spacingEdge - 0.02f; if (!pairOk) spFail++;
-            spLines.Append("  " + (pairOk ? "ok   " : "FAIL ") + a.label + " to " + c.label + ": centres " + F1(centre) + " m (at least " + F1(set.spacingCentre) + "), edges " + F1(edgeGap) + " m (at least " + F1(set.spacingEdge) + ")\n");
+            bool pairOk = centre >= set.spacingCentre - 0.01f && edgeGap >= set.spacingEdge - 0.02f; string why = "";
+            // a pair that stands together by design (Area.spacingExceptions): one unit when its gap is at most maxEdge, out of the slot band,
+            // with no trap or stop stand of the flood near either
+            if (!pairOk && A.spacingExceptions != null) foreach (var ex in A.spacingExceptions)
+            {
+                if (!((ex.a == a.label && ex.b == c.label) || (ex.a == c.label && ex.b == a.label))) continue;
+                int snags = 0; foreach (var bd in new[] { a.b, c.b }) { var cc0 = new UnityEngine.Vector2(bd.center.x, bd.center.z); foreach (var g in trapPlaces) if ((new UnityEngine.Vector2(g.x, g.z) - cc0).magnitude <= set.snagRadius) snags++; foreach (var sp in onStopPlaces) if ((new UnityEngine.Vector2(sp.x, sp.z) - cc0).magnitude <= set.snagRadius) snags++; }
+                bool slot = edgeGap >= set.slotLow && edgeGap < set.slotHigh; pairOk = edgeGap <= ex.maxEdge + 0.02f && !slot && snags == 0;
+                why = " (exception, " + ex.reason + ": edge at most " + F1(ex.maxEdge) + (slot ? ", IN THE SLOT BAND" : "") + ", trap and stop stands within " + F1(set.snagRadius) + " m " + snags + ")";
+            }
+            if (!pairOk) spFail++;
+            spLines.Append("  " + (pairOk ? "ok   " : "FAIL ") + a.label + " to " + c.label + ": centres " + F1(centre) + " m (at least " + F1(set.spacingCentre) + "), edges " + edgeGap.ToString("F2", inv) + " m (at least " + F1(set.spacingEdge) + ")" + why + "\n");
         }
         foreach (var bd in bodies)
         {

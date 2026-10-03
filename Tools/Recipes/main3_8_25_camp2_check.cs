@@ -100,6 +100,30 @@ try
         Line(falls.Count == 0, "T3 TOP RAIL: " + runs + " runs (walk, sprint, sprint-jump on " + railHeadings + " headings for " + F1(railTime) + " s from " + starts.Count + " starts), lowest " + F(least) + ", over the top rail " + falls.Count + (falls.Count > 0 ? ": " + string.Join("; ", falls.GetRange(0, UnityEngine.Mathf.Min(8, falls.Count))) : "") + "; down the stair (no fall) " + downStair);
         Line(stairFalls.Count == 0, "T3 STAIR RAILS (from the top): runs that went onto the stair and then off its footprint " + stairFalls.Count + (stairFalls.Count > 0 ? ": " + string.Join("; ", stairFalls.GetRange(0, UnityEngine.Mathf.Min(8, stairFalls.Count))) : ""));
     }
+    // ---- STAIR VOID (the 8.25 trap under Ramp2, Wren 2026-10-02): from Ramp1's centre line every voidStep m, walking, sprinting and
+    // sprint-jumping on headings east (voidFrom to voidTo), for voidTime s: none ends in the space under Ramp2 (east of the ramps' gap, inside
+    // the stair's footprint, under voidUnder m over the ground)
+    {
+        const float voidStep = 1f, voidFrom = 30f, voidTo = 150f, voidHeadStep = 15f, voidTime = 2f, voidUnder = 2f;
+        var r1 = c2.Find("StackPath/Ramp1") != null ? c2.Find("StackPath/Ramp1").GetComponent<UnityEngine.Collider>() : null; var r2 = c2.Find("StackPath/Ramp2") != null ? c2.Find("StackPath/Ramp2").GetComponent<UnityEngine.Collider>() : null;
+        if (r1 == null || r2 == null) Line(false, "STAIR VOID: no Ramp1 or Ramp2");
+        else
+        {
+            int runs = 0; var inVoid = new System.Collections.Generic.List<string>(); float cx = r1.bounds.center.x;
+            for (float z = r1.bounds.min.z + 0.5f; z <= r1.bounds.max.z - 0.5f; z += voidStep)
+            {
+                if (!r1.Raycast(new UnityEngine.Ray(V(cx, r1.bounds.max.y + 1f, z), UnityEngine.Vector3.down), out var hit, 40f)) continue;
+                for (float hd = voidFrom; hd <= voidTo + 1e-3f; hd += voidHeadStep) foreach (var (jump, sprint, how) in new[] { (false, false, "walk"), (false, true, "sprint"), (true, true, "sprint-jump") })
+                {
+                    Put(hit.point); var dir = UnityEngine.Quaternion.Euler(0f, hd, 0f) * UnityEngine.Vector3.forward; runs++;
+                    for (float t = 0f; t < voidTime; t += dt) pc.Step(dir, jump, sprint, dt);
+                    var e = pc.transform.position;
+                    if (e.x > r2.bounds.min.x && e.x < r2.bounds.max.x && e.z > r2.bounds.min.z && e.z < r2.bounds.max.z && e.y < H(e.x, e.z) + voidUnder) inVoid.Add("from z " + F1(z) + " " + how + " heading " + F1(hd) + " to (" + F1(e.x) + ", " + F1(e.y) + ", " + F1(e.z) + ")");
+                }
+            }
+            Line(inVoid.Count == 0, "STAIR VOID: " + runs + " runs off Ramp1 eastward, ending under Ramp2 " + inVoid.Count + (inVoid.Count > 0 ? ": " + string.Join("; ", inVoid.GetRange(0, UnityEngine.Mathf.Min(6, inVoid.Count))) : ""));
+        }
+    }
     // ---- S1 SIGHTLINE
     {
         var eye = V(294.76f, 25.2f, 110.31f); const float s1 = 66f; float r = s1 * UnityEngine.Mathf.Deg2Rad; var hdir = V(UnityEngine.Mathf.Sin(r), 0f, UnityEngine.Mathf.Cos(r));
