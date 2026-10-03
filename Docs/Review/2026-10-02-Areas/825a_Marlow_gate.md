@@ -106,3 +106,43 @@
 | every warp in it lands | PASS (Rook; Camp_2 and Camp_2_Top frames read) |
 
 Marlow
+
+## Round 2 (Play retest, 2026-10-03)
+Marlow. Scene at b99f3ab. Play from 16:46 to 16:49; I changed nothing. Frames are in the scratchpad (k2f) and not committed.
+
+**FAIL on the early turn (19 of 48 snag). The east-lane joint still snags. Leg 2's north edge is fixed, and so is the ring box. The way up is half readable.**
+
+1. **Early turn toward the talk stand. FAIL.**
+   - **Test:** up leg 1, then turn off leg 2 at eight points along it (0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9 and 1.0 of its length), in three lanes, and walk straight at the talk stand (291.3, 123.2). Walk and sprint: 48 runs.
+   - **Result:** 19 runs stall for 0.5 s or more. Every one stops at z 121.87, against the north bank:
+     - 10 standing on Layout825a/Bank, for example walk, turn at 0.3, centre lane: (289.84, 7.94, 121.87);
+     - 9 still on Leg2Ramp, for example turn at 0, centre lane: (289.28, 7.39, 121.87).
+   - **Where it happens:** only turns in the first 45 percent of the leg. Turns at 0.6 and later all reach the stand.
+   - **Why it counts as a snag:** a body heading north-east at the bank should slide east along its face. These hold still instead.
+2. **Round 1's snags.**
+   - **The east lane (+0.5) at the leg 1/landing joint: still there.**
+     - Walking up stalls at (288.45, 6.77, 120.11); sprinting up at (288.38, 6.82, 120.22), both on Leg1Ramp.
+     - The other lanes and every descent are clean: 12 runs, walk and sprint.
+   - **Leg 2's north edge when sprinting: gone.** 0 stalls in all three lanes.
+3. **The way up, by eye** (frames k2f: from each trail at 20, 10 and 4 m out, along travel and at the knob; the trail end; the cairn; the floor west of it).
+   - **The knob:** it now reads as a pile of dark boulders rather than a box, from both legs.
+   - **From the boathouse leg:** at 10 m and 4 m out, the pale cairn shows as a small white stack against the dark south face.
+   - **From the trail end:**
+     - Heading 300, the cairn is just left of the face's middle.
+     - Nothing at the trail end shows the scramble. Its foot is 6.5 m further west, round the south-west corner.
+     - From the cairn and from (291, 112), the frames toward the foot show only dark rock: no tread, steps or lighter path.
+     - The cairn says "here" but not "round the corner".
+   - **From the T leg:** at 10 m out, (303.2, 116.8), and at 4 m out, the frame toward the knob is filled by dark rock at arm's length. The cairn and the scramble are both out of sight from that side.
+   - **Verdict:** a first-time player finds the knob and the cairn. From the boathouse side, finding the climb still means walking round to the west face. From the T side, nothing points the way.
+4. **The ring box from the tent door. PASS: easy enough.**
+   - **At the door:** walked in to (295.60, 9.04, 120.37), 117 of 4,941 looks (1 degree grid) show `Examine`, in a 10 x 10 degree window: yaw 175 to 185, pitch 26 to 36 down. Round 1 was 3 x 3.
+   - **From nearby stands:**
+
+     | Stand | Looks that hit |
+     |---|---|
+     | 0.5 m left of the door (295.06, 120.34) | 124 |
+     | 0.5 m right of the door (296.12, 120.30) | 129 |
+     | 0.4 m back from the door | 9 |
+     | 0.9 m back from the door (295.63, 121.23) | 0, out of reach |
+
+Marlow
