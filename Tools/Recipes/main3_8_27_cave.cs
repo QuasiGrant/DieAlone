@@ -392,7 +392,7 @@ const float rimWest = 26f, rimEast = 92f, rimLook = 6f, rimBelowTop = 1f, rimUp 
 // round 2's RockBreakup; see the block for the method.
 const float voidZ0 = 33.4f, floorTile = 3f, floorOffX = 0.21f, floorOffZ = 0.37f, hullUnder = 2.5f, rubbleW = 3f, rubbleH = 0.25f, stripZ0 = 10.8f, deadFront = 0.05f, shutS = 1.6f; int rockPieces = 0;
 // the NARROWS pieces' depths and switches (CaveRock.md: if a check fails, cut d to 0.1, then drop the piece; never move it)
-const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.1f, v2d = 0.1f, v3d = 0.1f, v5d = 0.1f; const bool v1On = true, v2On = false, v3On = true, v5On = true, v6On = true; const string groundPath = "Assets/Materials/Ground054_25.0x25.0.mat", floorHex = "#6A655E", boulderHex = "#6E6862";
+const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.1f, v2d = 0.1f, v3d = 0.1f, v5d = 0.1f; const float walkClear = 2.0f, jambTopD = 0.3f; const bool v1On = false, v2On = false, v3On = true, v5On = true, v6On = true; const string groundPath = "Assets/Materials/Ground054_25.0x25.0.mat", floorHex = "#3E3A36", boxHex = "#3E3A36", boulderHex = "#6E6862";
 {
     var voidMat = kit.Tinted("Places_CaveVoid", rocks, Hex("#101214"), UnityEngine.Vector2.one);
     var vs = kit.Group("VoidSplit", L, L.position, 0f); var ent2 = cave.Find("Entrance");
@@ -409,6 +409,9 @@ const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.1f, v2d = 0
     // the niche's faces all take the cave rock (CaveRock.md A: a void face read as flat dark wall, not a recess)
     var wen = L.Find("Niche/Wall_E_N"); if (wen != null) wen.GetComponent<UnityEngine.Renderer>().sharedMaterial = rockMat;
     var cf = cave.Find("Chamber/Floor"); if (cf != null) { var fm = kit.Tinted("Places_CaveFloor_Chamber", groundPath, Hex(floorHex), new UnityEngine.Vector2(floorTile, floorTile)); fm.SetTextureOffset("_BaseMap", new UnityEngine.Vector2(floorOffX, floorOffZ)); cf.GetComponent<UnityEngine.Renderer>().sharedMaterial = fm; } else notes.Add("no Chamber/Floor");
+    // the box falls back into shadow (Wren 2026-10-03, past the 8.27a cap): every Places_CaveRock_ material (8.17's walls, ceilings and floors,
+    // this recipe's boxes) and the chamber floor tinted boxHex, the boulders kept at boulderHex so the rock reads as the lighter forms; the void stays
+    foreach (var guid in UnityEditor.AssetDatabase.FindAssets("Places_CaveRock_ t:Material", new[] { "Assets/Materials/Places" })) { var m = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>(UnityEditor.AssetDatabase.GUIDToAssetPath(guid)); if (m == null || !m.name.StartsWith("Places_CaveRock_")) continue; m.SetColor("_BaseColor", Hex(boxHex)); UnityEditor.EditorUtility.SetDirty(m); }
     // ---- CaveRock.md draft 1 (Vesper, 2026-10-03; PLAN 8.27a): the rock is the wall. Each piece: the prefab turned to yaw, scaled so its mesh
     // bounds' largest side is S, then placed by its bounds: along the wall at its along coordinate, its centre at y (or its bottom at the given
     // bottom), and its face nearest the room d m inside the room from the wall face (a corner piece: from both faces). minBottom raises a
@@ -489,10 +492,13 @@ const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.1f, v2d = 0
     // C. V9: jambs, lintel, the dead end's rock face, the turn, the deeper passage's lid
     if (v1On) Wall("V1", "BigBoulders_2", 2.4f, 30f, 'x', 97.5f, -1f, 12.4f, -16.8f, N, v1d, fC);
     if (v2On) Wall("V2", "BigBoulders_4", 2.4f, 200f, 'x', 97.5f, -1f, 15.2f, -16.8f, N, v2d, fC);
+    // the jambs' tops (Wren 2026-10-03, past the cap: rock over the lintel and on the jambs' tops only, nothing under walkClear m in the doorway;
+    // V1 and V2 at full height closed it): the same rocks with their bottoms walkClear over the floor
+    Wall("V1T", "BigBoulders_2", 2.4f, 30f, 'x', 97.5f, -1f, 12.4f, N, fC + walkClear, jambTopD, fC); Wall("V2T", "BigBoulders_4", 2.4f, 200f, 'x', 97.5f, -1f, 15.2f, N, fC + walkClear, jambTopD, fC);
     if (v3On) Wall("V3", "Boulder_3", 3.0f, 90f, 'x', 97.5f, -1f, 13.8f, N, -16.0f, v3d, fC);
     var v4 = Wall("V4", "Boulder_5", 2.5f, 0f, 'z', 15.8f, -1f, 101.0f, fC + deepH * 0.5f, N, 0.15f, fC, float.NaN, false);
     if (v5On) Corner("V5", "BigBoulders_0", 2.0f, 120f, 101.6f, -1f, 13.2f, 1f, -17.0f, v5d, fC);
-    if (v6On) Ceil("V6", "Boulder_1", 3.0f, 0f, 99.5f, 13.8f, -16.05f, fC);
+    if (v6On) Ceil("V6", "Boulder_1", 3.0f, 0f, 99.5f, 13.8f, fC + walkClear, fC);   // walkClear over the floor (was 1.95; Wren 2026-10-03)
     // the dead end slab: renderer off, its face moved deadFront m in front of V4's nearest point (the rock is its visible reason; Examine stays)
     { var de = L.Find("Deeper/DeadEnd"); if (de != null && v4 != null) { var vb = Exact(v4); var db = BoxOf(de); de.position += V(0f, 0f, (vb.min.z - deadFront) - db.min.z); de.GetComponent<UnityEngine.Renderer>().enabled = false; } }
     // shut days: DeeperClosed's renderer off; a Boulder_2 child at shutS fills the opening, its face 0.1 behind the wall face, and toggles with it

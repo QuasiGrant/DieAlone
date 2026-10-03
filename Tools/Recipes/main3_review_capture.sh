@@ -18,6 +18,9 @@ R="$(pwd)/Tools/Recipes"
 AREA=""; AREARES=""; LANDRES=""; PIXRES=""; EXTRARES=""
 if [ "${1:-}" = "--area" ]; then AREA="${2:-}"; [ -n "$AREA" ] || { echo "FAIL --area needs an id"; exit 1; }; shift 2; fi
 if [ -n "$AREA" ]; then OUT="${1:-Docs/Captures/Main3Review_$AREA}"; else OUT="${1:-Docs/Captures/Main3Review}"; fi
+# an area run starts from an empty folder (Wren 2026-10-03: twice a stale frame from an earlier run sat beside a new one and was graded):
+# its own frames, sheets and Checks.md go, only in a folder under Docs/Captures/; nothing else in the folder is touched
+case "$OUT" in Docs/Captures/Main3Review_?*) if [ -n "$AREA" ] && [ -d "$OUT" ]; then find "$OUT" -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.png" -o -name "Checks.md" \) -delete; fi ;; esac
 unity status 2>/dev/null | grep -q "ready" || { echo "FAIL no Editor in state ready (unity status)"; exit 1; }
 unity command editor_status --result-only 2>/dev/null | grep -q '"playMode": "stopped"' || { echo "FAIL Editor is in Play mode or busy; wait for it to stop"; exit 1; }
 mkdir -p Temp
