@@ -202,3 +202,38 @@ Marlow. Scene as saved after Rook's hedge extension. The Hedge_Camp3Rim south ro
 3. Every landing walks off. The hedge needs to run further east, past x 77, and close the lip behind it.
 
 Marlow
+
+## Round 4 (Play retest, 2026-10-03)
+Marlow. Scene at 73977d5 (fills capped at the visible rock plus 0.05). Play from 10:26 to 10:49; I changed nothing.
+
+**FAIL against "0 landings on any fill": 8 fill landings in the sweep and 6 in the flood. 0 traps.**
+
+**The fill tops in Play:**
+
+| Fill | Top | Extent |
+|---|---|---|
+| TentRockGap | -2.05 | x 72.55 to 75.50, z 138.00 to 139.64 |
+| TentRockGapWest | -1.98 | x 71.40 to 72.96, z 138.00 to 141.80 |
+| BehindCanvases | -2.69 | x 68.00 to 70.20, z 144.40 to 147.50 |
+
+The saved file has the same values.
+
+1. **Sweep:** every 0.5 m over x 64 to 102, z 128 to 147.5; 12 headings, four modes; 97,104 runs.
+
+   | Landed on | Landings |
+   |---|---|
+   | TentRockGapWest | 4 |
+   | TentRockGap | 3 |
+   | BehindCanvases | 1 |
+   | Tent (accepted) | 2 |
+
+   All of them start from the two lip spots, (68.50, 3.69, 139.55) and (71.02, 3.60, 137.03). Examples:
+   - (68.50, 3.69, 139.55), heading 90, walk, lands at (71.89, -1.94, 139.82) on TentRockGapWest.
+   - (68.50, 3.69, 139.55), heading 0, sprint, lands at (70.09, -2.66, 145.11) on BehindCanvases.
+2. **Flood from outside the hedge:** seeds (64, 130), (70, 130), (76, 131) and (62, 140); 1,419 places.
+   - It still reaches both lip spots (within 0.04 m) round the hedge's east end.
+   - **From just east of that end** (76.4 to 76.6, z 132.6 to 134.8), sprints land on TentRockGap 5 times, TentRockGapWest once and the tent 4 times. The flood logs only its first 10 landings.
+   - Example: (76.60, 2.11, 133.85), heading 330, sprint, lands at (73.63, -2.01, 139.64) on TentRockGap.
+3. **What a landing looks like now:** each fill top is 0.05 m over the rock beside it, so a body there stands 5 cm over the drawn rock rather than in the air. Every landing walks off. By the stated pass it still fails; whether a stand 5 cm over visible rock counts is Wren's call.
+
+Marlow
