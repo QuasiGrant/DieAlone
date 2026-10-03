@@ -169,3 +169,36 @@ Same sweep as round 1: every 0.5 m over x 64 to 102, z 128 to 168, 12 headings, 
   - The step, blanket and bowl fail on size at 145 m, not on the rail.
 
 Marlow
+
+## Round 3 (Play retest, 2026-10-03)
+Marlow. Scene as saved after Rook's hedge extension. The Hedge_Camp3Rim south row now ends at the box x 74.59 to 75.81, z 131.72 to 133.68. Play from 08:37 to 08:59; changed nothing.
+
+**FAIL: 10 landings on the tent and both TentRockGap fills. 0 traps.**
+
+1. **The round 2 sweep, rerun** (every 0.5 m over x 64 to 102, z 128 to 147.5; 12 headings, four modes; 97,104 runs):
+
+   | Landed on | Round 2 | Round 3 |
+   |---|---|---|
+   | Tent box | 5 | **2** |
+   | TentRockGap | 7 | **3** |
+   | TentRockGapWest | 4 | **4** |
+   | BehindCanvases | 0 | **1** |
+
+   All 10 start from two lip spots between the hedge and the drop:
+   - (68.50, 3.69, 139.55) lands on TentRockGapWest, TentRockGap and BehindCanvases.
+   - (71.02, 3.60, 137.03) lands on TentRockGapWest, TentRockGap and the tent, e.g. heading 60, sprint, to (76.74, -2.45, 140.33).
+   - Nothing from x 74 to 75 lands any more.
+2. **The lip spots can be reached.** I flooded the rim from four seeds outside the hedge, (64, 130), (70, 130), (76, 131) and (62, 140): 1,420 places, walk, sprint and sprint-jump, 12 headings.
+   - The flood reaches both lip spots (within 0.04 m), by going round the hedge's east end.
+   - From just east of that end it also lands on the fills and the tent directly:
+
+   | Start | Heading | Mode | Lands on | At |
+   |---|---|---|---|---|
+   | (76.60, 2.11, 133.85) | 0 | sprint | tent box | (76.60, -2.45, 140.45) |
+   | (76.60, 2.11, 133.85) | 330 | sprint | TentRockGap | (73.63, -2.01, 139.64) |
+   | (76.59, 1.99, 134.77) | 300 | sprint | TentRockGapWest | (72.25, -1.94, 139.12) |
+
+   The flood logged its first 10 landings and stopped counting there.
+3. Every landing walks off. The hedge needs to run further east, past x 77, and close the lip behind it.
+
+Marlow
