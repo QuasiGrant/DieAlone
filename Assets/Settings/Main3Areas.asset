@@ -1417,10 +1417,10 @@ MonoBehaviour:
       look: {x: 300.3969, y: 9.8, z: 124.0202}
     - label: 'F10 THE WAY UP FROM THE BOATHOUSE LEG''S END: THE CAIRN AND LEG 1'
       eye: {x: 298.9, y: -999, z: 106.3}
-      look: {x: 286.5, y: 5, z: 113.5}
+      look: {x: 292, y: 5.2, z: 113}
     - label: 'F11 THE WAY UP FROM THE T LEG''S START: THE CAIRN AND LEG 1'
       eye: {x: 298.9, y: -999, z: 107.8}
-      look: {x: 286.5, y: 5, z: 113.5}
+      look: {x: 292, y: 5.2, z: 113}
     - label: F12 THE SCRAMBLE FROM ITS FOOT, UP THE LINE
       eye: {x: 288, y: -999, z: 113.2}
       look: {x: 288, y: 8, z: 121.5}

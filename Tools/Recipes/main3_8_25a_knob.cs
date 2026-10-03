@@ -398,11 +398,12 @@ var topG = kit.Group("Top", L, V(293f, kTop, 121f), 0f);
 // Vesper 3: the flat walk collider stays; its drawn top is covered with Boulder_0 to 5 at coverScale, laid flat (coverFlat of their height)
 // and sunk so none stands over coverRise m (no collider: under a step, so no lip to stop on), every coverStep m off the top's places, and
 // RubbleSparse_1 every rubbleStep m round the flat top's edge; two stones on the gully's walls by its head, headStoneRise m over the top,
-// coming no nearer the head than its clear circle. Pim (Wren 2): a cairn of six pale stones (about 2 m), the ground's grass and ferns cleared cairnClear m round it and the foot, 1.6 m south-west of the scramble's foot, where
-// both trail ends see it past the knob's south-west boulder,
-// so the way up reads from the trail end; one capsule collider (it stands over the walk-into check's 0.5 m).
+// coming no nearer the head than its clear circle. Pim (Wren 2): a cairn of six pale stones (about 1.85 m, its own pale stone), the grass
+// and ferns cleared cairnClear m round it and the foot; it stands in front of the knob's south face, 6 m east of the scramble's foot and
+// 1.2 m north of the straight lines from the trail ends to the foot (on such a line it stopped the walk), so from both trail ends it stands
+// against the dark face (Wren 2026-10-03); one capsule collider (it stands over the walk-into check's 0.5 m).
 const float coverStep = 1.6f, coverJitter = 0.4f, coverScale = 0.22f, coverFlat = 0.35f, coverRise = 0.06f, coverPad = 0.3f, rubbleStep = 2.5f, rubbleScale = 0.5f;
-const float headStoneScale = 0.3f, headStoneRise = 0.25f, headStoneOut = 0.35f, headStoneBackS = 0.4f, headStoneBackN = 1.8f, cairnX = 287.5f, cairnZ = 112.8f, cairnSink = 0.05f;
+const float headStoneScale = 0.3f, headStoneRise = 0.25f, headStoneOut = 0.35f, headStoneBackS = 0.4f, headStoneBackN = 1.8f, cairnX = 294.0f, cairnZ = 112.2f, cairnSink = 0.05f;
 const float fx0 = 289f, fx1 = 297.5f, fz0 = 117f, fz1 = 125.5f; float[] cairnW = { 1.0f, 0.85f, 0.7f, 0.55f, 0.42f, 0.3f }, cairnH = { 0.45f, 0.4f, 0.36f, 0.32f, 0.28f, 0.24f }; const float cairnClear = 1.5f, cairnWMax = 1.4f;   // each stone cairnH tall (a width-only scale left the flat stones 0.7 m in all), no wider than cairnWMax of cairnW
 var topKeeps = new (float x, float z, float r)[] { (292.0f, 122.0f, 0.9f), (291.3f, 123.2f, 0.6f), (297.0f, 121.2f, 0.5f), (291.0f, 120.6f, 1.0f), (293.0f, 123.6f, 0.6f), (289.4f, 117.4f, 0.5f), (295.6f, 120.3f, 0.6f) };
 float wG = gullyHalf; var dirK = P(head.x - land.x, head.z - land.z).normalized; var perpK = P(-dirK.y, dirK.x);
