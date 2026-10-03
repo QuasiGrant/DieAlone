@@ -310,7 +310,9 @@ var screenNotes = new System.Collections.Generic.List<string>();
     float TreadD(UnityEngine.Vector2 q) { float best = float.MaxValue; for (int i = 1; i < tread.Count; i++) { var a0 = tread[i - 1]; var ab = tread[i] - a0; float tt = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(q - a0, ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude)); best = UnityEngine.Mathf.Min(best, UnityEngine.Vector2.Distance(q, a0 + ab * tt)); } return best; }
     // each at the height NorthLayout 5a gives (TS1 about 16 m, TS2 about 9 m), its scale from the prefab's own height (RedFir8 at the
     // doc's 1.5 stood 13.35 m, under the doorway line's 13.4 to 14.1 m crossing)
-    foreach (var (n, path, tall, x, z) in new[] { ("TS1", "RedFir8", 16f, 169.1f, 260.9f), ("TS2", "RedFir5", 9f, 178.5f, 263.8f) })
+    // TS1b (Wren 2026-10-02, round 2 addendum): a backing fir behind TS1 on the cab side, on the doorway and stand lines to the cab where
+    // the tower showed through TS1's leaf gaps (the doorway's gap ray crosses z 254 at x 169.3, 11.7 m up)
+    foreach (var (n, path, tall, x, z) in new[] { ("TS1", "RedFir8", 16f, 169.1f, 260.9f), ("TS1b", "RedFir6", 22f, 169.0f, 254.0f), ("TS2", "RedFir5", 9f, 178.5f, 263.8f) })
     {
         var along = (P(cabP.x, cabP.z) - P(x, z)).normalized; UnityEngine.Vector2 at = P(x, z); bool ok = false; float used = 0f;
         foreach (var off in new[] { 0f, 0.1f, -0.1f, 0.2f, -0.2f, 0.3f, -0.3f, 0.4f, -0.4f, 0.5f, -0.5f })

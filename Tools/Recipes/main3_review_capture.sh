@@ -48,7 +48,9 @@ for i in $(seq 1 60); do unity command editor_status --result-only 2>/dev/null |
 # the GPU Resident Drawer off while the capture and the pixel check render (Wren 2026-10-02: Camera.Render into a texture skipped every
 # resident object, so the sheets showed bare terrain); in memory only, never saved, restored below
 URPA='((UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline)'
-GRD=$(unity command eval --code "var a = $URPA; var was = a.gpuResidentDrawerMode; a.gpuResidentDrawerMode = UnityEngine.Rendering.GPUResidentDrawerMode.Disabled; return was.ToString();" --result-only 2>/dev/null | sed -n 's/.*"result": "\([A-Za-z]*\)".*/\1/p')
+GRD=""; for try in $(seq 1 10); do GRD=$(unity command eval --code "var a = $URPA; var was = a.gpuResidentDrawerMode; a.gpuResidentDrawerMode = UnityEngine.Rendering.GPUResidentDrawerMode.Disabled; return was.ToString();" --result-only 2>/dev/null | sed -n 's/.*"result": "\([A-Za-z]*\)".*/\1/p'); [ -n "$GRD" ] && break; sleep 3; done   # the main thread can stay busy past the bridge's 5 s limit just after Play starts
+# a timed-out try may still have run and switched it off, so a later try reads "Disabled": take the mode saved in the asset then
+if [ "$GRD" = "Disabled" ]; then case "$(grep -o 'm_GPUResidentDrawerMode: [0-9]' Assets/Settings/PC_RPAsset.asset | grep -o '[0-9]$')" in 1) GRD=InstancedDrawing;; esac; fi
 [ -n "$GRD" ] || { echo "FAIL could not turn the GPU Resident Drawer off"; unity command editor_stop >/dev/null 2>&1; exit 1; }
 echo "GPU Resident Drawer was $GRD; off for the capture"
 rc=0

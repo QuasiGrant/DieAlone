@@ -34,6 +34,7 @@ public static class KeepOuts
         new Zone("N14 stovepipe line", new Vector2(192.7f, 276.6f), new Vector2(171.43f, 283.40f), 1.5f),
         new Zone("5a TS1 tower screen", new Vector2(169.1f, 260.9f), 1.5f),   // NorthLayout 5a (round 2): the screen firs keep their ground
         new Zone("5a TS2 tower screen", new Vector2(178.5f, 263.8f), 1.5f),
+        new Zone("TS1b tower screen", new Vector2(169.0f, 254.0f), 1.5f),   // Wren 2026-10-02: backing fir behind TS1
     };
 
     public static bool Contains(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return true; return false; }
