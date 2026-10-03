@@ -1195,9 +1195,9 @@ MonoBehaviour:
       objectPath: 
       hiddenBy: 
     - label: The knob
-      point: {x: 294, y: -999, z: 121.5}
-      height: 5
-      objectPath: Campsites/Camp_2/Layout825a/Core
+      point: {x: 294, y: 9, z: 121.5}
+      height: 1
+      objectPath: Campsites/Camp_2/Layout825a
       hiddenBy: 
     - label: Scramble foot
       point: {x: 288, y: -999, z: 114.5}
@@ -1368,7 +1368,7 @@ MonoBehaviour:
       approach: {x: 295.6, y: 9, z: 120.3}
       prompt: Examine
       facing: 180
-      pitchDown: 29
+      pitchDown: 31
     - label: R2 at the table
       path: Campsites/Camp_2/Layout825/CardTable/HisChair
       approach: {x: 298.5, y: -999, z: 98.7}
@@ -2335,9 +2335,9 @@ MonoBehaviour:
       objectPath: 
       hiddenBy: 
     - label: The knob
-      point: {x: 294, y: -999, z: 121.5}
-      height: 5
-      objectPath: Campsites/Camp_2/Layout825a/Core
+      point: {x: 294, y: 9, z: 121.5}
+      height: 1
+      objectPath: Campsites/Camp_2/Layout825a
       hiddenBy: 
     - label: Scramble foot
       point: {x: 288, y: -999, z: 114.5}

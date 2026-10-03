@@ -178,7 +178,7 @@ var ringT = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveSc
 UnityEngine.Vector3 Hd(UnityEngine.Vector3 eye, float heading, float lookY) { float r = heading * UnityEngine.Mathf.Deg2Rad; return V(eye.x + UnityEngine.Mathf.Sin(r) * 10f, lookY, eye.z + UnityEngine.Mathf.Cos(r) * 10f); }
 var c2Knob = V(294f, 7f, 121.5f);
 var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25a", title = "Camp 2", bounds = new[] { R(262f, 56f, 345f, 172f) }, warps = new[] { "Camp_2", "Camp_2_Top" },
-    places = new[] { P("Camp 2", 294.3f, G, 95.0f), PO("The knob", 294f, G, 121.5f, 5f, c2K + "Core"), P("Scramble foot", 288.0f, G, 114.5f), P("Scramble head", 291.0f, c2Top, 120.6f),
+    places = new[] { P("Camp 2", 294.3f, G, 95.0f), PO("The knob", 294f, c2Top, 121.5f, 1f, "Campsites/Camp_2/Layout825a"), P("Scramble foot", 288.0f, G, 114.5f), P("Scramble head", 291.0f, c2Top, 120.6f),
         PO("His chair on top", 292.0f, c2Top, 122.0f, 1.2f, c2T + "HisChair"), PO("Tent", 295.6f, c2Top, 118.3f, 1.5f, c2T + "Tent"), PO("Lamp", 297.0f, c2Top, 121.2f, 1.9f, c2T + "Lamp"),
         Hid(PO("Ring box", ringAt.x, ringAt.y, ringAt.z, 0.07f, c2T + "RingBox"), "inside the tent, seen from its door (Camp2Layout K3)"),
         PO("Payphone", 300f, G, 99f, 3.2f, "Campsites/Camp_2/Dressing/Payphone"), POb("Hook", "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset"), PO("Card table", 298.555f, G, 97.755f, 0.98f, c2L + "CardTable"),
@@ -186,7 +186,7 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25a", title = "C
         PO("Barrel", 291.4f, G, 101.4f, 1.19f, c2L + "Barrel"), PO("Phone pole", 272.8f, G, 72f, 8f, "PointsOfInterest/POI_Phone_pole"), PO("Food lockers", 317.2f, G, 136.0f, 1.2f, "PointsOfInterest/POI_Food_lockers"),
         PO("Start blaze", 304.4f, G, 106.4f, 1.8f, "Campsites/Camp_2/Dressing/StartBlaze"),
         POt("PS1", c2K + "PaperSpots/PaperSpot_K1", 0.3f), POt("PS2", c2K + "PaperSpots/PaperSpot_K2", 0.3f), POt("PS3", c2K + "PaperSpots/PaperSpot_K3", 0.3f) },
-    interactions = new[] { IA("hook", "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset", 299.65f, G, 99.05f), IAp("ring box", c2T + "RingBox", 295.6f, c2Top, 120.3f, "Examine", 180f, 29f),
+    interactions = new[] { IA("hook", "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset", 299.65f, G, 99.05f), IAp("ring box", c2T + "RingBox", 295.6f, c2Top, 120.3f, "Examine", 180f, 31f),
         IA("R2 at the table", c2L + "CardTable/HisChair", 298.5f, G, 98.7f), IAp("R2 on top", c2T + "HisChair", 291.3f, c2Top, 123.2f, "Talk", 120f), IA("barrel", c2L + "Barrel", 292.3f, G, 100.4f) },
     frames = new[] { FR("F1 HEADING 7: TABLE 13.2 M, BOOTH 14.7 M", V(297.2f, G, 84.6f), Hd(V(297.2f, 0f, 84.6f), 7f, 5.0f)),
         FR("F2 HEADING 337: THE BARREL 12.15 M", V(296.1f, G, 90.2f), Hd(V(296.1f, 0f, 90.2f), 337f, 4.8f)),

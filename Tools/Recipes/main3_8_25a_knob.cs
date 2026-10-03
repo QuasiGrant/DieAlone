@@ -75,20 +75,27 @@ float GullyY(UnityEngine.Vector2 q) => Lerp(land.y, head.y, Proj(q, A2, H2));
 int coreBoxes = 0, skinN = 0, stepN = 0;
 {
     var core = kit.Group("Core", L, L.position, 0f);
-    for (float z = kz0; z < kz1 - 1e-3f; z += cellStep)
+    // whole cells by count (the footprint, 10.2 x 11, is no whole number of cells: a float walk to kx1 stepped past it and never closed
+    // the row's run, so rows with no gully cell were left out); the last cell in each row and column is cut to the footprint
+    int nx = UnityEngine.Mathf.CeilToInt((kx1 - kx0) / cellStep - 1e-3f), nz = UnityEngine.Mathf.CeilToInt((kz1 - kz0) / cellStep - 1e-3f);
+    for (int iz = 0; iz < nz; iz++)
     {
-        float zc = z + cellStep * 0.5f, runX0 = float.NaN;
-        for (float x = kx0; x <= kx1 + 1e-3f; x += cellStep)
+        float z0c = kz0 + iz * cellStep, z1c = UnityEngine.Mathf.Min(kz1, z0c + cellStep), zc = (z0c + z1c) * 0.5f, dz = z1c - z0c, runX0 = float.NaN;
+        for (int ix = 0; ix <= nx; ix++)
         {
-            bool edge = x >= kx1 - 1e-3f; float xc = x + cellStep * 0.5f; bool gully = !edge && InGully(P(xc, zc));
-            if (!float.IsNaN(runX0) && (gully || edge)) { float gy = G((runX0 + x) * 0.5f, zc); Slab("Core", core, V((runX0 + x) * 0.5f, (gy - 0.3f + kTop) * 0.5f, zc), V(x - runX0, kTop - gy + 0.3f, cellStep), knobMat, true); coreBoxes++; runX0 = float.NaN; }
+            bool edge = ix == nx; float x = edge ? kx1 : kx0 + ix * cellStep, x1c = UnityEngine.Mathf.Min(kx1, x + cellStep), xc = (x + x1c) * 0.5f; bool gully = !edge && InGully(P(xc, zc));
+            if (!float.IsNaN(runX0) && (gully || edge)) { float gy = G((runX0 + x) * 0.5f, zc); Slab("Core", core, V((runX0 + x) * 0.5f, (gy - 0.3f + kTop) * 0.5f, zc), V(x - runX0, kTop - gy + 0.3f, dz), knobMat, true); coreBoxes++; runX0 = float.NaN; }
             if (edge) break;
-            if (gully) { float ry = GullyY(P(xc, zc)) - rampT; float gy = G(xc, zc); if (ry - gy > 0.05f) { Slab("GullyFill", core, V(xc, (gy - 0.3f + ry) * 0.5f, zc), V(cellStep, ry - gy + 0.3f, cellStep), knobMat, true); coreBoxes++; } continue; }
+            if (gully) { float ry = GullyY(P(xc, zc)) - rampT; float gy = G(xc, zc); if (ry - gy > 0.05f) { Slab("GullyFill", core, V(xc, (gy - 0.3f + ry) * 0.5f, zc), V(x1c - x, ry - gy + 0.3f, dz), knobMat, true); coreBoxes++; } continue; }
             if (float.IsNaN(runX0)) runX0 = x;
         }
     }
-    // the flat top: one thin slab collider over the top's own footprint (doc K1)
-    kit.Blocker("TopSlab", L, L.InverseTransformPoint(V((289f + 297.5f) * 0.5f, kTop - 0.05f, (117f + 125.5f) * 0.5f)), V(297.5f - 289f, 0.1f, 125.5f - 117f));
+    // the flat top: thin slab colliders over the top's own footprint (doc K1), cut round the gully west of the head (one slab over it all
+    // roofed the gully: the body stopped under it 2.4 m short of the head); the cut spans the corridor's corners in z
+    const float tx0 = 289f, tx1 = 297.5f, tz0 = 117f, tz1 = 125.5f, slabT = 0.1f;
+    var nrm = UnityEngine.Vector3.Cross(UnityEngine.Vector3.up, (head - land).normalized) * (rampW * 0.5f); float gz0 = UnityEngine.Mathf.Min(land.z - UnityEngine.Mathf.Abs(nrm.z), head.z - UnityEngine.Mathf.Abs(nrm.z)), gz1 = UnityEngine.Mathf.Max(land.z + UnityEngine.Mathf.Abs(nrm.z), head.z + UnityEngine.Mathf.Abs(nrm.z));
+    void TopSlab(string n, float x0, float x1, float z0, float z1) => kit.Blocker(n, L, L.InverseTransformPoint(V((x0 + x1) * 0.5f, kTop - slabT * 0.5f, (z0 + z1) * 0.5f)), V(x1 - x0, slabT, z1 - z0));
+    TopSlab("TopSlab", tx0, tx1, tz0, gz0); TopSlab("TopSlab_N", tx0, tx1, gz1, tz1); TopSlab("TopSlab_E", head.x, tx1, gz0, gz1);
     // the ramps: invisible boxes, rampT thick, their tops on the walking line
     void Ramp(string n, UnityEngine.Vector3 a, UnityEngine.Vector3 b) { var d = b - a; var mid = (a + b) * 0.5f; var rot = UnityEngine.Quaternion.LookRotation(d.normalized); var g = kit.Blocker(n, L, UnityEngine.Vector3.zero, V(rampW, rampT, d.magnitude)); g.transform.rotation = rot; g.transform.position = mid - (rot * UnityEngine.Vector3.up) * (rampT * 0.5f); }
     Ramp("Leg1Ramp", foot, landS); Ramp("Leg2Ramp", land, head);
@@ -100,16 +107,20 @@ int coreBoxes = 0, skinN = 0, stepN = 0;
         float zc = z + cellStep * 0.5f; float wy = zc >= landS.z ? land.y : Lerp(foot.y, landS.y, (zc - foot.z) / (landS.z - foot.z)); float top = wy - rampT, gy = G(foot.x, zc);
         if (top - gy > 0.05f) { Slab("Fill", fill, V(foot.x, (gy - 0.3f + top) * 0.5f, zc), V(rampW, top - gy + 0.3f, cellStep), knobMat, true); coreBoxes++; }
     }
-    // the steps: boulders along both legs, their tops stepUnder m under the walking line
+    // the steps: boulders along both legs, every LOD0 vertex stepUnder m or more under the walking line over it (a step set by its top alone
+    // stood over the ramp on its downhill side, and 8.18a's solid pass then gave it a hull the body stopped on)
     var steps = kit.Group("Steps", L, L.position, 0f); int k = 0;
-    void Step(UnityEngine.Vector3 at)
+    void Step(UnityEngine.Vector3 at, UnityEngine.Vector3 a, UnityEngine.Vector3 b)
     {
         var g = kit.Spawn(PlaceKit.BK + "Rocks/Boulder_" + (k % 6), steps); if (g == null) return; PlaceKit.StripColliders(g); g.transform.rotation = UnityEngine.Quaternion.Euler(0f, k * 67f, 0f); g.transform.localScale *= stepScale;
-        var b = Exact(g); g.transform.position += V(at.x - b.center.x, at.y - stepUnder - b.max.y, at.z - b.center.z); k++; stepN++;
+        var bx = Exact(g); g.transform.position += V(at.x - bx.center.x, 0f, at.z - bx.center.z);
+        var lodg = g.GetComponentInChildren<UnityEngine.LODGroup>(); var rs = lodg != null && lodg.GetLODs().Length > 0 ? lodg.GetLODs()[0].renderers : g.GetComponentsInChildren<UnityEngine.Renderer>(); float dy = float.MaxValue;
+        foreach (var r in rs) { var mf = r != null ? r.GetComponent<UnityEngine.MeshFilter>() : null; if (mf == null || mf.sharedMesh == null) continue; foreach (var v in mf.sharedMesh.vertices) { var w = r.transform.TransformPoint(v); float sy = Lerp(a.y, b.y, Proj(P(w.x, w.z), P(a.x, a.z), P(b.x, b.z))); dy = UnityEngine.Mathf.Min(dy, sy - stepUnder - w.y); } }
+        if (dy < float.MaxValue) g.transform.position += V(0f, dy, 0f); k++; stepN++;
     }
-    for (float s = stepPitch * 0.5f; s < UnityEngine.Vector3.Distance(foot, landS); s += stepPitch) Step(UnityEngine.Vector3.Lerp(foot, landS, s / UnityEngine.Vector3.Distance(foot, landS)));
-    Step(land);
-    for (float s = landHalf + stepPitch * 0.5f; s < UnityEngine.Vector3.Distance(land, head) - 0.3f; s += stepPitch) Step(UnityEngine.Vector3.Lerp(land, head, s / UnityEngine.Vector3.Distance(land, head)));
+    for (float s = stepPitch * 0.5f; s < UnityEngine.Vector3.Distance(foot, landS); s += stepPitch) Step(UnityEngine.Vector3.Lerp(foot, landS, s / UnityEngine.Vector3.Distance(foot, landS)), foot, landS);
+    Step(land, land, land + V(0f, 0f, landHalf));
+    for (float s = landHalf + stepPitch * 0.5f; s < UnityEngine.Vector3.Distance(land, head) - 0.3f; s += stepPitch) Step(UnityEngine.Vector3.Lerp(land, head, s / UnityEngine.Vector3.Distance(land, head)), land, head);
     // the skin: north, east and south faces, none on the west face or in the gully
     var skin = kit.Group("Skin", L, L.position, 0f); int si = 0;
     // clearUp: the walking space kept clear over the ramp and landing, from clearOver m over their surface (the body's height plus a margin)
