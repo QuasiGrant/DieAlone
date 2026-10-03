@@ -261,8 +261,8 @@ int wallBoxes = 0; string slabDeg = "";
     float boards = 0f; foreach (UnityEngine.Transform t in ruin) if (t.name.StartsWith("CITW_Floor")) boards = UnityEngine.Mathf.Max(boards, PlaceKit.LocalBounds(t.gameObject, ruin).max.y);
     kit.Blocker("FloorSlab", R, V(0f, -floorT * 0.5f, 0f), V(2f * floorX, floorT, 2f * floorZ));   // its top at the ruin's foot (doc: local 0), so the doorway step is the ground's fall only (0.11 with its top on the boards)
     // the report box on its post
-    Log(R, R.TransformPoint(V(postX, boards - 0.05f, postZ)), R.TransformPoint(V(postX, boards + postH, postZ)), postW);
     var post = kit.Blocker("ReportPost", R, V(postX, boards + postH * 0.5f, postZ), V(postW, postH, postW));
+    Log(post.transform, R.TransformPoint(V(postX, boards - 0.05f, postZ)), R.TransformPoint(V(postX, boards + postH, postZ)), postW);   // under the post, so 8.33's size check sees its own mesh
     var crate = kit.Fill(PlaceKit.CI + "Props/CITW_Crate", post.transform, V(0f, postH * 0.5f, 0f), V(0.3f, 0.3f, 0.4f)); if (crate != null) { crate.name = "ReportBox"; ExactBox(crate, null); }
     // the roof slab, high edge on the back half-wall tops, low edge on the floor; the ridge beam lying on it
     var low = V(slabX, boards, slabLowZ); var high = V(slabX, slabHighY, slabHighZ); var along = high - low; slabDeg = F(UnityEngine.Mathf.Atan2(along.y, -along.z) * UnityEngine.Mathf.Rad2Deg);

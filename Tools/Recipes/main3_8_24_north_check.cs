@@ -129,6 +129,10 @@ try
         var urp = (UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline; var grdWas = urp.gpuResidentDrawerMode; urp.gpuResidentDrawerMode = UnityEngine.Rendering.GPUResidentDrawerMode.Disabled;
         const int pxW = 1920, pxH = 988; var rt = new UnityEngine.RenderTexture(pxW, pxH, 24); var shot = new UnityEngine.Texture2D(pxW, pxH, UnityEngine.TextureFormat.RGB24, false);
         var rends = tower.GetComponentsInChildren<UnityEngine.Renderer>(); var warp = Root("DevWarps").transform.Find("North_Loop_Ruin");
+        var modes = new UnityEngine.Rendering.ShadowCastingMode[rends.Length]; for (int i = 0; i < rends.Length; i++) modes[i] = rends[i].shadowCastingMode;
+        // "off" keeps the tower's shadows (ShadowsOnly): its shadow on the ground is not the tower in view (the first LOOP-LEG run counted it)
+        void Off() { for (int i = 0; i < rends.Length; i++) if (modes[i] == UnityEngine.Rendering.ShadowCastingMode.Off) rends[i].forceRenderingOff = true; else rends[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly; }
+        void On() { for (int i = 0; i < rends.Length; i++) if (rends[i] != null) { rends[i].forceRenderingOff = false; rends[i].shadowCastingMode = modes[i]; } }
         var eyes = new System.Collections.Generic.List<(string, UnityEngine.Vector3)>();
         if (warp != null) eyes.Add(("the warp", V(warp.position.x, H(warp.position.x, warp.position.z) + eyeH, warp.position.z)));
         eyes.Add(("the doorway", V(169.88f, H(169.88f, 278.88f) + eyeH, 278.88f))); eyes.Add(("the report box stand", V(170.16f, H(170.16f, 277.32f) + eyeH, 277.32f)));
@@ -140,14 +144,14 @@ try
             UnityEngine.Color32[] Shoot(UnityEngine.Vector3 e) { cam.transform.position = e; cam.transform.rotation = UnityEngine.Quaternion.LookRotation(cab.position + V(0f, 1.5f, 0f) - e); cam.Render(); UnityEngine.RenderTexture.active = rt; shot.ReadPixels(new UnityEngine.Rect(0, 0, pxW, pxH), 0, 0); shot.Apply(false); UnityEngine.RenderTexture.active = null; return shot.GetPixels32(); }
             foreach (var (name, e) in eyes)
             {
-                Shoot(e); var on = Shoot(e); foreach (var r in rends) r.forceRenderingOff = true; var off = Shoot(e); foreach (var r in rends) r.forceRenderingOff = false;
+                Shoot(e); var on = Shoot(e); Off(); var off = Shoot(e); On();
                 int px = 0; for (int i = 0; i < on.Length; i++) if (System.Math.Abs(on[i].r - off[i].r) > set.pixelTolerance || System.Math.Abs(on[i].g - off[i].g) > set.pixelTolerance || System.Math.Abs(on[i].b - off[i].b) > set.pixelTolerance) px++;
                 if (px > 0) seenAt.Add(name + " " + px + " px"); worst = UnityEngine.Mathf.Max(worst, px);
             }
         }
         finally
         {
-            foreach (var r in rends) r.forceRenderingOff = false; cam.targetTexture = null; cam.transform.SetParent(camParent, false); cam.transform.localPosition = camPos; cam.transform.localRotation = camRot;
+            On(); cam.targetTexture = null; cam.transform.SetParent(camParent, false); cam.transform.localPosition = camPos; cam.transform.localRotation = camRot;
             urp.gpuResidentDrawerMode = grdWas; rt.Release(); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(shot);
         }
         Line(seenAt.Count == 0, "NO TOWER FROM THE RUIN: aimed at the cab from " + eyes.Count + " eyes (the warp, the doorway, the report box stand, the room's centre), tower pixels " + (seenAt.Count == 0 ? "0 from every eye" : string.Join(", ", seenAt)));

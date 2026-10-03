@@ -33,7 +33,10 @@ var sb = new System.Text.StringBuilder(); var temps = new System.Collections.Gen
 var tower = Root("Camp").transform.Find("Tower"); var cab = tower.Find("Cab");
 var urp = (UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline; var grdWas = urp.gpuResidentDrawerMode;
 var cam = UnityEngine.Camera.main; var camParent = cam.transform.parent; var camPos = cam.transform.localPosition; var camRot = cam.transform.localRotation;
-var towerRends = tower.GetComponentsInChildren<UnityEngine.Renderer>();
+var towerRends = tower.GetComponentsInChildren<UnityEngine.Renderer>(); var towerModes = new UnityEngine.Rendering.ShadowCastingMode[towerRends.Length]; for (int i = 0; i < towerRends.Length; i++) towerModes[i] = towerRends[i].shadowCastingMode;
+// "off" keeps the tower's shadows (ShadowsOnly), so only the tower itself, not its shadow on the ground, counts as seen
+void TowerOff() { for (int i = 0; i < towerRends.Length; i++) if (towerModes[i] == UnityEngine.Rendering.ShadowCastingMode.Off) towerRends[i].forceRenderingOff = true; else towerRends[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly; }
+void TowerOn() { for (int i = 0; i < towerRends.Length; i++) if (towerRends[i] != null) { towerRends[i].forceRenderingOff = false; towerRends[i].shadowCastingMode = towerModes[i]; } }
 try
 {
     if (part == "tower")
@@ -65,7 +68,7 @@ try
                         foreach (var h in UnityEngine.Physics.RaycastAll(eye, d.normalized, d.magnitude - 0.05f, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore)) { if (h.collider.transform.IsChildOf(tower) || h.collider.transform.IsChildOf(pc.transform)) continue; blocked = true; break; }
                         if (!blocked) clear++;
                     }
-                    Shoot(eye); var on = Shoot(eye); foreach (var r in towerRends) r.forceRenderingOff = true; var off = Shoot(eye); foreach (var r in towerRends) r.forceRenderingOff = false;
+                    Shoot(eye); var on = Shoot(eye); TowerOff(); var off = Shoot(eye); TowerOn();
                     int px = 0; for (int i = 0; i < on.Length; i++) if (System.Math.Abs(on[i].r - off[i].r) > set.pixelTolerance || System.Math.Abs(on[i].g - off[i].g) > set.pixelTolerance || System.Math.Abs(on[i].b - off[i].b) > set.pixelTolerance) px++;
                     line.Append(" " + clear + " | " + px + " |");
                 }
@@ -74,7 +77,7 @@ try
         }
         finally
         {
-            foreach (var r in towerRends) if (r != null) r.forceRenderingOff = false; cam.targetTexture = null; rt.Release(); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(shot);
+            TowerOn(); cam.targetTexture = null; rt.Release(); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(shot);
         }
         System.IO.File.AppendAllText(outFile, sb.ToString());
         return "TOWER rows m " + F1(mFrom) + " to " + F1(mTo) + " appended to " + outFile + "\n" + sb;
