@@ -6,15 +6,12 @@ Last updated 2026-09-30.
 
 ## Next step
 
-As of 2026-09-30, early morning:
-1. Done tonight: 8.9h responsive menus, 8.9i dev panel day and night, 8.9j valley build, 8.9k valley walk checks. The team checked each one.
-2. Waiting on Grant: 8.9f (the 13 slice captures, now pre-valley), 8.9g (look at Docs/Look/DayOneFix, Vesper passed), then 8.10 (walk the valley and say "right for now").
-3. Valley: Docs/Design/Valley.md rev 7 and Valley_map.svg. Ridges wrap the map; the Ward sits on a knob at 115, above the tower's 56; the fire burns behind the west ridge, always on, seen only from the ledge. The rev 16 scene is kept at tag main3-rev16.
-4. Not built yet: the day-one smoke sheet (spec in Valley.md 3.2), the flame and ledge dressing (Edges.md 6, Milestone 11), and a lock that keeps the Ward climb night-only.
-5. Queued after Milestone 8: WalkChecks 4 beyond the climb, the lake sweep (5), a trail walker with gravity and jump; Milestone 10 tasks from Docs/Process/Milestone10Draft.md.
-6. Open for Grant: Docs/Private/OpenForGrant.md.
-7. Plan shape: 10 one playable week, 11 dressing and look, 12 characters, 13 content format and dialogue, 14 events, 15 resident minigames, 16 homage references, 17 release; sound (9) after 11.
-
+As of 2026-10-02, 23:00:
+1. Milestone 8 by area. Ticked: 8.21 camp, 8.22 front, 8.23 lake, 8.24 Camp 1 and north, 8.33 collider size check.
+2. Designed and passed on paper, waiting to build in order: 8.25 Camp 2 (Rook building now), 8.26 Camp 3, 8.27 cave, 8.28 burn, 8.29 Ward path (WardPath.md draft 3 change list, incl. the night switch for IW2).
+3. Then 8.30 whole map, then 8.10 Grant walks.
+4. New order per area: Marlow surveys ground first, Sable draws from it, one paper check, build, gate (Rook capture, Marlow walk, Vesper, Pim, Sable), two rounds then Wren rules.
+5. Waiting on Grant (none blocking): story drafts with Quill (cave seat, branch bulbs, burn start and year, forage eaten or carried); the Wren calls in the log below.
 ## How we work now
 
 - Nine named agents in .claude/agents. Wren runs the team, settles disagreements, reports to Grant. Nothing is decided until it is a dated line in DECISIONS.md and Grant has said yes.
