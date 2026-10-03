@@ -114,7 +114,7 @@ UnityEngine.Bounds LocalBounds(UnityEngine.GameObject g)   // mesh renderers onl
 void Fit(UnityEngine.GameObject g)   // a fitted box where the player can touch it; pack prefabs ship without colliders
 {
     if (g.GetComponentInChildren<UnityEngine.Collider>() != null) return;
-    var b = LocalBounds(g); var bc = g.AddComponent<UnityEngine.BoxCollider>(); bc.center = b.center; bc.size = b.size;
+    PlaceKit.FitExact(g);   // 8.33: fitted in g's own axes from its meshes (world bounds grew on turned props)
 }
 // 8.16a (Marlow: players walked through trunks): a BK tree gets one capsule on its trunk, measured from its first LOD's bark: the
 // median reach of the bark vertices between trunkBandLow and trunkBandHigh of the bark's height, about their centre, up trunkShare of

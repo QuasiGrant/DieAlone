@@ -309,10 +309,14 @@ int deckCleared = 0; var deckList = new System.Collections.Generic.List<string>(
     foreach (var go in gone) if (go != null) { UnityEngine.Object.DestroyImmediate(go); deckCleared++; }
 }
 
+// 8.33 (Wren 2026-10-02): the clearing-edge rocks 8.9d placed (Camp/Dressing/Rocks) had boxes fitted to world bounds, which grow on a
+// turned rock (0.4 to 0.8 m out); each is refitted in its own axes from its meshes (PlaceKit.FitExact)
+int rocksRefit = 0;
+{ var rocksT = kit.Root("Camp") != null ? kit.Root("Camp").transform.Find("Dressing/Rocks") : null; if (rocksT != null) foreach (UnityEngine.Transform r in rocksT) if (PlaceKit.FitExact(r.gameObject) != null) rocksRefit++; }
 UnityEngine.Physics.SyncTransforms();
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);
 
-return "saved=" + saved + " | interior: bunk, stove, wood box, counter, shelf, desk, washstand placed | porch railings removed " + rails + " | privy " + (outhouse != null ? "built" : "MISSING") +
+return "saved=" + saved + " | rocks refit " + rocksRefit + " | interior: bunk, stove, wood box, counter, shelf, desk, washstand placed | porch railings removed " + rails + " | privy " + (outhouse != null ? "built" : "MISSING") +
     " | rune post at (" + (post != null ? F(post.position.x) + ", " + F(post.position.z) : "-") + "), top " + F(postTop) + ", screen " + (screen != null ? "top " + F(PlaceKit.MeshBounds(screen).max.y) : "MISSING") +
     " | edge firs " + edgeFirN + ", saplings " + edgeSapN + " (" + edgeSkip + " spots skipped) | worn path cells " + wornCells + " | fire pit cold (" + coldOff + " switched off), seats moved out " + seatsMoved + " | forest pieces removed " + removed + " | deck lines cleared of " + deckCleared + (deckList.Count > 0 ? " (" + string.Join(", ", deckList) + ")" : "") + " | " + (listed.Count == 0 ? "no other colliders on the spots" : string.Join("; ", listed)) + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | missing: " + (kit.Missing.Count == 0 ? "none" : string.Join(", ", kit.Missing));

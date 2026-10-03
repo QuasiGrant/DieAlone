@@ -21,8 +21,8 @@ if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 string step = "day";
 // area (main3_review_capture.sh --area <id>; Assets/Settings/Main3Areas.asset): only frames that stand in the area's bounds, plus the
 // compass views and Deck_<id>.jpg (the deck toward each target of the area's deck list); "" captures the whole map
-// Every found and deck frame of an area is also written alone at full size (1920 x 988) as Found_<id>_<nn>_<label>.jpg and
-// Deck_<id>_<nn>_<label>.jpg (8.24 gate, Wren).
+// Every area frame, found frame and deck frame of an area is also written alone at full size (1920 x 988) as AreaFrames_<id>_<nn>_..,
+// Found_<id>_<nn>_.. and Deck_<id>_<nn>_..jpg, each with a magenta ring on its target drawn over the picture (8.24 gate, Wren).
 string area = "";
 Main3AreaSet.Area areaSel = null;
 if (area != "") { var areaSet = Main3AreaSet.Load(); areaSel = areaSet != null ? areaSet.Find(area) : null; if (areaSel == null) return "no area " + area + " in Assets/Settings/Main3Areas.asset"; }
@@ -97,6 +97,21 @@ UnityEngine.Color32[] Capture()   // full size, bottom row first
     return shot.GetPixels32();
 }
 UnityEngine.Color32[] Render(int div) => Shrink(Capture(), div);
+// a magenta ring on a frame at a world point (8.24 gate round 2, Wren: the SS1 and SS2 balls sat inside their own meshes and the deck's
+// spar top had no mark): drawn over the picture after the render, so nothing hides it; a point off the frame is ringed at the nearest
+// edge. Call right after the frame's Pose, on its full-size pixels.
+void MarkAt(UnityEngine.Color32[] px, UnityEngine.Vector3 world)
+{
+    cam.targetTexture = rt; var s = cam.WorldToScreenPoint(world); cam.targetTexture = null;
+    if (s.z < 0f) { s.x = shotW - s.x; s.y = 0f; }
+    int cx = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(s.x), 0, shotW - 1), cy = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(s.y), 0, shotH - 1);
+    const int ringR = 22, ringT = 3; var mag = new UnityEngine.Color32(255, 0, 255, 255);
+    for (int y = cy - ringR - ringT; y <= cy + ringR + ringT; y++) for (int x = cx - ringR - ringT; x <= cx + ringR + ringT; x++)
+    {
+        if (x < 0 || y < 0 || x >= shotW || y >= shotH) continue; float d = UnityEngine.Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy));
+        if (UnityEngine.Mathf.Abs(d - ringR) <= ringT * 0.5f || (d <= 2f)) px[y * shotW + x] = mag;
+    }
+}
 UnityEngine.Color32[] Shrink(UnityEngine.Color32[] src, int div)
 {
     int w = shotW / div, h = shotH / div; var dst = new UnityEngine.Color32[w * h]; int n = div * div;
@@ -156,7 +171,7 @@ void SaveSingle(string file, UnityEngine.Color32[] px)
     System.IO.File.WriteAllBytes(System.IO.Path.Combine(outDir, safe.ToString()), tex.EncodeToJPG(jpgQuality)); UnityEngine.Object.DestroyImmediate(tex); singles++;
 }
 // one frame spec: camera, look-at, label
-void Sheet(string file, string title, System.Collections.Generic.List<(UnityEngine.Vector3 cam, UnityEngine.Vector3 look, string label)> frames, int div, int cols, string singlePrefix = null)
+void Sheet(string file, string title, System.Collections.Generic.List<(UnityEngine.Vector3 cam, UnityEngine.Vector3 look, string label)> frames, int div, int cols, string singlePrefix = null, bool markLook = false)
 {
     if (areaSel != null && !file.StartsWith("Deck_") && !file.StartsWith("AreaFrames_") && !file.StartsWith("Found_") && file != "Compass_Views.jpg") { frames = frames.FindAll(f => areaSel.Contains(f.cam)); if (frames.Count == 0) return; }
     int tw = shotW / div, th = shotH / div; int rows = (frames.Count + cols - 1) / cols;
@@ -165,7 +180,7 @@ void Sheet(string file, string title, System.Collections.Generic.List<(UnityEngi
     for (int i = 0; i < frames.Count; i++)
     {
         int x = gap + (i % cols) * (tw + gap), y = headH + (i / cols) * (labelH + th + gap);
-        Pose(frames[i].cam, frames[i].look); var full = Capture(); Blit(Shrink(full, div), tw, th, x, y + labelH); Text(x + 2, y + 4, frames[i].label, 2, white);
+        Pose(frames[i].cam, frames[i].look); var full = Capture(); if (markLook) MarkAt(full, frames[i].look); Blit(Shrink(full, div), tw, th, x, y + labelH); Text(x + 2, y + 4, frames[i].label, 2, white);
         if (singlePrefix != null) SaveSingle(singlePrefix + (i + 1).ToString("00") + "_" + frames[i].label + ".jpg", full);
     }
     SaveCanvas(file, title, frames.Count);
@@ -548,7 +563,7 @@ try
             UnityEngine.Vector3 Walkway(UnityEngine.Vector3 at) { var d = new UnityEngine.Vector3(at.x - deckEye.x, 0f, at.z - deckEye.z).normalized; return deckEye + d * compassOut; }   // on the walkway on the target's side, outside the cab (as the compass views)
             foreach (var t in areaSel.deckSee) deckFrames.Add((Walkway(Aim(t.point)), Aim(t.point), "MUST SEE: " + t.label.ToUpperInvariant()));
             foreach (var t in areaSel.deckHide) deckFrames.Add((Walkway(Aim(t.point)), Aim(t.point), "MUST HIDE: " + t.label.ToUpperInvariant()));
-            Sheet("Deck_" + areaSel.id + ".jpg", "From the tower deck toward " + areaSel.title + " (" + areaSel.task + "): every target of its deck list", deckFrames, pairDiv, 3, "Deck_" + areaSel.id + "_");
+            Sheet("Deck_" + areaSel.id + ".jpg", "From the tower deck toward " + areaSel.title + " (" + areaSel.task + "): every target of its deck list", deckFrames, pairDiv, 3, "Deck_" + areaSel.id + "_", true);
         }
         // the area's own frames, full size (8.21 gate: the wake frame, the woodpile and stump), each labelled with the first hit of a 2 m
         // eye ray straight ahead (Pim: none within 2 m at the wake)
@@ -562,7 +577,7 @@ try
                 string ray = UnityEngine.Physics.Raycast(e, (lk - e).normalized, out var eh, 2f, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore) ? eh.collider.name + " at " + eh.distance.ToString("F1", inv) + " M" : "NONE WITHIN 2 M";
                 af.Add((e, lk, fr.label + ", EYE RAY: " + ray.ToUpperInvariant()));   // the sheet font has no ; or | glyph
             }
-            Sheet("AreaFrames_" + areaSel.id + ".jpg", areaSel.title + " (" + areaSel.task + "): the area's own frames, full size", af, 1, 1);
+            Sheet("AreaFrames_" + areaSel.id + ".jpg", areaSel.title + " (" + areaSel.task + "): the area's own frames, full size", af, 1, 1, "AreaFrames_" + areaSel.id + "_", true);
         }
         // Pim's found rule: one frame per place from the trail point main3_area_check.cs found it from (Temp/area_found_<id>.txt; the area
         // capture runs that check first)
@@ -587,7 +602,7 @@ try
                     var mark = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere); UnityEngine.Object.DestroyImmediate(mark.GetComponent<UnityEngine.Collider>());
                     mark.GetComponent<UnityEngine.Renderer>().sharedMaterial = markMat; mark.transform.position = ff[i].Item2;
                     mark.transform.localScale = UnityEngine.Vector3.one * UnityEngine.Mathf.Max(markMin, UnityEngine.Vector3.Distance(ff[i].Item1, ff[i].Item2) * markSize);
-                    int y = headH + i * (labelH + th + gap); Pose(ff[i].Item1, ff[i].Item2); var full = Render(1); Blit(full, tw, th, gap, y + labelH); Text(gap + 2, y + 4, ff[i].Item3, 2, white);
+                    int y = headH + i * (labelH + th + gap); Pose(ff[i].Item1, ff[i].Item2); var full = Render(1); MarkAt(full, ff[i].Item2); Blit(full, tw, th, gap, y + labelH); Text(gap + 2, y + 4, ff[i].Item3, 2, white);
                     SaveSingle("Found_" + areaSel.id + "_" + (i + 1).ToString("00") + "_" + ff[i].Item3 + ".jpg", full);
                     UnityEngine.Object.DestroyImmediate(mark);
                 }

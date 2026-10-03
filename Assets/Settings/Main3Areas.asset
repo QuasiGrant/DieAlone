@@ -59,6 +59,8 @@ MonoBehaviour:
   - Lake/Boathouse/Layout823/SlipRails
   colliderSlack: 0.3
   colliderShare: 0.25
+  colliderSkipRoots:
+  - Ground815/Pockets
   reachRadius: 4
   reachRise: 3
   foundReach: 30

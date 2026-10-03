@@ -4,7 +4,8 @@
 //   1.85) where the capsule fits clear of every collider; the doorway step (the ground outside against the floor slab's top).
 // REPORT BOX: the interactor's ray (its mask, interactReach) from the stand (170.16, 277.32) toward the box meets the box or its post.
 // FORAGE: along 5 m of tread centre beside the patch, how many points get the "Forage" prompt looking at a shrub 0 to 30 degrees down.
-// NO TOWER FROM THE RUIN: from the warp, the doorway, the report box stand and the room's centre, 0 tower pixels aimed at the cab.
+// NO TOWER FROM THE RUIN: from the doorway, the report box stand and the room's centre (NorthLayout 5a), 0 tower pixels aimed at the cab.
+// SKY GAP (N15): no fir or pine under 25 m tall within 8 m of the ruin's centre.
 // N14 STOVEPIPE: from the eye (192.7, G+1.6, 276.6) to the pipe's top, past every drawn mesh (temporary exact colliders, as 8.22): the
 //   first thing met is the pipe.
 // WALKS (doc 4): Jg to Camp 1 and Camp 1 to J along their trails; the side path from its mouth in at the doorway to the bunk, the
@@ -119,7 +120,7 @@ try
             foreach (var t in temps) if (t != null) UnityEngine.Object.DestroyImmediate(t); temps.Clear(); UnityEngine.Physics.SyncTransforms();
         }
     }
-    // ---- NO TOWER FROM THE RUIN (NorthLayout 5.5; Sable 824 gate 4.2): from the North_Loop_Ruin warp, the doorway, the report box stand
+    // ---- NO TOWER FROM THE RUIN (NorthLayout 5.5; Sable 824 gate 4.2): from the doorway, the report box stand
     // and the room's centre, eye 1.6 m, the game camera aimed at the tower cab renders the scene twice, with and without Camp/Tower's
     // renderers; any pixel changed by more than the pixel tolerance is tower in view. The bar is 0 px from every eye. The GPU Resident
     // Drawer is off for the renders (Camera.Render skips its objects) and restored after.
@@ -128,13 +129,13 @@ try
         var cam = UnityEngine.Camera.main; var camParent = cam.transform.parent; var camPos = cam.transform.localPosition; var camRot = cam.transform.localRotation;
         var urp = (UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline; var grdWas = urp.gpuResidentDrawerMode; urp.gpuResidentDrawerMode = UnityEngine.Rendering.GPUResidentDrawerMode.Disabled;
         const int pxW = 1920, pxH = 988; var rt = new UnityEngine.RenderTexture(pxW, pxH, 24); var shot = new UnityEngine.Texture2D(pxW, pxH, UnityEngine.TextureFormat.RGB24, false);
-        var rends = tower.GetComponentsInChildren<UnityEngine.Renderer>(); var warp = Root("DevWarps").transform.Find("North_Loop_Ruin");
+        var rends = tower.GetComponentsInChildren<UnityEngine.Renderer>();
         var modes = new UnityEngine.Rendering.ShadowCastingMode[rends.Length]; for (int i = 0; i < rends.Length; i++) modes[i] = rends[i].shadowCastingMode;
         // "off" keeps the tower's shadows (ShadowsOnly): its shadow on the ground is not the tower in view (the first LOOP-LEG run counted it)
         void Off() { for (int i = 0; i < rends.Length; i++) if (modes[i] == UnityEngine.Rendering.ShadowCastingMode.Off) rends[i].forceRenderingOff = true; else rends[i].shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly; }
         void On() { for (int i = 0; i < rends.Length; i++) if (rends[i] != null) { rends[i].forceRenderingOff = false; rends[i].shadowCastingMode = modes[i]; } }
         var eyes = new System.Collections.Generic.List<(string, UnityEngine.Vector3)>();
-        if (warp != null) eyes.Add(("the warp", V(warp.position.x, H(warp.position.x, warp.position.z) + eyeH, warp.position.z)));
+        // the North_Loop_Ruin warp is left out: a dev warp on the loop, which may see the tower (NorthLayout 5a.1)
         eyes.Add(("the doorway", V(169.88f, H(169.88f, 278.88f) + eyeH, 278.88f))); eyes.Add(("the report box stand", V(170.16f, H(170.16f, 277.32f) + eyeH, 277.32f)));
         var rc = ruin.position; eyes.Add(("the room's centre", V(rc.x, slab.bounds.max.y + eyeH, rc.z)));
         var seenAt = new System.Collections.Generic.List<string>(); int worst = 0;
@@ -154,7 +155,19 @@ try
             On(); cam.targetTexture = null; cam.transform.SetParent(camParent, false); cam.transform.localPosition = camPos; cam.transform.localRotation = camRot;
             urp.gpuResidentDrawerMode = grdWas; rt.Release(); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(shot);
         }
-        Line(seenAt.Count == 0, "NO TOWER FROM THE RUIN: aimed at the cab from " + eyes.Count + " eyes (the warp, the doorway, the report box stand, the room's centre), tower pixels " + (seenAt.Count == 0 ? "0 from every eye" : string.Join(", ", seenAt)));
+        Line(seenAt.Count == 0, "NO TOWER FROM THE RUIN: aimed at the cab from " + eyes.Count + " eyes (the doorway, the report box stand, the room's centre), tower pixels " + (seenAt.Count == 0 ? "0 from every eye" : string.Join(", ", seenAt)));
+    }
+    // ---- SKY GAP (N15): no fir or pine under skyTop m tall standing within skyR m of the ruin's centre (giants stay)
+    {
+        const float skyR = 8f, skyTop = 25f; var near = new System.Collections.Generic.List<string>(); var rc = ruin.position;
+        foreach (var root in new[] { Root("Forest"), Root("SliceLook"), Root("Places") }) if (root != null)
+            foreach (var t in root.GetComponentsInChildren<UnityEngine.Transform>())
+            {
+                if (!(t.name.StartsWith("RedFir") || t.name.StartsWith("RedPine")) || !UnityEditor.PrefabUtility.IsOutermostPrefabInstanceRoot(t.gameObject)) continue;
+                if (new UnityEngine.Vector2(t.position.x - rc.x, t.position.z - rc.z).magnitude > skyR) continue;
+                float top = PlaceKit.MeshBounds(t.gameObject).max.y - H(t.position.x, t.position.z); if (top < skyTop) near.Add(WalkIns.PathOf(t) + " " + F1(top) + " m");
+            }
+        Line(near.Count == 0, "SKY GAP: firs and pines under " + F1(skyTop) + " m within " + F1(skyR) + " m of the ruin: " + (near.Count == 0 ? "none" : string.Join(", ", near)));
     }
     // ---- WALKS
     {

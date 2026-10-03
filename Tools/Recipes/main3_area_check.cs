@@ -24,7 +24,8 @@
 //   An area with no deck list prints "no deck list" and does
 //   not pass.
 // COLLIDER SIZE (8.33): every box, sphere or capsule collider over a drawn mesh in the bounds whose faces stand past the mesh by more
-//   than colliderSlack m or colliderShare of it (ColliderFit) fails; invisible blockers and Ignore Raycast stops are not measured.
+//   than colliderSlack m or colliderShare of it (ColliderFit) fails; invisible blockers, Ignore Raycast stops and colliderSkipRoots (the
+//   8.18a pocket fills, by design) are not measured.
 // INVENTORY: the area's items, expected and found; a zero fails.
 string area = "camp";
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
@@ -178,6 +179,7 @@ try
         foreach (var c in UnityEngine.Object.FindObjectsByType<UnityEngine.Collider>(UnityEngine.FindObjectsSortMode.None))
         {
             if (!c.enabled || c.isTrigger || c.gameObject.layer == 2 || !c.gameObject.activeInHierarchy || c.transform.IsChildOf(pc.transform) || !A.Contains(c.bounds.center)) continue;
+            if (set.colliderSkipRoots != null) { var cpath = WalkIns.PathOf(c.transform); bool skipIt = false; foreach (var sr in set.colliderSkipRoots) if (cpath.StartsWith(sr)) skipIt = true; if (skipIt) continue; }   // pocket fills, by design
             var r = ColliderFit.Measure(c, set.colliderSlack, set.colliderShare); if (!r.measured) continue; measured++;
             if (r.inflated) big.Add(WalkIns.PathOf(c.transform) + " (" + c.GetType().Name + " " + F1(r.colliderSize.x) + " x " + F1(r.colliderSize.y) + " x " + F1(r.colliderSize.z) + " over a mesh of " + F1(r.meshSize.x) + " x " + F1(r.meshSize.y) + " x " + F1(r.meshSize.z) + ", a face " + F1(r.excess) + " m out)");
         }

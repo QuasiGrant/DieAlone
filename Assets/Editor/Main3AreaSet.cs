@@ -187,6 +187,8 @@ public class Main3AreaSet : ScriptableObject
     [Header("Collider size (PLAN 8.33, ColliderFit)")]
     [Tooltip("A collider face may stand this many metres past its drawn mesh, or colliderShare of the mesh size on that axis, whichever is larger, before it counts as inflated (the turned-prop boxes: the Camp 1 tent stood 1.46 m out).")]
     public float colliderSlack = 0.3f, colliderShare = 0.25f;
+    [Tooltip("Colliders under these scene paths are not measured: the pocket fills of 8.18a are boxes that fill a pocket on purpose, the rock only their look (Wren 2026-10-02).")]
+    public string[] colliderSkipRoots = { "Ground815/Pockets" };
 
     [Header("Reach and found (Pim, Wren 2026-10-02)")]
     [Tooltip("A place counts as reached when a flood place lies within this many metres (xz) of its point.")] public float reachRadius = 4f;

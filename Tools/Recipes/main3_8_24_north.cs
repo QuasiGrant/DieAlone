@@ -30,6 +30,7 @@
 // WARPS (doc 5.1): Camp_1 (268, 226) facing 49, North_Loop_Ruin (165.8, 267.7) facing 25.
 // Round 2 (Wren's 8.24 gate list): forage C's ring moved to the tread edge with bare litter round it, SS1's root hollow, SS2 at 0.5, the
 // lumber log's and kid's table's boxes fitted in their own axes (8.33), the white rubble at Camp 1 to J m 184 to 186 gone.
+// Addendum (NorthLayout 5a): the tower screen firs TS1 and TS2 under Places/NorthLoop/TowerScreen; CS_Stone_8 off the tread at loop m 110.5.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -52,21 +53,7 @@ UnityEngine.GameObject Log(UnityEngine.Transform parent, UnityEngine.Vector3 a, 
 }
 // a box collider on g fitted to its meshes in g's own axes, from each mesh's own bounds (PlaceKit.FitCollider measures world boxes and
 // grows them when g is turned: the tent's 7.32 m box, the trunk's 1.58 m one); renderers whose name holds skipName are left out
-UnityEngine.BoxCollider ExactBox(UnityEngine.GameObject g, string skipName)
-{
-    foreach (var c in g.GetComponents<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c);
-    bool any = false; var b = new UnityEngine.Bounds();
-    foreach (var mf in g.GetComponentsInChildren<UnityEngine.MeshFilter>())
-    {
-        if (mf.sharedMesh == null || (skipName != null && mf.name.Contains(skipName))) continue; var mb = mf.sharedMesh.bounds;
-        for (int i = 0; i < 8; i++)
-        {
-            var w = mf.transform.TransformPoint(V((i & 1) == 0 ? mb.min.x : mb.max.x, (i & 2) == 0 ? mb.min.y : mb.max.y, (i & 4) == 0 ? mb.min.z : mb.max.z)); var l = g.transform.InverseTransformPoint(w);
-            if (!any) { b = new UnityEngine.Bounds(l, UnityEngine.Vector3.zero); any = true; } else b.Encapsulate(l);
-        }
-    }
-    if (!any) return null; var bc = g.AddComponent<UnityEngine.BoxCollider>(); bc.center = b.center; bc.size = b.size; return bc;
-}
+UnityEngine.BoxCollider ExactBox(UnityEngine.GameObject g, string skipName) => PlaceKit.FitExact(g, skipName);
 // the ground under a point (terrain)
 float G(float x, float z) => kit.H(x, z);
 
@@ -309,6 +296,45 @@ foreach (var path in new[] { "Lumber/CS_Log_Large_Long", "KidTable/CS_Table_Smal
     else notes.Add("no Forest/GapClumps or Camp 1 to J m 182 to 188");
 }
 
+// ================= addendum (NorthLayout.md 5a, Sable 2026-10-02): the tower screens and the trail stone =================
+// TS1 and TS2, two firs under Places/NorthLoop/TowerScreen (outside Forest, so 8.19 never rebuilds them; keep-outs r 1.5 in KeepOuts):
+// TS1 cuts the doorway's and the report stand's lines to the cab and the loop's at m 130 to 132, TS2 the loop's at m 120. Each trunk
+// keeps screenGap m from every other collider and from the tread edge; when it does not, it moves up to screenNudge m along its own line
+// to the cab (0.1 m steps). Each gets 8.16a's trunk capsule. Marlow's LOOP-LEG stone (Ground815/TrailEdges CS_Stone_8, 0.11 m onto the
+// tread at loop m 110.5) moves out to stoneGap m past the tread edge.
+const float screenGap = 1.2f, screenNudge = 0.5f, screenSink = 0.3f, stoneGap = 0.3f;
+var screenNotes = new System.Collections.Generic.List<string>();
+{
+    var ts = kit.Group("TowerScreen", loop, V(174f, 0f, 262f), 0f); var cabP = kit.Root("Camp").transform.Find("Tower/Cab").position;
+    var legC = kit.Root("Trails").transform.Find("Camp 1 to J"); var tread = new System.Collections.Generic.List<UnityEngine.Vector2>(); if (legC != null) foreach (UnityEngine.Transform p in legC) tread.Add(P(p.position.x, p.position.z));
+    float TreadD(UnityEngine.Vector2 q) { float best = float.MaxValue; for (int i = 1; i < tread.Count; i++) { var a0 = tread[i - 1]; var ab = tread[i] - a0; float tt = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(q - a0, ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude)); best = UnityEngine.Mathf.Min(best, UnityEngine.Vector2.Distance(q, a0 + ab * tt)); } return best; }
+    foreach (var (n, path, scale, x, z) in new[] { ("TS1", "RedFir8", 1.5f, 169.1f, 260.9f), ("TS2", "RedFir5", 1.0f, 178.5f, 263.8f) })
+    {
+        var along = (P(cabP.x, cabP.z) - P(x, z)).normalized; UnityEngine.Vector2 at = P(x, z); bool ok = false; float used = 0f;
+        foreach (var off in new[] { 0f, 0.1f, -0.1f, 0.2f, -0.2f, 0.3f, -0.3f, 0.4f, -0.4f, 0.5f, -0.5f })
+        {
+            if (UnityEngine.Mathf.Abs(off) > screenNudge + 1e-4f) continue; var q = P(x, z) + along * off; float gy = G(q.x, q.y); bool clear = TreadD(q) >= treadHalf + screenGap;
+            foreach (var c in UnityEngine.Physics.OverlapCapsule(V(q.x, gy + 0.3f, q.y), V(q.x, gy + 3f, q.y), screenGap, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) if (!(c is UnityEngine.TerrainCollider) && c.gameObject.layer != 2) clear = false;
+            if (clear) { at = q; used = off; ok = true; break; }
+        }
+        if (!ok) screenNotes.Add(n + " has no spot within " + F(screenNudge) + " m with " + F(screenGap) + " m clear; placed as drawn");
+        var g = kit.Spawn(PlaceKit.BK + "Trees/" + path, ts); if (g == null) continue; PlaceKit.StripColliders(g); g.name = n;
+        g.transform.SetPositionAndRotation(V(at.x, G(at.x, at.y) - screenSink * scale, at.y), UnityEngine.Quaternion.Euler(0f, n == "TS1" ? 40f : 160f, 0f)); g.transform.localScale = UnityEngine.Vector3.one * scale;
+        PlaceKit.PackTrunkCapsule(g, 0.01f, 0.06f, 0.4f, 8, 0.3f); UnityEngine.Physics.SyncTransforms();
+        screenNotes.Add(n + " at (" + F(at.x) + ", " + F(at.y) + "), nudged " + F(used) + " m, top " + F(PlaceKit.MeshBounds(g).max.y - G(at.x, at.y)) + " m");
+    }
+    // the stone at loop m 110.5
+    var edges = kit.Root("Ground815") != null ? kit.Root("Ground815").transform.Find("TrailEdges") : null; float m = 0f; UnityEngine.Vector3? prev = null; UnityEngine.Vector2 at110 = default, dir110 = default; bool have = false;
+    if (legC != null) foreach (UnityEngine.Transform p in legC) { if (prev.HasValue) { float s = UnityEngine.Vector3.Distance(prev.Value, p.position); if (!have && m + s >= 110.5f) { var a = P(prev.Value.x, prev.Value.z); var b = P(p.position.x, p.position.z); at110 = UnityEngine.Vector2.Lerp(a, b, (110.5f - m) / UnityEngine.Mathf.Max(1e-4f, s)); dir110 = (b - a).normalized; have = true; } m += s; } prev = p.position; }
+    if (edges != null && have) foreach (UnityEngine.Transform t in edges)
+    {
+        if (!t.name.StartsWith("CS_Stone_8") || UnityEngine.Vector2.Distance(P(t.position.x, t.position.z), at110) > 3f) continue; var c = t.GetComponentInChildren<UnityEngine.Collider>(); if (c == null) continue;
+        var side = P(dir110.y, -dir110.x); var rel = P(c.bounds.center.x, c.bounds.center.z) - at110; if (UnityEngine.Vector2.Dot(rel, side) < 0f) side = -side;
+        float reach = UnityEngine.Mathf.Max(c.bounds.extents.x, c.bounds.extents.z); float want = treadHalf + stoneGap + reach, now = UnityEngine.Vector2.Dot(rel, side);
+        if (now < want) { var shift = side * (want - now); t.position += V(shift.x, 0f, shift.y); var nb = PlaceKit.MeshBounds(t.gameObject); t.position += V(0f, G(t.position.x, t.position.z) - nb.min.y - 0.05f, 0f); screenNotes.Add("CS_Stone_8 moved " + F(want - now) + " m off the tread"); }
+    }
+}
+
 // ================= WARPS (doc 5.1) =================
 var warps = kit.Root("DevWarps").transform;
 foreach (var (n, x, z, yaw) in new[] { ("Camp_1", 268f, 226f, 49f), ("North_Loop_Ruin", 165.8f, 267.7f, 25f) })
@@ -319,4 +345,4 @@ UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 var zones = new System.Collections.Generic.List<string>(); foreach (var kv in zoneBy) zones.Add(kv.Key + " " + kv.Value);
 return "saved=" + saved + " | removed by name " + namedGone + " of " + named.Length + (namedMissing.Count > 0 ? " (not found, likely gone already: " + string.Join(", ", namedMissing) + ")" : "") + ", in keep-out zones " + zoneGone + (zones.Count > 0 ? " (" + string.Join(", ", zones) + ")" : "") + ", sky gap " + skyGone
-    + " | " + forageAt + " | refit boxes " + refit + ", rubble piles removed " + rubbleGone + " | tent box " + tentBox + " | ruin wall boxes " + wallBoxes + ", roof slab " + slabDeg + " degrees | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    + " | " + forageAt + " | screens: " + string.Join("; ", screenNotes) + " | refit boxes " + refit + ", rubble piles removed " + rubbleGone + " | tent box " + tentBox + " | ruin wall boxes " + wallBoxes + ", roof slab " + slabDeg + " degrees | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

@@ -32,6 +32,8 @@ public static class KeepOuts
         new Zone("N11 root plate", new Vector2(146.1f, 271.4f), 5f),   // the 4 m plate's radius 2 plus 3 m, on the axis's NE end
         new Zone("N13 N15 ruin and sky gap", new Vector2(172f, 281f), 8f),
         new Zone("N14 stovepipe line", new Vector2(192.7f, 276.6f), new Vector2(171.43f, 283.40f), 1.5f),
+        new Zone("5a TS1 tower screen", new Vector2(169.1f, 260.9f), 1.5f),   // NorthLayout 5a (round 2): the screen firs keep their ground
+        new Zone("5a TS2 tower screen", new Vector2(178.5f, 263.8f), 1.5f),
     };
 
     public static bool Contains(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return true; return false; }

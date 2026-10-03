@@ -143,6 +143,24 @@ public sealed class PlaceKit
 
     public static void StripColliders(GameObject g) { foreach (var c in g.GetComponentsInChildren<Collider>()) Object.DestroyImmediate(c); }
 
+    /// A box collider on g fitted to its meshes in g's own axes, from each mesh's own bounds (8.33: FitCollider boxes world bounds, which
+    /// grow when g is turned: the Camp 1 tent stood 1.46 m out). Removes g's own colliders first; meshes whose name holds skipName (ropes)
+    /// are left out. Returns null when g has no mesh.
+    public static BoxCollider FitExact(GameObject g, string skipName = null)
+    {
+        foreach (var c in g.GetComponents<Collider>()) Object.DestroyImmediate(c);
+        bool any = false; var b = new Bounds();
+        foreach (var mf in g.GetComponentsInChildren<MeshFilter>())
+        {
+            if (mf.sharedMesh == null || (skipName != null && mf.name.Contains(skipName))) continue; var mb = mf.sharedMesh.bounds;
+            for (int i = 0; i < 8; i++)
+            {
+                var l = g.transform.InverseTransformPoint(mf.transform.TransformPoint(new Vector3((i & 1) == 0 ? mb.min.x : mb.max.x, (i & 2) == 0 ? mb.min.y : mb.max.y, (i & 4) == 0 ? mb.min.z : mb.max.z)));
+                if (!any) { b = new Bounds(l, Vector3.zero); any = true; } else b.Encapsulate(l);
+            }
+        }
+        if (!any) return null; var bc = g.AddComponent<BoxCollider>(); bc.center = b.center; bc.size = b.size; return bc;
+    }
     /// One box round the meshes (in g's own axes), unless the prefab already carries colliders.
     public static void FitCollider(GameObject g)
     {
