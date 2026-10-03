@@ -20,3 +20,14 @@ Trails
 14. L. Both legs end at the ramp foot, and each passes 25 to 35 m from the payphone in the open (a far ring must carry).
 
 Night: no Camp 2 event at night (R2-3 is dawn). Why each item: Docs/Private/Camp2Layout_Quill.md (private).
+
+## 8.25a rethink
+Quill, 2026-10-03. **Draft.** Grant's walk: the column does not work. Sable draws from Marlow's survey; Grant decides.
+1. Options. A: a bare granite knob on a rise, the ground climbing through the trees to a rock top above them, cliff on the road side, a worn scramble up the back. B: an old water tower or fire lookout, ladder, rails, a roof. C: a hunting stand on a dead tree.
+2. My pick: A. He found it, he did not build it. A real person camps on a rock bald for the view; nobody camps on a water tower. B is a second tower in a valley that already has the keeper's, and reads as trespass. C is too small for a tent and two people standing, and a dead tree is the Snag's job at Camp 3.
+3. What it must say: he walked as high as he could get and stopped where he could see the road. Picked for the view, not for comfort: wind, no shelter, nothing flat but the top. Everything up there he carried up himself; the path shows it.
+4. Open sky over the top. No overhead beam or limb above the tent or his chair, and nothing built up there except what he brought.
+5. Carries over unchanged: 1 to 6 (payphone, table, three places, the third place, seat view, barrel), 9, 10, 11, and the trails 12 to 14. The ring box goes in the tent on top, per Wren's list.
+6. Carries over with new words: 7 and 8. "Stack top" becomes the rock top; tent, cold white lamp, his chair at the east edge facing the road, room to stand beside him. The highway and the gate T must still clear the treetops from his chair; the top's height comes from Marlow's survey, not from me. Unverified until the one frame.
+7. No longer works: the ramp foot as a fixed point (items 1 and 14 hang on it; they now hang on the foot of the path up). Valley 1.2's "the stack rising through the trunks" becomes grey rock showing through the trunks. LookBoards 4 title, ladder and "none above a third of its height" go with the column; the boulder field stays as rockfall off the cliff.
+8. The deck still sees his lamp, but the eye height changes: the stack-top rows in Valley 7 were figured for 25.6 m and need rerunning on the new top.
