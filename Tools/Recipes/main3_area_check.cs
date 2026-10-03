@@ -134,6 +134,7 @@ try
         if (!any || top.collider is UnityEngine.TerrainCollider) continue;
         var ht = top.collider.transform; var path = WalkIns.PathOf(ht); bool stop = ht.gameObject.layer == 2;
         if (set.stopRoots != null) foreach (var sr in set.stopRoots) if (path.StartsWith(sr)) stop = true;
+        if (path.StartsWith("Ground815/Stops/FaceRock") && new UnityEngine.Vector2(ht.position.x - 78f, ht.position.z - 146f).magnitude <= 14f) stop = false;   // 8.26 T1: the FaceRock round the Camp 3 hollow is floor edge, not a stop (main3_8_18a_solid.cs HollowRock)
         string accepted = null; if (stop && A.acceptedStops != null) foreach (var a in A.acceptedStops) if ((a.point - p).magnitude <= a.radius) accepted = a.reason;
         if (stop && accepted != null) acceptedOnStop.Add(P3(p) + " on " + path + " (accepted: " + accepted + ")");
         else if (stop) { onStop.Add(P3(p) + " on " + path); onStopPlaces.Add(p); }

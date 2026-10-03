@@ -3,6 +3,7 @@
 // CREEK FALLS (C5; Marlow's running-minimum sample): along each water strip (Layout826/Creek/Upper and Lower) from its source, the water
 //   never rises more than riseTol over the lowest water upstream; the ground under the line stays under the water.
 // WATER EDGE (Wren 2026-10-03): the water's edge stands edgeToTread m or more from every tread edge (trail centre lines less treadHalf),
+//   the crossings being the plank bridge (its POI and Camp to J's anchor (104.8, 203.2), where trail and creek meet) and the stones;
 //   except within crossR m of the two designed crossings (POI_Plank_bridge, POI_Stepping_stones).
 // TENT (block 1): its one box is its mesh's local bounds (within boxTol per axis), long side east-west, door north, centred at
 //   (75.0, 140.7); the studio's pieces (easel, stool, paint box, table, faced canvases) stand studioClear m or more off its box.
@@ -37,7 +38,7 @@ try
     // ---- CREEK FALLS and WATER EDGE
     {
         var plank = poiRoot.Find("POI_Plank_bridge"); var stones = poiRoot.Find("POI_Stepping_stones");
-        var crossings = new System.Collections.Generic.List<UnityEngine.Vector2>(); if (plank != null) crossings.Add(P(plank.position.x, plank.position.z)); if (stones != null) crossings.Add(P(stones.position.x, stones.position.z));
+        var crossings = new System.Collections.Generic.List<UnityEngine.Vector2> { P(104.8f, 203.2f) }; if (plank != null) crossings.Add(P(plank.position.x, plank.position.z)); if (stones != null) crossings.Add(P(stones.position.x, stones.position.z));
         var lines = new System.Collections.Generic.List<(string name, UnityEngine.Vector2[] pts)>(); foreach (UnityEngine.Transform lg in trails) { var l = new System.Collections.Generic.List<UnityEngine.Vector2>(); foreach (UnityEngine.Transform p in lg) l.Add(P(p.position.x, p.position.z)); if (l.Count > 1) lines.Add((lg.name, l.ToArray())); }
         foreach (var run in new[] { "Upper", "Lower" })
         {
@@ -146,7 +147,7 @@ try
         var legs = new System.Collections.Generic.List<(string, UnityEngine.Vector3[])>();
         foreach (var n in new[] { "Camp to Camp 3", "W1 to Camp 3", "Pump to W1" }) { var lg = trails.Find(n); if (lg == null) { Line(false, "WALK: no Trails/" + n); continue; } var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform p in lg) pts.Add(p.position); legs.Add((n + ", the trail", pts.ToArray())); }
         var arrival = G(79.06f, 145.39f);
-        legs.Add(("the arrival to the fire stand", new[] { arrival, G(74.6f, 151.2f) })); legs.Add(("the arrival to the easel stand", new[] { arrival, G(79.0f, 149.9f) })); legs.Add(("the arrival to the dam stand", new[] { arrival, G(82.6f, 147.2f) }));
+        legs.Add(("the arrival to the fire stand", new[] { arrival, G(74.6f, 151.2f) })); legs.Add(("the arrival round the table to the easel stand", new[] { arrival, G(79.7f, 146.6f), G(79.6f, 148.2f), G(79.0f, 149.9f) })); legs.Add(("the arrival to the dam stand", new[] { arrival, G(82.6f, 147.2f) }));
         legs.Add(("the steps' top to the east rim spot", new[] { G(96.5f, 142.8f), G(94.0f, 138.5f) }));
         float speed = tuning != null ? tuning.walkSpeed : 2.5f;
         foreach (var (name, pts) in legs)

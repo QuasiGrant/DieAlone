@@ -1371,22 +1371,6 @@ MonoBehaviour:
       point: {x: 96, y: -999, z: 146.5}
       height: 54
       objectPath: Giants/Heroes/Snag
-    - label: Piece 1
-      point: {x: 92.8, y: -999, z: 149.8}
-      height: 3.5
-      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece1
-    - label: Piece 2
-      point: {x: 89.6, y: -999, z: 153.1}
-      height: 3.5
-      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece2
-    - label: Piece 3
-      point: {x: 86.4, y: -999, z: 156.4}
-      height: 3.5
-      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece3
-    - label: Piece 4
-      point: {x: 83.2, y: -999, z: 159.7}
-      height: 3.5
-      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece4
     - label: Hoist cleat
       point: {x: 98.86, y: -999, z: 144.85}
       height: 1.2
@@ -1431,10 +1415,6 @@ MonoBehaviour:
       point: {x: 131.71031, y: -999, z: 72.82208}
       height: 0.3
       objectPath: PointsOfInterest/POI_Stepping_stones
-    - label: Lamppost spot
-      point: {x: 58, y: -999, z: 150}
-      height: 0
-      objectPath: 
     inventory:
     - Camp 3 tent
     - Camp 3 fire
@@ -1525,7 +1505,7 @@ MonoBehaviour:
       anyEye: 0
     - label: the faced canvases' faces
       point: {x: 70.3, y: -3.4, z: 145.95}
-      treeCoverPath: Campsites/Camp_3/Layout826/FacedCanvases
+      treeCoverPath: Campsites/Camp_3/Layout826/FacedCanvases/Faces
       hard: 0
       loose: 0
       objectPath: 
@@ -2042,22 +2022,6 @@ MonoBehaviour:
       point: {x: 96, y: -999, z: 146.5}
       height: 54
       objectPath: Giants/Heroes/Snag
-    - label: Piece 1
-      point: {x: 92.8, y: -999, z: 149.8}
-      height: 3.5
-      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece1
-    - label: Piece 2
-      point: {x: 89.6, y: -999, z: 153.1}
-      height: 3.5
-      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece2
-    - label: Piece 3
-      point: {x: 86.4, y: -999, z: 156.4}
-      height: 3.5
-      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece3
-    - label: Piece 4
-      point: {x: 83.2, y: -999, z: 159.7}
-      height: 3.5
-      objectPath: Campsites/Camp_3/Layout826/SnagLine/Piece4
     - label: Hoist cleat
       point: {x: 98.86, y: -999, z: 144.85}
       height: 1.2
@@ -2102,10 +2066,6 @@ MonoBehaviour:
       point: {x: 131.71031, y: -999, z: 72.82208}
       height: 0.3
       objectPath: PointsOfInterest/POI_Stepping_stones
-    - label: Lamppost spot
-      point: {x: 58, y: -999, z: 150}
-      height: 0
-      objectPath: 
     - label: Cave mouth
       point: {x: 52, y: -999, z: 40}
       height: 0

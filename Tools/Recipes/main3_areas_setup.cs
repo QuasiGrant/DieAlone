@@ -212,11 +212,11 @@ var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Ca
     places = new[] { P("Camp 3", 75.0f, G, 143.6f), PO("Fire", 76.0f, G, 150.5f, 0.6f, c3D + "Fire"), PO("Seat log", 73.8f, G, 150.2f, 0.45f, c3D + "CS_Log_Large_Long_Seat_1"),
         PO("Tent", 75.0f, G, 140.7f, 1.65f, c3D + "CS_Tent_Old_2"), PO("Easel", 80.3f, G, 148.8f, 1.8f, c3D + "Easel"), PO("Table", 78.5f, G, 147.3f, 0.75f, c3L + "PlankTable"),
         PO("Faced canvases", 70.3f, G, 145.95f, 1.3f, c3L + "FacedCanvases"), PO("Snag", 96f, G, 146.5f, 54f, "Giants/Heroes/Snag"),
-        PO("Piece 1", 92.8f, G, 149.8f, 3.5f, c3L + "SnagLine/Piece1"), PO("Piece 2", 89.6f, G, 153.1f, 3.5f, c3L + "SnagLine/Piece2"), PO("Piece 3", 86.4f, G, 156.4f, 3.5f, c3L + "SnagLine/Piece3"), PO("Piece 4", 83.2f, G, 159.7f, 3.5f, c3L + "SnagLine/Piece4"),
+        // the Snag line's pieces hang 2.85 m or more over the ground and over the ravine: deck targets (deckSee), not places to reach
         PO("Hoist cleat", 98.86f, G, 144.85f, 1.2f, c3L + "Hoist"), PO("Stake", 80f, G, 163f, 3.6f, c3L + "SnagLine/Stake"), P("East rim spot", 94f, G, 138.5f), P("Steps' top", 96.5f, G, 142.8f),
         PO("Pool", 83.6f, G, 149.7f, 0.3f, c3L + "Creek/Pool"), PO("Sink", 83.6f, G, 148.45f, 0.2f, c3L + "Sink"), PO("Spring", 85.8f, G, 126.0f, 0.6f, c3L + "Spring"),
         PO("W1 sign", 127.0f, G, 72.8f, 2.0f, c3L + "W1Sign"), POn("Blaze_W1_Camp3", "Ground815/JunctionMarkers/Blaze_W1_Camp3", 1.8f), POn("Camper trailer", "PointsOfInterest/POI_Camper_trailer", 2.4f),
-        POn("Stepping stones", "PointsOfInterest/POI_Stepping_stones", 0.3f), P("Lamppost spot", 58f, G, 150f) },
+        POn("Stepping stones", "PointsOfInterest/POI_Stepping_stones", 0.3f) },   // the lamppost spot (58, 150) is kept free off the trail (C7, homage): no found rule
     interactions = new[] { IA("fire", c3D + "Fire", 74.6f, G, 151.2f), IA("easel", c3D + "Easel", 79.0f, G, 149.9f), IA("form and table", c3L + "PlankTable;" + c3D + "JobForm", 78.6f, G, 148.4f), IA("sink", c3L + "Sink", 82.6f, G, 147.2f) },
     frames = new[] { FR("F1 STEPS' TOP HEADING 270: FIRE, POOL, CANVASES", V(96.5f, G, 142.8f), Hd(V(96.5f, 0f, 142.8f), 270f, -3.5f)),
         FR("F2 W1 ARRIVAL HEADING 342: FIRE, EASEL BACK", V(84f, G, 132f), Hd(V(84f, 0f, 132f), 342f, -3.0f)),
@@ -232,7 +232,7 @@ var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Ca
     deckSee = new[] { DH("Snag line piece 1", 92.8f, 6.7f, 149.8f, c3L + "SnagLine/Piece1"), DH("Snag line piece 2", 89.6f, 6.8f, 153.1f, c3L + "SnagLine/Piece2"), DH("Snag line piece 3", 86.4f, 6.9f, 156.4f, c3L + "SnagLine/Piece3"),
         DLO("Snag line piece 4", 83.2f, 7.0f, 159.7f, c3L + "SnagLine/Piece4"), DLO("Snag lantern", 96f, 7.3f, 146.5f, c3D + "SnagLantern"), DLO("hoist", 98.86f, 5.0f, 144.85f, c3L + "Hoist"),
         DL("east rim spot", 94f, 4.5f, 138.5f), DLO("fire", 76.0f, -3.6f, 150.5f, c3D + "Fire"), DLO("tent", 75.0f, -3.2f, 140.7f, c3D + "CS_Tent_Old_2") },
-    deckHide = new[] { D("the easel's painted face", 80.3f, -2.8f, 148.8f, c3D + "Easel/TheCanvas/Painting"), D("the faced canvases' faces", 70.3f, -3.4f, 145.95f, c3L + "FacedCanvases") } };
+    deckHide = new[] { D("the easel's painted face", 80.3f, -2.8f, 148.8f, c3D + "Easel/TheCanvas/Painting"), D("the faced canvases' faces", 70.3f, -3.4f, 145.95f, c3L + "FacedCanvases/Faces") } };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,
     front,

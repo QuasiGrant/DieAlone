@@ -158,10 +158,23 @@ UnityEngine.Physics.SyncTransforms();
         foreach (var (c, s) in new[] { (V(0f, 0.02f, 0f), V(w, 0.04f, 0.05f)), (V(0f, h - 0.02f, 0f), V(w, 0.04f, 0.05f)), (V(-w * 0.5f + 0.02f, h * 0.5f, 0f), V(0.04f, h, 0.05f)), (V(w * 0.5f - 0.02f, h * 0.5f, 0f), V(0.04f, h, 0.05f)) }) kit.Slab("Stretcher", g, c, s, planks);
         kit.Slab("Painting", g, V(0f, h * 0.5f, -0.005f), V(w - 0.06f, h - 0.06f, 0.005f), paint);
     }
+    // the painted faces under one group, so the must-hide pixel check tests the faces and not the backs (the backs are what the deck reads)
+    var faces = kit.Group("Faces", fc, fc.position, 0f); foreach (var p in System.Linq.Enumerable.ToArray(fc.GetComponentsInChildren<UnityEngine.Transform>())) if (p.name == "Painting") p.SetParent(faces, true);
+    // behind the canvases, to the rock: a box as high as the canvases (the canvases and the rock are its reason; a 2.2 m Ignore Raycast box
+    // was stood on from the rocks), so no body gets in behind them (the
+    // first area flood found a 20-place pocket at (69.5, -3.2, 146.0) between the canvases and the west wall's hulls)
+    const float behindX0 = 68.0f; var fcb = PlaceKit.MeshBounds(fc.gameObject); float behindH = fcb.max.y - fcb.min.y;
+    var behind = kit.Blocker("BehindCanvases", L, L.InverseTransformPoint(V((behindX0 + fcb.max.x) * 0.5f, fcb.min.y + behindH * 0.5f, fcb.center.z)), V(fcb.max.x - behindX0, behindH, fcb.size.z + 0.2f));
+    // the fire: one box from its meshes, so its interaction ray has something to meet
+    if (fire != null) PlaceKit.FitExact(fire.gameObject);
+    // the slot along the tent's south face from its west end, between it and the hulls of FaceRock Boulder_2 and BigBoulders_3 (the area flood
+    // found traps at (72.6, -3.3, 139.6) and, after a first fill there, (73.4, -3.3, 139.3)): a box filled to the rocks' height
+    { const float gx0 = 72.55f, gx1 = 75.5f, gz0 = 138.0f, gz1 = 139.64f, gTop = 1.7f; float gg = G((gx0 + gx1) * 0.5f, (gz0 + gz1) * 0.5f); kit.Blocker("TentRockGap", L, L.InverseTransformPoint(V((gx0 + gx1) * 0.5f, gg + gTop * 0.5f - 0.25f, (gz0 + gz1) * 0.5f)), V(gx1 - gx0, gTop + 0.5f, gz1 - gz0)); }   // over the rock's top too (then a 5-place trap at (74.6, -2.6, 138.6)), open east to the floor
+    { const float wx0 = 71.4f, wx1 = 72.96f, wz0 = 138.0f, wz1 = 141.8f, wTop = 1.7f; float wg = G((wx0 + wx1) * 0.5f, (wz0 + wz1) * 0.5f); kit.Blocker("TentRockGapWest", L, L.InverseTransformPoint(V((wx0 + wx1) * 0.5f, wg + wTop * 0.5f - 0.25f, (wz0 + wz1) * 0.5f)), V(wx1 - wx0, wTop + 0.5f, wz1 - wz0)); }   // and along its west face over Boulder_2's foot (then traps at (72.6, -3.1, 140.0) and (72.2, -2.8, 139.6) in the rocks' hollows)
 }
 
 // ================= C3: the Snag line and the hoist =================
-const float snagRopeUp = 3.4f, stakeUp = 3.6f, stakeW = 0.12f, pieceSide = 0.5f, pieceDrop = 0.2f, ropeT = 0.03f, hoistUp = 12f, cleatH = 1.2f, cleatW = 0.12f, cleatOff = 0.3f, barkR = 2.5f;
+const float pieceClear = 2.85f; string ropeNote = "none"; const float snagRopeUp = 3.4f, stakeUp = 3.6f, stakeW = 0.12f, pieceSide = 0.5f, pieceDrop = 0.2f, ropeT = 0.03f, hoistUp = 12f, cleatH = 1.2f, cleatW = 0.12f, cleatOff = 0.3f, barkR = 2.5f;
 var pegs = new[] { P(92.8f, 149.8f), P(89.6f, 153.1f), P(86.4f, 156.4f), P(83.2f, 159.7f) }; var stakeAt = P(80f, 163f); var cleatAt = P(98.86f, 144.85f);
 int pieceN = 0;
 {
@@ -174,6 +187,8 @@ int pieceN = 0;
         var toStake = (stakeAt - sc).normalized; var a2 = sc + toStake * trunkR; var a = V(a2.x, G(a2.x, a2.y) + snagRopeUp, a2.y);
         var stake = Slab("Stake", line, V(stakeAt.x, G(stakeAt.x, stakeAt.y) + stakeUp * 0.5f, stakeAt.y), V(stakeW, stakeUp, stakeW), planks, true);
         var b = V(stakeAt.x, G(stakeAt.x, stakeAt.y) + stakeUp, stakeAt.y);
+        // the rope's Snag end no lower than every piece needs to hang pieceClear over the ground under it (at the doc's 3.4 m piece 1 hung 2.72)
+        foreach (var q in pegs) { var ab2 = P(b.x - a.x, b.z - a.z); float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(q - P(a.x, a.z), ab2) / ab2.sqrMagnitude); if (t >= 0.999f) continue; float need = G(q.x, q.y) + pieceClear + pieceDrop + pieceSide + 0.02f; float ay = (need - t * b.y) / (1f - t); if (ay > a.y) { a.y = ay; ropeNote = "Snag end raised to " + F(a.y - G(a2.x, a2.y)) + " m over its ground"; } }
         void Rope(UnityEngine.Transform parent, UnityEngine.Vector3 p, UnityEngine.Vector3 q, string n) { var s = Slab(n, parent, (p + q) * 0.5f, V(ropeT, ropeT, UnityEngine.Vector3.Distance(p, q)), rope); s.transform.rotation = UnityEngine.Quaternion.LookRotation((q - p).normalized); }
         Rope(line, a, b, "Rope");
         UnityEngine.Vector3 OnRope(UnityEngine.Vector2 q) { var ab = P(b.x - a.x, b.z - a.z); float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(q - P(a.x, a.z), ab) / ab.sqrMagnitude); return UnityEngine.Vector3.Lerp(a, b, t); }
@@ -196,7 +211,7 @@ int pieceN = 0;
 }
 
 // ================= C4: the log steps =================
-const int logSteps = 19; const float logLen = 1.8f, logGirth = 0.3f, rampW = 1.8f, rampT = 0.2f, packLogLen = 2f, packLogGirth = 0.37f;
+const int logSteps = 19; const float rampExtra = 0.6f, logLen = 1.8f, logGirth = 0.3f, rampW = 1.8f, rampT = 0.2f, packLogLen = 2f, packLogGirth = 0.37f;
 int logsMade = 0;
 {
     foreach (var t in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(poiRoot))) if (t.name == "POI_Log_steps") PlaceKit.Remove(t);
@@ -220,7 +235,7 @@ int logsMade = 0;
         // the StairRamp: a collider-only box whose top face runs from P80 to P94 (the trail points are on the walking surface)
         var top = pts[0]; var bot = pts[pts.Count - 1]; var run = bot - top; var ramp = new UnityEngine.GameObject("StairRamp").transform; ramp.SetParent(steps, false);
         var up = UnityEngine.Vector3.Cross(run.normalized, UnityEngine.Vector3.Cross(UnityEngine.Vector3.up, run.normalized)).normalized; if (up.y < 0f) up = -up;
-        ramp.rotation = UnityEngine.Quaternion.LookRotation(run.normalized, up); ramp.position = (top + bot) * 0.5f - up * (rampT * 0.5f); ramp.localScale = V(rampW, rampT, run.magnitude + 0.6f);
+        ramp.rotation = UnityEngine.Quaternion.LookRotation(run.normalized, up); ramp.position = (top + bot) * 0.5f + run.normalized * (rampExtra * 0.5f) - up * (rampT * 0.5f); ramp.localScale = V(rampW, rampT, run.magnitude + rampExtra);   // its top end on P80 (a lip past it stopped the walk), the extra length under the floor past P94
         ramp.gameObject.AddComponent<UnityEngine.BoxCollider>();
     }
 }
@@ -358,6 +373,24 @@ int carved = 0, stonesN = 0, rocksN = 0;
     }
 }
 
+// ================= T1: the FaceRock round the hollow =================
+// the Ground815/Stops/FaceRock rocks within hollowR of the hollow's centre stand on the floor's edge, not on a stop edge: each LOD0 mesh gets
+// its convex hull here (main3_8_18a_solid.cs then makes exact or drops any hull that enters a trail tread, and no longer strips them)
+const float hollowR = 14f; int hullsAdded = 0;
+{
+    var fr = kit.Root("Ground815") != null ? kit.Root("Ground815").transform.Find("Stops/FaceRock") : null;
+    if (fr == null) notes.Add("no Ground815/Stops/FaceRock");
+    else foreach (var lod in fr.GetComponentsInChildren<UnityEngine.LODGroup>())
+    {
+        if (new UnityEngine.Vector2(lod.transform.position.x - 78f, lod.transform.position.z - 146f).magnitude > hollowR) continue; var lods = lod.GetLODs(); if (lods.Length == 0) continue;
+        foreach (var r in lods[0].renderers)
+        {
+            var mf = r != null ? r.GetComponent<UnityEngine.MeshFilter>() : null; if (mf == null || mf.sharedMesh == null || r.GetComponent<UnityEngine.Collider>() != null) continue;
+            var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; mc.convex = true; hullsAdded++;
+        }
+    }
+}
+
 // ================= WARPS =================
 var warps = kit.Root("DevWarps").transform;
 foreach (var (n, x, z, yaw) in new[] { ("Camp_3", 75.0f, 143.6f, 30f), ("Camp_3_Rim", 97.8f, 142.0f, 268f) })
@@ -367,5 +400,5 @@ UnityEngine.Physics.SyncTransforms();
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " | removed by name " + namedGone + " of " + named.Length + (namedMissing.Count > 0 ? " (not found: " + string.Join(", ", namedMissing) + ")" : "") + ", in keep-out zones " + zoneGone + (zoneNames.Count > 0 ? " (" + string.Join("; ", zoneNames) + ")" : "")
-    + ", leftover props " + propsGone + ", footbridge " + (bridgeGone ? "gone" : "absent") + " | Snag line pieces " + pieceN + " | log steps " + logsMade + " | creek: upper " + upper.Count + " and lower " + lower.Count + " samples, cells cut " + carved + ", stones " + stonesN + ", cascade rocks " + rocksN
+    + ", leftover props " + propsGone + ", footbridge " + (bridgeGone ? "gone" : "absent") + " | Snag line pieces " + pieceN + " (rope " + ropeNote + ") | FaceRock hulls added " + hullsAdded + " | log steps " + logsMade + " | creek: upper " + upper.Count + " and lower " + lower.Count + " samples, cells cut " + carved + ", stones " + stonesN + ", cascade rocks " + rocksN
     + (pushNotes.Count > 0 ? ", AT THE VALLEY EDGE: " + string.Join("; ", pushNotes) : "") + " | tent " + tentNote + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
