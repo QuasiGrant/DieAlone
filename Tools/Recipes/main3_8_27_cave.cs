@@ -103,9 +103,9 @@ const float postH = 1.0f, ropeH = 0.6f, postW = 0.1f, postStep = 2f, railOff = 1
 
 // ================= V2: the bulbs =================
 {
-    var bulbs = poiRoot.Find("POI_Coloured_bulbs"); var to = P(82.15f, 52.96f);
-    if (bulbs == null) notes.Add("no POI_Coloured_bulbs");
-    else { var branch = bulbs.Find("DeadBranch"); var foot = branch != null ? branch.GetComponent<UnityEngine.Collider>().bounds.min.y : bulbs.position.y; float rise = G(to.x, to.y) - foot; bulbs.position += V(to.x - bulbs.position.x, rise, to.y - bulbs.position.z); }
+    var bulbsPoi = poiRoot.Find("POI_Coloured_bulbs"); var to = P(82.15f, 52.96f);
+    if (bulbsPoi == null) notes.Add("no POI_Coloured_bulbs");
+    else { var branch = bulbsPoi.Find("DeadBranch"); var foot = branch != null ? branch.GetComponent<UnityEngine.Collider>().bounds.min.y : bulbsPoi.position.y; float rise = G(to.x, to.y) - foot; bulbsPoi.position += V(to.x - bulbsPoi.position.x, rise, to.y - bulbsPoi.position.z); }
 }
 
 // ================= V3: the passage =================

@@ -1696,7 +1696,7 @@ MonoBehaviour:
       height: 1.8
       objectPath: Cave/Mouth/DayOneBoard
     - label: Bulbs
-      point: {x: 82.63908, y: -999, z: 48.978657}
+      point: {x: 82.15, y: -999, z: 52.96}
       height: 2.8
       objectPath: PointsOfInterest/POI_Coloured_bulbs
     - label: Rope rail
@@ -2352,7 +2352,7 @@ MonoBehaviour:
       height: 1.8
       objectPath: Cave/Mouth/DayOneBoard
     - label: Bulbs
-      point: {x: 82.63908, y: -999, z: 48.978657}
+      point: {x: 82.15, y: -999, z: 52.96}
       height: 2.8
       objectPath: PointsOfInterest/POI_Coloured_bulbs
     - label: Rope rail

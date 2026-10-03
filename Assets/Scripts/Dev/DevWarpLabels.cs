@@ -44,6 +44,8 @@ public static class DevWarpLabels
         new Row("FRONT", "Old_Burn", "Old burn"),
         new Row("CAVE", "Cave_Mouth", "Cave mouth"),
         new Row("CAVE", "Cave_Chamber", "Cave chamber"),
+        new Row("CAVE", "Cave_SideRoom", "Cave side room (table)"),   // 8.27 CaveLayout V6, Pim 5
+        new Row("CAVE", "Spur_Descent", "Cave spur, the descent"),   // 8.27 CaveLayout 6.1
     };
 
     public static bool IsListed(string warpName)
