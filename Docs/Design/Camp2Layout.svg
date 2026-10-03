@@ -14,80 +14,79 @@
  .trail{fill:none;stroke:#b07a3a;stroke-width:1.4}
  .floor{fill:none;stroke:#b07a3a;stroke-width:0.8;stroke-dasharray:2 1}
  .gone{fill:none;stroke:#c0392b;stroke-width:0.7;stroke-dasharray:3 1.5}
+ .x{stroke:#c0392b;stroke-width:0.8}
  .sight{fill:none;stroke:#8e44ad;stroke-width:0.6;stroke-dasharray:3 1.5}
  .deck{fill:none;stroke:#2a7fd4;stroke-width:0.6;stroke-dasharray:3 1.5}
+ .clear{fill:none;stroke:#3d5a2a;stroke-width:0.5;stroke-dasharray:1 1}
  .tree{fill:#3d5a2a;fill-opacity:0.5;stroke:#2a3a1a;stroke-width:0.4}
  .frame{fill:none;stroke:#999;stroke-width:0.3}
  .warp{fill:#2a7fd4;stroke:#123;stroke-width:0.3}
 </style>
 <rect x="0" y="0" width="520" height="380" fill="#fff"/>
-<text class="h" x="20" y="14">Camp2Layout.svg, draft 3, 2026-10-03, Sable (PLAN 8.25a): the column goes; a 5 m granite knob he found. From Marlow's 825a survey.</text>
+<text class="h" x="20" y="14">Camp2Layout.svg, draft 4, 2026-10-03, Sable (PLAN 8.25a): a 5 m granite knob he found. From Marlow's 825a survey and paper check.</text>
 
-<!-- PANEL A: plan, 8 px per m, x 280 to 312, z 92 to 132. X = 20 + 8(x-280), Y = 30 + 8(132-z) -->
+<!-- PANEL A: X = 20 + 8(x-280), Y = 30 + 8(132-z); x 280 to 312, z 92 to 132 -->
 <rect class="frame" x="20" y="30" width="256" height="320"/>
-<text class="h" x="20" y="27">A. Plan (x 280 to 312, z 92 to 132), 8 px = 1 m, ground 4.0 everywhere here</text>
-<!-- old column ghost -->
+<text class="h" x="20" y="27">A. Plan (x 280 to 312, z 92 to 132), 8 px = 1 m, ground 4.0</text>
 <polygon class="gone" points="116,174 150,188 164,222 150,256 116,270 82,256 68,222 82,188"/>
-<text class="s" x="70" y="232" fill="#c0392b">old column, stair, rails, screens: removed (list in the doc)</text>
+<text class="s" x="66" y="234" fill="#c0392b">old column, stair, rails, screens, fills: removed (doc list)</text>
 <!-- knob -->
-<polygon class="rock" points="92,158 156,158 172,142 172,86 156,70 100,70 84,86 84,142"/>
-<rect class="top" x="108" y="82" width="52" height="48"/>
+<polygon class="rock" points="96,158 156,158 172,142 172,86 156,70 100,70 90.4,82 90.4,151.6"/>
+<rect class="top" x="92" y="82" width="68" height="68"/>
 <line class="cliff" x1="172" y1="86" x2="172" y2="142"/><line class="cliff" x1="156" y1="70" x2="172" y2="86"/>
 <text class="s" x="175" y="118">cliff (road side)</text>
-<text class="t" x="112" y="152">K1 knob, top 9.0 (5 m)</text>
-<!-- scramble -->
-<rect class="ramp" x="77.6" y="118" width="12.8" height="56"/>
-<polyline points="84,118 108,102" fill="none" stroke="#b8a888" stroke-width="12.8"/>
-<polyline points="84,118 108,102" fill="none" stroke="#6e5a44" stroke-width="0.5" stroke-dasharray="1 1"/>
-<text class="s" x="40" y="168">K2 scramble</text><text class="s" x="40" y="172">23 then 31 deg</text>
+<text class="t" x="100" y="157">K1 knob, top 9.0 (5 m)</text>
+<!-- scramble: leg 1, landing, gully leg 2 -->
+<rect class="ramp" x="77.6" y="111.6" width="12.8" height="62.4"/>
+<polyline points="84,118 108,125.2" fill="none" stroke="#b8a888" stroke-width="12.8"/>
+<polyline points="84,118 108,125.2" fill="none" stroke="#444" stroke-width="0.5" stroke-dasharray="1 1"/>
+<circle class="clear" cx="108" cy="125.2" r="8"/>
+<text class="s" x="36" y="178">K2 leg 1, 23 deg</text><text class="s" x="96" y="136">leg 2 gully, 33 deg</text><text class="s" x="112" y="132">head, 1 m clear</text>
 <!-- top items -->
-<rect class="fur" x="110.4" y="97.8" width="18" height="16.2"/><text class="s" x="111" y="107">tent, door E</text>
-<circle class="evt" cx="130" cy="106" r="1.2"/><text class="s" x="118" y="120">ring box at the door</text>
-<rect class="fur" x="147.4" y="86.2" width="6" height="6.2" transform="rotate(65 150.4 89.2)"/><text class="s" x="140" y="80">his chair, faces 65</text>
-<circle class="act" cx="143.2" cy="97.2" r="1.3"/>
-<circle class="act" cx="152.8" cy="105.2" r="1.8"/><text class="s" x="134" y="128">lamp (deck, hard)</text>
-<circle class="evt" cx="112" cy="126.8" r="1.4"/><circle class="evt" cx="84" cy="134" r="1.4"/><circle class="evt" cx="180" cy="74" r="1.4"/>
-<text class="s" x="26" y="140">PS2</text><text class="s" x="104" y="134">PS1</text><text class="s" x="184" y="72">PS3</text>
-<!-- rockfall moved -->
+<rect class="fur" x="113" y="106.9" width="5.9" height="6.2" transform="rotate(65 116 110)"/><text class="s" x="100" y="104">his chair on Marlow's cell (292, 122)</text>
+<circle class="act" cx="110.4" cy="100.4" r="1.3"/>
+<rect class="fur" x="136" y="131.4" width="18" height="16.2"/><text class="s" x="137" y="142">tent, door N</text>
+<circle class="evt" cx="145" cy="130.5" r="1.2"/><circle class="act" cx="144.8" cy="123.6" r="1.2"/><text class="s" x="132" y="119">ring box stand</text>
+<circle class="act" cx="156" cy="116.4" r="1.8"/><text class="s" x="158" y="112">lamp</text>
+<circle class="evt" cx="95.2" cy="146.8" r="1.4"/><circle class="evt" cx="76" cy="134" r="1.4"/><circle class="evt" cx="180" cy="74" r="1.4"/>
+<text class="s" x="96" y="145">PS1</text><text class="s" x="66" y="130">PS2</text><text class="s" x="184" y="72">PS3</text>
+<circle class="warp" cx="124" cy="97.2" r="1.6"/><text class="s" x="126" y="95">top warp</text>
+<!-- rockfall moved, plants and tree removed -->
 <circle class="rock" cx="180" cy="74" r="8.8"/><circle class="rock" cx="184" cy="98" r="10.4"/>
-<line class="gone" x1="79" y1="104" x2="86" y2="111"/><line class="gone" x1="86" y1="104" x2="79" y2="111"/>
-<line class="gone" x1="64" y1="158" x2="71" y2="165"/><line class="gone" x1="71" y1="158" x2="64" y2="165"/>
-<text class="s" x="190" y="88">K4 rockfall at the cliff foot</text>
-<!-- trees nearby -->
-<circle class="tree" cx="127.4" cy="53.3" r="3"/><text class="s" x="132" y="50">Sequoia1</text>
-<circle class="rock" cx="276" cy="153.2" r="6"/>
+<line class="x" x1="79" y1="104" x2="86" y2="111"/><line class="x" x1="86" y1="104" x2="79" y2="111"/>
+<line class="x" x1="64" y1="158" x2="71" y2="165"/><line class="x" x1="71" y1="158" x2="64" y2="165"/>
+<circle class="gone" cx="127.4" cy="53.3" r="7.4"/><line class="x" x1="122" y1="48" x2="133" y2="59"/><line class="x" x1="133" y1="48" x2="122" y2="59"/>
+<text class="s" x="136" y="50" fill="#c0392b">R Sequoia1: open sky, lamp lines</text>
+<text class="s" x="22" y="64" fill="#c0392b">6 plants inside the knob: R</text>
 <!-- trails -->
 <polyline class="trail" points="126.4,299.6 135.2,285.2 144.8,272.4 155.2,260.4 164.8,247.6 171.2,223.6"/>
 <polyline class="trail" points="171.2,223.6 183.2,243.6 199.2,238 208.8,210 212,174 210.2,142.2 229,138.7 243,130.4 249.1,115.9 248.8,97 247.2,81.2 248.8,65.2 258.4,53.2"/>
 <circle class="act" cx="171.2" cy="223.6" r="2"/><text class="s" x="176" y="228">trail end (298.9, 107.8)</text>
-<polyline class="floor" points="171.2,223.6 84,174"/><text class="s" x="120" y="196">12.5 m over open floor</text>
+<polyline class="floor" points="171.2,223.6 84,174"/><text class="s" x="118" y="196">12.8 m over open floor</text>
 <text class="t" x="216" y="120">Camp 2 to T</text><text class="t" x="100" y="296">Boathouse leg</text>
-<!-- booth cluster as built -->
 <rect class="booth" x="178.6" y="282.2" width="10.8" height="11.6"/><rect class="fur" x="168.8" y="300.3" width="7.3" height="7.3"/>
 <text class="s" x="192" y="292">booth, table, 3 places (as built)</text>
 <circle class="act" cx="111.2" cy="274.8" r="3.9"/><text class="s" x="90" y="284">barrel</text>
-<!-- sight lines from the chair -->
-<line class="sight" x1="150.4" y1="89.2" x2="241.5" y2="48.1"/><line class="sight" x1="150.4" y1="89.2" x2="245.5" y2="58.1"/><line class="sight" x1="150.4" y1="89.2" x2="240.4" y2="45.7"/>
-<text class="s" x="214" y="42">to the highway, gate T, barrier (S1)</text>
-<line class="deck" x1="152.8" y1="105.2" x2="57" y2="78"/><text class="s" x="26" y="74">to the deck (E rail)</text>
-<circle class="warp" cx="116" cy="122" r="1.6"/><text class="s" x="96" y="118">top warp</text>
+<!-- sight lines -->
+<line class="sight" x1="116" y1="110" x2="224" y2="57.8"/><line class="sight" x1="116" y1="110" x2="225.3" y2="60.7"/><line class="sight" x1="116" y1="110" x2="230.1" y2="72.7"/>
+<text class="s" x="200" y="46">S1: highway, gate T, barrier</text>
+<line class="deck" x1="156" y1="116.4" x2="61.2" y2="84.5"/><text class="s" x="24" y="88">to the deck</text>
 
-<!-- PANEL B: section through z 123, looking north. X = 330 + 8(x-284), Y = 300 - 8(y) + 0 -->
+<!-- PANEL B: section through z 121, looking north. X = 330 + 8(x-284), Y = 300 - 8y -->
 <rect class="frame" x="300" y="30" width="200" height="320"/>
-<text class="h" x="300" y="27">B. Section through z 123, looking north, 8 px = 1 m</text>
+<text class="h" x="300" y="27">B. Section near z 121 (the gully), looking north, 8 px = 1 m</text>
 <line x1="300" y1="268" x2="500" y2="268" stroke="#333" stroke-width="0.6"/><text class="s" x="304" y="275">ground 4.0</text>
-<rect class="gone" x="346" y="108" width="96" height="160"/><text class="s" x="348" y="104" fill="#c0392b">old column, 24 (it stood at z 102 to 114)</text>
-<polygon class="rock" points="362,268 386,228 442,228 446,232 450,268"/>
+<polygon class="rock" points="366.4,268 366.4,228 442,228 446,232 450,268"/>
 <line class="cliff" x1="446" y1="232" x2="450" y2="268"/>
-<text class="s" x="390" y="252">knob, 5.0 m, top 9.0</text>
-<polyline points="362,268 386,228" fill="none" stroke="#b8a888" stroke-width="3"/><text class="s" x="320" y="246">scramble</text>
-<rect class="fur" x="388.4" y="215.8" width="18" height="12.2"/><text class="s" x="388" y="212">tent</text>
-<rect class="fur" x="425.4" y="219" width="6" height="9"/><circle class="act" cx="428.4" cy="218.4" r="1.4"/><text class="s" x="412" y="210">his eye 10.2</text>
-<line x1="430.8" y1="228" x2="430.8" y2="218.4" stroke="#333" stroke-width="0.5"/><circle class="act" cx="430.8" cy="217.6" r="1.4"/>
-<line class="sight" x1="428.4" y1="218.4" x2="498" y2="210"/><text class="s" x="452" y="206">the road between trunks</text>
+<polyline points="356,268 360,244 366.4,244 384,228" fill="none" stroke="#b8a888" stroke-width="3"/>
+<text class="s" x="318" y="240">leg 1 to the landing (7.0), then the gully</text>
+<rect class="fur" x="391" y="219" width="6" height="9"/><circle class="act" cx="394" cy="218.4" r="1.4"/><text class="s" x="380" y="212">his eye 10.2 on (292, 122)</text>
+<line x1="434" y1="228" x2="434" y2="218.4" stroke="#333" stroke-width="0.5"/><circle class="act" cx="434" cy="217.6" r="1.4"/><text class="s" x="430" y="212">lamp</text>
+<line class="sight" x1="394" y1="218.4" x2="498" y2="210"/><text class="s" x="452" y="206">the road between trunks</text>
 <rect class="tree" x="472" y="76" width="4" height="192"/><text class="s" x="460" y="72">firs 14 to 25 m</text>
-<text class="s" x="304" y="300">Marlow 6: a standing eye at (292, 122) sees the highway, the gate T</text>
-<text class="s" x="304" y="304">and the barrier through gaps, and all three plainly at +6; at +11 two</text>
-<text class="s" x="304" y="308">drop out behind branches. Nothing under 21 m clears the trees.</text>
-<text class="s" x="304" y="316">Deck: the cell (296, 124) at +5 is seen from the E rail (98 px).</text>
+<text class="s" x="390" y="252">knob, 5.0 m, top 9.0</text>
+<text class="s" x="304" y="300">Marlow: at (292, 122) the eye at +6 (10.0) sees the highway 167 px,</text>
+<text class="s" x="304" y="304">gate T 110, barrier 115; at +11 two drop out. Fallback: a passing cell</text>
+<text class="s" x="304" y="308">within 1.5 m, else the top 1 m lower. Lamp: both rails cross Sequoia1's</text>
+<text class="s" x="304" y="312">crown at (285, 125); with it gone, Rook's check decides.</text>
 </svg>
