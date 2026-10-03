@@ -123,7 +123,7 @@ try
         }
     }
     // a place standing on a stop is an escape over it (8.22 round 2, Marlow 1), wherever it leads
-    var onStop = new System.Collections.Generic.List<string>(); var onStopPlaces = new System.Collections.Generic.List<UnityEngine.Vector3>();
+    var acceptedOnStop = new System.Collections.Generic.List<string>(); var onStop = new System.Collections.Generic.List<string>(); var onStopPlaces = new System.Collections.Generic.List<UnityEngine.Vector3>();
     foreach (var kv in pos)
     {
         // only the surface the body stands on, the highest under it (8.23 round 2: ring boxes 0.2 m under the boathouse floor and the dock
@@ -134,11 +134,13 @@ try
         if (!any || top.collider is UnityEngine.TerrainCollider) continue;
         var ht = top.collider.transform; var path = WalkIns.PathOf(ht); bool stop = ht.gameObject.layer == 2;
         if (set.stopRoots != null) foreach (var sr in set.stopRoots) if (path.StartsWith(sr)) stop = true;
-        if (stop) { onStop.Add(P3(p) + " on " + path); onStopPlaces.Add(p); }
+        string accepted = null; if (stop && A.acceptedStops != null) foreach (var a in A.acceptedStops) if ((a.point - p).magnitude <= a.radius) accepted = a.reason;
+        if (stop && accepted != null) acceptedOnStop.Add(P3(p) + " on " + path + " (accepted: " + accepted + ")");
+        else if (stop) { onStop.Add(P3(p) + " on " + path); onStopPlaces.Add(p); }
     }
     bool floodOk = leaks.Count == 0 && fell.Count == 0 && onStop.Count == 0; if (!floodOk) fails++;
     sb.Append((floodOk ? "PASS" : "FAIL") + " FLOOD: " + pos.Count + " standing places from " + seeds + " seeds, " + moves + " moves; closed-zone leaks " + leaks.Count + ", fell through " + fell.Count + ", standing on a stop " + onStop.Count + (closedWater.Count > 0 ? "; closed water: " + string.Join(", ", System.Linq.Enumerable.Select(closedWater, w => w.label + " " + w.cells + " cells")) : "") + "\n");
-    foreach (var l in onStop) sb.Append("  ON STOP " + l + "\n");
+    foreach (var l in onStop) sb.Append("  ON STOP " + l + "\n"); foreach (var l in acceptedOnStop) sb.Append("  ok   ON STOP " + l + "\n");
     foreach (var l in leaks) sb.Append("  LEAK " + l + "\n"); foreach (var l in fell) sb.Append("  FELL " + l + "\n");
     // ---- TRAPS
     var ok = new System.Collections.Generic.HashSet<long>(good); var rq = new System.Collections.Generic.Queue<long>(good);

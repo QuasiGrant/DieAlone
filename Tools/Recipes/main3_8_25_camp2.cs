@@ -7,7 +7,7 @@
 // C1  the top: a rope rail on rock, an octagon 0.25 m inside the top's faces (faces topRailFace, vertices topRailVertex from the centre, at
 //     the stack's own bearings), posts every postStep m, rope at 0.5 and 1.05, a 1.05 x 0.1 box run as its collider, open only at the
 //     landing mouth, (295.90, 106.5) to the vertex (296.52, 108); LandingTop_RailS cut back to start at x 295.90; his chair CS_Chair_2 at
-//     (294.76, 110.31) facing 66, a box from its mesh (never a hull: a hulled seat is a perch over the rail); the tent CS_Tent_Modern_2
+//     (294.94, 110.30) facing 66 (slid 0.18 m from the doc's (294.76, 110.31) so the T signpost clears, Wren 2026-10-03), a box from its mesh (never a hull: a hulled seat is a perch over the rail); the tent CS_Tent_Modern_2
 //     at (288.86, 108.0), door east, box from its fabric; the ring box inside it; the lamp on a 1.2 m pole at (291.6, 107.4), cold core;
 //     the letters under stones by the tent; his mug and thermos by his chair; his spot on the chair.
 // C2  the table cluster beside the booth: CS_Table_Small_Modern_2 at 1.3, yaw 0, x 298.10 to 299.01, z 97.30 to 98.21; his chair east facing
@@ -86,7 +86,7 @@ void RailRun(UnityEngine.Transform parent, UnityEngine.Vector3 a, UnityEngine.Ve
     var rs = path2.Find("LandingTop_RailS"); if (rs != null) { float x0 = 295.90f, x1 = 301.1f; rs.position = V((x0 + x1) * 0.5f, rs.position.y, rs.position.z); rs.localScale = V(x1 - x0, rs.localScale.y, rs.localScale.z); } else notes.Add("no LandingTop_RailS");
     // his chair at the east rail facing the T (66), a box from its mesh; his mug and thermos beside it
     var topD = top.Find("Dressing"); foreach (var n in new[] { "CS_Chair_2", "CS_Tent_Modern_2", "CS_Lantern_Modern", "LampCore", "CS_Drink_Thermos_1", "CS_Tableware_Mug_Metal_1" }) if (topD != null) PlaceKit.Remove(topD.Find(n));
-    var chair = kit.On(PlaceKit.CS + "CS_Chair_2", LT, LT.InverseTransformPoint(V(294.76f, topY, 110.31f)), 66f, 1f, false, null, true); if (chair != null) { chair.name = "HisChair"; PlaceKit.FitExact(chair); }
+    var chair = kit.On(PlaceKit.CS + "CS_Chair_2", LT, LT.InverseTransformPoint(V(294.94f, topY, 110.30f)), 66f, 1f, false, null, true); if (chair != null) { chair.name = "HisChair"; PlaceKit.FitExact(chair); }
     kit.On(PlaceKit.CS + "Drinks/CS_Drink_Thermos_1", LT, LT.InverseTransformPoint(V(294.2f, topY, 110.9f)), 0f, 1f, false, null, true);
     kit.On(PlaceKit.CS + "Tableware/CS_Tableware_Mug_Metal_1", LT, LT.InverseTransformPoint(V(294.0f, topY, 110.6f)), 30f, 1f, false, null, true);
     // the tent, door east (its door is on its own -z: yaw 270 faces it east), box from its fabric; the ring box inside it, by the door
@@ -100,7 +100,7 @@ void RailRun(UnityEngine.Transform parent, UnityEngine.Vector3 a, UnityEngine.Ve
     var core = kit.Slab("LampCore", lamp, V(0f, poleH + 0.1f, 0f), V(0.12f, 0.18f, 0.12f), kit.Glow("Places_ColdLamp", Hex("#DDE6F0"), kit.Look.farMarkerIntensity)); core.GetComponent<UnityEngine.Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     // the letters under stones, by the tent's south side
     if (topD != null) { int k = 0; foreach (UnityEngine.Transform t in topD) if (t.name.StartsWith("Paper") || t.name.StartsWith("CS_Stone_")) { int slot = k / 2; t.position = V(288.4f + (slot % 3) * 0.35f, t.position.y, 106.75f - (slot / 3) * 0.3f + (t.name.StartsWith("CS_Stone_") ? 0.01f : 0f)); k++; } }
-    var spot = top.Find("Resident_Camp2_Spot"); if (spot != null) { spot.position = V(294.76f, topY + 0.9f, 110.31f); spot.rotation = UnityEngine.Quaternion.Euler(0f, 66f, 0f); }
+    var spot = top.Find("Resident_Camp2_Spot"); if (spot != null) { spot.position = V(294.94f, topY + 0.9f, 110.30f); spot.rotation = UnityEngine.Quaternion.Euler(0f, 66f, 0f); }
     kit.Marker("TalkStand_Top", LT, LT.InverseTransformPoint(V(293.8f, topY, 109.5f)), 50f);
 }
 // ================= C3: the landing's north edge =================
@@ -224,6 +224,47 @@ int newPts = 0, paintCells = 0, boardN = 0;
         if (ramp == null || east == null) { notes.Add("no " + rn + " or its east rail"); continue; }
         var up = ramp.up; float rampTop = ramp.localScale.y * 0.5f, o = UnityEngine.Vector3.Dot(east.position - ramp.position, up), foot = o - east.localScale.y * 0.5f, head = rampTop + railH;
         east.localScale = V(east.localScale.x, head - foot, east.localScale.z); east.position += up * ((head + foot) * 0.5f - o);
+    }
+    // plank screens on both sides of every ramp (Wren 2026-10-03: 13 downhill sprint-jumps still went over the raised rails): upright boards
+    // over a box each, on each rail's line, from the ramp's top screenH m plumb, every board pitch along the ramp
+    const float screenH = 1.5f; int screenBoards = 0;
+    foreach (var rn in new[] { "Ramp1", "Ramp2", "Ramp3", "Ramp4" })
+    {
+        var ramp = path2.Find(rn); var rc = ramp != null ? ramp.GetComponent<UnityEngine.Collider>() : null; if (rc == null) { notes.Add("no " + rn + " collider"); continue; }
+        foreach (UnityEngine.Transform rail in path2)
+        {
+            if (rail.name != rn + "_Rail") continue; float rx = rail.position.x, inward = rx < rc.bounds.center.x ? 0.1f : -0.1f;
+            float z0 = rc.bounds.min.z, z1 = rc.bounds.max.z; int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt((z1 - z0) / (boardW + boardGap))); float pitch = (z1 - z0) / n;
+            for (int k = 0; k < n; k++)
+            {
+                float z = z0 + (k + 0.5f) * pitch; if (!rc.Raycast(new UnityEngine.Ray(V(rx + inward, rc.bounds.max.y + 1f, z), UnityEngine.Vector3.down), out var hit, 40f)) continue;
+                var c = V(rx, hit.point.y + screenH * 0.5f, z);
+                Board(c, screenH, false); kit.Blocker("Screen", sk, sk.InverseTransformPoint(c), V(0.1f, screenH, pitch)); screenBoards++;
+            }
+        }
+    }
+    // and on every landing rail (8.25 round 3: two sprint-jumps down Ramp4 went over LandingN2's 1.0 m rails onto the screens' stepped
+    // tops): a screen on each rail's line, from the landing's top screenH m
+    foreach (UnityEngine.Transform rail in path2)
+    {
+        if (!rail.name.StartsWith("Landing") || !rail.name.Contains("_Rail")) continue; var rb = rail.GetComponent<UnityEngine.Collider>() != null ? rail.GetComponent<UnityEngine.Collider>().bounds : new UnityEngine.Bounds(rail.position, UnityEngine.Vector3.zero);
+        bool alongX = rb.size.x >= rb.size.z; float len = alongX ? rb.size.x : rb.size.z; int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(len / (boardW + boardGap))); float pitch = len / n;
+        for (int k = 0; k < n; k++)
+        {
+            float u = -len * 0.5f + (k + 0.5f) * pitch; var c = V(rb.center.x + (alongX ? u : 0f), rb.min.y + screenH * 0.5f, rb.center.z + (alongX ? 0f : u));
+            Board(c, screenH, alongX); kit.Blocker("Screen", sk, sk.InverseTransformPoint(c), alongX ? V(pitch, screenH, 0.1f) : V(0.1f, screenH, pitch)); screenBoards++;
+        }
+    }
+    // the wedge between the stack and Ramp1, south of the z 112 skirt (Wren 2026-10-03, the 8.25 notch trap): a fill block of stack rock to
+    // over the skirt's top, so nothing falls into it
+    {
+        var stoneMat = kit.Tinted("Places_WedgeFill", "Assets/Materials/Concrete034_1.0x1.0.mat", Hex("#6E6A64"), UnityEngine.Vector2.one);
+        const float wx0 = 296.28f, wx1 = 298.15f, wz0 = 107.8f, wz1 = 112.06f, overSkirt = 0.1f; float gy = G((wx0 + wx1) * 0.5f, (wz0 + wz1) * 0.5f), wy1 = gy + bareSkirt + overSkirt;
+        kit.Slab("WedgeFill", L, L.InverseTransformPoint(V((wx0 + wx1) * 0.5f, (gy + wy1) * 0.5f - 0.5f, (wz0 + wz1) * 0.5f)), V(wx1 - wx0, wy1 - gy + 1f, wz1 - wz0), stoneMat, default, true);
+        // and the corner south of it, behind the way-in planks (8.25 round 3: a 5-place pocket at (297.8, 5.6, 106.9) on the stack's foot), over
+        // the planks' tops so none is stood on
+        const float cx0 = 297.0f, cx1 = 298.26f, cz0 = 106.44f, cz1 = 107.8f;
+        kit.Slab("WedgeFillCorner", L, L.InverseTransformPoint(V((cx0 + cx1) * 0.5f, (gy + wy1) * 0.5f - 0.5f, (cz0 + cz1) * 0.5f)), V(cx1 - cx0, wy1 - gy + 1f, cz1 - cz0), stoneMat, default, true);
     }
     // the blaze by position, not child index (Marlow 825 2)
     var blaze = cd.Find("StartBlaze"); if (blaze != null) blaze.position = V(304.4f, G(304.4f, 106.4f), 106.4f); else notes.Add("no StartBlaze");

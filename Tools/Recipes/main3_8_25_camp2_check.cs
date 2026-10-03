@@ -6,7 +6,7 @@
 // T3 TOP RAIL: from points on the top, on the landing and in front of his chair (and on its seat if a jump reaches it: TOP CHAIR SEAT), walking, sprinting and sprint-jumping out on every railHeadings
 //   heading for railTime s: none crosses the top rail (leaves the top for neither the top nor the stair); down the stair is no fall; runs that go
 //   onto the stair and then over a stair rail are listed apart (T3 STAIR RAILS).
-// S1 SIGHTLINE: seated at his chair (294.76, 25.2, 110.31), to the T (337, 170) and the highway on heading 66 (x 430), past the terrain, every drawn collider (not the invisible rail boxes),
+// S1 SIGHTLINE: seated at his chair, to the T signpost's top; HIGHWAY FROM THE TOP: one stand spot on the top floor sees the highway (Wren 2026-10-03); past the terrain, every drawn collider (not the invisible rail boxes),
 //   and every drawn mesh (temporary exact colliders, as 8.24's stovepipe): reported clear or the first thing met.
 // WALKS (doc 4): boathouse to Camp 2 and Camp 2 to T along their trails; the ramp foot up the stair to his top chair; your seat to the
 //   booth door; the table to the ramp foot. Each arrives within arrive m, with times.
@@ -124,24 +124,43 @@ try
             Line(inVoid.Count == 0, "STAIR VOID: " + runs + " runs off Ramp1 eastward, ending under Ramp2 " + inVoid.Count + (inVoid.Count > 0 ? ": " + string.Join("; ", inVoid.GetRange(0, UnityEngine.Mathf.Min(6, inVoid.Count))) : ""));
         }
     }
-    // ---- S1 SIGHTLINE
+    // ---- S1 SIGHTLINE (Wren 2026-10-03): seated at his chair (its box centre, seatEye over the top) to the T signpost's top
+    // (Ground815/JunctionMarkers/Trailhead_Board, less signDrop); HIGHWAY FROM THE TOP: at least one stand spot on the top floor (every
+    // standStep m within standR of the centre, eye 1.6) sees a highway point (x highwayX, ground + 1, one of highwayZs). Lines pass the
+    // terrain, every drawn collider (not invisible boxes) and every drawn mesh (temporary exact colliders, as 8.24's stovepipe).
     {
-        var eye = V(294.76f, 25.2f, 110.31f); const float s1 = 66f; float r = s1 * UnityEngine.Mathf.Deg2Rad; var hdir = V(UnityEngine.Mathf.Sin(r), 0f, UnityEngine.Mathf.Cos(r));
-        float tHw = (430f - eye.x) / hdir.x; var hw = eye + hdir * tHw; hw.y = H(hw.x, hw.z) + 1f; var tT = V(337f, H(337f, 170f) + 1f, 170f);
-        var notLod0 = new System.Collections.Generic.HashSet<UnityEngine.Renderer>(); foreach (var lod in UnityEngine.Object.FindObjectsByType<UnityEngine.LODGroup>(UnityEngine.FindObjectsSortMode.None)) { var l = lod.GetLODs(); for (int i = 1; i < l.Length; i++) foreach (var rr in l[i].renderers) if (rr != null) notLod0.Add(rr); }
-        foreach (var (label, to) in new[] { ("the T (337, 170)", tT), ("the highway on heading 66 (" + F1(hw.x) + ", " + F1(hw.z) + ")", hw) })
+        const float seatEye = 1.2f, signDrop = 0.05f, standStep = 0.5f, standR = 3.8f, highwayX = 430f; float[] highwayZs = { 150f, 160f, 170f, 180f, 185f, 190f, 200f, 210f };
+        var sign = Root("Ground815").transform.Find("JunctionMarkers/Trailhead_Board");
+        if (sign == null || chair == null) Line(false, "S1 SIGHTLINE: no Trailhead_Board or his chair");
+        else
         {
-            var d = to - eye; var ray = new UnityEngine.Ray(eye, d.normalized);
+            var sbd = PlaceKit.MeshBounds(sign.gameObject); var tPt = V(sbd.center.x, sbd.max.y - signDrop, sbd.center.z);
+            var cbd = chair.GetComponent<UnityEngine.Collider>().bounds; var seat = V(cbd.center.x, topY + seatEye, cbd.center.z);
+            var stands = new System.Collections.Generic.List<UnityEngine.Vector3>();
+            for (float x = 292f - standR; x <= 292f + standR + 1e-3f; x += standStep) for (float z = 108f - standR; z <= 108f + standR + 1e-3f; z += standStep) if (new UnityEngine.Vector2(x - 292f, z - 108f).magnitude <= standR) stands.Add(V(x, topY + eyeH, z));
+            var hws = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (var hz in highwayZs) hws.Add(V(highwayX, H(highwayX, hz) + 1f, hz));
+            var rays = new System.Collections.Generic.List<(UnityEngine.Vector3 a, UnityEngine.Vector3 b)> { (seat, tPt) }; foreach (var s in stands) foreach (var h in hws) rays.Add((s, h));
+            var notLod0 = new System.Collections.Generic.HashSet<UnityEngine.Renderer>(); foreach (var lod in UnityEngine.Object.FindObjectsByType<UnityEngine.LODGroup>(UnityEngine.FindObjectsSortMode.None)) { var l = lod.GetLODs(); for (int i = 1; i < l.Length; i++) foreach (var rr in l[i].renderers) if (rr != null) notLod0.Add(rr); }
             foreach (var mr in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshRenderer>(UnityEngine.FindObjectsSortMode.None))
             {
-                if (!mr.enabled || !mr.gameObject.activeInHierarchy || notLod0.Contains(mr) || mr.GetComponent<UnityEngine.Collider>() != null || mr.transform.IsChildOf(pc.transform)) continue;
-                var mf = mr.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null || !mr.bounds.IntersectRay(ray, out float dist) || dist > d.magnitude) continue;
-                var mc = mr.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; temps.Add(mc);
+                if (!mr.enabled || !mr.gameObject.activeInHierarchy || notLod0.Contains(mr) || mr.GetComponent<UnityEngine.Collider>() != null || mr.transform.IsChildOf(pc.transform) || mr.transform.IsChildOf(chair)) continue;
+                var mf = mr.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue; bool on = false;
+                foreach (var (a, b) in rays) { var d = b - a; if (mr.bounds.IntersectRay(new UnityEngine.Ray(a, d.normalized), out float dist) && dist <= d.magnitude) { on = true; break; } }
+                if (!on) continue; var mc = mr.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; temps.Add(mc);
             }
-            UnityEngine.Physics.SyncTransforms(); float fo = float.MaxValue; string what = "";
-            foreach (var hh in UnityEngine.Physics.RaycastAll(eye, d.normalized, d.magnitude, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
-            { var ht = hh.collider.transform; if (ht.IsChildOf(pc.transform) || ht.gameObject.layer == 2 || (chair != null && ht.IsChildOf(chair)) || (!(hh.collider is UnityEngine.TerrainCollider) && ht.GetComponent<UnityEngine.Renderer>() == null)) continue; if (hh.distance < fo) { fo = hh.distance; what = WalkIns.PathOf(ht) + " at " + F1(hh.distance) + " m"; } }   // what is drawn: an invisible box (a rail run's collider) hides nothing
-            Line(fo == float.MaxValue, "S1 SIGHTLINE: seated at his chair to " + label + ", " + F1(d.magnitude) + " m: " + (fo == float.MaxValue ? "clear" : "first " + what));
+            UnityEngine.Physics.SyncTransforms();
+            string First(UnityEngine.Vector3 a, UnityEngine.Vector3 b)
+            {
+                var d = b - a; float best = float.MaxValue; string what = null;
+                foreach (var hh in UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude - signDrop, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
+                { var ht = hh.collider.transform; if (ht.IsChildOf(pc.transform) || ht.IsChildOf(sign) || ht.IsChildOf(chair) || ht.gameObject.layer == 2 || (!(hh.collider is UnityEngine.TerrainCollider) && ht.GetComponent<UnityEngine.Renderer>() == null)) continue; if (hh.distance < best) { best = hh.distance; what = WalkIns.PathOf(ht) + " at " + F1(hh.distance) + " m"; } }
+                return what;
+            }
+            var ft = First(seat, tPt);
+            Line(ft == null, "S1 SIGHTLINE: seated at his chair (" + F(seat.x) + ", " + F(seat.y) + ", " + F(seat.z) + ") to the T signpost's top (" + F1(tPt.x) + ", " + F1(tPt.y) + ", " + F1(tPt.z) + "): " + (ft == null ? "clear" : "first " + ft));
+            int seen = 0; string ex = "";
+            foreach (var s in stands) foreach (var h in hws) if (First(s, h) == null) { seen++; if (ex == "") ex = " (first: (" + F1(s.x) + ", " + F1(s.z) + ") to z " + F1(h.z) + ")"; break; }
+            Line(seen > 0, "HIGHWAY FROM THE TOP: " + seen + " of " + stands.Count + " stand spots on the top floor see a highway point" + ex);
             foreach (var t in temps) if (t != null) UnityEngine.Object.DestroyImmediate(t); temps.Clear(); UnityEngine.Physics.SyncTransforms();
         }
     }

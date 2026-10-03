@@ -143,8 +143,18 @@ public class Main3AreaSet : ScriptableObject
     }
 
     [System.Serializable]
+    public struct AcceptedStop
+    {
+        [Tooltip("A flood stand on a stop within radius m of this point is listed as accepted, not failed.")] public Vector3 point;
+        public float radius;
+        [Tooltip("Why (Wren's ruling).")] public string reason;
+    }
+
+    [System.Serializable]
     public class Area
     {
+        [Tooltip("Flood stands on a stop ruled artifacts (8.25: the top rail box, a teleport-overlap that did not reproduce).")]
+        public AcceptedStop[] acceptedStops;
         [Tooltip("Interaction pairs that stand together by design (8.25: the hook and his table chair).")]
         public SpacingException[] spacingExceptions;
         [Tooltip("Extra walking lines for the found rule, beside the Trails (8.22).")]

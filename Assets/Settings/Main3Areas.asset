@@ -242,7 +242,8 @@ MonoBehaviour:
     name: 
     expected: 8
   areas:
-  - spacingExceptions: []
+  - acceptedStops: []
+    spacingExceptions: []
     walkLines: []
     id: camp
     task: 8.21
@@ -484,7 +485,8 @@ MonoBehaviour:
     - main3_tower_stairs_check.cs
     - main3_breaks_recheck.cs
     - main3_8_21b_stop_check.cs
-  - spacingExceptions: []
+  - acceptedStops: []
+    spacingExceptions: []
     walkLines:
     - label: T east across the lot to the gate
       points:
@@ -685,7 +687,8 @@ MonoBehaviour:
     - main3_8_22_front_check.cs
     - main3_8_22_deck_frames.cs?look=Day_one
     - main3_8_22_deck_frames.cs?look=Night
-  - spacingExceptions: []
+  - acceptedStops: []
+    spacingExceptions: []
     walkLines: []
     id: lake
     task: 8.23
@@ -859,7 +862,8 @@ MonoBehaviour:
     playChecks:
     - main3_8_23_lake_check.cs
     - main3_8_23_lake_frames.cs?look=Day_one
-  - spacingExceptions: []
+  - acceptedStops: []
+    spacingExceptions: []
     walkLines:
     - label: side path to the ruin
       points:
@@ -1052,7 +1056,12 @@ MonoBehaviour:
       look: {x: 172.4, y: 4.5, z: 281.4}
     playChecks:
     - main3_8_24_north_check.cs
-  - spacingExceptions:
+  - acceptedStops:
+    - point: {x: 293.1, y: 25.1, z: 112.1}
+      radius: 0.5
+      reason: flood teleport overlap; 3424 flood-style moves from the top floor never
+        stood there (Wren 2026-10-03)
+    spacingExceptions:
     - a: hook
       b: R2 at the table
       reason: he answers the phone from his seat (Camp2Layout C2, Wren 2026-10-02)
@@ -1121,7 +1130,7 @@ MonoBehaviour:
       height: 1.05
       objectPath: Campsites/Camp_2/StackPath/LandingTop
     - label: His chair on top
-      point: {x: 294.76, y: 24, z: 110.31}
+      point: {x: 294.94, y: 24, z: 110.3}
       height: 1.2
       objectPath: Campsites/Camp_2/StackTop/Layout825/HisChair
     - label: Tent
@@ -1206,7 +1215,7 @@ MonoBehaviour:
       controlRaise: 0
       anyEye: 0
     - label: his chair on top
-      point: {x: 294.76, y: 24.8, z: 110.31}
+      point: {x: 294.94, y: 24.8, z: 110.3}
       treeCoverPath: 
       hard: 0
       loose: 1
@@ -1291,7 +1300,8 @@ MonoBehaviour:
       look: {x: 317.2, y: 4.8, z: 136}
     playChecks:
     - main3_8_25_camp2_check.cs
-  - spacingExceptions: []
+  - acceptedStops: []
+    spacingExceptions: []
     walkLines: []
     id: camp3
     task: 8.26
@@ -1346,7 +1356,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - spacingExceptions: []
+  - acceptedStops: []
+    spacingExceptions: []
     walkLines: []
     id: cave
     task: 8.27
@@ -1390,7 +1401,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - spacingExceptions: []
+  - acceptedStops: []
+    spacingExceptions: []
     walkLines: []
     id: burn
     task: 8.28
@@ -1425,7 +1437,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - spacingExceptions: []
+  - acceptedStops: []
+    spacingExceptions: []
     walkLines: []
     id: ward
     task: 8.29
@@ -1482,7 +1495,8 @@ MonoBehaviour:
     interactions: []
     frames: []
     playChecks: []
-  - spacingExceptions: []
+  - acceptedStops: []
+    spacingExceptions: []
     walkLines: []
     id: whole
     task: 8.30
@@ -1718,7 +1732,7 @@ MonoBehaviour:
       height: 1.05
       objectPath: Campsites/Camp_2/StackPath/LandingTop
     - label: His chair on top
-      point: {x: 294.76, y: 24, z: 110.31}
+      point: {x: 294.94, y: 24, z: 110.3}
       height: 1.2
       objectPath: Campsites/Camp_2/StackTop/Layout825/HisChair
     - label: Tent

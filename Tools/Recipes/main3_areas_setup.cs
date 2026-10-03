@@ -162,7 +162,7 @@ UnityEngine.Vector3 Hd(UnityEngine.Vector3 eye, float heading, float lookY) { fl
 var c2F5 = V(298.3f, c2Top + eyeH, 107.25f);
 var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Camp 2", bounds = new[] { R(262f, 56f, 345f, 172f) }, warps = new[] { "Camp_2", "Camp_2_Top" },
     places = new[] { P("Camp 2", 294.3f, G, 95.0f), PO("Granite stack (south face)", 292f, G, 101.6f, 20f, "Campsites/Camp_2/GraniteStack"), P("Ramp foot", 298.9f, G, 107.8f),
-        PO("Landing top", 298.3f, c2Top, 107.25f, 1.05f, "Campsites/Camp_2/StackPath/LandingTop"), PO("His chair on top", 294.76f, c2Top, 110.31f, 1.2f, c2T + "HisChair"),
+        PO("Landing top", 298.3f, c2Top, 107.25f, 1.05f, "Campsites/Camp_2/StackPath/LandingTop"), PO("His chair on top", 294.94f, c2Top, 110.30f, 1.2f, c2T + "HisChair"),
         PO("Tent", 288.86f, c2Top, 108.0f, 1.5f, c2T + "Tent"), PO("Lamp", 291.6f, c2Top, 107.4f, 1.9f, c2T + "Lamp"), PO("Payphone", 300f, G, 99f, 3.2f, "Campsites/Camp_2/Dressing/Payphone"),
         PO("Hook", 299.63f, G, 98.40f, 1.5f, c2L + "Handset"), PO("Card table", 298.555f, G, 97.755f, 0.98f, c2L + "CardTable"),
         PO("His seat at the table", 299.40f, G, 97.76f, 1.2f, c2L + "CardTable/HisChair"), PO("Your seat", 297.71f, G, 97.76f, 1.2f, c2L + "CardTable/YourChair"), PO("Third place", 298.55f, G, 96.91f, 1.2f, c2L + "CardTable/ThirdPlace"),
@@ -185,10 +185,12 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Ca
         WL("to PS1 on the west rail", V(291.6f, c2Top, 109.7f), V(288.8f, c2Top, 109.7f)), WL("to PS2 at the NW vertex", V(291.6f, c2Top, 111.3f), V(289.4f, c2Top, 111.3f)),
         WL("the table to the booth mouth", V(297.5f, G, 98.6f), V(299.0f, G, 99.0f), V(299.6f, G, 99.2f)) },
     // Wren 2026-10-02: the hook and his table chair stand together by design (Camp2Layout C2: he answers without standing)
+    // Wren 2026-10-03: the stand on the top rail box is the flood's teleport overlap (3424 flood moves from the top floor did not repeat it)
+    acceptedStops = new[] { new Main3AreaSet.AcceptedStop { point = V(293.1f, 25.1f, 112.1f), radius = 0.5f, reason = "flood teleport overlap; 3424 flood-style moves from the top floor never stood there (Wren 2026-10-03)" } },
     spacingExceptions = new[] { new Main3AreaSet.SpacingException { a = "hook", b = "R2 at the table", reason = "he answers the phone from his seat (Camp2Layout C2, Wren 2026-10-02)", maxEdge = 0.5f } },
     playChecks = new[] { "main3_8_25_camp2_check.cs" },
     inventory = new[] { "Lanterns and lamps" }, deckListWritten = true,
-    deckSee = new[] { DH("lamp core", 291.6f, 25.3f, 107.4f, c2T + "Lamp"), DLO("top rail, west faces", 287.82f, 24.8f, 108.0f, c2T + "TopRail"), DLO("his chair on top", 294.76f, 24.8f, 110.31f, c2T + "HisChair"),
+    deckSee = new[] { DH("lamp core", 291.6f, 25.3f, 107.4f, c2T + "Lamp"), DLO("top rail, west faces", 287.82f, 24.8f, 108.0f, c2T + "TopRail"), DLO("his chair on top", 294.94f, 24.8f, 110.30f, c2T + "HisChair"),
         DLO("tent", 288.86f, 25.0f, 108.0f, c2T + "Tent"), DL("PS1", 288.14f, 24.1f, 109.6f), DL("PS2", 288.8f, 24.1f, 111.2f), DL("PS3", 283.70f, 4.5f, 107.90f), DL("booth hood light", 299.0f, 6.6f, 99.0f) },
     deckHide = none };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {

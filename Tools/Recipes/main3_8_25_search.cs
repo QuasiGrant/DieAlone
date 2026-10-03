@@ -1,9 +1,8 @@
 // Main3 8.25 search (edit mode, Main3; Wren's calls on the 8.25 fails, 2026-10-02). Never saves; removes its temporary colliders.
 // S1 CHAIR: his top chair slid along the top rail (its centre chairInset m inside the rail's faces, the faces 4.18 m from the stack centre,
-//   bearings every chairStep degrees, not on the landing mouth's face nor by the tent): from each spot, seated (eye seatEye over the top),
-//   the line to the T (337, 170) and the line on heading 66 to the highway (x 430), past the terrain, every drawn collider and every drawn
-//   mesh (temporary exact colliders, as the 8.25 check's S1). Lists the nearest spot (by arc from today's chair) where both clear, and the
-//   nearest where the T clears.
+//   bearings every chairStep degrees, not on the landing mouth's face nor by the tent): from today's chair and each spot, seated (eye seatEye
+//   over the top), the line to the T signpost's top past the terrain, every drawn collider and every drawn mesh (temporary exact colliders);
+//   the nearest clear spot by arc. HIGHWAY FROM THE TOP: stand spots on the top floor that see a highway point.
 // PS3: the talus within ps3Move m of PS3 (285.7, 109.9), every ps3Grid m, on the highest standable surface under it (no stack top, no
 //   invisible box): the nearest spot found by Pim's rule (Main3AreaSet.Found) from a trail or a camp2 walk line, the paper's ps3H m tall.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
@@ -13,7 +12,7 @@ UnityEngine.GameObject Root(string n) { foreach (var r in scene.GetRootGameObjec
 UnityEngine.Vector3 V(float x, float y, float z) => new UnityEngine.Vector3(x, y, z);
 var inv = System.Globalization.CultureInfo.InvariantCulture; string F(float v) => v.ToString("F2", inv);
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y;
-const float sx = 292f, sz = 108f, topY = 24f, face = 4.18f, chairInset = 0.58f, chairStep = 2f, seatEye = 1.2f, s1Heading = 66f, highwayX = 430f;
+const float sx = 292f, sz = 108f, topY = 24f, face = 4.18f, chairInset = 0.58f, chairStep = 2f, seatEye = 1.2f, highwayX = 430f;
 const float ps3X = 285.7f, ps3Z = 109.9f, ps3Move = 5f, ps3Grid = 0.5f, ps3H = 0.3f, stackTopMin = 20f;
 var c2 = Root("Campsites").transform.Find("Camp_2"); var chair = c2.Find("StackTop/Layout825/HisChair"); var ps3 = c2.Find("Layout825/PaperSpots/PS3");
 if (chair == null || ps3 == null) return "run main3_8_25_camp2.cs first";
@@ -21,48 +20,54 @@ var temps = new System.Collections.Generic.List<UnityEngine.Collider>(); var sb 
 bool Drawn(UnityEngine.Collider c) => c is UnityEngine.TerrainCollider || c.GetComponent<UnityEngine.Renderer>() != null;
 try
 {
-    // ---- S1 CHAIR
+    // ---- S1 CHAIR (Wren 2026-10-03): the T line is judged to the top of the T signpost (Ground815/JunctionMarkers/Trailhead_Board, its
+    // drawn top less signDrop); the highway from at least one stand spot on the top floor (every standStep m within standR of the centre, eye
+    // standEye), to highway points (highwayX, ground + 1, each of highwayZs)
+    const float signDrop = 0.05f, standStep = 0.5f, standR = 3.8f, standEye = 1.6f; float[] highwayZs = { 150f, 160f, 170f, 180f, 185f, 190f, 200f, 210f };
     float BearingOf(UnityEngine.Vector3 p) => (UnityEngine.Mathf.Atan2(p.x - sx, p.z - sz) * UnityEngine.Mathf.Rad2Deg + 360f) % 360f;
     UnityEngine.Vector3 OnFace(float b)   // the point at bearing b, chairInset inside the octagon's face (faces centred on 22.5 + k*45)
     {
         float fc = 22.5f + UnityEngine.Mathf.Round((b - 22.5f) / 45f) * 45f; float r = (face - chairInset) / UnityEngine.Mathf.Cos((b - fc) * UnityEngine.Mathf.Deg2Rad);
         return V(sx + UnityEngine.Mathf.Sin(b * UnityEngine.Mathf.Deg2Rad) * r, topY, sz + UnityEngine.Mathf.Cos(b * UnityEngine.Mathf.Deg2Rad) * r);
     }
-    float now = BearingOf(chair.position); var tPt = V(337f, H(337f, 170f) + 1f, 170f); float hr = s1Heading * UnityEngine.Mathf.Deg2Rad; var hdir = V(UnityEngine.Mathf.Sin(hr), 0f, UnityEngine.Mathf.Cos(hr));
-    var cands = new System.Collections.Generic.List<(float b, UnityEngine.Vector3 eye, UnityEngine.Vector3 hw)>();
+    var sign = Root("Ground815").transform.Find("JunctionMarkers/Trailhead_Board"); if (sign == null) return "no Ground815/JunctionMarkers/Trailhead_Board";
+    var sbnd = PlaceKit.MeshBounds(sign.gameObject); var tPt = V(sbnd.center.x, sbnd.max.y - signDrop, sbnd.center.z);
+    var cb0 = chair.GetComponent<UnityEngine.Collider>().bounds; var nowEye = V(cb0.center.x, topY + seatEye, cb0.center.z); float now = BearingOf(nowEye);
+    var cands = new System.Collections.Generic.List<(float b, UnityEngine.Vector3 eye)>();
     for (float b = 0f; b < 360f; b += chairStep)
     {
         if ((b > 95f && b < 135f) || (b > 200f && b < 340f)) continue;   // the landing mouth's face; the tent, the lamp and the letters west
-        var p = OnFace(b); var eye = p + UnityEngine.Vector3.up * seatEye; var hw = eye + hdir * ((highwayX - eye.x) / hdir.x); hw.y = H(hw.x, hw.z) + 1f; cands.Add((b, eye, hw));
+        cands.Add((b, OnFace(b) + UnityEngine.Vector3.up * seatEye));
     }
+    var stands = new System.Collections.Generic.List<UnityEngine.Vector3>();
+    for (float x = sx - standR; x <= sx + standR + 1e-3f; x += standStep) for (float z = sz - standR; z <= sz + standR + 1e-3f; z += standStep) if (new UnityEngine.Vector2(x - sx, z - sz).magnitude <= standR) stands.Add(V(x, topY + standEye, z));
+    var hws = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (var hz in highwayZs) hws.Add(V(highwayX, H(highwayX, hz) + 1f, hz));
+    var rays = new System.Collections.Generic.List<(UnityEngine.Vector3 a, UnityEngine.Vector3 b)> { (nowEye, tPt) }; foreach (var c in cands) rays.Add((c.eye, tPt)); foreach (var s in stands) foreach (var h in hws) rays.Add((s, h));
     var notLod0 = new System.Collections.Generic.HashSet<UnityEngine.Renderer>(); foreach (var lod in UnityEngine.Object.FindObjectsByType<UnityEngine.LODGroup>(UnityEngine.FindObjectsSortMode.None)) { var l = lod.GetLODs(); for (int i = 1; i < l.Length; i++) foreach (var rr in l[i].renderers) if (rr != null) notLod0.Add(rr); }
     foreach (var mr in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshRenderer>(UnityEngine.FindObjectsSortMode.None))
     {
         if (!mr.enabled || !mr.gameObject.activeInHierarchy || notLod0.Contains(mr) || mr.GetComponent<UnityEngine.Collider>() != null || mr.transform.IsChildOf(chair)) continue;
         var mf = mr.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue; bool on = false;
-        foreach (var c in cands) { foreach (var to in new[] { tPt, c.hw }) { var d = to - c.eye; if (mr.bounds.IntersectRay(new UnityEngine.Ray(c.eye, d.normalized), out float dist) && dist <= d.magnitude) { on = true; break; } } if (on) break; }
+        foreach (var (a, b) in rays) { var d = b - a; if (mr.bounds.IntersectRay(new UnityEngine.Ray(a, d.normalized), out float dist) && dist <= d.magnitude) { on = true; break; } }
         if (!on) continue; var mc = mr.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; temps.Add(mc);
     }
     UnityEngine.Physics.SyncTransforms();
     string First(UnityEngine.Vector3 a, UnityEngine.Vector3 b)
     {
         var d = b - a; float best = float.MaxValue; string what = null;
-        foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
-        { var t = h.collider.transform; if (t.IsChildOf(chair) || t.gameObject.layer == 2 || !Drawn(h.collider)) continue; if (h.distance < best) { best = h.distance; what = WalkIns.PathOf(t) + " at " + F(h.distance) + " m"; } }
+        foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, d.magnitude - signDrop, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
+        { var t = h.collider.transform; if (t.IsChildOf(chair) || t.IsChildOf(sign) || t.gameObject.layer == 2 || !Drawn(h.collider)) continue; if (h.distance < best) { best = h.distance; what = WalkIns.PathOf(t) + " at " + F(h.distance) + " m"; } }
         return what;
     }
     float Arc(float b) { float d = UnityEngine.Mathf.Abs(b - now) % 360f; return d > 180f ? 360f - d : d; }
-    (float b, UnityEngine.Vector3 eye)? both = null, tOnly = null; string nowT = null, nowH = null; int nBoth = 0, nT = 0; var tBy = new System.Collections.Generic.SortedDictionary<string, int>(); var hBy = new System.Collections.Generic.SortedDictionary<string, int>();
-    void Count(System.Collections.Generic.SortedDictionary<string, int> by, string w) { if (w == null) return; var k = w.Substring(0, w.LastIndexOf(" at ")); by[k] = by.TryGetValue(k, out int n) ? n + 1 : 1; }
-    foreach (var c in cands)
-    {
-        var ft = First(c.eye, tPt); var fh = First(c.eye, c.hw); Count(tBy, ft); Count(hBy, fh);
-        if (ft == null) { nT++; if (!tOnly.HasValue || Arc(c.b) < Arc(tOnly.Value.b)) tOnly = (c.b, c.eye); }
-        if (ft == null && fh == null) { nBoth++; if (!both.HasValue || Arc(c.b) < Arc(both.Value.b)) both = (c.b, c.eye); }
-        if (Arc(c.b) < chairStep * 0.5f + 0.01f) { nowT = ft ?? "clear"; nowH = fh ?? "clear"; }
-    }
+    var tBy = new System.Collections.Generic.SortedDictionary<string, int>(); void Count(System.Collections.Generic.SortedDictionary<string, int> by, string w) { if (w == null) return; var k = w.Substring(0, w.LastIndexOf(" at ")); by[k] = by.TryGetValue(k, out int n) ? n + 1 : 1; }
+    string nowT = First(nowEye, tPt); (float b, UnityEngine.Vector3 eye)? tOnly = null; int nT = 0;
+    foreach (var c in cands) { var ft = First(c.eye, tPt); Count(tBy, ft); if (ft == null) { nT++; if (!tOnly.HasValue || Arc(c.b) < Arc(tOnly.Value.b)) tOnly = (c.b, c.eye); } }
     string Spot((float b, UnityEngine.Vector3 eye)? s) => s.HasValue ? "bearing " + F(s.Value.b) + " at (" + F(s.Value.eye.x) + ", " + F(s.Value.eye.z) + "), " + F(Arc(s.Value.b)) + " degrees round from today's" : "none";
-    sb.Append("S1 CHAIR: " + cands.Count + " spots (today's at bearing " + F(now) + ": T " + nowT + ", highway " + nowH + "); both lines clear at " + nBoth + ", nearest " + Spot(both) + "; the T clear at " + nT + ", nearest " + Spot(tOnly) + "\n  the T line first met: " + string.Join(", ", System.Linq.Enumerable.Select(tBy, kv => kv.Key + " x" + kv.Value)) + "\n  the highway line first met: " + string.Join(", ", System.Linq.Enumerable.Select(hBy, kv => kv.Key + " x" + kv.Value)) + "\n");
+    sb.Append("S1 T: to the signpost top (" + F(tPt.x) + ", " + F(tPt.y) + ", " + F(tPt.z) + "); from today's chair (bearing " + F(now) + "): " + (nowT ?? "clear") + "; slide spots clear " + nT + " of " + cands.Count + ", nearest " + Spot(tOnly) + "\n  first met: " + string.Join(", ", System.Linq.Enumerable.Select(tBy, kv => kv.Key + " x" + kv.Value)) + "\n");
+    int hSpots = 0; string hEx = "none"; var hBy = new System.Collections.Generic.SortedDictionary<string, int>();
+    foreach (var s in stands) { string clearTo = null; foreach (var h in hws) { var fh = First(s, h); if (fh == null) { clearTo = "(" + F(h.x) + ", " + F(h.z) + ")"; break; } Count(hBy, fh); } if (clearTo != null) { hSpots++; if (hEx == "none") hEx = "(" + F(s.x) + ", " + F(s.z) + ") to " + clearTo; } }
+    sb.Append("HIGHWAY FROM THE TOP: " + hSpots + " of " + stands.Count + " stand spots see a highway point (x " + F(highwayX) + ", z " + string.Join("/", highwayZs) + "), e.g. " + hEx + "\n  first met when not: " + string.Join(", ", System.Linq.Enumerable.Select(hBy, kv => kv.Key + " x" + kv.Value)) + "\n");
     foreach (var t in temps) if (t != null) UnityEngine.Object.DestroyImmediate(t); temps.Clear(); UnityEngine.Physics.SyncTransforms();
 
     // ---- PS3
