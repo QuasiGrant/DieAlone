@@ -36,3 +36,19 @@ Warp press counts in the dev panel: not rerun for 8.25 (not gate tasks; Camp_2_T
 4. Open, not 8.25: keyboard-only has no Look binding (Grant decides whether keyboard-only must play the world, or the bar is keyboard plus mouse).
 
 Pim
+
+## Round 2 (2026-10-03)
+Sources: Checks.md lines 8 to 13 and 71 to 77; AreaFrames_camp2_08 to 11; Found_camp2_09.
+
+**Verdict: PASS** (all round-1 fails closed; notes below are not blocking).
+
+| Item | Evidence | Result |
+|---|---|---|
+| 1. Phone | Checks: ray from (299.7, 99.1) meets Payphone/Telephone_Booth/Handset at 0.59 m, prompt "Lift the receiver"; 121 of 121 looks within 10 deg from the stand meet it first. Only one phone now: the back-wall phone is the live one. 1 press (Y / E), pad and kb+mouse. Note: in AreaFrames_08 (0.6 m) and Found_09 (2.1 m) the cover reads as a plain black panel with the mesh's two grey rings; no handset shape. The prompt carries the task; the look goes to Vesper / dressing 11.0. Note: Found_09's ball still sits on the south jamb where the kitbash handset was, so the Hook place in Main3Areas.asset may still point at Layout825/Handset; if that slab still exists, Rook removes it and retargets the place (unverified, scene not read) | PASS |
+| 2. Ring box | Checks: RingBox collider x 290.0 to 290.1, top 24.1, in the doorway; ray from (290.3, 108.0) meets it at 1.55 m, first hit itself, prompt "Examine". AreaFrames_09 shows it by eye as a small dark red block at the door sill, below the reticle; that frame's own ray (level) meets the tent at 1.0 m, so the player must look down at it (about 75 deg, inside the 85 deg pitch limit). 1 press. Note: it now sits in the doorway, not inside the tent; whether that still meets Wren's "stays in the tent" is Wren's call. What Examine shows is still unwritten (Quill, private) | PASS |
+| 3. Prompts | Checks: "Take water" barrel 0.87 m, "Talk" R2 table 1.00 m, "Talk" R2 top 1.23 m, plus the two above: five of five show from their stands. "Deal me in" is right as a reply, not a prompt (Camp2Layout_UI.md row 2, Dialogue.md): Y, then pick the ACT reply, at most 3 presses with 3 replies on screen; 5-press bar met | PASS |
+| 4. Warp facing | AreaFrames_10, Camp_2 facing 55: lit booth centred, table and three chairs in front, path on the left; reads as the place on landing. AreaFrames_11, Camp_2_Top facing 20: his chair at the rail, the highway and lot lights beyond, rail across the view | PASS |
+
+Still open, not 8.25: no keyboard Look binding (round 1, Input facts).
+
+Pim
