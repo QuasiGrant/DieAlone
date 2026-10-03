@@ -39,3 +39,18 @@ They do not read as part of the place:
 On the far ridge, behind the trees east of the tower, there are pale see-through giant shapes (F5, Found_06, 07, 18). Something solid is rendering translucent in haze. Wren to route.
 
 Vesper
+
+## Round 2 (final), 2026-10-03
+
+Rechecked only my round-1 fails plus the phones, from Rook's new single frames. Layout only.
+
+**Verdict: FAIL.** PS3 and the deck lamp are still D.
+
+| Item | Grade | Frames | Why, and the one fix |
+|---|---|---|---|
+| Ramps and landings | C, passes | Found_04, 06, 18, 19 | The open post-and-rail reads as part of the stair. The view comes back (treetops, lake, ridge), and the battlement read is gone. Fix: the outer posts are heavy, with a coarse, blocky texture at 1 m (Found_06, 18, right edge). Use thinner posts with a finer texture. Dressing task. |
+| PS3 | **D** | Found_20 (16.2 m) | The mark still reads as grass at the stack's west foot. No boulder top shows under it, and the talus humps behind it sit higher than the mark. I can't confirm it is on BigBoulders_1. Fix: show it in a frame where the rock's top is under the mark, or move the spot to a rock that shows from the trail. |
+| Deck lamp by eye | **D** | DeckLamp_Night_Eye, DeckLamp_Night_Binoculars | By eye: no warm point where Camp 2 should be. Only the red mast and the lot lights show. Through binoculars: a 1 to 2 px dim grey speck at the centre, not a lamp. Fix (one lighting change): raise the lamp's emissive core until it sits at least 40 grey over the frame mean in the binocular frame (the Gate.md night N1 bar). Keep the light's range as it is, so it stays a point and does not flood the top. The coder sets the value in LookTuning. |
+| Two phones | C, passes | AreaFrames_08, Found_09 | Now one phone, on the back wall, and the jamb handset is gone. Fix: the dark receiver on a dark body cannot be seen (AreaFrames_08), and the two pale rings are left over from the old mesh. Give the receiver a lighter value or a metal cradle, and cover the rings. |
+
+Vesper
