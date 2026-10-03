@@ -1050,26 +1050,26 @@ MonoBehaviour:
       controlRaise: 0
       anyEye: 0
     - label: kid's table
-      point: {x: 285.2, y: 5.8, z: 236.5}
+      point: {x: 284.84448, y: 5.55592, z: 236.28018}
       treeCoverPath: 
-      hard: 0
-      loose: 1
+      hard: 1
+      loose: 0
       objectPath: Campsites/Camp_1/Dressing/KidTable
       controlRaise: 0
       anyEye: 0
     - label: tent
-      point: {x: 271, y: 6.5, z: 234.5}
+      point: {x: 271, y: 6.494542, z: 234.5}
       treeCoverPath: 
-      hard: 0
-      loose: 1
+      hard: 1
+      loose: 0
       objectPath: Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1
       controlRaise: 0
       anyEye: 0
     - label: tripod
-      point: {x: 276, y: 6.3, z: 232}
+      point: {x: 275.65067, y: 6.011108, z: 232.86777}
       treeCoverPath: 
-      hard: 0
-      loose: 1
+      hard: 1
+      loose: 0
       objectPath: Campsites/Camp_1/Dressing/Cookfire
       controlRaise: 0
       anyEye: 0
@@ -1788,7 +1788,7 @@ MonoBehaviour:
       objectPath: PointsOfInterest/POI_Coloured_bulbs
       hiddenBy: 
     - label: Rope rail
-      point: {x: 69.9953, y: -999, z: 45.779366}
+      point: {x: 71.41931, y: -999, z: 47.51046}
       height: 1
       objectPath: PointsOfInterest/RopeRail827
       hiddenBy: 
@@ -1974,6 +1974,8 @@ MonoBehaviour:
       look: {x: 67.903076, y: -2, z: 45.1798}
     playChecks:
     - main3_8_27_cave_check.cs
+    - main3_8_27_cave_frames.cs?look=Day_one
+    - main3_8_27_cave_frames.cs?look=Day_two
   - acceptedStops: []
     spacingExceptions: []
     walkLines: []
@@ -2555,7 +2557,7 @@ MonoBehaviour:
       objectPath: PointsOfInterest/POI_Coloured_bulbs
       hiddenBy: 
     - label: Rope rail
-      point: {x: 69.9953, y: -999, z: 45.779366}
+      point: {x: 71.41931, y: -999, z: 47.51046}
       height: 1
       objectPath: PointsOfInterest/RopeRail827
       hiddenBy: 

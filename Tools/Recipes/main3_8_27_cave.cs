@@ -7,8 +7,8 @@
 // REMOVALS (R), by name within removeTol m: the old rope rail POI (106.8, 57.6); TrailEdges CS_Stone_5 (53.22, 36.83) in the passage and
 //   CS_Stone_8 (52.84, 41.94) in the mouth strip; ChamberDressing Boulder_1 (89.0, 5.51) (the seat shelf replaces it) and RubbleSparse_2
 //   (82.86, 18.68) (under the battery bank); SideRoom Boulder_0 (97.50, 13.79) (in V9's opening).
-// V1  the spur's rope rail on the drop side: posts postH tall every postStep m along the tread from P56 to P70 (W1 to cave), railOff m
-//     south of the centre line (square to it), on the tread's ground; a rope at ropeH; a box from the ground to postH under each span.
+// V1  the spur's rope rail on the drop side: posts railH over the tread every postStep m along the tread from P52 to P70 (W1 to cave), railOff m
+//     south of the centre line (square to it), on their ground; three rope rails at railLevels; a box from the ground to the tops under each span.
 // V2  the coloured bulbs (POI_Coloured_bulbs) moved to (82.15, 52.96) on the tread's ground; the dead branch keeps its own height.
 // V3  the passage: the drip can (51.2, 28) at the west wall; the generator niche cut into the entrance's east wall, x 53.5 to 55.5,
 //     z 31.6 to 33.4, floor -6, ceiling -4 (rock boxes, the old wall split round it), a cold generator and jugs in it; the cable, pale,
@@ -28,7 +28,7 @@
 // V10 the narrow: one row of owned BigBoulders on the bank side from x 72 to 61, their near faces narrowNear m north of the tread centre,
 //     narrowH tall, convex hulls, continuous.
 // V11 the rim band: a hedge box hedgeH tall (Ground815/Stops, a stop) with brush brushH tall, along the north wall's top, x 54 to 80 at the
-//     rim's first ground over rimTop, tied into the slope at each end (rimTie m past it).
+//     rim's first ground over rimTop, and past x 54 to 80 on west to rimWest and east to rimEast along the face's top (round 2).
 // WARPS: Cave_Mouth (58, 44) facing 223; Cave_Chamber (74, 12) facing 90; Cave_SideRoom (91.0, 12.0) facing 90 (new); Spur_Descent
 //     (77.3, 48.6) facing 250 (new).
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
@@ -47,7 +47,8 @@ float G(float x, float z) => kit.H(x, z);
 const float T = 0.5f, floorY = -18f;
 const string rocks = "Assets/BK/PureNature_Redwood/Models/Rocks/Textures/Materials/Rocks.mat", planksPath = "Assets/Materials/Planks023A_1.0x1.0.mat", concrete = "Assets/Materials/Concrete034_1.0x1.0.mat";
 var rockMat = kit.Tinted("Places_CaveRock_2x2", rocks, Hex("#7A746C"), new UnityEngine.Vector2(2f, 2f)); var planks = kit.Tinted("Places_BoardPlank", planksPath, Hex("#6B5540"), new UnityEngine.Vector2(3f, 0.3f));
-var rope = kit.Tinted("Places_Rope", planksPath, Hex("#8C7A58"), UnityEngine.Vector2.one); var cableMat = kit.Tinted("Places_Cable", concrete, Hex("#D8D2C0"), UnityEngine.Vector2.one);
+const string cableHex = "#9A968A"; const float cableGlow = 0.6f;
+var rope = kit.Tinted("Places_Rope", planksPath, Hex("#8C7A58"), UnityEngine.Vector2.one); var cableMat = kit.Glow("Places_CableGlow", Hex(cableHex), cableGlow);   // unlit pale (round 2, Sable: the lit cable did not read on the passage wall; it reads cableOver grey or more, the cave frames)
 var darkMat = kit.Tinted("Places_GearDark", concrete, Hex("#2A2C2E"), UnityEngine.Vector2.one); var greenMat = kit.Tinted("Places_Generator", concrete, Hex("#3E4A36"), UnityEngine.Vector2.one); var whiteMat = kit.Tinted("Places_Cooler", concrete, Hex("#C8CCC4"), UnityEngine.Vector2.one);
 UnityEngine.GameObject Slab(string n, UnityEngine.Transform parent, UnityEngine.Vector3 world, UnityEngine.Vector3 size, UnityEngine.Material m, bool collide = false) => kit.Slab(n, parent, parent.InverseTransformPoint(world), size, m, default, collide);
 UnityEngine.GameObject Rock(string n, UnityEngine.Transform parent, UnityEngine.Vector3 world, UnityEngine.Vector3 size) => Slab(n, parent, world, size, rockMat, true);
@@ -75,42 +76,62 @@ UnityEngine.Physics.SyncTransforms();
 var leg = trails.Find("W1 to cave"); var tread = new System.Collections.Generic.List<(string name, UnityEngine.Vector3 p)>();
 if (leg != null) foreach (UnityEngine.Transform p in leg) tread.Add((p.name, p.position)); else notes.Add("no Trails/W1 to cave");
 int IndexOf(string n) { for (int i = 0; i < tread.Count; i++) if (tread[i].name == n) return i; return -1; }
+// the tread's last point off the day-one board (round 2, Marlow: P84 sat inside a plank at z 37.6 and the W1 walk waited 200 s there): moved
+// out to boardClear m past the board's outer face on the tread's own line
+const float boardClear = 0.5f; string p84Note = "none";
+{
+    var board = cave.Find("Mouth/DayOneBoard"); int last = tread.Count - 1;
+    if (board != null && last >= 1)
+    {
+        var bb = new UnityEngine.Bounds(); bool any = false; foreach (var r in board.GetComponentsInChildren<UnityEngine.Renderer>(true)) { if (!any) { bb = r.bounds; any = true; } else bb.Encapsulate(r.bounds); }
+        var p = tread[last].p; bb.Expand(0.1f);
+        if (any && bb.Contains(V(p.x, bb.center.y, p.z))) { var t = leg.Find(tread[last].name); var np = V(p.x, p.y, bb.max.z + boardClear); t.position = np; tread[last] = (tread[last].name, np); p84Note = tread[last].name + " moved to z " + F(np.z); }
+    }
+}
 
 // ================= V1: the rope rail on the drop side =================
-const float postH = 1.0f, ropeH = 0.6f, postW = 0.1f, postStep = 2f, railOff = 1.2f, railT = 0.1f; int posts = 0;
+const float railH = 1.5f, postW = 0.1f, postStep = 2f, railOff = 1.2f, railT = 0.1f, railBar = 0.04f; var railLevels = new[] { 0.5f, 1.05f, 1.5f }; int posts = 0;   // round 2 (Wren 2026-10-03, Marlow: sprint-jumped at P58 to P68, open at P52 to P56): 1.5 m posts and rails from P52, as the Camp 2 screens
 {
-    var rail = kit.Fresh("RopeRail827", poiRoot, poiRoot.position, 0f); int i0 = IndexOf("P56"), i1 = IndexOf("P70");
-    if (i0 < 0 || i1 <= i0) notes.Add("W1 to cave: no P56 to P70");
+    var rail = kit.Fresh("RopeRail827", poiRoot, poiRoot.position, 0f); int i0 = IndexOf("P52"), i1 = IndexOf("P70");
+    if (i0 < 0 || i1 <= i0) notes.Add("W1 to cave: no P52 to P70");
     else
     {
         // posts every postStep m along the tread polyline, each railOff m to its south (the drop's side), square to the tread
         var line = new System.Collections.Generic.List<UnityEngine.Vector3>(); for (int i = i0; i <= i1; i++) line.Add(tread[i].p);
         float len = 0f; for (int i = 1; i < line.Count; i++) len += UnityEngine.Vector3.Distance(line[i - 1], line[i]); int n = UnityEngine.Mathf.Max(1, UnityEngine.Mathf.RoundToInt(len / postStep));
         UnityEngine.Vector3 At(float s, out UnityEngine.Vector3 dir) { float acc = 0f; for (int i = 1; i < line.Count; i++) { float l = UnityEngine.Vector3.Distance(line[i - 1], line[i]); dir = (line[i] - line[i - 1]).normalized; if (acc + l >= s || i == line.Count - 1) return UnityEngine.Vector3.Lerp(line[i - 1], line[i], UnityEngine.Mathf.Clamp01((s - acc) / UnityEngine.Mathf.Max(1e-4f, l))); acc += l; } dir = UnityEngine.Vector3.forward; return line[0]; }
-        var feet = new System.Collections.Generic.List<UnityEngine.Vector3>();
+        var feet = new System.Collections.Generic.List<UnityEngine.Vector3>(); var tops = new System.Collections.Generic.List<float>();
         for (int k = 0; k <= n; k++)
         {
             var q = At(len * k / n, out var dir); var side = V(-dir.z, 0f, dir.x).normalized; if (side.z > 0f) side = -side;   // the south side, where the drop is
             var f = q + side * railOff; f.y = G(f.x, f.z); feet.Add(f);
-            Slab("Post", rail, f + V(0f, postH * 0.5f, 0f), V(postW, postH, postW), planks, true); posts++;
+            // railH over the tread or the foot, whichever is higher: the drop side's low ground left the old rope 0.5 m over the tread
+            float top = UnityEngine.Mathf.Max(f.y, q.y) + railH; tops.Add(top);
+            Slab("Post", rail, V(f.x, (f.y + top) * 0.5f, f.z), V(postW, top - f.y, postW), planks, true); posts++;
         }
         for (int k = 1; k < feet.Count; k++)
         {
             var a = feet[k - 1]; var b = feet[k]; var mid = (a + b) * 0.5f; float l = UnityEngine.Vector3.Distance(a, b); var rot = UnityEngine.Quaternion.LookRotation(V(b.x - a.x, 0f, b.z - a.z).normalized);
-            var r = Slab("Rope", rail, mid + V(0f, ropeH, 0f), V(0.03f, 0.03f, l), rope); r.transform.rotation = UnityEngine.Quaternion.LookRotation((b - a).normalized);
-            var box = kit.Blocker("RailBox", rail, rail.InverseTransformPoint(mid + V(0f, postH * 0.5f, 0f)), V(railT, postH, new UnityEngine.Vector2(b.x - a.x, b.z - a.z).magnitude)); box.transform.rotation = rot;
+            // three rope rails at railLevels under each post's top, and one box from the lower foot to the higher top
+            foreach (var lv in railLevels) { var pa = V(a.x, tops[k - 1] - railH + lv, a.z); var pb = V(b.x, tops[k] - railH + lv, b.z); var r = Slab("Rope", rail, (pa + pb) * 0.5f, V(railBar, railBar, UnityEngine.Vector3.Distance(pa, pb)), rope); r.transform.rotation = UnityEngine.Quaternion.LookRotation((pb - pa).normalized); }
+            float lo = UnityEngine.Mathf.Min(a.y, b.y), hi = UnityEngine.Mathf.Max(tops[k - 1], tops[k]);
+            var box = kit.Blocker("RailBox", rail, rail.InverseTransformPoint(V(mid.x, (lo + hi) * 0.5f, mid.z)), V(railT, hi - lo, new UnityEngine.Vector2(b.x - a.x, b.z - a.z).magnitude)); box.transform.rotation = rot;
         }
     }
 }
 
 // ================= V2: the bulbs =================
-const float bulbsOff = 1.8f;
+const float bulbsOff = 1.8f, treeW = 1.0f, treeH = 3.0f;
 {
     // beside the tread, bulbsOff m to its north (Wren 2026-10-03: V2 stood the dead branch on the centre line and its collider stopped the walk)
     var bulbsPoi = poiRoot.Find("POI_Coloured_bulbs"); var to = P(82.15f, 52.96f);
     { float bd = float.MaxValue; var side = P(0f, 1f); for (int i = 1; i < tread.Count; i++) { var a = P(tread[i - 1].p.x, tread[i - 1].p.z); var ab = P(tread[i].p.x, tread[i].p.z) - a; float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(to - a, ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude)); float d = UnityEngine.Vector2.Distance(to, a + ab * t); if (d < bd) { bd = d; side = P(-ab.y, ab.x).normalized; if (side.y < 0f) side = -side; } } to += side * bulbsOff; }
     if (bulbsPoi == null) notes.Add("no POI_Coloured_bulbs");
-    else { var branch = bulbsPoi.Find("DeadBranch"); var foot = branch != null ? branch.GetComponent<UnityEngine.Collider>().bounds.min.y : bulbsPoi.position.y; float rise = G(to.x, to.y) - foot; bulbsPoi.position += V(to.x - bulbsPoi.position.x, rise, to.y - bulbsPoi.position.z); }
+    else { var branch = bulbsPoi.Find("DeadBranch"); var foot = branch != null ? branch.position.y - branch.lossyScale.y : bulbsPoi.position.y;   // the cylinder's foot from its transform, so a hidden branch reads the same
+           float rise = G(to.x, to.y) - foot; bulbsPoi.position += V(to.x - bulbsPoi.position.x, rise, to.y - bulbsPoi.position.z); }
+    // the branch a real dead tree (round 2, Vesper: the grey capsule was an untextured primitive): the pack's Tree_Dead filled to treeW by
+    // treeH by treeW on the branch's foot, a box from its meshes; the capsule hidden
+    if (bulbsPoi != null) { var branch = bulbsPoi.Find("DeadBranch"); PlaceKit.Remove(bulbsPoi.Find("DeadTree")); if (branch != null) { var foot = V(branch.position.x, branch.position.y - branch.lossyScale.y, branch.position.z); branch.gameObject.SetActive(false); var dt = kit.Fill(PlaceKit.CE + "Decoration_Out/Tree_Dead", bulbsPoi, bulbsPoi.InverseTransformPoint(foot), V(treeW, treeH, treeW), 0f, true); if (dt != null) dt.name = "DeadTree"; else notes.Add("no Tree_Dead"); } }
     // the string is overhead decor: no collider (8.27 build round: beside the tread, its 2.6 m box made a step up the north slope, 18 trapped places)
     if (bulbsPoi != null) { var str = bulbsPoi.Find("BulbString"); if (str != null) foreach (var c in str.GetComponents<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c); }
 }
@@ -278,18 +299,27 @@ const float narrowOver = 3.0f, narrowNear = 1.5f, narrowH = 4f, narrowStep = 2.6
 
 // ================= V11: the rim band =================
 // hedgeT 1.2 (first run 0.6): the thin boxes left a one-place pocket where two met at an angle, (71.8, 57.8), a trap
-const float rimUp = 3f, rimUpStep = 0.5f, rimX0 = 54f, rimX1 = 80f, rimStep = 1f, rimZ0 = 55f, rimZ1 = 62f, rimTop = 15.5f, rimTie = 2f, hedgeH = 2f, hedgeT = 1.2f, brushH = 1.5f, brushStep = 1.4f; int hedgeBoxes = 0, brush = 0;
+const float rimWest = 26f, rimEast = 92f, rimLook = 6f, rimBelowTop = 1f, rimUp = 3f, rimUpStep = 0.5f, rimX0 = 54f, rimX1 = 80f, rimStep = 1f, rimZ0 = 55f, rimZ1 = 62f, rimTop = 15.5f, hedgeH = 2f, hedgeT = 1.2f, brushH = 1.5f, brushStep = 1.4f; int hedgeBoxes = 0, brush = 0;
 {
     var stops = ground815 != null ? ground815.Find("Stops") : null; if (stops == null) { notes.Add("no Ground815/Stops"); }
     else
     {
-        var hedge = kit.Fresh("Hedge_CaveRim", stops, V((rimX0 + rimX1) * 0.5f, 0f, 58.5f), 0f);
+        var hedge = kit.Fresh("Hedge_CaveRim", stops, V((rimWest + rimEast) * 0.5f, 0f, 58.5f), 0f);
         // a box's top hedgeH over the highest ground rimUp m north of it (uphill): the flood stood on boxes whose top was hedgeH over the
         // face's own lip (8.27 first run: 78 stands on Hedge_CaveRim)
         float Uphill(UnityEngine.Vector3 p) { float m = p.y; for (float dz = 0f; dz <= rimUp + 1e-3f; dz += rimUpStep) m = UnityEngine.Mathf.Max(m, G(p.x, p.z + dz)); return m; }
         // the band's line: at each x, the first z (going north from rimZ0) where the ground reaches rimTop, the top of the steep face
         var line = new System.Collections.Generic.List<UnityEngine.Vector3>();
-        for (float x = rimX0 - rimTie; x <= rimX1 + rimTie + 1e-3f; x += rimStep) { float zz = rimZ1; for (float z = rimZ0; z <= rimZ1; z += 0.25f) if (G(UnityEngine.Mathf.Clamp(x, rimX0, rimX1), z) >= rimTop) { zz = z; break; } line.Add(V(x, G(x, zz), zz)); }
+        // past x rimX0 to rimX1 (where the face tops out at rimTop) the band runs on west to rimWest and east to rimEast (Wren 2026-10-03,
+        // Marlow's 8.27 gate: open ends let a sprint slide down the north wall to the mouth): there its line is the first z north of rimZ0
+        // within rimBelowTop of the highest ground up to rimLook m past rimZ1
+        for (float x = rimWest; x <= rimEast + 1e-3f; x += rimStep)
+        {
+            float zz = rimZ1;
+            if (x >= rimX0 && x <= rimX1) { for (float z = rimZ0; z <= rimZ1; z += 0.25f) if (G(x, z) >= rimTop) { zz = z; break; } }
+            else { float top = float.MinValue; for (float z = rimZ0; z <= rimZ1 + rimLook; z += 0.25f) top = UnityEngine.Mathf.Max(top, G(x, z)); for (float z = rimZ0; z <= rimZ1 + rimLook; z += 0.25f) if (G(x, z) >= top - rimBelowTop) { zz = z; break; } }
+            line.Add(V(x, G(x, zz), zz));
+        }
         for (int i = 1; i < line.Count; i++)
         {
             var a = line[i - 1]; var b = line[i]; var mid = (a + b) * 0.5f; float l = new UnityEngine.Vector2(b.x - a.x, b.z - a.z).magnitude; float lo = UnityEngine.Mathf.Min(a.y, b.y) - 0.3f, hi = UnityEngine.Mathf.Max(Uphill(a), Uphill(b)) + hedgeH;
@@ -302,6 +332,56 @@ const float rimUp = 3f, rimUpStep = 0.5f, rimX0 = 54f, rimX1 = 80f, rimStep = 1f
             var g = kit.Ground(PlaceKit.CS + "Vegetation/CS_Bush_Large_" + (1 + brush % 2), hedge, line[i].x, line[i].z, i * 53f, 1f, false, 0.1f); if (g == null) continue;
             var gb = PlaceKit.MeshBounds(g); g.transform.localScale *= brushH / UnityEngine.Mathf.Max(0.1f, gb.size.y); PlaceKit.StripColliders(g); brush++;
         }
+    }
+}
+
+// ================= V13: the cave reads as rock (round 2, Vesper and Sable, Wren 2026-10-03) =================
+// the void: the near-black void material only on the first voidLen m inside the mouth (z voidZ0 to the mouth); the rest of the entrance
+// passage takes the cave rock. The entrance's Floor, Ceiling and Wall_W span both, so each is hidden and built again as two boxes under
+// Layout827/VoidSplit (rerun-safe: the originals are read from their transforms); the niche's north wall piece takes the void.
+// the chamber floor: its own seamless ground material (Ground054; the cave rock texture is not seamless, and its tile edge ran down the walk
+// line), tinted floorHex, tiled floorTile with an offset. The pack boulders take the cave's tint (boulderHex): untinted they read pale and floating.
+// rock against the box: pack boulders at the passage's west wall and ceiling, round the leg 1 opening (a ragged edge), and at the chamber's
+// walls, corners and ceiling, kept off the strips, the cable, the openings and his things. Those a body can reach carry convex hulls.
+const float voidZ0 = 33.4f, floorTile = 3f, floorOffX = 0.21f, floorOffZ = 0.37f; int rockPieces = 0; const string groundPath = "Assets/Materials/Ground054_25.0x25.0.mat", floorHex = "#6A655E", boulderHex = "#6E6862";
+{
+    var voidMat = kit.Tinted("Places_CaveVoid", rocks, Hex("#101214"), UnityEngine.Vector2.one);
+    var vs = kit.Group("VoidSplit", L, L.position, 0f); var ent2 = cave.Find("Entrance");
+    foreach (var n in new[] { "Floor", "Ceiling", "Wall_W" })
+    {
+        var t = ent2 != null ? ent2.Find(n) : null; if (t == null) { notes.Add("no Entrance/" + n); continue; }
+        var b = BoxOf(t); t.gameObject.SetActive(false);
+        if (b.max.z <= voidZ0 || b.min.z >= voidZ0) { var whole = Slab(n, vs, b.center, b.size, b.min.z >= voidZ0 ? voidMat : rockMat, true); continue; }
+        Slab(n + "_Rock", vs, V(b.center.x, b.center.y, (b.min.z + voidZ0) * 0.5f), V(b.size.x, b.size.y, voidZ0 - b.min.z), rockMat, true);
+        Slab(n + "_Void", vs, V(b.center.x, b.center.y, (voidZ0 + b.max.z) * 0.5f), V(b.size.x, b.size.y, b.max.z - voidZ0), voidMat, true);
+    }
+    // every other entrance box (the south end wall, the short east wall by leg 1): void only if it lies wholly in the first voidLen m
+    if (ent2 != null) foreach (UnityEngine.Transform t in ent2) if (t.gameObject.activeSelf) { var r = t.GetComponent<UnityEngine.Renderer>(); if (r != null) r.sharedMaterial = BoxOf(t).min.z >= voidZ0 ? voidMat : rockMat; }
+    var wen = L.Find("Niche/Wall_E_N"); if (wen != null) wen.GetComponent<UnityEngine.Renderer>().sharedMaterial = voidMat;
+    var cf = cave.Find("Chamber/Floor"); if (cf != null) { var fm = kit.Tinted("Places_CaveFloor_Chamber", groundPath, Hex(floorHex), new UnityEngine.Vector2(floorTile, floorTile)); fm.SetTextureOffset("_BaseMap", new UnityEngine.Vector2(floorOffX, floorOffZ)); cf.GetComponent<UnityEngine.Renderer>().sharedMaterial = fm; } else notes.Add("no Chamber/Floor");
+    // the pieces: (prefab, world centre, largest side, yaw, a body reaches it)
+    var rg = kit.Group("RockBreakup", L, L.position, 0f); var boulderMat = kit.Tinted("Places_CaveBoulder", rocks, Hex(boulderHex), UnityEngine.Vector2.one);
+    var rockSet = new (string pf, UnityEngine.Vector3 c, float s, float yaw, bool solid)[] {
+        // entrance passage: the west wall (clear of the drip at z 28 and the day-2 boards at z 34 to 37.2), the ceiling, the leg 1 opening
+        ("BigBoulders_1", V(50.2f, -5.2f, 22.6f), 1.6f, 20f, true), ("BigBoulders_3", V(50.2f, -5.3f, 25.6f), 1.4f, 110f, true), ("BigBoulders_4", V(50.2f, -5.2f, 30.8f), 1.6f, 250f, true),
+        ("Boulder_2", V(52.0f, -1.9f, 24.0f), 1.6f, 40f, false), ("Boulder_4", V(51.4f, -1.9f, 28.6f), 1.4f, 160f, false), ("Boulder_1", V(52.4f, -1.9f, 32.2f), 1.5f, 300f, false),
+        ("BigBoulders_2", V(53.7f, -4.2f, 20.1f), 1.4f, 70f, true), ("BigBoulders_0", V(53.8f, -2.5f, 22.0f), 1.8f, 200f, false), ("BigBoulders_5", V(53.7f, -4.8f, 23.9f), 1.3f, 330f, true),
+        // chamber: south wall, west wall south of the opening, the south-east corner, the east wall between the doorway and the stack, behind
+        // the seat shelf, the north-east corner behind the stack
+        ("BigBoulders_1", V(74.5f, -17.2f, 2.6f), 2.6f, 15f, true), ("BigBoulders_3", V(79.0f, -17.3f, 2.6f), 2.2f, 95f, true), ("BigBoulders_4", V(89.4f, -17.0f, 2.6f), 2.4f, 140f, true),
+        ("BigBoulders_2", V(70.6f, -17.1f, 6.5f), 2.4f, 220f, true), ("BigBoulders_5", V(89.3f, -17.4f, 15.0f), 1.8f, 280f, true), ("BigBoulders_0", V(90.2f, -16.6f, 6.0f), 3.0f, 60f, true),
+        ("BigBoulders_3", V(89.5f, -17.0f, 21.5f), 2.5f, 175f, true),
+        // chamber: high on the walls (over every reach) and the ceiling, so the hall is not a box
+        ("BigBoulders_4", V(82.0f, -13.0f, 2.9f), 3.0f, 35f, false), ("BigBoulders_1", V(77.0f, -12.8f, 21.2f), 3.5f, 250f, false), ("BigBoulders_2", V(70.8f, -13.0f, 17.0f), 3.0f, 125f, false),
+        ("BigBoulders_5", V(89.2f, -13.0f, 12.0f), 3.0f, 10f, false), ("BigBoulders_0", V(75.0f, -10.3f, 7.0f), 4.0f, 75f, false), ("BigBoulders_3", V(80.0f, -10.5f, 17.0f), 4.5f, 200f, false),
+        ("BigBoulders_4", V(84.0f, -10.2f, 9.0f), 3.5f, 310f, false), ("BigBoulders_1", V(77.0f, -10.6f, 13.0f), 3.0f, 130f, false), ("BigBoulders_2", V(86.5f, -10.4f, 15.0f), 3.0f, 45f, false) };
+    foreach (var (pf, c, s, yaw, solid) in rockSet)
+    {
+        var g = kit.Spawn(PlaceKit.BK + "Rocks/" + pf, rg); if (g == null) continue; PlaceKit.StripColliders(g); foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) { var ms = r.sharedMaterials; for (int i = 0; i < ms.Length; i++) ms[i] = boulderMat; r.sharedMaterials = ms; }
+        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, yaw, 0f); var b0 = PlaceKit.MeshBounds(g); g.transform.localScale *= s / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b0.size.x, UnityEngine.Mathf.Max(b0.size.y, b0.size.z)));
+        var b1 = PlaceKit.MeshBounds(g); g.transform.position += c - b1.center;
+        if (solid) { var lodg = g.GetComponentInChildren<UnityEngine.LODGroup>(); foreach (var r in g.GetComponentsInChildren<UnityEngine.MeshRenderer>()) { if (lodg != null && lodg.GetLODs().Length > 0 && System.Array.IndexOf(lodg.GetLODs()[0].renderers, r) < 0) continue; var mf = r.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; mc.convex = true; } }
+        rockPieces++;
     }
 }
 
@@ -342,4 +422,4 @@ UnityEngine.Physics.SyncTransforms();
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " | removed " + removed + (missing.Count > 0 ? " (not found, likely gone already: " + string.Join(", ", missing) + ")" : "") + " | rail posts " + posts + " | cable runs " + cableRuns + " | bulbs " + bulbs + " | narrow rocks " + narrowRocks
-    + " | rim hedge boxes " + hedgeBoxes + ", brush " + brush + " | usables " + uses + " | mouth strip trees: " + treeNote + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    + " | rim hedge boxes " + hedgeBoxes + ", brush " + brush + " | usables " + uses + " | mouth strip trees: " + treeNote + " | rock pieces " + rockPieces + " | " + p84Note + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

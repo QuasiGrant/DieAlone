@@ -35,7 +35,7 @@ var start = pc.transform.position; var startRot = pc.transform.rotation; bool pc
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y;
 var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Settings/PlayerTuning.asset");
 const float dt = 0.02f, arrive = 0.5f, legTime = 200f, eyeH = 1.6f, floorY = -18f;
-const float railOff = 1.2f, railTol = 0.25f, footTol = 0.2f, stripTop = 0.3f, coverMin = 2.3f, lidMax = 0.1f, shovelMax = 0.3f, clearTop = 0.3f, landSpan = 30f, tallStep = 0.25f, wallFace = 88.95f, roomFace = 89.55f, headUp = 1.5f, talkCone = 10f, narrowMin = 1.4f, gapMax = 0.6f, rimStep = 2f;
+const float railOff = 1.2f, railTol = 0.25f, footTol = 0.2f, stripTop = 0.3f, coverMin = 2.3f, lidMax = 0.1f, shovelMax = 0.3f, clearTop = 0.3f, landSpan = 30f, tallStep = 0.25f, wallFace = 88.95f, roomFace = 89.55f, headUp = 1.5f, talkCone = 10f, narrowMin = 1.4f, gapMax = 0.6f, rimStep = 2f, rimBeyond = 6f, rimSprint = 2f, rimFloorY = -3.5f; var rimHeadings = new[] { 150f, 180f, 210f, 240f };
 var sb = new System.Text.StringBuilder(); int fails = 0; void Line(bool ok, string s) { if (!ok) fails++; sb.Append((ok ? "PASS " : "FAIL ") + s + "\n"); }
 var temps = new System.Collections.Generic.List<UnityEngine.Collider>();
 var cave = Root("Cave") != null ? Root("Cave").transform : null; var L = cave != null ? cave.Find("Layout827") : null; var poiRoot = Root("PointsOfInterest").transform; var trails = Root("Trails").transform;
@@ -201,11 +201,21 @@ try
             var targets = new[] { V(52f, -4.0f, 37.6f), V(50.6f, -5.0f, 37.9f), V(53.4f, -5.0f, 37.9f), V(52f, -5.9f, 38.4f) };   // the board, the void's edges, the floor
             var eyes = new System.Collections.Generic.List<UnityEngine.Vector3>(); var lineZ = new System.Collections.Generic.Dictionary<int, float>(); var lineMinZ = new System.Collections.Generic.Dictionary<int, float>();
             foreach (UnityEngine.Transform t in hedge) if (t.name == "HedgeCollider") { var b = t.GetComponent<UnityEngine.Collider>().bounds; int kx = UnityEngine.Mathf.RoundToInt(b.center.x); lineZ[kx] = b.max.z; lineMinZ[kx] = lineMinZ.TryGetValue(kx, out var mz) ? UnityEngine.Mathf.Min(mz, b.min.z) : b.min.z; }
-            for (float x = 58f; x <= 78f + 1e-3f; x += rimStep) { int k = UnityEngine.Mathf.RoundToInt(x); if (!lineZ.ContainsKey(k)) continue; float z = lineZ[k] + 0.6f; eyes.Add(V(x, H(x, z) + eyeH, z)); }
+            // eyes every rimStep m along the whole band and rimBeyond m past both ends (round 2, Marlow: open ends let a sprint slide down the
+            // north wall to the mouth); each sprints south and at rimHeadings for rimSprint s, twice; it slid down when it ends on the ravine floor
+            // (under rimFloorY; the slopes west and east of the cave fall elsewhere and are not the mouth)
+            int xMin = int.MaxValue, xMax = int.MinValue; foreach (var k in lineZ.Keys) { xMin = UnityEngine.Mathf.Min(xMin, k); xMax = UnityEngine.Mathf.Max(xMax, k); }
+            for (float x = xMin - rimBeyond; x <= xMax + rimBeyond + 1e-3f; x += rimStep) { int k = UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(x), xMin, xMax); if (!lineZ.ContainsKey(k)) continue; float z = lineZ[k] + 0.6f; eyes.Add(V(x, H(x, z) + eyeH, z)); }
             var rays = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3)>(); foreach (var e in eyes) foreach (var t in targets) rays.Add((e, t)); TempColliders(rays);
             int seen = 0; foreach (var e in eyes) foreach (var t in targets) if (ClearLine(e, t, null)) seen++; DropTemps();
-            int crossed = 0; foreach (var e in eyes) { var from = e - V(0f, eyeH, 0f); Put(from); for (float t = 0f; t < 3f; t += dt) pc.Step(V(0f, 0f, -1f), true, true, dt); var end = pc.transform.position; int ke = UnityEngine.Mathf.RoundToInt(end.x); if (lineMinZ.TryGetValue(ke, out var southZ) ? end.z < southZ : end.z < from.z - 1.2f) crossed++; }   // past: south of the band's boxes at the end's own x (round 2: a 1.2 m drop alone counted walks along a zigzag line)
-            Line(eyes.Count > 0 && seen == 0 && crossed == 0, "RIM: " + eyes.Count + " eyes on the band's north side, clear lines to the mouth " + seen + " of " + (eyes.Count * targets.Length) + "; sprint-jumps south past the band " + crossed);
+            int crossed = 0; string firstSlide = "";
+            foreach (var e in eyes) foreach (var hd in rimHeadings)
+            {
+                var from = e - V(0f, eyeH, 0f); Put(from); var dir = UnityEngine.Quaternion.Euler(0f, hd, 0f) * UnityEngine.Vector3.forward;
+                for (int s = 0; s < 2; s++) for (float t = 0f; t < rimSprint; t += dt) pc.Step(dir, true, true, dt);
+                var end = pc.transform.position; if (end.y < rimFloorY) { crossed++; if (firstSlide == "") firstSlide = " (first: from (" + F1(from.x) + ", " + F1(from.z) + ") heading " + F1(hd) + " to (" + F1(end.x) + ", " + F1(end.y) + ", " + F1(end.z) + "))"; }
+            }
+            Line(eyes.Count > 0 && seen == 0 && crossed == 0, "RIM: " + eyes.Count + " eyes on the band's north side, clear lines to the mouth " + seen + " of " + (eyes.Count * targets.Length) + "; sprints to the ravine floor, south and at " + rimHeadings.Length + " headings, twice, from the band and " + F1(rimBeyond) + " m past its ends: " + crossed + firstSlide);
         }
     }
     // ---- WALKS

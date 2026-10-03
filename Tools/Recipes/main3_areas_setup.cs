@@ -284,7 +284,7 @@ var caveArea = new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave
         FR("SPUR_DESCENT WARP LANDING, FACING 250", V(77.3f, G, 48.6f), Hd(V(77.3f, 0f, 48.6f), 250f, -2.0f)) },
     walkLines = new[] { WL("the descent", V(52f, -6f, 37f), V(52f, -6f, 22f), V(68f, -10f, 22f), V(68f, -10f, 17f), V(52f, -14f, 17f), V(52f, -14f, 12f), V(68f, -18f, 12f), V(71f, -18f, 12f)),
         WL("the chamber to the side room", V(71f, -18f, 12f), V(89.25f, -18f, 12f), V(92.0f, -18f, 12f)) },
-    playChecks = new[] { "main3_8_27_cave_check.cs" },
+    playChecks = new[] { "main3_8_27_cave_check.cs", "main3_8_27_cave_frames.cs?look=Day_one", "main3_8_27_cave_frames.cs?look=Day_two" },
     inventory = new[] { "Cave lights" }, deckListWritten = true, deckSee = none,
     deckHide = new[] { D("mouth", 52f, -4.5f, 37.9f), D("boards", 52f, -4.4f, 37.6f), D("jamb top", 57.7f, -0.2f, 37.9f), D("bulbs", 82.15f, 6.5f, 52.96f), D("toilet", 47.64f, -5.85f, 41.2f),
         D("rope rail", 70.9f, 0.7f, 44.0f), D("spur below the rise", 65f, -0.5f, 47.3f), D("ravine floor", 60f, -5.8f, 40f) } };
