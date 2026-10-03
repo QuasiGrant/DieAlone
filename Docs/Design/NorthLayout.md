@@ -50,6 +50,21 @@ A full round is 559 m and 224 s, plus stops. Chase: tent door to the loop in 8.8
 3. **Found frames:** F1 Jg trail heading 31 into the clearing: table, cookfire, spar. F2 table heading NW: blaze. F3 (239.8, 261.5) heading 298: forage C, 14.9 m, 17 degrees off (RedFir8 (237.95, 267.41) 2.9 m off the line; no known sapling within 0.5 m). F4 = N14. F5 side-path mouth (168.1, 267.1) heading 9: doorway and report box. F6 = N9's line. F7 = N10's. F8 = N12's. F9 (130.5, 259.5): SS3.
 4. **Deck must-see:** spar top (284, 29, 240) is **hard once Rook's mesh rays clear it.** Today Grove_C1Ring Sequoia3 (256.3, 219.7) and Sequoia5 (247.1, 220.9) stand 1.4 to 4.7 m off its line at 36 m up. If the rays are blocked, those two move 6 m outward round the ring and their spots become K. Loose: kid's table (285.2, 5.8, 236.5), tent (271, 6.5, 234.5), tripod (276, 6.3, 232). **Must-hide, pixel check with the 20 m control:** north ruin (172, 4, 281); SS1 (251.6, G+0.3, 272.0); SS2 (150.5, G+0.5, 276.5); SS3 (132.3, G+0.3, 262.3). The loop may read as a trail.
 5. **Sightline:** no tower from the ruin's warp, doorway or inside (8.16b: 0 px). Rerun after N13 to N15. The ruin's inventory count changes.
+## 5a. Round 2: tower screens (2026-10-02, from Rook's LoopLeg.md and Checks.md)
+1. **Why the ruin must not see the tower:** Quill 12: "no tower anywhere in view from it". It is the one place on the map that stands outside the keeper's watch both ways, and the private ruin beats rest on that. The deck side already passes (pixel: the ruin seen from 0 of 128 eyes). The need is real for **the ruin itself: the doorway, the report box stand and the room**. It is **not** needed at the North_Loop_Ruin warp: that is a dev warp on the loop, 11 m south of the doorway, and the loop may see the tower (at J it is the way home). So the warp drops out of NO TOWER FROM THE RUIN.
+2. **Two screen firs**, under Places/NorthLoop/TowerScreen (outside Forest, so 8.19 never rebuilds them), each with a keep-out of r 1.5 in 8.19's spot test:
+
+| # | Type, height | Position (ground about 3.5) | Covers | Clear of |
+|---|---|---|---|---|
+| TS1 | BK RedFir8 at scale 1.5, about 16 m, crown from about 4 m up | (169.1, 260.9) | the doorway and stand lines to the cab (bearings 183.0 and 183.2) where they cross z 260.9 at x 168.9 to 169.2 and heights 13.4 to 14.1. The same crown cuts the loop's line at m 130 to 132 (x 169.4, height 7.9) | 5.5 m south of the loop tread; south of the side path's end; 20 m from the ruin centre (the sky gap holds); far off the stovepipe line (its west end is x 171.4, z 283.4) and the spar-top line |
+| TS2 | BK RedFir5 at scale 1.0, about 9 m | (178.5, 263.8) | the loop's line at m 120 (eye (179.4, 269.7), bearing 188.4), height about 8.1 there | 4.5 m off the loop tread; 18 m from the ruin centre |
+
+3. Each trunk stands 1.2 m or more from every other trunk and collider and from the tread edge (the spacing rule); Rook nudges up to 0.5 m along its line to meet it. No tree is removed.
+4. **Result wanted** (Rook's machine check decides):
+   - the doorway, stand and room at 0 px;
+   - LOOP-LEG unbroken from m 104 to m 132 (28 m) with both firs, and at least m 104 to 129 (25 m) with TS2 alone;
+   - m 93 to 103 may keep its view: the run already clears 20 m without it;
+   - the deck pixel checks (ruin, SS1 to SS3) and the spar top re-run unchanged.
 ## 6. Borrowed, and what none of them do
 Firewatch: an empty camp and another keeper's ruin. Boba Teashop and Kiosk: a counter with one customer, here a child's table and a bear. Dredge: the rotating forage spot. Fears to Fathom: a real-scale family pitch. Papers, Please: the deck checks his spar. None put your far food patch between a child's camp and a dead keeper's cabin, so feeding yourself means passing both.
 ## 7. Open questions
