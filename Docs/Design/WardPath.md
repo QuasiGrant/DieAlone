@@ -1,14 +1,44 @@
 # WardPath: the Ward walk and the ledge, redesigned
-**DRAFT 2, 2026-10-01, Sable.** Folds in Marlow (WardPath_Marlow.md: 3 blocks, 6 hurts), Vesper and Quill (below). Grant, 2026-10-01: "The ward scene and walk up the ward path is the worst." Replaces Valley.md rev 11 1.6 and 4 and ClimbFix.md 1 to 4. Drawing: WardPath.svg. Binding: DECISIONS 2026-09-25, 09-29 (Ward higher than the tower; land hides the fire; night-one reveal), 09-30 (small, never oppressive). Nothing here is decided until it is a dated line in DECISIONS.md and Grant confirms.
+**DRAFT 3, 2026-10-02, Sable (PLAN 8.29).** Draft 2 is built. Draft 3 is a change list against that build (section 0), from Marlow's survey of it (Docs/Review/2026-10-02-Areas/829_Marlow_ground.md), which replaces the paper round. What it passed stands:
+- the route, 116 to 121 s from camp, under 150;
+- the day closure;
+- the deck sees neither the Ward nor the fire (0 of 128 on every target);
+- nothing north of the fallen giant is reachable except by C6's gap;
+- the flights, rails, prow and stones as built.
+
+Sections 1 to 5 are draft 2, with C9's numbers corrected in place.
+## 0. Change list against the build (Rook builds from this)
+| # | What, where (name and position) | Change | Why |
+|---|---|---|---|
+| C1 | **Ward/CairnGate/GateBlocker (IW2)**, box at (86.00, 13.54, 213.00), 0.50 x 4.00 x 3.40 | **A script switches it.** It is **on** in every day look (Day one, Day two) and **off** in the Night look: the same switch as the lit cairn lamp, LookVisibility Night. It turns on only at wake, with the player in the cabin. If a dev warp puts the player west of x 86.5 by day, it stays off until the player is east of x 87. | Marlow block 1: nothing turns it off, so J to the prow can never be walked |
+| C1a | **The chain** at (86, 13.44, 213) | **By day:** hooked taut across the gap between the two rock arms at 0.9 m, a padlock on the north arm's hook, no sign. IW2 stands behind it and says nothing (Valley 8). **By night:** unhooked, lying slack in a coil at the north arm's foot, nothing across the tread; the cairn lamp lit. Neither state has a collider of its own. | the stop the player sees, both states |
+| C2 | **Throat rocks,** no colliders, on the tread (chainage 149.6 to 170.9): FaceRock BigBoulders_2 (16.24, 265.64), Boulder_2 (8.10, 264.05), Boulder_2 (13.53, 263.98), BigBoulders_2 (18.67, 263.23), Boulder_0 (10.12, 266.90), BigBoulders_1 (6.13, 266.69), Boulder_1 (20.68, 259.98), BigBoulders_3 (22.67, 263.71), BigBoulders_2 (6.38, 263.50), Boulder_0 (4.66, 268.45), Boulder_0 (14.84, 266.88) | **Move each** straight away from the tread centreline until no vertex comes within 0.9 m of it (the 0.7 half tread plus 0.2), seated on the cleft wall. Where the slot is too narrow for that, scale the rock down until it fits. No hulls: these stay Stops visuals and the cleft walls hold. | Marlow hurt 2: the body walks through rock up to 1.25 m deep |
+| C2a | **Rock/BandScree/BigBoulders_4** (84.20, 13.56, 215.46) at the gate | moves 1.1 m north, to z 216.6 against the north rock arm, clear of the tread by 0.2 m | the same; it enters the tread 0.59 m |
+| C3 | **Ward/WardPath/FallenGiant/RunBench/Collider**, capsule x 33.0 to 61.5, r 1.5 at (y 42.17, z 272.0) | **Refit to the visible log:** r 3.8, axis at (y 42.25, z 271.8), the same x run, ends buried as built. Its south face is at z 268.0, 4 m north of landing 1's north rail (z 264). | Marlow hurt 3: the log is r 3.5 to 4, so a walker reached 2 to 2.5 m into the bark |
+| C4 | **Landing 2 hide** (new): Ward/WardPath/Landing2_Overhang | One BK BigBoulders at 0.55, the P1_Overhang pattern, against the west face beside landing 2 (32.5, 247, floor 49). Its underside is 2.0 m over the landing and it has a convex hull. Under it, a covered standing spot 1.2 x 1.2 m at about (31.0, 247.0), reached from the landing. Rook fits it to the face. | Marlow hurt 4: the hollow under flight 3 was not built |
+| C4a | **Landing 1 hide** (new): Ward/WardPath/Landing1_Overhang | the same, against the west face beside landing 1 (35, 262, floor 44), standing spot about (33.6, 262.0), inside the rails. RedFir_Bent stays as dressing. | landing 1's hide was unclear; this is also Quill's second place above landing 1 |
+| C5 | **W foot band at the chute:** Rock/Band_W_N where the draw cuts it, about x 76.5 to 81.5, z 216 to 219 (band top 16 to 17 against the chute floor 15.8 at (79, 214)) | **Close it with a visible stop:** a rock piece in the Rock root on the band's cut face, owned rock texture, top 19.5 (about 3.7 m over the chute floor; the band rule). The same on the south cut face (z 207 to 210) if the band top there is within 2 m of the chute floor. | Marlow hurt 5: the band top is a second way off the walk at night. **Closed, not accepted:** the band is the map's west boundary and must never be a path; a night shortcut off the walk also breaks the "you cannot leave the climb" rule |
+| C6 | **Ward/WardPath/FallenGiant/RimTie**, box (58.75, 38.91, 272.00), x 55.5 to 62.0 | **Extend east** from x 62.0 to the first ground over 45 degrees on z 272, about x 64 to 66 (Marlow reads it); same top (43.95) and depth | Marlow hurt 6: a slope at x 62.5 walks past the RimTie's east end, north to the 3 m² pocket at (63.0, 278.8). Closing the gap takes the pocket out of reach |
+| C7 | **Ward/WardPath/Flight3/RailE/RailCollider**, a 9.3 m slab | refit to a pitched box following the treads, top 1.1 m over each tread, like the StairRamp | invisible-wall rule (Valley 8) |
+| C8 | **J to Ward markers P2 and P4,** 0.36 m over the ground | reseat on the ground | cosmetic |
+| C9 | **Numbers** | Camp to the prow 289.5 m in plan, 116 to 121 s. J to the prow 198.3 m in plan. Flight 1 24 degrees. Seep 50, rune post 81.6, landing 1 109.8, landing 2 124.5, lookout 144, fin exit 178.5, prow 197.9. Largest gap 28.1 m (11 s). IW2 3.4 m wide (it fills the built gap). | Marlow 8 |
+| C10 | **Beat 0** | The "old giant at the gap" is not built and is dropped. The gate rests on the cairn and the chain. | Marlow 9 |
+
+**Checks after the build:**
+- the night flood from every trail reaches the prow and back;
+- the day flood stops at the chain;
+- the hand walk confirms C5 and C6 closed and the pocket gone;
+- the walk-into check counts the C2 rocks (none on the tread);
+- the deck checks are unchanged. Folds in Marlow (WardPath_Marlow.md: 3 blocks, 6 hurts), Vesper and Quill (below). Grant, 2026-10-01: "The ward scene and walk up the ward path is the worst." Replaces Valley.md rev 11 1.6 and 4 and ClimbFix.md 1 to 4. Drawing: WardPath.svg. Binding: DECISIONS 2026-09-25, 09-29 (Ward higher than the tower; land hides the fire; night-one reveal), 09-30 (small, never oppressive). Nothing here is decided until it is a dated line in DECISIONS.md and Grant confirms.
 ## 1. The walk (camp to the stones, every night)
 Firewatch's trail to the lookout: forest, timber, a view earned. Five beats, each with its own ground, light and sound. Reference images: Hoh rainforest creek gullies (beat 1), Yosemite Mist Trail steps (3), Friedrich's Wanderer above the Sea of Fog (5).
 
 | Beat (chainage from J) | Do | See | Feel |
 |---|---|---|---|
-| 0. Gate, 0 to 20 | cairn lamp lit, chain down | one old giant at the gap in the rock band, dark beyond | the job is not over |
+| 0. Gate, 0 to 20 | cairn lamp lit, chain down in a coil | the gap in the rock band, dark beyond | the job is not over |
 | 1. The draw, 20 to 54, W | up a fir gully on log steps beside a dry stony bed | banks 3 to 5 m high, firs within 8 m both sides, crowns closing to a strip of sky; a trickle you hear and never see; the seep and tin cup at the head (54) | sheltered; your lamp on ferns |
 | 2. The shelf, 54 to 97, N then W (as built to the turn, graded B) | along the rib, the drop on your right; turn west across the bench at the rune post (82) | the whole valley, the tower cab level with you; ahead, a lantern at the stair foot and a fallen giant lying across the old way north | on show; wind |
-| 3. The stair, 97 to 144 | three flights cut into the face: N, back S, N | landing 1 (114): lantern, the bent fir across the corner, its overhang to hide in. Landing 2 (129): lantern, a hollow under flight 3 to hide in, the valley through firs | effort; breath; the lamp swings |
+| 3. The stair, 97 to 144 | three flights cut into the face: N, back S, N | landing 1 (110): lantern, the bent fir across the corner, a rock overhang on the face to hide under (C4a). Landing 2 (124.5): lantern, a rock overhang to hide under (C4), the valley through firs | effort; breath; the lamp swings |
 | 4. Lookout and throat, 144 to 179 | the top: a plank floor with a rail, facing east; then through the split snag into the cleft | cab, cabin window, lot lights, highway (one car on night 1); then rock, a sky strip, the insects cut at the dogleg (18, 262) | last look; then silence |
 | 5. The ledge, 179 to 199 | round the fin; walk to the prow | the fire (section 2) | the job was never the fire lookout |
 
@@ -33,13 +63,13 @@ Night 1 (WARD 12) is the baseline: nothing changed, the car passes once (trigger
 | Gate | J (104, 206) 10 to (86, 213) 12 | 20 m | dirt | W foot band and IW2 as built |
 | Draw | (86, 213), (70, 213), P1 (52, 216) 30 | 34 m, 30 percent | fill both flats (16) so each bank stands 3 to 5 m over the tread within 6 m, laid back 30 degrees or less; bank tops are open forest that drains back to the tread, no rim | log steps, a StairRamp on each |
 | Shelf and bench | P1, (55, 244), stair foot (41, 246) 39 | 43 m | as built; bench 35 to 41 | shelf rims as built |
-| Flight 1 | to landing 1 (35, 262) 44 | 17 m, 17 degrees | a 2.5 m bench cut and filled into the face along the line | crib logs on the downhill edge |
+| Flight 1 | to landing 1 (35, 262) 44 | 18.2 m, 24 degrees (as built) | a 2.5 m bench cut and filled into the face along the line | crib logs on the downhill edge |
 | Flight 2 | to landing 2 (32.5, 247) 49 | 15 m, 18 degrees | cut bench | crib logs |
 | Flight 3 | to the top (29, 262) 60 | 15 m, 36 degrees | stair on stringers set into the face; one notch through the rock band at x 31.5 to 32 (50 to 57), cut faces under 5 m | posts 1.5 m or less |
 | Lookout | the top, (27 to 31, 258 to 264), flush with ground | 5 m | planks | rail 1.0 m |
 | Throat | split snag (25.5, 262), cleft entry (24, 262), cleft and fin as built | 34.5 m | bare stone | dressing only |
 | Ledge | fin exit (4, 257.3) to the prow (-12, 246) 62 | 20 m | stone | lip rim 1.1 m; prow rail (2.2) |
-1. J to the prow 199 m; camp to the prow 279 m, about 115 s at walk (2.5 m/s) with slope. Ceiling 150 s. Largest gap between landmarks 34 m (gate to seep), 14 s.
+1. J to the prow 198.3 m in plan; camp to the prow 289.5 m in plan, 116 to 121 s (Marlow, as built). Ceiling 150 s. Largest gap between landmarks 28.1 m (P1 lantern to rune post), 11 s.
 2. **Closing the old loop:** a fallen giant (BK Sequoia laid down, root plate up) runs continuous at z 272 from the crest face at x 22, across leg 4's tread, down the face and across the whole bench to the east drop at x 59, tied into the shelf's valley rim; collider 1.3 m over ground on both sides, ends buried 2 m into faces over 50 degrees. Everything north of it (old shelf, P2, the cwm, leg 4) is unreachable; the P2 trap is behind it.
 3. **Falls:** every flight, landing and the lookout stand on ground or posts of 1.5 m or less, all south of z 266. A fall off any of them slides down the face onto the open bench south of the giant, 20 m or less from the stair foot. No soft lock; rails are for the eye. No collider within 3 m of the face foot (Marlow's slide-pocket pattern).
 4. Every join over 0.1 m gets a StairRamp: log steps, flights, landings, the lookout and prow edges (DECISIONS 2026-09-20). The draw bridge is cut (no water; one plank bridge on the map, Quill 6).
