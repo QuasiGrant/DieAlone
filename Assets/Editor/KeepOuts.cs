@@ -43,6 +43,7 @@ public static class KeepOuts
         new Zone("K1 phone wire", new Vector2(272.8f, 72.0f), new Vector2(300.0f, 99.0f), 1f),
         new Zone("K4 barrel", new Vector2(291.4f, 101.4f), 2.5f),
         new Zone("K6 booth", new Vector2(299.2f, 98.2f), 3f),
+        new Zone("K-top", new Vector2(293.0f, 121.0f), 8f),   // Camp2Layout.md draft 4 (PLAN 8.25a): no trunk within 8 m of the knob top
     };
 
     /// Camp3Layout.md draft 2 (PLAN 8.26): K1 the creek, 1.5 m each side of the water (the water 0.6 m each side of its line; the lower run's
