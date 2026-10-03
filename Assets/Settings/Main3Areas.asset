@@ -1290,7 +1290,7 @@ MonoBehaviour:
       objectPath: Campsites/Camp_2/Layout825a/PaperSpots/PaperSpot_K2
       hiddenBy: 
     - label: PS3
-      point: {x: 300, y: 7.1903076, z: 126.5}
+      point: {x: 300, y: 9.0246935, z: 126.5}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825a/PaperSpots/PaperSpot_K3
       hiddenBy: 
@@ -2571,7 +2571,7 @@ MonoBehaviour:
       objectPath: Campsites/Camp_2/Layout825a/PaperSpots/PaperSpot_K2
       hiddenBy: 
     - label: PS3
-      point: {x: 300, y: 7.1903076, z: 126.5}
+      point: {x: 300, y: 9.0246935, z: 126.5}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825a/PaperSpots/PaperSpot_K3
       hiddenBy: 

@@ -14,8 +14,10 @@
 //   ESCAPE: a walk on each heading for escTime s; escaped when one ends escDist m or more from the start on the floor.
 // T12 GULLY: the foot to the head by the landing and back on three lanes (centre and laneOff m either side), walking, sprinting and
 //   sprint-jumping; each arrives within arrive m (no stall at the turn or the joints).
-// WALKS (doc 4): boathouse to Camp 2 and Camp 2 to T along their trails; the trail end across the floor and up the scramble to the talk
+// WALKS (doc 4): boathouse to Camp 2 and Camp 2 to T along their trails; early turns from leg 2 at 0.5, 0.6, 0.75 and 0.9 of it straight to
+//   the talk stand; the trail end across the floor and up the scramble to the talk
 //   stand; your seat to the booth door; the table to the trail end. Each arrives within arrive m, with times.
+// BANK LIP: across the north side of leg 2 from 0.4 of it, every 0.1 m from its line to the top, no rise over 0.1 m (Wren 2026-10-03).
 // K-TOP (doc 2.2): no tree trunk within kTopR m of (293, 121); no tree's LOD0 vertex over the flat top (no crown over it).
 // S1 SIGHTLINE (doc 2.1, 6.5): seated at his chair (its box centre, eye seatEye), a 2 m flat magenta cube at each target (the highway, the T
 //   stop sign, the barrier arm) shows more than s1Px pixels through the game camera at Grant's size (rendered with and without it; changed
@@ -37,7 +39,7 @@ const float dt = 0.02f, arrive = 0.5f, legTime = 200f, eyeH = 1.6f, topY = 9f, c
 const float kx0 = 288.8f, kx1 = 299f, kz0 = 116f, kz1 = 127f, tx0 = 289f, tx1 = 297.5f, tz0 = 117f, tz1 = 125.5f, rampHalf = 0.8f;
 var foot = V(288.0f, 4.0f, 114.5f); var landS = V(288.0f, 7.0f, 120.7f); var land = V(288.0f, 7.0f, 121.5f); var head = V(291.0f, topY, 120.6f); var talk = V(291.3f, topY, 123.2f);
 // the head as Marlow walked it (8.25a gate 1: "up leg 2 to the head (291.2, 120.7), across the top to the talk stand"): the walk turns for the
-// stand on the top, 0.2 m on from where the ramp ends; a turn before the gully's end meets its north wall (reported, Wren 2026-10-03)
+// stand on the top, 0.2 m on from where the ramp ends (the early turns, over the north bank, are their own walks)
 var headOn = V(291.2f, topY, 120.7f);
 var sb = new System.Text.StringBuilder(); int fails = 0; void Line(bool ok, string s) { if (!ok) fails++; sb.Append((ok ? "PASS " : "FAIL ") + s + "\n"); }
 var temps = new System.Collections.Generic.List<UnityEngine.Object>();
@@ -201,6 +203,10 @@ try
             }
         foreach (var n in new[] { "Boathouse to Camp 2", "Camp 2 to T" }) { var leg = Root("Trails").transform.Find(n); if (leg == null) { Line(false, "WALK: no Trails/" + n); continue; } var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform p in leg) pts.Add(p.position); legs.Add(("WALK: " + n + ", the trail", pts.ToArray(), 0)); }
         legs.Add(("WALK: the trail end across the floor and up the scramble to the talk stand", new[] { G(298.9f, 107.8f), foot, land, head, headOn, talk }, 0));
+        // early turns (Wren 2026-10-03: a player turns for the talk stand before the gully's end): up leg 2 to earlyTs of its length from its start
+        // on the landing's east edge, then straight to the talk stand over the north bank
+        var d2v = new UnityEngine.Vector2(head.x - land.x, head.z - land.z).normalized; var s2p = V(land.x + 0.8f, land.y, land.z + d2v.y * 0.8f / d2v.x);
+        foreach (var et in new[] { 0.5f, 0.6f, 0.75f, 0.9f }) legs.Add(("WALK: up leg 2 to " + F(et) + " of its length, then straight to the talk stand", new[] { G(298.9f, 107.8f), foot, land, UnityEngine.Vector3.Lerp(s2p, head, et), talk }, 0));
         legs.Add(("WALK: your seat round the table's north side to the booth door", new[] { G(297.5f, 98.6f), G(299.0f, 99.0f), G(299.6f, 99.2f) }, 0));
         legs.Add(("WALK: the table to the trail end", new[] { G(298.5f, 98.7f), G(298.9f, 107.8f) }, 0));
         float speed = tuning != null ? tuning.walkSpeed : 2.5f;
@@ -211,6 +217,25 @@ try
             var e = pc.transform.position; if (ok && pts[pts.Length - 1].y >= topY - 0.1f && e.y < topY - 0.3f) { ok = false; where = ", arrives below the top at y " + F(e.y); }
             Line(ok, name + ", " + F1(len) + " m, " + F1(time) + " s" + (mode == 0 ? " at " + F1(speed) + " m/s" : "") + where);
         }
+    }
+    // ---- BANK LIP (Wren 2026-10-03): across the north side of leg 2 from lipT0 of it to its end, from the ramp's centre line north to the top,
+    // the walk surface (the highest solid collider; Ignore Raycast, the top's furniture and its cover stones apart) every lipStep m; no rise
+    // between neighbours over lipMax m
+    {
+        const float lipT0 = 0.4f, lipStep = 0.1f, lipAcross = 3.0f, lipMax = 0.1f, lipTStep = 0.05f; const int lipMask = ~(1 << 2);
+        var dv2 = new UnityEngine.Vector2(head.x - land.x, head.z - land.z).normalized; var nN = new UnityEngine.Vector2(-dv2.y, dv2.x); var sp = new UnityEngine.Vector2(land.x + 0.8f, land.z + dv2.y * 0.8f / dv2.x); var hp = new UnityEngine.Vector2(head.x, head.z);
+        float worst = 0f; string where = "";
+        for (float t = lipT0; t <= 1f + 1e-3f; t += lipTStep)
+        {
+            var c = UnityEngine.Vector2.Lerp(sp, hp, t); float prev = float.NaN;
+            for (float s = 0f; s <= lipAcross + 1e-3f; s += lipStep)
+            {
+                var q = c + nN * s; UnityEngine.RaycastHit hit = default; bool got = false; foreach (var h in UnityEngine.Physics.RaycastAll(V(q.x, topY + 3f, q.y), UnityEngine.Vector3.down, 10f, lipMask, UnityEngine.QueryTriggerInteraction.Ignore)) { if (h.collider.transform.IsChildOf(KT) || (K.Find("TopCover") != null && h.collider.transform.IsChildOf(K.Find("TopCover"))) || h.collider.transform.IsChildOf(pc.transform)) continue; if (!got || h.point.y > hit.point.y) { hit = h; got = true; } } if (!got) continue;
+                if (!float.IsNaN(prev) && hit.point.y - prev > worst) { worst = hit.point.y - prev; where = "t " + F(t) + ", " + F(s) + " m north of the line at (" + F1(q.x) + ", " + F1(q.y) + "), onto " + WalkIns.PathOf(hit.collider.transform); }
+                prev = hit.point.y;
+            }
+        }
+        Line(worst <= lipMax, "BANK LIP: the worst rise across the north of leg 2 from " + F(lipT0) + " to its end is " + F(worst) + " m (" + F(lipMax) + " or less)" + (where != "" ? ", at " + where : ""));
     }
     // ---- K-TOP: trunks and crowns
     {

@@ -94,6 +94,16 @@ const float wallClear = 0.1f; float gullyHalf = rampW * 0.5f + cellStep * 0.7072
 bool InGully(UnityEngine.Vector2 q) { float t = Proj(q, A2, H2); return t >= 0f && t <= 1f + cellStep / UnityEngine.Vector2.Distance(A2, H2) && Off(q, A2, H2) <= gullyHalf; }
 // the gully floor's fill top: the landing's height back of leg 2's start, rampT under the ramp after it
 float GullyTop(UnityEngine.Vector2 q) => Proj(q, S2, H2) < 0f ? land.y : Lerp(leg2a.y, head.y, Proj(q, S2, H2)) - rampT;
+// the north bank (8.25a gate, Wren 2026-10-03: a player turns for the talk stand before the gully's end, and its north wall stood 0.15 to
+// 0.3 m over the ramp there): from bankT0 of leg 2 to the head, the ground north of the ramp's edge rises from the ramp's height to the
+// top's over bankW m, one drawn mesh collider; the core cells under it drop below it (as gully cells)
+// bankT0: a body's width before the earliest turn tested (0.5 of leg 2); 37 degrees at its steepest
+const float bankT0 = 0.25f, bankW = 2.0f, bankUnder = 0.03f, bankPast = 0.15f, bankBeyond = 0.4f; const int bankNT = 8, bankNS = 7;
+var bankN = P(-(H2 - S2).normalized.y, (H2 - S2).normalized.x);   // square to leg 2, its north side
+float RampY(float tS) => Lerp(leg2a.y, head.y, tS);
+float BankS(UnityEngine.Vector2 q) { float tS = UnityEngine.Mathf.Clamp01(Proj(q, S2, H2)); return UnityEngine.Vector2.Dot(q - (S2 + (H2 - S2) * tS), bankN) - rampW * 0.5f; }
+float BankH(float tS, float s) => UnityEngine.Mathf.Lerp(RampY(tS), kTop, UnityEngine.Mathf.Clamp01(s / bankW));
+bool InBank(UnityEngine.Vector2 q) { float tS = Proj(q, S2, H2), s = BankS(q); return tS >= bankT0 && tS <= 1f && s > -cellStep && s < bankW + cellStep * 0.7072f; }
 string skinNote = ""; int coreBoxes = 0, skinN = 0, stepN = 0, faces = 0; var skinDropped = new System.Collections.Generic.List<string>();   // by design: boulders that would stand in the scramble
 const float faceT = 0.02f;
 {
@@ -104,7 +114,7 @@ const float faceT = 0.02f;
     float CX0(int ix) => kx0 + ix * cellStep; float CX1(int ix) => UnityEngine.Mathf.Min(kx1, kx0 + (ix + 1) * cellStep);
     float CZ0(int iz) => kz0 + iz * cellStep; float CZ1(int iz) => UnityEngine.Mathf.Min(kz1, kz0 + (iz + 1) * cellStep);
     var gul = new bool[nx, nz]; var floorY = new float[nx, nz];
-    for (int iz = 0; iz < nz; iz++) for (int ix = 0; ix < nx; ix++) gul[ix, iz] = InGully(P((CX0(ix) + CX1(ix)) * 0.5f, (CZ0(iz) + CZ1(iz)) * 0.5f));
+    for (int iz = 0; iz < nz; iz++) for (int ix = 0; ix < nx; ix++) { var cq = P((CX0(ix) + CX1(ix)) * 0.5f, (CZ0(iz) + CZ1(iz)) * 0.5f); gul[ix, iz] = InGully(cq) || InBank(cq); }
     // the core: invisible collider runs (8.25a gate, Vesper 1: its flat faces read as a black box); the gully's fill is drawn (its floor)
     for (int iz = 0; iz < nz; iz++)
     {
@@ -114,7 +124,7 @@ const float faceT = 0.02f;
             bool edge = ix == nx; float x = edge ? kx1 : CX0(ix), x1c = edge ? kx1 : CX1(ix), xc = (x + x1c) * 0.5f; bool gully = !edge && gul[ix, iz];
             if (!float.IsNaN(runX0) && (gully || edge)) { float gy = G((runX0 + x) * 0.5f, zc); var cb = Slab("Core", core, V((runX0 + x) * 0.5f, (gy - 0.3f + kTop) * 0.5f, zc), V(x - runX0, kTop - gy + 0.3f, dz), knobMat, true); cb.GetComponent<UnityEngine.Renderer>().enabled = false; coreBoxes++; runX0 = float.NaN; }
             if (edge) break;
-            if (gully) { float ry = GullyTop(P(xc, zc)); if (Proj(P(xc, zc), S2, H2) > 1f) { float tMin = float.MaxValue; foreach (var cx in new[] { x, x1c }) foreach (var cz in new[] { z0c, z1c }) tMin = UnityEngine.Mathf.Min(tMin, Proj(P(cx, cz), S2, H2)); ry = Lerp(leg2a.y, head.y, tMin); } floorY[ix, iz] = ry; float gy = G(xc, zc); if (ry - gy > 0.05f) { Slab("GullyFill", core, V(xc, (gy - 0.3f + ry) * 0.5f, zc), V(x1c - x, ry - gy + 0.3f, dz), knobMat, true).GetComponent<UnityEngine.Renderer>().enabled = false; coreBoxes++; } continue; }
+            if (gully) { float ry = GullyTop(P(xc, zc)); if (!InGully(P(xc, zc)) || (Proj(P(xc, zc), S2, H2) >= bankT0 && BankS(P(xc, zc)) > 0f)) {   /* the bank's cells, and the gully's cells north of the ramp's edge alongside it (at the bank's height, under its mesh) */ ry = float.MaxValue; foreach (var cx in new[] { x, x1c }) foreach (var cz in new[] { z0c, z1c }) ry = UnityEngine.Mathf.Min(ry, BankH(UnityEngine.Mathf.Clamp01(Proj(P(cx, cz), S2, H2)), BankS(P(cx, cz)))); ry -= bankUnder; } else if (Proj(P(xc, zc), S2, H2) > 1f) { float tMin = float.MaxValue; foreach (var cx in new[] { x, x1c }) foreach (var cz in new[] { z0c, z1c }) tMin = UnityEngine.Mathf.Min(tMin, Proj(P(cx, cz), S2, H2)); ry = Lerp(leg2a.y, head.y, tMin); } floorY[ix, iz] = ry; float gy = G(xc, zc); if (ry - gy > 0.05f) { Slab("GullyFill", core, V(xc, (gy - 0.3f + ry) * 0.5f, zc), V(x1c - x, ry - gy + 0.3f, dz), knobMat, true).GetComponent<UnityEngine.Renderer>().enabled = false; coreBoxes++; } continue; }
             if (float.IsNaN(runX0)) runX0 = x;
         }
     }
@@ -149,7 +159,25 @@ const float faceT = 0.02f;
     var dirH = P(head.x - land.x, head.z - land.z).normalized; float wGully = gullyHalf, halfZ = wGully / UnityEngine.Mathf.Abs(dirH.x);
     float gz0 = UnityEngine.Mathf.Min(land.z, head.z) - halfZ, gz1 = UnityEngine.Mathf.Max(land.z, head.z) + halfZ, gxE = head.x + wGully * UnityEngine.Mathf.Abs(dirH.y) + cellStep * UnityEngine.Mathf.Abs(dirH.x);
     void TopSlab(string n, float x0, float x1, float z0, float z1) => kit.Blocker(n, L, L.InverseTransformPoint(V((x0 + x1) * 0.5f, kTop - slabT * 0.5f, (z0 + z1) * 0.5f)), V(x1 - x0, slabT, z1 - z0));
-    TopSlab("TopSlab", tx0, tx1, tz0, gz0); TopSlab("TopSlab_N", tx0, tx1, gz1, tz1); TopSlab("TopSlab_E", gxE, tx1, gz0, gz1);
+    // the bank's surface: a drawn mesh collider, bankNT by bankNS quads from the ramp's north edge (at the ramp's height) to bankW m out (at the
+    // top's); the north top slab starts past it
+    float bankZMax = gz1;
+    {
+        var verts = new UnityEngine.Vector3[(bankNT + 1) * (bankNS + 1)]; var tris = new System.Collections.Generic.List<int>(); var bankRoot = L.position;
+        for (int i = 0; i <= bankNT; i++) for (int j = 0; j <= bankNS; j++)
+        {
+            // the mesh runs past the head by bankPast and past the bank's top edge by bankBeyond, both at the top's height (the cells under its edges)
+            float tS = bankT0 + (1f + bankPast - bankT0) * i / bankNT, s = (bankW + bankBeyond) * j / bankNS; var lp = S2 + (H2 - S2) * tS + bankN * (rampW * 0.5f + s);
+            verts[i * (bankNS + 1) + j] = V(lp.x, BankH(tS, s), lp.y) - bankRoot; bankZMax = UnityEngine.Mathf.Max(bankZMax, lp.y);
+        }
+        for (int i = 0; i < bankNT; i++) for (int j = 0; j < bankNS; j++) { int a = i * (bankNS + 1) + j, b = a + bankNS + 1; tris.AddRange(new[] { a, a + 1, b, b, a + 1, b + 1 }); }
+        var mesh = new UnityEngine.Mesh { name = "KnobBank" }; mesh.vertices = verts; mesh.triangles = tris.ToArray(); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+        if (mesh.normals[0].y < 0f) { var tr = mesh.triangles; for (int k2 = 0; k2 < tr.Length; k2 += 3) { int sw = tr[k2 + 1]; tr[k2 + 1] = tr[k2 + 2]; tr[k2 + 2] = sw; } mesh.triangles = tr; mesh.RecalculateNormals(); }
+        var bank = new UnityEngine.GameObject("Bank"); bank.transform.SetParent(L, false); bank.transform.position = bankRoot;
+        bank.AddComponent<UnityEngine.MeshFilter>().sharedMesh = mesh; bank.AddComponent<UnityEngine.MeshRenderer>().sharedMaterial = knobMat; bank.AddComponent<UnityEngine.MeshCollider>().sharedMesh = mesh; faces++;
+        bankZMax += 0.1f;
+    }
+    TopSlab("TopSlab", tx0, tx1, tz0, gz0); TopSlab("TopSlab_N", tx0, tx1, bankZMax, tz1); TopSlab("TopSlab_E", gxE, tx1, gz0, gz1);
     // the ramps: invisible boxes, rampT thick, their tops on the walking line
     void Ramp(string n, UnityEngine.Vector3 a, UnityEngine.Vector3 b) { var d = b - a; var mid = (a + b) * 0.5f; var rot = UnityEngine.Quaternion.LookRotation(d.normalized); var g = kit.Blocker(n, L, UnityEngine.Vector3.zero, V(rampW, rampT, d.magnitude)); g.transform.rotation = rot; g.transform.position = mid - (rot * UnityEngine.Vector3.up) * (rampT * 0.5f); }
     Ramp("Leg1Ramp", foot, landS); Ramp("Leg2Ramp", leg2a, head);
@@ -194,7 +222,7 @@ const float faceT = 0.02f;
     // over the ramp up to kTop + highRise, touching the face (Vesper: leg 1's clear width untouched).
     var skin = kit.Group("Skin", L, L.position, 0f); int si = 0;
     const float clearUp = 2.2f, clearOver = 0.05f, skinScaleLo = 1.3f, skinScaleStep = 0.1f, skinOut = 3.0f, skinOutE = 2.3f, skinOutFar = 4.0f, riseFree = 0.02f, lipBand = 1.2f, riseUnder = 0.3f, fanLat = 1.5f, gullyKeep = 1.3f;
-    const float highOver = 2.8f, highRise = 0.3f, highMinH = 0.8f, highW = 1.4f; const int skinSizes = 4;   // highW: its widest, so it reads set in the face, not hung over the path (F12)
+    const float highOver = 2.8f, highRise = 0.3f, highMinH = 0.8f, highW = 1.4f, highOverGround = 2.5f, highWS = 2.0f, sHighX = 289.6f; const int skinSizes = 4;   // highW: its widest, so it reads set in the face, not hung over the path (F12)
     float[] skinRises = { 1.0f, 0.7f, 0.4f, 0.2f, -0.02f };
     var seat = V(292.0f, 10.2f, 122.0f); var s1 = new[] { V(430f, 4f, 185f), V(423.05f, 5.3f, 166f), V(389.3f, 4.5f, 169.5f) };
     // the top's places a rising boulder keeps clear of: circles (x, z, r) and the tent with its door and the ring box's stand
@@ -208,7 +236,7 @@ const float faceT = 0.02f;
             if (w.y <= kTop + riseFree) continue; var q = P(w.x, w.z);
             foreach (var kc in keepC) if (UnityEngine.Vector2.Distance(q, P(kc.x, kc.z)) < kc.r) return "a top place at (" + F(kc.x) + ", " + F(kc.z) + ")";
             if (q.x > keepTx0 && q.x < keepTx1 && q.y > keepTz0 && q.y < keepTz1) return "the tent";
-            if (Off(q, A2, H2) < gullyKeep) return "the gully";
+            if (Off(q, A2, H2) < gullyKeep || InBank(q)) return "the gully";
             if (q.x > tx0 + lipBand && q.x < tx1 - lipBand && q.y > tz0 + lipBand && q.y < tz1 - lipBand) return "the top inside its lip";
             foreach (var t in s1)
             {
@@ -235,6 +263,8 @@ const float faceT = 0.02f;
     }
     // each spot's outer extent past its face: skinOut, or skinOutE beside the T tread (east, south of z 119)
     var spots = new (char face, float along, float outM)[] { ('S', 293.0f, skinOut), ('S', 296.0f, skinOut), ('S', 299.0f, skinOut), ('E', 116.0f, skinOutE), ('E', 117.5f, skinOutE), ('E', 121.0f, skinOutFar), ('E', 124.5f, skinOutFar), ('N', 290.5f, skinOut), ('N', 293.5f, skinOut), ('N', 296.8f, skinOut), ('W', 125.5f, skinOut) };
+    // 8.25a gate (Wren): one BigBoulders at 1.3 on the north-east corner, flat in F5 (the scale is fixed; the spots above cycle 1.3 to 1.6)
+    var allSpots = new System.Collections.Generic.List<(char face, float along, float outM, float sc)>(); foreach (var (fc, al, om) in spots) allSpots.Add((fc, al, om, -1f)); allSpots.Add(('E', 127.5f, skinOutFar, skinScaleLo));
     var rises = new System.Collections.Generic.List<string>();
     // each spot: of skinYaws turns, the one whose first passing rise is highest (a single turn left a boulder flush where another rose)
     float[] skinYaws = { 0f, 60f, 120f, 180f, 240f, 300f };
@@ -247,9 +277,9 @@ const float faceT = 0.02f;
         else g.transform.position += V(along - b.center.x, dy, kz0 - outM - b.min.z);
     }
     int spotI = 0;
-    foreach (var (face, along, outM) in spots)
+    foreach (var (face, along, outM, sc) in allSpots)
     {
-        var g = Boulder("BigBoulders_" + (spotI % 6), skinScaleLo + skinScaleStep * (spotI % skinSizes)); spotI++; if (g == null) continue; string label = face + " " + F(along);
+        var g = Boulder("BigBoulders_" + (spotI % 6), sc > 0f ? sc : skinScaleLo + skinScaleStep * (spotI % skinSizes)); spotI++; if (g == null) continue; string label = face + " " + F(along);
         float bestRise = float.NaN, bestYaw = 0f; string firstBlock = null, lastBlock = null;
         foreach (var yaw in skinYaws)
         {
@@ -266,23 +296,30 @@ const float faceT = 0.02f;
         g.transform.rotation = UnityEngine.Quaternion.Euler(0f, bestYaw, 0f); PlaceAt(g, face, along, outM, bestRise);
         if (Hull(g, label, true)) { skinN++; rises.Add(label + " +" + F(bestRise) + (bestRise < skinRises[0] && firstBlock != null ? " (higher met " + firstBlock + ")" : "")); }
     }
-    // the west face beside leg 1, high: a boulder from highOver m over the ramp at its z to kTop + highRise, its east extent on the face; of
-    // Boulder_0 to 5 and skinYaws, the first that keeps the top's places and the scramble's walking space clear
-    foreach (var along in new[] { 116.6f, 117.6f })
+    // high boulders set on a face, touching it from outside, of Boulder_0 to 5 and skinYaws the first that keeps the top's places and the
+    // scramble's walking space clear: the west face beside leg 1 from highOver m over the ramp at its z; and (8.25a gate, Wren) the flat south
+    // face at the south-west corner, under F12's perched one, from highOverGround m over the ground; each up to kTop + highRise, no wider than
+    // its width cap
+    var highs = new System.Collections.Generic.List<(string label, char face, float along, float bottom, float wCap)>();
+    foreach (var al in new[] { 116.6f, 117.6f }) highs.Add(("W high " + F(al), 'W', al, Lerp(foot.y, landS.y, (al - foot.z) / (landS.z - foot.z)) + highOver, highW));
+    highs.Add(("S high " + F(sHighX), 'S', sHighX, G(sHighX, kz0) + highOverGround, highWS));
+    foreach (var (hl, hf, along, bottom, wCap) in highs)
     {
-        float rampY = Lerp(foot.y, landS.y, (along - foot.z) / (landS.z - foot.z)), bottom = rampY + highOver, hgt = kTop + highRise - bottom; if (hgt < highMinH) continue;
+        float hgt = kTop + highRise - bottom; if (hgt < highMinH) continue;
         bool done = false; string why = null;
         for (int pi = 0; pi < 6 && !done; pi++)
             foreach (var yaw in skinYaws)
             {
                 var g = Boulder("Boulder_" + pi, 1f); if (g == null) break; g.transform.rotation = UnityEngine.Quaternion.Euler(0f, yaw, 0f);
-                var b = Exact(g); g.transform.localScale *= UnityEngine.Mathf.Min(hgt / UnityEngine.Mathf.Max(0.1f, b.size.y), highW / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b.size.x, b.size.z)));
-                b = Exact(g); g.transform.position += V(kx0 - b.max.x + 0.05f, bottom - b.min.y, along - b.center.z);
+                var b = Exact(g); g.transform.localScale *= UnityEngine.Mathf.Min(hgt / UnityEngine.Mathf.Max(0.1f, b.size.y), wCap / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b.size.x, b.size.z)));
+                b = Exact(g);
+                if (hf == 'W') g.transform.position += V(kx0 - b.max.x + 0.05f, bottom - b.min.y, along - b.center.z);
+                else g.transform.position += V(along - b.center.x, bottom - b.min.y, kz0 - b.max.z + 0.05f);
                 why = RiseBlock(g); if (why != null) { PlaceKit.Remove(g.transform); continue; }
-                if (!Hull(g, "W high " + F(along), false)) { why = "the scramble's walking space"; PlaceKit.Remove(g.transform); continue; }
-                skinN++; rises.Add("W high " + F(along) + " from " + F(bottom)); done = true; break;
+                if (!Hull(g, hl, false)) { why = "the scramble's walking space"; PlaceKit.Remove(g.transform); continue; }
+                skinN++; rises.Add(hl + " from " + F(bottom)); done = true; break;
             }
-        if (!done) skinDropped.Add("W high " + F(along) + " (" + why + ")");
+        if (!done) skinDropped.Add(hl + " (" + why + ")");
     }
     skinNote = string.Join(", ", rises);
 }
@@ -365,15 +402,15 @@ var topG = kit.Group("Top", L, V(293f, kTop, 121f), 0f);
 // both trail ends see it past the knob's south-west boulder,
 // so the way up reads from the trail end; one capsule collider (it stands over the walk-into check's 0.5 m).
 const float coverStep = 1.6f, coverJitter = 0.4f, coverScale = 0.22f, coverFlat = 0.35f, coverRise = 0.06f, coverPad = 0.3f, rubbleStep = 2.5f, rubbleScale = 0.5f;
-const float headStoneScale = 0.3f, headStoneRise = 0.25f, headStoneOut = 0.35f, headStoneBackS = 0.4f, headStoneBackN = 1.8f, cairnX = 286.0f, cairnZ = 112.8f, cairnSink = 0.05f;
-const float fx0 = 289f, fx1 = 297.5f, fz0 = 117f, fz1 = 125.5f; float[] cairnW = { 1.0f, 0.85f, 0.7f, 0.55f, 0.42f, 0.3f }; const float cairnClear = 2.5f;
+const float headStoneScale = 0.3f, headStoneRise = 0.25f, headStoneOut = 0.35f, headStoneBackS = 0.4f, headStoneBackN = 1.8f, cairnX = 287.5f, cairnZ = 112.8f, cairnSink = 0.05f;
+const float fx0 = 289f, fx1 = 297.5f, fz0 = 117f, fz1 = 125.5f; float[] cairnW = { 1.0f, 0.85f, 0.7f, 0.55f, 0.42f, 0.3f }, cairnH = { 0.45f, 0.4f, 0.36f, 0.32f, 0.28f, 0.24f }; const float cairnClear = 1.5f, cairnWMax = 1.4f;   // each stone cairnH tall (a width-only scale left the flat stones 0.7 m in all), no wider than cairnWMax of cairnW
 var topKeeps = new (float x, float z, float r)[] { (292.0f, 122.0f, 0.9f), (291.3f, 123.2f, 0.6f), (297.0f, 121.2f, 0.5f), (291.0f, 120.6f, 1.0f), (293.0f, 123.6f, 0.6f), (289.4f, 117.4f, 0.5f), (295.6f, 120.3f, 0.6f) };
 float wG = gullyHalf; var dirK = P(head.x - land.x, head.z - land.z).normalized; var perpK = P(-dirK.y, dirK.x);
 bool TopKeep(UnityEngine.Vector2 q, float pad)
 {
     foreach (var kc in topKeeps) if (UnityEngine.Vector2.Distance(q, P(kc.x, kc.z)) < kc.r + pad) return true;
     if (q.x > 294.5f - pad && q.x < 296.75f + pad && q.y > 116.7f - pad && q.y < 120.0f + pad) return true;   // the tent, its door and the letters
-    return Off(q, A2, H2) < wG + pad;
+    return Off(q, A2, H2) < wG + pad || InBank(q) || BankS(q) < bankW + pad && Proj(q, S2, H2) >= bankT0 - 0.1f && Proj(q, S2, H2) <= 1f && BankS(q) > 0f;
 }
 int coverN = 0, rubbleN = 0;
 {
@@ -411,7 +448,7 @@ int coverN = 0, rubbleN = 0;
     for (int i = 0; i < cairnW.Length; i++)
     {
         var g = kit.Spawn(PlaceKit.BK + "Rocks/Boulder_" + ((i + 2) % 6), cairn); if (g == null) continue; PlaceKit.StripColliders(g); foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>(true)) { var ms = r.sharedMaterials; for (int j = 0; j < ms.Length; j++) ms[j] = cairnMat; r.sharedMaterials = ms; }
-        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, i * 73f, 0f); var b = Exact(g); g.transform.localScale *= cairnW[i] / UnityEngine.Mathf.Max(0.05f, UnityEngine.Mathf.Max(b.size.x, b.size.z));
+        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, i * 73f, 0f); var b = Exact(g); g.transform.localScale *= UnityEngine.Mathf.Min(cairnH[i] / UnityEngine.Mathf.Max(0.05f, b.size.y), cairnWMax * cairnW[i] / UnityEngine.Mathf.Max(0.05f, UnityEngine.Mathf.Max(b.size.x, b.size.z)));
         b = Exact(g); g.transform.position += V(cairnX - b.center.x, y - cairnSink - b.min.y, cairnZ - b.center.z); y = Exact(g).max.y;
     }
     kit.ClearDetail(V(cairnX, 0f, cairnZ), cairnClear); kit.ClearDetail(V(foot.x, 0f, foot.z), cairnClear);
