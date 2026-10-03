@@ -392,7 +392,7 @@ const float rimWest = 26f, rimEast = 92f, rimLook = 6f, rimBelowTop = 1f, rimUp 
 // round 2's RockBreakup; see the block for the method.
 const float voidZ0 = 33.4f, floorTile = 3f, floorOffX = 0.21f, floorOffZ = 0.37f, hullUnder = 2.5f, rubbleW = 3f, rubbleH = 0.25f, stripZ0 = 10.8f, deadFront = 0.05f, shutS = 1.6f; int rockPieces = 0;
 // the NARROWS pieces' depths and switches (CaveRock.md: if a check fails, cut d to 0.1, then drop the piece; never move it)
-const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.5f, v2d = 0.4f, v3d = 0.4f, v5d = 0.2f; const bool v1On = true, v2On = true, v3On = true, v5On = true, v6On = true; const string groundPath = "Assets/Materials/Ground054_25.0x25.0.mat", floorHex = "#6A655E", boulderHex = "#6E6862";
+const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.1f, v2d = 0.1f, v3d = 0.1f, v5d = 0.1f; const bool v1On = true, v2On = false, v3On = true, v5On = true, v6On = true; const string groundPath = "Assets/Materials/Ground054_25.0x25.0.mat", floorHex = "#6A655E", boulderHex = "#6E6862";
 {
     var voidMat = kit.Tinted("Places_CaveVoid", rocks, Hex("#101214"), UnityEngine.Vector2.one);
     var vs = kit.Group("VoidSplit", L, L.position, 0f); var ent2 = cave.Find("Entrance");
@@ -416,16 +416,19 @@ const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.5f, v2d = 0
     // from LOD0; the rest have none. NARROWS pieces are judged by the area and cave checks (cut d to 0.1, then drop; never moved).
     var rg = kit.Group("CaveRock", L, L.position, 0f); var boulderMat = kit.Tinted("Places_CaveBoulder", rocks, Hex(boulderHex), UnityEngine.Vector2.one);
     void Tint(UnityEngine.GameObject g) { foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) { var ms = r.sharedMaterials; for (int i = 0; i < ms.Length; i++) ms[i] = boulderMat; r.sharedMaterials = ms; } }
+    // a piece's true extent: its LOD0 meshes' vertices in world space (a renderer's bounds box the turned mesh box and grow with the yaw, so a
+    // rock d m into the room by them sat inside the wall: Vesper's 8.27a gate, the wall rocks did not show)
+    UnityEngine.Bounds Exact(UnityEngine.GameObject g) { var lodg = g.GetComponentInChildren<UnityEngine.LODGroup>(); var rs = lodg != null && lodg.GetLODs().Length > 0 ? lodg.GetLODs()[0].renderers : g.GetComponentsInChildren<UnityEngine.Renderer>(); bool any = false; var b = new UnityEngine.Bounds(); foreach (var r in rs) { var mf = r != null ? r.GetComponent<UnityEngine.MeshFilter>() : null; if (mf == null || mf.sharedMesh == null) continue; foreach (var v in mf.sharedMesh.vertices) { var w = r.transform.TransformPoint(v); if (!any) { b = new UnityEngine.Bounds(w, UnityEngine.Vector3.zero); any = true; } else b.Encapsulate(w); } } return any ? b : PlaceKit.MeshBounds(g); }
     UnityEngine.GameObject Piece(string id, string pf, float S, float yaw)
     {
         var g = kit.Spawn(PlaceKit.BK + "Rocks/" + pf, rg); if (g == null) { notes.Add("no " + pf); return null; } g.name = id + "_" + pf; PlaceKit.StripColliders(g); Tint(g);
-        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, yaw, 0f); var b0 = PlaceKit.MeshBounds(g); g.transform.localScale *= S / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b0.size.x, UnityEngine.Mathf.Max(b0.size.y, b0.size.z)));
+        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, yaw, 0f); var b0 = Exact(g); g.transform.localScale *= S / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b0.size.x, UnityEngine.Mathf.Max(b0.size.y, b0.size.z)));
         return g;
     }
     void Finish(UnityEngine.GameObject g, float floor, float minBottom, bool solidRule)
     {
-        var b = PlaceKit.MeshBounds(g); if (!float.IsNaN(minBottom) && b.min.y < minBottom) g.transform.position += V(0f, minBottom - b.min.y, 0f);
-        b = PlaceKit.MeshBounds(g);
+        var b = Exact(g); if (!float.IsNaN(minBottom) && b.min.y < minBottom) g.transform.position += V(0f, minBottom - b.min.y, 0f);
+        b = Exact(g);
         if (solidRule && b.min.y < floor + hullUnder) { var lodg = g.GetComponentInChildren<UnityEngine.LODGroup>(); foreach (var r in g.GetComponentsInChildren<UnityEngine.MeshRenderer>()) { if (lodg != null && lodg.GetLODs().Length > 0 && System.Array.IndexOf(lodg.GetLODs()[0].renderers, r) < 0) continue; var mf = r.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; mc.convex = true; } }
         rockPieces++;
     }
@@ -433,26 +436,26 @@ const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.5f, v2d = 0
     // a wall piece: axis 'x' (the face is x = face, along runs in z) or 'z' (the face is z = face, along runs in x); inward +1 or -1
     UnityEngine.GameObject Wall(string id, string pf, float S, float yaw, char axis, float face, float inward, float along, float yc, float yb, float d, float floor, float minBottom = float.NaN, bool solidRule = true)
     {
-        var g = Piece(id, pf, S, yaw); if (g == null) return null; var b = PlaceKit.MeshBounds(g); float dy = Y(b, yc, yb);
+        var g = Piece(id, pf, S, yaw); if (g == null) return null; var b = Exact(g); float dy = Y(b, yc, yb);
         if (axis == 'x') { float nearX = inward > 0f ? b.max.x : b.min.x; g.transform.position += V(face + inward * d - nearX, dy, along - b.center.z); }
         else { float nearZ = inward > 0f ? b.max.z : b.min.z; g.transform.position += V(along - b.center.x, dy, face + inward * d - nearZ); }
         Finish(g, floor, minBottom, solidRule); return g;
     }
     UnityEngine.GameObject Corner(string id, string pf, float S, float yaw, float faceX, float inX, float faceZ, float inZ, float yc, float d, float floor, float minBottom = float.NaN)
     {
-        var g = Piece(id, pf, S, yaw); if (g == null) return null; var b = PlaceKit.MeshBounds(g);
+        var g = Piece(id, pf, S, yaw); if (g == null) return null; var b = Exact(g);
         float nearX = inX > 0f ? b.max.x : b.min.x, nearZ = inZ > 0f ? b.max.z : b.min.z; g.transform.position += V(faceX + inX * d - nearX, yc - b.center.y, faceZ + inZ * d - nearZ);
         Finish(g, floor, minBottom, true); return g;
     }
     UnityEngine.GameObject Ceil(string id, string pf, float S, float yaw, float x, float z, float bottom, float floor)
     {
-        var g = Piece(id, pf, S, yaw); if (g == null) return null; var b = PlaceKit.MeshBounds(g); g.transform.position += V(x - b.center.x, bottom - b.min.y, z - b.center.z);
+        var g = Piece(id, pf, S, yaw); if (g == null) return null; var b = Exact(g); g.transform.position += V(x - b.center.x, bottom - b.min.y, z - b.center.z);
         Finish(g, floor, float.NaN, true); return g;
     }
     const float N = float.NaN, fE = -6f, fC = -18f;
     // A. entrance passage (box x 50.5 to 53.5, z 20.5 to 37.4, floor -6, ceiling -2)
     Corner("P1", "BigBoulders_1", 4.0f, 20f, 50.5f, 1f, 20.5f, 1f, -4.2f, p1d, fE);
-    { var p2 = Wall("P2", "BigBoulders_5", 2.6f, 330f, 'x', 53.5f, -1f, 24.6f, -4.4f, N, p2d, fE); if (p2 != null) { var b = PlaceKit.MeshBounds(p2); if (b.min.z < 23.2f) p2.transform.position += V(0f, 0f, 23.2f - b.min.z); } }
+    { var p2 = Wall("P2", "BigBoulders_5", 2.6f, 330f, 'x', 53.5f, -1f, 24.6f, -4.4f, N, p2d, fE); if (p2 != null) { var b = Exact(p2); if (b.min.z < 23.2f) p2.transform.position += V(0f, 0f, 23.2f - b.min.z); } }
     Ceil("P3", "Boulder_2", 3.5f, 0f, 54.25f, 22.0f, -2.8f, fE);
     Wall("P4", "BigBoulders_2", 3.0f, 70f, 'z', 20.5f, 1f, 54.5f, -5.0f, N, p4d, fE);
     Wall("P5", "BigBoulders_3", 4.0f, 110f, 'x', 50.5f, 1f, 25.0f, -4.0f, N, 0.4f, fE);
@@ -468,7 +471,7 @@ const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.5f, v2d = 0
     Corner("L11", "BigBoulders_3", 6.0f, 175f, 89f, -1f, 21f, -1f, -14.8f, 0.2f, fC, -15.0f);
     Wall("L12", "BigBoulders_0", 5.0f, 60f, 'x', 89f, -1f, 6.0f, N, -17.4f, 0.3f, fC);
     Wall("L13", "BigBoulders_5", 4.5f, 280f, 'x', 89f, -1f, 8.4f, -16.3f, N, 0.6f, fC); Wall("L14", "BigBoulders_2", 4.5f, 45f, 'x', 89f, -1f, 15.6f, -16.3f, N, l14d, fC);
-    { var l15 = Wall("L15", "BigBoulders_1", 3.0f, 10f, 'x', 89f, -1f, 9.3f, -16.6f, N, 0.3f, fC); if (l15 != null) { var b = PlaceKit.MeshBounds(l15); if (b.max.z > stripZ0) l15.transform.position += V(0f, 0f, stripZ0 - b.max.z); } }
+    { var l15 = Wall("L15", "BigBoulders_1", 3.0f, 10f, 'x', 89f, -1f, 9.3f, -16.6f, N, 0.3f, fC); if (l15 != null) { var b = Exact(l15); if (b.max.z > stripZ0) l15.transform.position += V(0f, 0f, stripZ0 - b.max.z); } }
     // B2. high band and lintels (over reach)
     Wall("H1", "Boulder_0", 7.0f, 0f, 'z', 3f, 1f, 75.5f, -12.0f, N, 0.8f, fC); Wall("H2", "Boulder_3", 7.0f, 180f, 'z', 3f, 1f, 83.5f, -11.8f, N, 0.8f, fC);
     Wall("H3", "Boulder_1", 7.0f, 90f, 'x', 71f, 1f, 5.5f, -11.5f, N, 0.8f, fC); Wall("H4", "Boulder_4", 5.0f, 90f, 'x', 71f, 1f, 12.0f, N, -14.3f, 0.5f, fC);
@@ -491,14 +494,14 @@ const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.5f, v2d = 0
     if (v5On) Corner("V5", "BigBoulders_0", 2.0f, 120f, 101.6f, -1f, 13.2f, 1f, -17.0f, v5d, fC);
     if (v6On) Ceil("V6", "Boulder_1", 3.0f, 0f, 99.5f, 13.8f, -16.05f, fC);
     // the dead end slab: renderer off, its face moved deadFront m in front of V4's nearest point (the rock is its visible reason; Examine stays)
-    { var de = L.Find("Deeper/DeadEnd"); if (de != null && v4 != null) { var vb = PlaceKit.MeshBounds(v4); var db = BoxOf(de); de.position += V(0f, 0f, (vb.min.z - deadFront) - db.min.z); de.GetComponent<UnityEngine.Renderer>().enabled = false; } }
+    { var de = L.Find("Deeper/DeadEnd"); if (de != null && v4 != null) { var vb = Exact(v4); var db = BoxOf(de); de.position += V(0f, 0f, (vb.min.z - deadFront) - db.min.z); de.GetComponent<UnityEngine.Renderer>().enabled = false; } }
     // shut days: DeeperClosed's renderer off; a Boulder_2 child at shutS fills the opening, its face 0.1 behind the wall face, and toggles with it
     {
         var dc = L.Find("Deeper/DeeperClosed");
         if (dc != null)
         {
             dc.GetComponent<UnityEngine.Renderer>().enabled = false; var g = kit.Spawn(PlaceKit.BK + "Rocks/Boulder_2", dc);
-            if (g != null) { g.name = "ShutRock"; PlaceKit.StripColliders(g); Tint(g); g.transform.rotation = UnityEngine.Quaternion.identity; var b0 = PlaceKit.MeshBounds(g); g.transform.localScale *= shutS / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b0.size.x, UnityEngine.Mathf.Max(b0.size.y, b0.size.z))); var b = PlaceKit.MeshBounds(g); g.transform.position += V(97.6f - b.min.x, (fC + 1.05f) - b.center.y, 13.8f - b.center.z); rockPieces++; }
+            if (g != null) { g.name = "ShutRock"; PlaceKit.StripColliders(g); Tint(g); g.transform.rotation = UnityEngine.Quaternion.identity; var b0 = Exact(g); g.transform.localScale *= shutS / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b0.size.x, UnityEngine.Mathf.Max(b0.size.y, b0.size.z))); var b = Exact(g); g.transform.position += V(97.6f - b.min.x, (fC + 1.05f) - b.center.y, 13.8f - b.center.z); rockPieces++; }
         }
     }
 }
