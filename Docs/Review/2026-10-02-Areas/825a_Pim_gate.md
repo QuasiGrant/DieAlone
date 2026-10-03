@@ -41,3 +41,21 @@ Gate menu tasks: no new rows; Ward is FirstWarp. Not rerun.
 3. Warp label word for the knob.
 
 Pim
+
+## Round 2 (2026-10-03)
+Sources: Checks.md (run 15:20) PROMPT lines and REACH AND FOUND; AreaFrames_camp2_10 (F10), 11 (F11), 12 (F12), 14 (ring box).
+
+**Verdict: FAIL** (the way up still does not read by eye; everything else PASS).
+
+| Item | Evidence | Result |
+|---|---|---|
+| The way up, F10 (boathouse leg's end) | The ring sits on grass at the horizon line. Behind it is a row of five grey rounded stones of one tone and size class (the talus). If the cairn is the shape just above the ring, it does not stand apart from them: same grey, no lighter face, no height that breaks the row at this range. The cleared grass does not show at eye height: the foreground grass (about 0.5 m) hides the ground to the stones. The knob is a dark mass on the right, and no step line shows on it | FAIL |
+| The way up, F11 (T leg's start) | Same row. A faint stacked shape sits above and left of the ring against a dark trunk; it is the only thing that could be the cairn, and it is as grey as the boulders beside it. No line from it up the rock | FAIL |
+| The way up, F12 (scramble foot, up the line) | A dark rock face fills the right half; one boulder overhangs at the top; the steps are dark on dark, and no tread edge or lighter step face shows a route. From the foot itself the climb does not read as steps | FAIL |
+| Found rule | Knob 29.9 m and scramble foot 30.0 m from Boathouse to Camp 2 (unchanged). Scramble head now "from the trails: none" (round 1: 29.3 m) and tent "from the trails: none"; the knob and foot carry the find. Rule PASS; by eye, above | rule PASS |
+| Ring box | PROMPT: from (295.6, 120.3), facing 180, 31.1 down, the ray meets RingBox/RingBoxReach at 1.61 m, "Examine", target 9.8 deg (5.0 or more). Confirmed. AreaFrames_14: the crate inside the door reads; the reach box is larger than the drawn box, so a look anywhere on the crate top finds it | PASS |
+| Angular size on every PROMPT line | All five print it, all 5.0 or more: hook 73.3, barrel 54.4, R2 at the table 45.6, R2 on top 54.2, ring box 9.8. Confirmed | PASS |
+
+What would pass, for whoever builds it (Sable or Vesper choose the look): the cairn is lighter or a different hue than the talus, and taller than every boulder in that row, from both F10 and F11. The first two step faces are lighter than the knob's face, reading as a stair from the foot (F12). Or there is a line (a worn path or a rope) from the trail end to the first step that shows above the grass.
+
+Pim
