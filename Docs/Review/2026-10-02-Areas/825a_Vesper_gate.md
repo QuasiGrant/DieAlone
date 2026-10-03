@@ -30,3 +30,22 @@ Frames: Docs/Captures/Main3Review_camp2 (AreaFrames F1, F4, F5, F8, F9; Found 18
 Rook's south-west flat face (F8): it is the same issue as point 1. Cover it with a boulder on the face above leg 1's walk height, with d 0 to the face, so leg 1's clear width is untouched. If no fit clears leg 1, a smaller Boulder (scale 0.6) set high, from 2.5 m up, does.
 
 Vesper
+
+## Round 2 (final), 2026-10-03
+
+Frames: AreaFrames F4, F5, F8, F9, F10, F11, F12 (6952b9f). Layout only.
+
+**Verdict: PASS.** Knob, top and rockfall are all C or better. On the question that matters: **yes, it now reads as a natural granite knob.** From both trail ends it is a rounded pile of weathered boulders with a broken skyline, no box. A man could have found it and climbed it.
+
+| Place | Grade | Frames | Why, and the fix |
+|---|---|---|---|
+| The knob | C, passes | F4, F5, F8 | F4 and F8: rounded masses and a broken skyline; the core is gone. **F5 fix:** at the right of the skyline there is still a dark block with a level top and a square corner, about a fifth of the frame wide (Rook's flat edge). One BigBoulders at scale 1.3 on that corner, its top 0.5 m over the edge, ends it. |
+| Top: tent, chair, lamp | B, ships | F9 | The top is now lumpy rock with boulders at its lip, and the tent, chair and lamp sit on it. The view to the T, the road and the mast is intact. Note: the lamp's card reads near-white in F5 and F9. At Rook's 207 grey it passes hard line 5; I can't confirm the value from a JPEG. |
+| Rockfall | C, passes | F5 | With one tint, the pale eggs are gone and the rockfall sits as part of the knob's foot. Fix: it is now hard to pick out at all. That is fine for dressing, but PS3 sits on it, so keep PS3's paper the palest thing there. |
+
+Rook's three flags:
+1. **F12, the west boulder over leg 1:** it reads as a perched boulder on a ledge. That is natural on granite and I keep it. What reads wrong is the face under it: a flat vertical plane with a straight edge from frame top to bottom. One boulder on that face, set from 2.5 m up, clear of leg 1, fixes it. Logged; not a fail.
+2. **F11, the cairn:** it is lost. It stands pale among the pale boulder field behind it, so at 15 m it reads as one more rock. Fix: move it 1 to 2 m east so the dark knob face is its background, or darken the boulders behind it. A cairn needs a dark ground to read.
+3. **F5, the flat edge:** see the knob row above.
+
+Vesper
