@@ -41,6 +41,10 @@ public class Main3AreaSet : ScriptableObject
         public string path;
         [Tooltip("Where the player stands to use it (world metres; y -999 is the ground there; the eye is 1.6 m over it).")]
         public Vector3 approach;
+        [Tooltip("The prompt word the area's UI doc gives it (Wren 2026-10-03: every interactable carries a stand-in usable): the area check's PROMPT line wants the interactor's ray from the approach to meet an Interactable with this prompt. Empty: no PROMPT line yet.")]
+        public string prompt;
+        [Tooltip("The approach's facing and pitch down for the PROMPT ray (degrees); NaN facing aims at the body's centre.")]
+        public float facing, pitchDown;
     }
 
     [System.Serializable]

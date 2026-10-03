@@ -305,6 +305,30 @@ try
         if (spFail > 0) fails++;
         sb.Append((spFail == 0 ? "PASS" : "FAIL") + " SPACING: " + bodies.Count + " interaction points\n" + spLines);
     }
+    // ---- PROMPTS (Wren 2026-10-03, a standing rule for every area): each interaction with a prompt word: from its approach (eye 1.6) at its
+    // facing and pitch (or at its body's centre), the interactor's own test (its mask, triggers ignored, interactReach) meets an Interactable
+    // under the interaction's path whose prompt is the word
+    if (A.interactions != null)
+    {
+        var piP = UnityEngine.Object.FindFirstObjectByType<PlayerInteractor>(); var maskF = typeof(PlayerInteractor).GetField("mask", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        int pMask = piP != null && maskF != null ? ((UnityEngine.LayerMask)maskF.GetValue(piP)).value : ~0; float pReach = tuning != null ? tuning.interactReach : 2f; int pFail = 0, pN = 0; var pLines = new System.Text.StringBuilder();
+        foreach (var ia in A.interactions)
+        {
+            if (string.IsNullOrEmpty(ia.prompt)) continue; pN++;
+            var parts = new System.Collections.Generic.List<UnityEngine.Transform>(); foreach (var pp in ia.path.Split(';')) { var pt = Main3AreaSet.At(scene, pp.Trim()); if (pt != null) parts.Add(pt); }
+            var ap = ia.approach.y <= groundY ? new UnityEngine.Vector3(ia.approach.x, H(ia.approach.x, ia.approach.z), ia.approach.z) : ia.approach; var eye = ap + UnityEngine.Vector3.up * 1.6f; UnityEngine.Vector3 dir;
+            if (float.IsNaN(ia.facing)) { var b = new UnityEngine.Bounds(); bool any = false; foreach (var pt in parts) foreach (var c in pt.GetComponentsInChildren<UnityEngine.Collider>()) { if (!any) { b = c.bounds; any = true; } else b.Encapsulate(c.bounds); } dir = any ? (b.center - eye).normalized : UnityEngine.Vector3.forward; }
+            else dir = UnityEngine.Quaternion.Euler(ia.pitchDown, ia.facing, 0f) * UnityEngine.Vector3.forward;
+            string got = "nothing within " + F1(pReach) + " m"; bool pOk = false;
+            if (UnityEngine.Physics.Raycast(eye, dir, out var hit, pReach, pMask, UnityEngine.QueryTriggerInteraction.Ignore))
+            {
+                var it = hit.collider.GetComponentInParent<Interactable>(); bool own = false; foreach (var pt in parts) if (hit.collider.transform.IsChildOf(pt)) own = true;
+                got = WalkIns.PathOf(hit.collider.transform) + " at " + F1(hit.distance) + " m, prompt \"" + (it != null ? it.Prompt : "none") + "\""; pOk = own && it != null && it.Prompt == ia.prompt;
+            }
+            if (!pOk) pFail++; pLines.Append("  " + (pOk ? "ok   " : "FAIL ") + "PROMPT " + ia.label + " (\"" + ia.prompt + "\") from " + P3(ap) + (float.IsNaN(ia.facing) ? " at its centre" : " facing " + F1(ia.facing) + ", " + F1(ia.pitchDown) + " down") + ": " + got + "\n");
+        }
+        if (pN > 0) { if (pFail > 0) fails++; sb.Append((pFail == 0 ? "PASS" : "FAIL") + " PROMPTS: " + pN + " interactions with a prompt word\n" + pLines); }
+    }
     // ---- DECK must-see (trees block) and the pixel check
     if (A.deckListWritten)
     {

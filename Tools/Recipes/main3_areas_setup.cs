@@ -16,7 +16,9 @@ UnityEngine.Rect R(float x0, float z0, float x1, float z1) => new UnityEngine.Re
 UnityEngine.Vector3 V(float x, float y, float z) => new UnityEngine.Vector3(x, y, z);
 Main3AreaSet.Place P(string l, float x, float y, float z) => new Main3AreaSet.Place { label = l, point = V(x, y, z) };
 Main3AreaSet.Place PO(string l, float x, float y, float z, float h, string obj) => new Main3AreaSet.Place { label = l, point = V(x, y, z), height = h, objectPath = obj };
-Main3AreaSet.Interaction IA(string l, string p, float x, float y, float z) => new Main3AreaSet.Interaction { label = l, path = p, approach = V(x, y, z) };
+Main3AreaSet.Interaction IA(string l, string p, float x, float y, float z) => new Main3AreaSet.Interaction { label = l, path = p, approach = V(x, y, z), facing = float.NaN };
+// with its prompt word (Wren 2026-10-03, a standing rule): the PROMPT ray from the approach at facing and pitchDown (NaN facing: at the body's centre)
+Main3AreaSet.Interaction IAp(string l, string p, float x, float y, float z, string prompt, float facing = float.NaN, float pitchDown = 0f) => new Main3AreaSet.Interaction { label = l, path = p, approach = V(x, y, z), prompt = prompt, facing = facing, pitchDown = pitchDown };
 Main3AreaSet.Frame FR(string l, UnityEngine.Vector3 eye, UnityEngine.Vector3 look) => new Main3AreaSet.Frame { label = l, eye = eye, look = look };
 Main3AreaSet.DeckTarget D(string l, float x, float y, float z, string cover = "") => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), treeCoverPath = cover };
 Main3AreaSet.DeckTarget DH(string l, float x, float y, float z, string obj) => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), hard = true, objectPath = obj };   // hard must-see, every mesh (8.22)
@@ -213,12 +215,22 @@ var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Ca
         PO("Tent", 75.0f, G, 140.7f, 1.65f, c3D + "CS_Tent_Old_2"), PO("Easel", 80.3f, G, 148.8f, 1.8f, c3D + "Easel"), PO("Table", 78.5f, G, 147.3f, 0.75f, c3L + "PlankTable"),
         PO("Faced canvases", 70.3f, G, 145.95f, 1.3f, c3L + "FacedCanvases"), PO("Snag", 96f, G, 146.5f, 54f, "Giants/Heroes/Snag"),
         // the Snag line's pieces hang 2.85 m or more over the ground and over the ravine: deck targets (deckSee), not places to reach
-        PO("Hoist cleat", 98.86f, G, 144.85f, 1.2f, c3L + "Hoist"), PO("Stake", 80f, G, 163f, 3.6f, c3L + "SnagLine/Stake"), P("East rim spot", 94f, G, 138.5f), P("Steps' top", 96.5f, G, 142.8f),
-        PO("Pool", 83.6f, G, 149.7f, 0.3f, c3L + "Creek/Pool"), PO("Sink", 83.6f, G, 148.45f, 0.2f, c3L + "Sink"), PO("Spring", 85.8f, G, 126.0f, 0.6f, c3L + "Spring"),
+        PO("Hoist cleat", 98.86f, G, 144.85f, 1.2f, c3L + "Hoist"), PO("Stake", 80f, G, 163f, 3.6f, c3L + "SnagLine/Stake"), P("East rim spot", 94f, G, 138.5f), P("Steps' top viewpoint", 96.0f, G, 140.8f),   // slid 2.06 m south of the steps' top: the nearest spot off the tread that sees the Snag line (main3_8_26_search.cs, pieces 2 to 4)
+       
+        PO("Pool", 83.6f, G, 149.7f, 0.3f, c3L + "Creek/Pool"), PO("Sink", 83.6f, G, 148.45f, 0.4f, c3L + "Dam"),   // the dam's debris sits on the sink (gate round 2): it is what is seen
+        PO("Spring", 85.8f, G, 126.0f, 0.6f, c3L + "Spring"),
         PO("W1 sign", 127.0f, G, 72.8f, 2.0f, c3L + "W1Sign"), POn("Blaze_W1_Camp3", "Ground815/JunctionMarkers/Blaze_W1_Camp3", 1.8f), POn("Camper trailer", "PointsOfInterest/POI_Camper_trailer", 2.4f),
         POn("Stepping stones", "PointsOfInterest/POI_Stepping_stones", 0.3f) },   // the lamppost spot (58, 150) is kept free off the trail (C7, homage): no found rule
-    interactions = new[] { IA("fire", c3D + "Fire", 74.6f, G, 151.2f), IA("easel", c3D + "Easel", 79.0f, G, 149.9f), IA("form and table", c3L + "PlankTable;" + c3D + "JobForm", 78.6f, G, 148.4f), IA("sink", c3L + "Sink", 82.6f, G, 147.2f) },
-    frames = new[] { FR("F1 STEPS' TOP HEADING 270: FIRE, POOL, CANVASES", V(96.5f, G, 142.8f), Hd(V(96.5f, 0f, 142.8f), 270f, -3.5f)),
+    // the prompt words from Camp3UI; the stand-in usables are main3_8_26_camp3.cs's (the 8.26 gate round 2, Wren 2026-10-03)
+    interactions = new[] { IAp("fire", c3D + "Fire", 74.6f, G, 151.2f, "Sit by the fire", 117f, 40f), IAp("easel", c3D + "Easel", 79.0f, G, 149.9f, "Study the painting", 130f, 8f),
+        IAp("form and table", c3L + "PlankTable;" + c3D + "JobForm", 78.6f, G, 148.4f, "Examine", 180f, 35f), IAp("dam", c3L + "Dam", 82.6f, G, 147.2f, "Clear the dam", 45f, 40f),
+        IAp("R3", "Campsites/Camp_3/Resident/Resident_Camp3_Spot/StandInBody", 75.2f, G, 148.6f, "Talk") },
+    // F1, the rim spot and the viewpoint from main3_8_26_search.cs; the tent faces and the canvas backs from clear eyes found by drawn-mesh lines
+    frames = new[] { FR("F1 DOWN THE STEPS: FIRE, POOL, CANVASES", V(90.0f, G, 145.3f), V(76.6f, -3.7f, 148.7f)),
+        FR("THE EAST RIM SPOT: THE CAMP FLOOR", V(94f, G, 138.5f), V(77.5f, -3.9f, 146.5f)),
+        FR("THE STEPS' TOP VIEWPOINT: THE SNAG LINE", V(96.0f, G, 140.8f), V(86.4f, 6.9f, 156.4f)),
+        FR("THE TENT'S SOUTH FACE", V(75.0f, G, 137.6f), V(75.0f, -3.3f, 139.64f)), FR("THE TENT'S WEST FACE", V(70.0f, G, 140.7f), V(72.96f, -3.3f, 140.7f)),
+        FR("THE CANVAS BACKS FROM THE FLOOR", V(74.3f, G, 146.0f), V(70.33f, -3.25f, 145.95f)),
         FR("F2 W1 ARRIVAL HEADING 342: FIRE, EASEL BACK", V(84f, G, 132f), Hd(V(84f, 0f, 132f), 342f, -3.0f)),
         FR("F3 THE FLOOR HEADING 60: THE LINE'S BACKS", V(78f, G, 147f), Hd(V(78f, 0f, 147f), 60f, 2.0f)),
         FR("F4 THE STONES HEADING 250: THE W1 SIGN", V(131.71f, G, 72.82f), Hd(V(131.71f, 0f, 72.82f), 250f, -3.0f)),
@@ -226,8 +238,10 @@ var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Ca
         FR("F6 W1 LEG AT THE SPRING HEADING 20: WATER OUT OF THE ROCKS", V(84.43f, G, 122.24f), V(85.8f, -3.8f, 126.0f)),
         FR("CAMP_3 WARP LANDING, FACING 30", V(75.0f, G, 143.6f), Hd(V(75.0f, 0f, 143.6f), 30f, -2.6f)),
         FR("CAMP_3_RIM WARP LANDING, FACING 268", V(97.8f, G, 142.0f), Hd(V(97.8f, 0f, 142.0f), 268f, 2.0f)) },
-    walkLines = new[] { WL("the floor from the arrival", V(79.06f, G, 145.39f), V(78f, G, 147f), V(76f, G, 148.5f)) },
-    playChecks = new[] { "main3_8_26_camp3_check.cs" },
+    // the arrival to the dam stand: the walk to clear the dam (the 8.26 check's WALK line), from which the pool and the sink are found; from the
+    // trails they sit below the banks since the gate round 2 sank the water (Wren 2026-10-03 item 8)
+    walkLines = new[] { WL("the floor from the arrival", V(79.06f, G, 145.39f), V(78f, G, 147f), V(76f, G, 148.5f)), WL("the arrival to the dam stand", V(79.06f, G, 145.39f), V(82.6f, G, 147.2f)) },
+    playChecks = new[] { "main3_8_26_camp3_check.cs", "main3_8_26_camp3_frames.cs?look=Day_one" },
     inventory = new[] { "Camp 3 tent", "Camp 3 fire", "Camp 3 easel" }, deckListWritten = true,
     deckSee = new[] { DH("Snag line piece 1", 92.8f, 6.7f, 149.8f, c3L + "SnagLine/Piece1"), DH("Snag line piece 2", 89.6f, 6.8f, 153.1f, c3L + "SnagLine/Piece2"), DH("Snag line piece 3", 86.4f, 6.9f, 156.4f, c3L + "SnagLine/Piece3"),
         DLO("Snag line piece 4", 83.2f, 7.0f, 159.7f, c3L + "SnagLine/Piece4"), DLO("Snag lantern", 96f, 7.3f, 146.5f, c3D + "SnagLantern"), DLO("hoist", 98.86f, 5.0f, 144.85f, c3L + "Hoist"),

@@ -446,27 +446,51 @@ MonoBehaviour:
     - label: bunk
       path: Camp/Cabin/Bunk
       approach: {x: 179.9, y: 15.03, z: 168.85}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: stove
       path: Camp/Cabin/Stove
       approach: {x: 175.8, y: 15.03, z: 168.65}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: desk, report box and chair
       path: Camp/Cabin/Desk;Camp/Cabin/ReportBox;Camp/Cabin/Interior/CITW_Chair
       approach: {x: 176.4, y: 15.03, z: 168}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: door
       path: Camp/Cabin/Door/Panel
       approach: {x: 178, y: 15.03, z: 164.75}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: shelf and counter
       path: Camp/Cabin/Interior/Counter
       approach: {x: 178, y: 15.03, z: 169.15}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: washstand
       path: Camp/Cabin/Interior/Washstand
       approach: {x: 179.3, y: 15.03, z: 166.85}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: stump
       path: Camp/Cabin/Woodpile/CITW_Tree_Stump
       approach: {x: 182, y: -999, z: 164.4}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: lectern
       path: Camp/Tower/Cab/Lectern
       approach: {x: 167.3, y: 56.03, z: 168.9}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     frames:
     - label: WAKE, FACING 245 (DOOR LEFT, DESK AND WINDOW CENTRE, STOVE RIGHT)
       eye: {x: 179.9, y: 16.63, z: 168.95}
@@ -655,12 +679,21 @@ MonoBehaviour:
     - label: booth window counter
       path: FrontZone/GateBooth/Counter
       approach: {x: 391.9, y: 3, z: 165.2}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: back-room door
       path: FrontZone/Office/BackDoor
       approach: {x: 351.1, y: 3.05, z: 201}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: trailhead board
       path: Ground815/JunctionMarkers/Trailhead_Board
       approach: {x: 339.5, y: -999, z: 172.5}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     frames:
     - label: THE BOOTH FROM THE LOT'S EAST EDGE, THE BARRIER AND THE GATE
       eye: {x: 373, y: -999, z: 170}
@@ -837,12 +870,21 @@ MonoBehaviour:
     - label: pump
       path: Lake/Dock/Pump
       approach: {x: 190, y: -4.8, z: 96}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: slip rest
       path: Lake/Boathouse/Layout823/SlipRest
       approach: {x: 241.3, y: -3.8, z: 52.4}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: reeds rest
       path: Lake/Boathouse/Layout823/ReedsRest
       approach: {x: 244.1, y: -999, z: 62}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     frames:
     - label: THE PUMP FROM THE TRAIL END, FACING SOUTH
       eye: {x: 190, y: -999, z: 96.5}
@@ -1020,9 +1062,15 @@ MonoBehaviour:
     - label: report box
       path: Places/NorthRuin/Layout824/ReportPost
       approach: {x: 170.16, y: -999, z: 277.32}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: forage C
       path: Places/ForageC
       approach: {x: 228.03, y: -999, z: 268.85}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     frames:
     - label: 'F1 JG TRAIL INTO THE CLEARING, HEADING 31: TABLE, COOKFIRE, SPAR'
       eye: {x: 276.5, y: -999, z: 221.5}
@@ -1267,18 +1315,33 @@ MonoBehaviour:
     - label: hook
       path: Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset
       approach: {x: 299.65, y: -999, z: 99.05}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: ring box
       path: Campsites/Camp_2/StackTop/Layout825/RingBox
       approach: {x: 290.3, y: 24, z: 108}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: R2 at the table
       path: Campsites/Camp_2/Layout825/CardTable/HisChair
       approach: {x: 298.5, y: -999, z: 98.7}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: R2 on top
       path: Campsites/Camp_2/StackTop/Layout825/HisChair
       approach: {x: 293.8, y: 24, z: 109.5}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     - label: barrel
       path: Campsites/Camp_2/Layout825/Barrel
       approach: {x: 292.3, y: -999, z: 100.4}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
     frames:
     - label: 'F1 HEADING 7: TABLE 13.2 M, BOOTH 14.7 M'
       eye: {x: 297.2, y: -999, z: 84.6}
@@ -1325,6 +1388,10 @@ MonoBehaviour:
       - {x: 79.06, y: -999, z: 145.39}
       - {x: 78, y: -999, z: 147}
       - {x: 76, y: -999, z: 148.5}
+    - label: the arrival to the dam stand
+      points:
+      - {x: 79.06, y: -999, z: 145.39}
+      - {x: 82.6, y: -999, z: 147.2}
     id: camp3
     task: 8.26
     title: Camp 3 and the west trails
@@ -1383,8 +1450,8 @@ MonoBehaviour:
       point: {x: 94, y: -999, z: 138.5}
       height: 0
       objectPath: 
-    - label: Steps' top
-      point: {x: 96.5, y: -999, z: 142.8}
+    - label: Steps' top viewpoint
+      point: {x: 96, y: -999, z: 140.8}
       height: 0
       objectPath: 
     - label: Pool
@@ -1393,8 +1460,8 @@ MonoBehaviour:
       objectPath: Campsites/Camp_3/Layout826/Creek/Pool
     - label: Sink
       point: {x: 83.6, y: -999, z: 148.45}
-      height: 0.2
-      objectPath: Campsites/Camp_3/Layout826/Sink
+      height: 0.4
+      objectPath: Campsites/Camp_3/Layout826/Dam
     - label: Spring
       point: {x: 85.8, y: -999, z: 126}
       height: 0.6
@@ -1515,19 +1582,52 @@ MonoBehaviour:
     - label: fire
       path: Campsites/Camp_3/Dressing/Fire
       approach: {x: 74.6, y: -999, z: 151.2}
+      prompt: Sit by the fire
+      facing: 117
+      pitchDown: 40
     - label: easel
       path: Campsites/Camp_3/Dressing/Easel
       approach: {x: 79, y: -999, z: 149.9}
+      prompt: Study the painting
+      facing: 130
+      pitchDown: 8
     - label: form and table
       path: Campsites/Camp_3/Layout826/PlankTable;Campsites/Camp_3/Dressing/JobForm
       approach: {x: 78.6, y: -999, z: 148.4}
-    - label: sink
-      path: Campsites/Camp_3/Layout826/Sink
+      prompt: Examine
+      facing: 180
+      pitchDown: 35
+    - label: dam
+      path: Campsites/Camp_3/Layout826/Dam
       approach: {x: 82.6, y: -999, z: 147.2}
+      prompt: Clear the dam
+      facing: 45
+      pitchDown: 40
+    - label: R3
+      path: Campsites/Camp_3/Resident/Resident_Camp3_Spot/StandInBody
+      approach: {x: 75.2, y: -999, z: 148.6}
+      prompt: Talk
+      facing: NaN
+      pitchDown: 0
     frames:
-    - label: 'F1 STEPS'' TOP HEADING 270: FIRE, POOL, CANVASES'
-      eye: {x: 96.5, y: -999, z: 142.8}
-      look: {x: 86.5, y: -3.5, z: 142.8}
+    - label: 'F1 DOWN THE STEPS: FIRE, POOL, CANVASES'
+      eye: {x: 90, y: -999, z: 145.3}
+      look: {x: 76.6, y: -3.7, z: 148.7}
+    - label: 'THE EAST RIM SPOT: THE CAMP FLOOR'
+      eye: {x: 94, y: -999, z: 138.5}
+      look: {x: 77.5, y: -3.9, z: 146.5}
+    - label: 'THE STEPS'' TOP VIEWPOINT: THE SNAG LINE'
+      eye: {x: 96, y: -999, z: 140.8}
+      look: {x: 86.4, y: 6.9, z: 156.4}
+    - label: THE TENT'S SOUTH FACE
+      eye: {x: 75, y: -999, z: 137.6}
+      look: {x: 75, y: -3.3, z: 139.64}
+    - label: THE TENT'S WEST FACE
+      eye: {x: 70, y: -999, z: 140.7}
+      look: {x: 72.96, y: -3.3, z: 140.7}
+    - label: THE CANVAS BACKS FROM THE FLOOR
+      eye: {x: 74.3, y: -999, z: 146}
+      look: {x: 70.33, y: -3.25, z: 145.95}
     - label: 'F2 W1 ARRIVAL HEADING 342: FIRE, EASEL BACK'
       eye: {x: 84, y: -999, z: 132}
       look: {x: 80.90983, y: -3, z: 141.51056}
@@ -1551,51 +1651,218 @@ MonoBehaviour:
       look: {x: 87.80609, y: 2, z: 141.651}
     playChecks:
     - main3_8_26_camp3_check.cs
+    - main3_8_26_camp3_frames.cs?look=Day_one
   - acceptedStops: []
     spacingExceptions: []
-    walkLines: []
+    walkLines:
+    - label: the descent
+      points:
+      - {x: 52, y: -6, z: 37}
+      - {x: 52, y: -6, z: 22}
+      - {x: 68, y: -10, z: 22}
+      - {x: 68, y: -10, z: 17}
+      - {x: 52, y: -14, z: 17}
+      - {x: 52, y: -14, z: 12}
+      - {x: 68, y: -18, z: 12}
+      - {x: 71, y: -18, z: 12}
+    - label: the chamber to the side room
+      points:
+      - {x: 71, y: -18, z: 12}
+      - {x: 89.25, y: -18, z: 12}
+      - {x: 92, y: -18, z: 12}
     id: cave
     task: 8.27
     title: Cave and ravine
     bounds:
     - serializedVersion: 2
-      x: 20
-      y: -20
-      width: 100
-      height: 85
+      x: 40
+      y: 0
+      width: 92
+      height: 72
     warps:
     - Cave_Mouth
     - Cave_Chamber
+    - Cave_SideRoom
+    - Spur_Descent
     places:
-    - label: Cave mouth
-      point: {x: 52, y: -999, z: 40}
-      height: 0
-      objectPath: 
+    - label: Mouth
+      point: {x: 52, y: -6, z: 37.9}
+      height: 2.25
+      objectPath: Cave/Mouth
+    - label: Boards
+      point: {x: 52, y: -5.4, z: 37.6}
+      height: 1.8
+      objectPath: Cave/Mouth/DayOneBoard
+    - label: Bulbs
+      point: {x: 82.63908, y: -999, z: 48.978657}
+      height: 2.8
+      objectPath: PointsOfInterest/POI_Coloured_bulbs
+    - label: Rope rail
+      point: {x: 0, y: -999, z: 0}
+      height: 1
+      objectPath: PointsOfInterest/RopeRail827
+    - label: Toilet
+      point: {x: 47.64, y: -999, z: 41.2}
+      height: 0.1
+      objectPath: Cave/Layout827/Toilet
+    - label: Drip
+      point: {x: 51.2, y: -6, z: 28}
+      height: 0.3
+      objectPath: Cave/Layout827/Drip
+    - label: Niche
+      point: {x: 54.5, y: -6, z: 32.5}
+      height: 2
+      objectPath: Cave/Layout827/Niche
     - label: Chamber
       point: {x: 80, y: -18, z: 12}
       height: 0
       objectPath: 
+    - label: Seat shelf
+      point: {x: 88.4, y: -18, z: 6}
+      height: 0.6
+      objectPath: Cave/Layout827/Chamber/SeatShelf
+    - label: Sleep
+      point: {x: 85, y: -18, z: 4}
+      height: 0.5
+      objectPath: Cave/Layout827/Chamber/Sleep
+    - label: Food
+      point: {x: 73, y: -18, z: 14.75}
+      height: 0.5
+      objectPath: Cave/Layout827/Chamber/Food
+    - label: Stack
+      point: {x: 86.75, y: -18, z: 18.75}
+      height: 3
+      objectPath: Cave/Layout827/Chamber/Stack
+    - label: Battery bank
+      point: {x: 84.5, y: -18, z: 20.7}
+      height: 0.8
+      objectPath: Cave/Layout827/Chamber/BatteryBank
     - label: Side room
-      point: {x: 94, y: -18, z: 12}
+      point: {x: 93.5, y: -18, z: 11.5}
       height: 0
       objectPath: 
-    - label: Rope handrail
-      point: {x: 107, y: -999, z: 58}
-      height: 0
-      objectPath: 
-    - label: Coloured bulbs
-      point: {x: 83, y: -999, z: 49}
-      height: 0
-      objectPath: 
+    - label: Guest chair
+      point: {x: 92.85, y: -18, z: 11.5}
+      height: 1
+      objectPath: Cave/SideRoom/RouletteTable/Chair
+    - label: His chair
+      point: {x: 95.05, y: -18, z: 11.3}
+      height: 1
+      objectPath: Cave/SideRoom/RouletteTable
+    - label: Deeper opening
+      point: {x: 97.75, y: -18, z: 13.8}
+      height: 2.1
+      objectPath: Cave/Layout827/Deeper/DeeperClosed
     inventory:
     - Cave lights
-    deckListWritten: 0
+    deckListWritten: 1
     hardSeesTower: 0
     deckSee: []
-    deckHide: []
-    interactions: []
-    frames: []
-    playChecks: []
+    deckHide:
+    - label: mouth
+      point: {x: 52, y: -4.5, z: 37.9}
+      treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: boards
+      point: {x: 52, y: -4.4, z: 37.6}
+      treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: jamb top
+      point: {x: 57.7, y: -0.2, z: 37.9}
+      treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: bulbs
+      point: {x: 82.15, y: 6.5, z: 52.96}
+      treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: toilet
+      point: {x: 47.64, y: -5.85, z: 41.2}
+      treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: rope rail
+      point: {x: 70.9, y: 0.7, z: 44}
+      treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: spur below the rise
+      point: {x: 65, y: -0.5, z: 47.3}
+      treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: ravine floor
+      point: {x: 60, y: -5.8, z: 40}
+      treeCoverPath: 
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    interactions:
+    - label: guest chair
+      path: Cave/SideRoom/RouletteTable/Chair
+      approach: {x: 91, y: -18, z: 12}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
+    - label: event 16 (deeper)
+      path: Cave/Layout827/Deeper/Wall_End
+      approach: {x: 101, y: -18, z: 14}
+      prompt: 
+      facing: NaN
+      pitchDown: 0
+    frames:
+    - label: 'F1 HEADING 222: THE OPENING (FOUND AT 10 M)'
+      eye: {x: 56.31, y: -999, z: 46.6}
+      look: {x: 49.618694, y: -4.6, z: 39.16855}
+    - label: 'F2 HEADING 300: THE BULBS'
+      eye: {x: 91.3, y: -999, z: 47.4}
+      look: {x: 82.15, y: 6.5, z: 52.96}
+    - label: 'F3 HEADING 180: THE LEG 1 OPENING AND THE CABLE'
+      eye: {x: 52, y: -4.4, z: 24}
+      look: {x: 52, y: -5.6, z: 14}
+    - label: 'F4 HEADING 90: STACK, DOORWAY, R7'
+      eye: {x: 71, y: -16.4, z: 12}
+      look: {x: 81, y: -16.8, z: 12}
+    - label: 'F5 THE DOORWAY HEADING 90: THE GUEST CHAIR'
+      eye: {x: 89.25, y: -16.4, z: 12}
+      look: {x: 92.85, y: -17.4, z: 11.5}
+    - label: F6 THE STANDING POINT HEADING 270
+      eye: {x: 92, y: -16.4, z: 12}
+      look: {x: 82, y: -16.6, z: 12}
+    - label: CAVE_SIDEROOM WARP LANDING, FACING 90
+      eye: {x: 91, y: -16.4, z: 12}
+      look: {x: 101, y: -17, z: 12}
+    - label: SPUR_DESCENT WARP LANDING, FACING 250
+      eye: {x: 77.3, y: -999, z: 48.6}
+      look: {x: 67.903076, y: -2, z: 45.1798}
+    playChecks:
+    - main3_8_27_cave_check.cs
   - acceptedStops: []
     spacingExceptions: []
     walkLines: []
@@ -1723,6 +1990,8 @@ MonoBehaviour:
     - Junction_W1
     - Cave_Mouth
     - Cave_Chamber
+    - Cave_SideRoom
+    - Spur_Descent
     - Old_Burn
     - Junction_Jg
     - Junction_J
@@ -2034,8 +2303,8 @@ MonoBehaviour:
       point: {x: 94, y: -999, z: 138.5}
       height: 0
       objectPath: 
-    - label: Steps' top
-      point: {x: 96.5, y: -999, z: 142.8}
+    - label: Steps' top viewpoint
+      point: {x: 96, y: -999, z: 140.8}
       height: 0
       objectPath: 
     - label: Pool
@@ -2044,8 +2313,8 @@ MonoBehaviour:
       objectPath: Campsites/Camp_3/Layout826/Creek/Pool
     - label: Sink
       point: {x: 83.6, y: -999, z: 148.45}
-      height: 0.2
-      objectPath: Campsites/Camp_3/Layout826/Sink
+      height: 0.4
+      objectPath: Campsites/Camp_3/Layout826/Dam
     - label: Spring
       point: {x: 85.8, y: -999, z: 126}
       height: 0.6
@@ -2066,26 +2335,74 @@ MonoBehaviour:
       point: {x: 131.71031, y: -999, z: 72.82208}
       height: 0.3
       objectPath: PointsOfInterest/POI_Stepping_stones
-    - label: Cave mouth
-      point: {x: 52, y: -999, z: 40}
-      height: 0
-      objectPath: 
+    - label: Mouth
+      point: {x: 52, y: -6, z: 37.9}
+      height: 2.25
+      objectPath: Cave/Mouth
+    - label: Boards
+      point: {x: 52, y: -5.4, z: 37.6}
+      height: 1.8
+      objectPath: Cave/Mouth/DayOneBoard
+    - label: Bulbs
+      point: {x: 82.63908, y: -999, z: 48.978657}
+      height: 2.8
+      objectPath: PointsOfInterest/POI_Coloured_bulbs
+    - label: Rope rail
+      point: {x: 0, y: -999, z: 0}
+      height: 1
+      objectPath: PointsOfInterest/RopeRail827
+    - label: Toilet
+      point: {x: 47.64, y: -999, z: 41.2}
+      height: 0.1
+      objectPath: Cave/Layout827/Toilet
+    - label: Drip
+      point: {x: 51.2, y: -6, z: 28}
+      height: 0.3
+      objectPath: Cave/Layout827/Drip
+    - label: Niche
+      point: {x: 54.5, y: -6, z: 32.5}
+      height: 2
+      objectPath: Cave/Layout827/Niche
     - label: Chamber
       point: {x: 80, y: -18, z: 12}
       height: 0
       objectPath: 
+    - label: Seat shelf
+      point: {x: 88.4, y: -18, z: 6}
+      height: 0.6
+      objectPath: Cave/Layout827/Chamber/SeatShelf
+    - label: Sleep
+      point: {x: 85, y: -18, z: 4}
+      height: 0.5
+      objectPath: Cave/Layout827/Chamber/Sleep
+    - label: Food
+      point: {x: 73, y: -18, z: 14.75}
+      height: 0.5
+      objectPath: Cave/Layout827/Chamber/Food
+    - label: Stack
+      point: {x: 86.75, y: -18, z: 18.75}
+      height: 3
+      objectPath: Cave/Layout827/Chamber/Stack
+    - label: Battery bank
+      point: {x: 84.5, y: -18, z: 20.7}
+      height: 0.8
+      objectPath: Cave/Layout827/Chamber/BatteryBank
     - label: Side room
-      point: {x: 94, y: -18, z: 12}
+      point: {x: 93.5, y: -18, z: 11.5}
       height: 0
       objectPath: 
-    - label: Rope handrail
-      point: {x: 107, y: -999, z: 58}
-      height: 0
-      objectPath: 
-    - label: Coloured bulbs
-      point: {x: 83, y: -999, z: 49}
-      height: 0
-      objectPath: 
+    - label: Guest chair
+      point: {x: 92.85, y: -18, z: 11.5}
+      height: 1
+      objectPath: Cave/SideRoom/RouletteTable/Chair
+    - label: His chair
+      point: {x: 95.05, y: -18, z: 11.3}
+      height: 1
+      objectPath: Cave/SideRoom/RouletteTable
+    - label: Deeper opening
+      point: {x: 97.75, y: -18, z: 13.8}
+      height: 2.1
+      objectPath: Cave/Layout827/Deeper/DeeperClosed
     - label: Old burn
       point: {x: 240, y: -999, z: 160}
       height: 0
