@@ -1,2 +1,5 @@
 - [Build rewrites need Grant](feedback_build_rewrites.md) — build dirties settings; git checkout and deletes blocked; runtime list cannot match HEAD via Editor
 - [Player build perf](project_player_build_perf.md) — 8.16 floor judged in a dev player via PerfSpots; first BRG build ~60 min; what builds dirty
+- [One Editor job at a time](feedback_editor_one_job.md) — no Play scripts or editor_play/stop while a background capture runs
+- [Comments at line end](feedback_inline_comment_edits.md) — a // inserted mid-line swallowed code four times on 2026-10-03
+- [Sightline eyes](feedback_sightline_eyes.md) — reject eyes inside drawn meshes; drawn meshes block, not gameplay colliders
