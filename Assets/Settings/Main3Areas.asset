@@ -1490,7 +1490,7 @@ MonoBehaviour:
     hardSeesTower: 0
     deckSee:
     - label: Snag line piece 1
-      point: {x: 92.8, y: 6.7, z: 149.8}
+      point: {x: 92.798, y: 7.1140985, z: 149.8}
       treeCoverPath: 
       hard: 1
       loose: 0
@@ -1498,7 +1498,7 @@ MonoBehaviour:
       controlRaise: 0
       anyEye: 0
     - label: Snag line piece 2
-      point: {x: 89.6, y: 6.8, z: 153.1}
+      point: {x: 89.598, y: 7.1236916, z: 153.1}
       treeCoverPath: 
       hard: 1
       loose: 0
@@ -1506,7 +1506,7 @@ MonoBehaviour:
       controlRaise: 0
       anyEye: 0
     - label: Snag line piece 3
-      point: {x: 86.4, y: 6.9, z: 156.4}
+      point: {x: 86.398, y: 7.1332855, z: 156.4}
       treeCoverPath: 
       hard: 1
       loose: 0
@@ -1514,7 +1514,7 @@ MonoBehaviour:
       controlRaise: 0
       anyEye: 0
     - label: Snag line piece 4
-      point: {x: 83.2, y: 7, z: 159.7}
+      point: {x: 83.198, y: 7.1428785, z: 159.7}
       treeCoverPath: 
       hard: 0
       loose: 1

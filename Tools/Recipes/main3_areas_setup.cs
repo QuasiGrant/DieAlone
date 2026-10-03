@@ -209,6 +209,9 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Ca
 // deck must-see hard: Snag line pieces 1 to 3 (every mesh); loose: piece 4, the Snag lantern, the hoist, the east rim spot, the fire, the
 // tent; must-hide by the pixel check with its 20 m control: the easel's painted face and the faced canvases' faces. The floor is about -4.0.
 const string c3D = "Campsites/Camp_3/Dressing/", c3L = "Campsites/Camp_3/Layout826/";
+// the Snag line pieces' deck points read from the scene (their centres), so a raised Snag end (gate round 2, C) moves the targets with them
+UnityEngine.Vector3 PieceAt(int i, float x, float y, float z) { var t = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), c3L + "SnagLine/Piece" + i); return t != null ? PlaceKit.MeshBounds(t.gameObject).center : V(x, y, z); }
+var sp1 = PieceAt(1, 92.8f, 6.7f, 149.8f); var sp2 = PieceAt(2, 89.6f, 6.8f, 153.1f); var sp3 = PieceAt(3, 86.4f, 6.9f, 156.4f); var sp4 = PieceAt(4, 83.2f, 7.0f, 159.7f);
 Main3AreaSet.Place POn(string l, string obj, float h) { var t = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), obj); var p = t != null ? t.position : V(0f, G, 0f); return new Main3AreaSet.Place { label = l, point = V(p.x, G, p.z), height = h, objectPath = obj }; }
 var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Camp 3 and the west trails", bounds = new[] { R(50f, 62f, 160f, 207f) }, warps = new[] { "Camp_3", "Camp_3_Rim", "Junction_W1" },
     places = new[] { P("Camp 3", 75.0f, G, 143.6f), PO("Fire", 76.0f, G, 150.5f, 0.6f, c3D + "Fire"), PO("Seat log", 73.8f, G, 150.2f, 0.45f, c3D + "CS_Log_Large_Long_Seat_1"),
@@ -243,8 +246,8 @@ var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Ca
     walkLines = new[] { WL("the floor from the arrival", V(79.06f, G, 145.39f), V(78f, G, 147f), V(76f, G, 148.5f)), WL("the arrival to the dam stand", V(79.06f, G, 145.39f), V(82.6f, G, 147.2f)) },
     playChecks = new[] { "main3_8_26_camp3_check.cs", "main3_8_26_camp3_frames.cs?look=Day_one" },
     inventory = new[] { "Camp 3 tent", "Camp 3 fire", "Camp 3 easel" }, deckListWritten = true,
-    deckSee = new[] { DH("Snag line piece 1", 92.8f, 6.7f, 149.8f, c3L + "SnagLine/Piece1"), DH("Snag line piece 2", 89.6f, 6.8f, 153.1f, c3L + "SnagLine/Piece2"), DH("Snag line piece 3", 86.4f, 6.9f, 156.4f, c3L + "SnagLine/Piece3"),
-        DLO("Snag line piece 4", 83.2f, 7.0f, 159.7f, c3L + "SnagLine/Piece4"), DLO("Snag lantern", 96f, 7.3f, 146.5f, c3D + "SnagLantern"), DLO("hoist", 98.86f, 5.0f, 144.85f, c3L + "Hoist"),
+    deckSee = new[] { DH("Snag line piece 1", sp1.x, sp1.y, sp1.z, c3L + "SnagLine/Piece1"), DH("Snag line piece 2", sp2.x, sp2.y, sp2.z, c3L + "SnagLine/Piece2"), DH("Snag line piece 3", sp3.x, sp3.y, sp3.z, c3L + "SnagLine/Piece3"),
+        DLO("Snag line piece 4", sp4.x, sp4.y, sp4.z, c3L + "SnagLine/Piece4"), DLO("Snag lantern", 96f, 7.3f, 146.5f, c3D + "SnagLantern"), DLO("hoist", 98.86f, 5.0f, 144.85f, c3L + "Hoist"),
         DL("east rim spot", 94f, 4.5f, 138.5f), DLO("fire", 76.0f, -3.6f, 150.5f, c3D + "Fire"), DLO("tent", 75.0f, -3.2f, 140.7f, c3D + "CS_Tent_Old_2") },
     deckHide = new[] { D("the easel's painted face", 80.3f, -2.8f, 148.8f, c3D + "Easel/TheCanvas/Painting"), D("the faced canvases' faces", 70.3f, -3.4f, 145.95f, c3L + "FacedCanvases/Faces") } };
 // cave (8.27; CaveLayout.md draft 2 section 6, Sable 2026-10-02): places on their objects (main3_8_27_cave.cs builds Cave/Layout827); the
