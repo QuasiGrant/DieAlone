@@ -289,6 +289,47 @@ var caveArea = new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave
     inventory = new[] { "Cave lights" }, deckListWritten = true, deckSee = none,
     deckHide = new[] { D("mouth", 52f, -4.5f, 37.9f), D("boards", 52f, -4.4f, 37.6f), D("jamb top", 57.7f, -0.2f, 37.9f), D("bulbs", 82.15f, 6.5f, 52.96f), D("toilet", 47.64f, -5.85f, 41.2f),
         D("rope rail", 70.9f, 0.7f, 44.0f), D("spur below the rise", 65f, -0.5f, 47.3f), D("ravine floor", 60f, -5.8f, 40f) } };
+// burn (8.28; BurnLayout.md draft 2 section 6, Sable 2026-10-02; BurnLayout_UI.md, Pim): places on their objects (main3_8_28_burn.cs builds
+// Places/Burn828 and moves the Jg sign); the frames at Marlow's measured first-found points, the trail ones read from the scene's trail
+// markers; deck must-see hard: the office west door and the verge tree; must-hide by pixel: forage A, B and C bush tops and the inside of
+// the Hollow Giant hollow. Forage B and C prompts are the 8.28 check's PROMPT lines (their stands are in the camp and north areas).
+const string bnL = "Places/Burn828/", jm = "Ground815/JunctionMarkers/";
+// a trail marker dist m or more from a target, walking the leg's markers from the one nearest it toward the leg's end (after) or start
+UnityEngine.Vector3 MarkFrom(string leg, UnityEngine.Vector3 target, float dist, bool after)
+{
+    var s = UnityEngine.SceneManagement.SceneManager.GetActiveScene(); var t = Main3AreaSet.At(s, "Trails/" + leg); if (t == null || t.childCount == 0) return target;
+    int k = 0; float bd = float.MaxValue; for (int i = 0; i < t.childCount; i++) { var q = t.GetChild(i).position; float d = new UnityEngine.Vector2(q.x - target.x, q.z - target.z).magnitude; if (d < bd) { bd = d; k = i; } }
+    for (int i = k; i >= 0 && i < t.childCount; i += after ? 1 : -1) { var q = t.GetChild(i).position; if (new UnityEngine.Vector2(q.x - target.x, q.z - target.z).magnitude >= dist) return V(q.x, G, q.z); }
+    var e = t.GetChild(after ? t.childCount - 1 : 0).position; return V(e.x, G, e.z);
+}
+UnityEngine.Vector3 MarkAt(string leg, int i) { var t = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), "Trails/" + leg); if (t == null || t.childCount == 0) return V(0f, G, 0f); var q = t.GetChild(UnityEngine.Mathf.Clamp(i, 0, t.childCount - 1)).position; return V(q.x, G, q.z); }
+var forageA = V(239.59f, 5.6f, 163.04f); var forageB = V(140.75f, 8.9f, 167.12f); var stub = V(290f, 16f, 176f); var jgC = V(262f, 5.5f, 172f);
+var hollowT = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), bnL + "Hollow"); var hollowAt = hollowT != null ? hollowT.position + V(0f, 1f, 0f) : V(203.2f, 7f, 142.3f);
+var signT = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), jm + "Sign_Jg"); var signAt = signT != null ? signT.position + V(0f, 2.2f, 0f) : V(263.8f, 7.4f, 170.2f);
+var m30 = MarkAt("Camp to Jg", 15);   // scene marker chainage m 30 (2 m apart, from P16)
+var burnArea = new Main3AreaSet.Area { id = "burn", task = "8.28", title = "Old burn and forage", bounds = new[] { R(180f, 100f, 345f, 240f) }, warps = new[] { "Old_Burn", "Junction_Jg" },
+    places = new[] { PO("Forage A", 239.59f, G, 163.04f, 0.95f, "PointsOfInterest/POI_Forage_patch_A"), POn("Hollow Giant hollow", bnL + "Hollow", 2.25f),
+        PO("Jg signpost", 263.8f, G, 170.2f, 2.6f, jm + "Sign_Jg"), PO("Gate Tree stub", 290f, G, 176f, 15f, "Giants/Heroes/Gate_Tree"),
+        PO("Trailhead board", 338f, G, 172.5f, 2.1f, jm + "Trailhead_Board"), POn("Trailhead arms", bnL + "T_Arms", 2.0f),
+        POn("Firebreak", bnL + "Firebreak", 0.45f), PO("First-sight stake", 327.3f, G, 168.2f, 1.2f, "PointsOfInterest/POI_First_sight_of_the_lot") },
+    interactions = new[] { IAp("forage A", "PointsOfInterest/POI_Forage_patch_A", 241.6f, G, 160.6f, "Forage", 301f, 36f),
+        IAp("T board", jm + "Trailhead_Board/Board", 339.5f, G, 172.5f, "Examine", 270f, 0f) },
+    frames = new[] { FR("FORAGE A FROM THE CAMP SIDE", V(233.4f, G, 148.3f), forageA), FR("FORAGE A FROM THE JG SIDE", V(247.8f, G, 174.3f), forageA),
+        FR("FORAGE B AT 12 M, FROM CAMP", MarkFrom("Camp to Camp 3", forageB, 12f, false), forageB), FR("FORAGE B AT 11 M, FROM CAMP 3", MarkFrom("Camp to Camp 3", forageB, 11f, true), forageB),
+        FR("THE GATE TREE FROM JG", V(267.0f, G, 180.7f), stub), FR("THE GATE TREE FROM T AT 17 M, ITS UPPER TRUNK", MarkFrom("Jg to T", stub, 17f, true), stub),
+        FR("JG SIGN FROM THE CAMP LEG AT 30 M", MarkFrom("Camp to Jg", jgC, 30f, false), signAt), FR("JG SIGN FROM THE T LEG AT 30 M", MarkFrom("Jg to T", jgC, 30f, true), signAt),
+        FR("JG SIGN FROM THE CAMP 1 LEG AT 30 M", MarkFrom("Jg to Camp 1", jgC, 30f, true), signAt), FR("JG SIGN FROM THE JUNCTION FACING 135", V(262f, G, 172f), Hd(V(262f, 0f, 172f), 135f, signAt.y)),
+        FR("THE T BOARD FROM THE LOT FACING 270", V(358f, G, 170f), Hd(V(358f, 0f, 170f), 270f, 5.0f)),
+        FR("THE HOLLOW FROM M 30 HEADING 200", m30, Hd(m30, 200f, hollowAt.y)),
+        FR("JUNCTION_JG WARP LANDING, FACING 40", V(262f, G, 168f), Hd(V(262f, 0f, 168f), 40f, 6.8f)),
+        FR("OLD_BURN WARP LANDING, FACING 5", V(239.6f, G, 157.8f), Hd(V(239.6f, 0f, 157.8f), 5f, 6.9f)) },
+    // the hollow is reached on foot from Camp to pump P60 (BurnLayout B2, T4)
+    walkLines = new[] { WL("Camp to pump P60 to the hollow", V(186.69f, G, 133.44f), V(203.9f, G, 143.6f)) },
+    playChecks = new[] { "main3_8_28_burn_check.cs" },
+    inventory = new string[0], deckListWritten = true,
+    deckSee = new[] { DH("office west door opening", 344.0f, 4.3f, 199f, "FrontZone/Office/WestDoor"), DH("verge tree", 419f, 25f, 139f, "FrontZone/VergeTree") },
+    deckHide = new[] { D("forage A bush tops", 239.59f, 5.95f, 163.04f, "PointsOfInterest/POI_Forage_patch_A"), D("forage B bush tops", 140.75f, 9.2f, 167.12f, "PointsOfInterest/POI_Forage_patch_B"),
+        D("forage C shrub tops", 229.5f, 5.3f, 273.5f, "Places/ForageC"), D("the inside of the Hollow Giant hollow", hollowAt.x, hollowAt.y, hollowAt.z, bnL + "Hollow/Recess") } };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,
     front,
@@ -297,9 +338,7 @@ var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp2Area,
     camp3Area,
     caveArea,
-    new Main3AreaSet.Area { id = "burn", task = "8.28", title = "Old burn and forage", bounds = new[] { R(205f, 140f, 335f, 200f) }, warps = new[] { "Old_Burn", "Junction_Jg" },
-        places = new[] { P("Old burn", 240f, G, 160f), P("Forage patch A", 240f, G, 163f), P("Jg", 262f, G, 170f) },
-        inventory = new string[0], deckSee = none, deckHide = none },
+    burnArea,
     new Main3AreaSet.Area { id = "ward", task = "8.29", title = "Ward path and ledge", bounds = new[] { R(-70f, 185f, 115f, 305f) }, warps = new[] { "Junction_J", "Ward_Stair", "Ward_Lookout", "Ward" },
         places = new[] { P("J", 106f, G, 203f), P("Plank bridge", 105f, G, 205f), P("Ward stair", 35f, G, 248f), P("Lookout", 29f, G, 261f), P("Ward stones", -3f, G, 230f), P("Path end", -9f, G, 246f) },
         inventory = fireItems, deckSee = none, deckHide = none },

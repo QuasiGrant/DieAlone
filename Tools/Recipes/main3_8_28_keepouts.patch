@@ -1,0 +1,32 @@
+diff --git a/Assets/Editor/KeepOuts.cs b/Assets/Editor/KeepOuts.cs
+index 104fb96..dc9bda8 100644
+--- a/Assets/Editor/KeepOuts.cs
++++ b/Assets/Editor/KeepOuts.cs
+@@ -82,11 +82,26 @@ public static class KeepOuts
+         new Zone("C1 mouth strip", new Vector2(53.25f, 39.25f), new Vector2(53.25f, 45.25f), 1.25f),
+     };
+ 
++    /// BurnLayout.md draft 2 (PLAN 8.28): B1 forage A's ring and its approach from the stand, B3 Jg's open ground (r 4), B5 the Gate Tree
++    /// stub's face, B6 the firebreak, B8 the deck's verge frame (15 m each side of the deck-to-verge line, x 250 to 345) and office line
++    /// (5 m each side of the lowest eye's line to the office west door, x 230 to 340).
++    public static readonly Zone[] Burn =
++    {
++        new Zone("B1 forage A", new Vector2(239.59f, 163.04f), 3f),
++        new Zone("B1 forage A approach", new Vector2(239.59f, 163.04f), new Vector2(241.6f, 160.6f), 1.5f),
++        new Zone("B3 Jg open ground", new Vector2(262f, 172f), 4f),
++        new Zone("B5 Gate Tree face", new Vector2(290f, 176f), 3f),
++        new Zone("B6 firebreak", new Vector2(208f, 143f), new Vector2(208f, 200f), 3f),
++        new Zone("B8 verge frame", new Vector2(250f, 156.89f), new Vector2(345f, 146.84f), 15f),   // the deck (164, 166) to the verge tree (419, 139)
++        new Zone("B8 office line", new Vector2(230f, 178.10f), new Vector2(340f, 198.27f), 5f),   // the deck (164, 166) to the office west door (344, 199)
++    };
++
+     public static bool Contains(Vector2 p) => Which(p) != null;
+     public static bool Contains(Vector3 p) => Contains(new Vector2(p.x, p.z));
+-    public static string Which(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return z.label; var c2 = WhichCamp2(p); return c2 ?? WhichCamp3(p) ?? WhichCave(p) ?? WhichCamp1(p); }
++    public static string Which(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return z.label; var c2 = WhichCamp2(p); return c2 ?? WhichCamp3(p) ?? WhichCave(p) ?? WhichCamp1(p) ?? WhichBurn(p); }
+     public static string WhichCamp2(Vector2 p) { foreach (var z in Camp2) if (z.Contains(p)) return z.label; return null; }
+     public static string WhichCamp3(Vector2 p) { foreach (var z in Camp3) if (z.Contains(p)) return z.label; return null; }
+     public static string WhichCave(Vector2 p) { foreach (var z in Cave) if (z.Contains(p)) return z.label; return null; }
+     public static string WhichCamp1(Vector2 p) { foreach (var z in Camp1) if (z.Contains(p)) return z.label; return null; }
++    public static string WhichBurn(Vector2 p) { foreach (var z in Burn) if (z.Contains(p)) return z.label; return null; }
+ }
