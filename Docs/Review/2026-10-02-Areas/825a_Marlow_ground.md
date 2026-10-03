@@ -38,9 +38,9 @@
    | south (292, 96) | the gate T at 1.6 and 6 m and the barrier at 6 m; the highway at no height up to 26 m |
    | east (304, 108) | the barrier from 11 m, the highway only at 26 m, the gate T at no height |
    | east edge (330, 108) | the gate T at 1.6 m, then nothing until 21 m |
+   | on BigBoulders_0 | the highway from 11 m over its top, all three from 21 m over it |
 
    Today's column and the trees stand in the way of the west, south and east spots.
-   | on BigBoulders_0 | the highway from 11 m over its top, all three from 21 m over it |
 
 5. **The deck (section 7):**
    - From the E and S rails, most of the circle is hidden at ground and +5 m. Seen cells gather on the north edge (z 140 to 144) and in scattered gaps.
