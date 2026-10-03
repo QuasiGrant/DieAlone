@@ -24,3 +24,27 @@ Check before the next round, one line each:
 Darkness: not the blocker here. The flat walls show clearly enough to grade. Lighting stays with 11.0.
 
 Vesper
+
+## Round 2 (final), 2026-10-03
+
+Frames: AreaFrames_03 (F3 heading 165), AreaFrames_04 (F4), CaveFrames Day_one/two V9Open_FromSideRoom, Found_cave_06, RockCheck_F3_Red, RockCheck_F4_Red. Layout only.
+
+**Verdict: FAIL.** All three are D at eye height. The shapes alone would pass: C for the passage and chamber on the red check.
+
+| Item | Shape (red check) | Eye height | Grade | Why |
+|---|---|---|---|---|
+| Entrance passage | C | does not read | **D** | RockCheck_F3_Red shows the turn rock on the west wall, a rock jamb on the leg 1 opening and a large rock at the right foreground. That is enough to break the corridor. In AreaFrames_03 none of them separates from the wall: the opening is still a clean rectangle with straight edges. Found_06: the niche still does not show as a recess. |
+| Chamber | C | does not read | **D** | RockCheck_F4_Red shows about 15 masses over the walls and ceiling, the floor rubble at both wall feet, and a mass behind the shelf. In AreaFrames_04 the walls read as before: flat tiled panels with seams, the rocks lost in them. The wall corners and the wall-to-floor line are still straight in both frames. |
+| V9 doorway | no red frame | does not read | **D** | With V2 dropped and V1, V3 and V5 at d 0.1, the opening in V9Open_FromSideRoom (day one and two) is still a rectangle with a pale flat frame. |
+
+## Tint call (one change; the coder sets it)
+- **Darken the box walls, not the boulders.** The rock is meant to *be* the wall, so the box faces behind it should fall back as shadow, and the boulders read as the cave.
+  - Today: wall tint #7A746C, boulder tint #6E6862. The boulders are darker than the walls.
+  - **Set the cave wall, ceiling and floor box material to #3E3A36.** Boulders stay at #6E6862.
+  - That is about 50 to 60 levels of value separation in sRGB before lighting, with the boulders now the lighter of the two. It also hides the tiling seams on the flat faces, which are the strongest "box" cue in F4 and F3.
+- **Scope:** the cave box materials only, inside the mouth's first 4 m line. Leave the void (#101214) and the mouth rocks alone.
+- **Not waiting for 11.0.** At these light levels the gap is in the materials, and no light change makes two near-equal tints separate. If 11.0 later lifts the cave, recheck the gap then.
+- **Recheck frames:** F3, F4, V9Open_FromSideRoom and Found_06, normal look, side by side with these.
+- **Pass bar:** every red-check mass separates from the wall by eye, and the wall-to-floor line and the corners are broken by rock in F4.
+
+Vesper
