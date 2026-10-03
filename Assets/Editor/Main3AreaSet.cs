@@ -202,6 +202,7 @@ public class Main3AreaSet : ScriptableObject
     [Tooltip("Seconds per flood move.")] public float floodMoveTime = 1f;
     [Tooltip("Metres the flood reaches past the area's bounds before it stops expanding.")] public float floodMargin = 10f;
     [Tooltip("A standing place this far under the terrain fell through the map.")] public float fellUnder = 2f;
+    [Tooltip("Unless a floor collider lies within this many metres under it (a cave), metres.")] public float fellProbe = 2.5f;
     [Tooltip("Escape headings per move kind in the trap retest (Marlow: 16 x walk, sprint, sprint-jump = 48).")] public int escapeHeadings = 16;
     [Tooltip("Seconds per escape try.")] public float escapeTime = 3f;
     [Tooltip("Ground closed by thicket (Valley.md 8): a reached place inside one is a leak.")] public Rect[] closedZones;
@@ -293,7 +294,7 @@ public class Main3AreaSet : ScriptableObject
                 var p = pts[i]; var to = new Vector2(pl.point.x - p.x, pl.point.z - p.z); float d = to.magnitude; if (d > foundReach || d < 0.5f) continue;
                 var a = pts[Mathf.Max(0, i - 1)]; var b = pts[Mathf.Min(pts.Count - 1, i + 1)]; var dir = new Vector2(b.x - a.x, b.z - a.z); if (dir.sqrMagnitude < 1e-4f) continue;
                 float ang = Mathf.Min(Vector2.Angle(dir, to), Vector2.Angle(-dir, to)); if (ang > foundMaxAngle) continue;
-                float g = ground(p.x, p.z); var eye = new Vector3(p.x, (p.y > g + raisedWalk ? p.y : g) + 1.6f, p.z); float tall = Vector3.Angle(footP - eye, footP + Vector3.up * h - eye); if (tall < foundMinDeg) continue;   // a walk line over the terrain (a stair, a stack top) keeps its own height
+                float g = ground(p.x, p.z); var eye = new Vector3(p.x, (p.y > g + raisedWalk || p.y < g - fellUnder ? p.y : g) + 1.6f, p.z); float tall = Vector3.Angle(footP - eye, footP + Vector3.up * h - eye); if (tall < foundMinDeg) continue;   // a walk line over the terrain (a stair, a stack top) or under it (a cave, 8.27) keeps its own height
                 r.tried++;
                 if (r.found && d <= r.dist) continue;
                 if (!clear(eye, centre) || !clear(eye, top)) continue;

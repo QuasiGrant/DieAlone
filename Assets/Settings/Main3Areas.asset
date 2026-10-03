@@ -21,6 +21,7 @@ MonoBehaviour:
   floodMoveTime: 1
   floodMargin: 10
   fellUnder: 2
+  fellProbe: 2.5
   escapeHeadings: 16
   escapeTime: 3
   closedZones:
@@ -1700,7 +1701,7 @@ MonoBehaviour:
       height: 2.8
       objectPath: PointsOfInterest/POI_Coloured_bulbs
     - label: Rope rail
-      point: {x: 0, y: -999, z: 0}
+      point: {x: 69.9953, y: -999, z: 45.779366}
       height: 1
       objectPath: PointsOfInterest/RopeRail827
     - label: Toilet
@@ -2356,7 +2357,7 @@ MonoBehaviour:
       height: 2.8
       objectPath: PointsOfInterest/POI_Coloured_bulbs
     - label: Rope rail
-      point: {x: 0, y: -999, z: 0}
+      point: {x: 69.9953, y: -999, z: 45.779366}
       height: 1
       objectPath: PointsOfInterest/RopeRail827
     - label: Toilet

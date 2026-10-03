@@ -11,4 +11,6 @@ compiles when the swallowed part was optional.
 the compile failed. Once it compiled, and a ramp stayed 1 m long until a check caught it.
 
 **How to apply:** append comments with `s|$|   // ...|` on the target line, or put them on their own line above. After any sed edit to
-code, grep the line to confirm nothing follows the comment. Related: [[editor-one-job-at-a-time]].
+code, grep the line to confirm nothing follows the comment. Before an `s/statement;/statement;   // note/` replacement, check the matched
+statement is the last on its line: a fifth case (2026-10-03, Main3AreaSet.Found) matched mid-line and swallowed `float tall`. Related:
+[[editor-one-job-at-a-time]].

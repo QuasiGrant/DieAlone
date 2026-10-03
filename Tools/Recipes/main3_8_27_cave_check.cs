@@ -7,7 +7,8 @@
 // CABLE (V3): no collider and no light under Layout827/Cable.
 // TOILET (V4): the lid's top lidMax over the ground, the shovel's top shovelMax; the lid unseen from every W1 to cave point P40 to P84
 //   (eye 1.6, terrain and every collider).
-// KEEP CLEAR (V5, V6): nothing drawn over clearTop in the chamber strip x 71 to 89.25, z 10.8 to 13.2, or the side-room strip x 89.25 to
+// KEEP CLEAR (V5, V6): nothing drawn over clearTop in the chamber strip x 71 to the wall face 89.0, z 10.8 to 13.2, or the side-room strip from
+//   its wall face 89.5 (the doorway wall's own thickness is not in either room) to
 //   92.4, z 11 to 13.
 // TALK (V5): R7's spot (its head headUp over the shelf) within reach of the talk stand's eye, and within talkCone degrees of its 98 heading.
 // SIDE ROOM (V6): his chair at world yaw 270; the crate flush to the west and north walls; BigBoulders_0 east of the chamber wall; the guest
@@ -33,7 +34,7 @@ var start = pc.transform.position; var startRot = pc.transform.rotation; bool pc
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y;
 var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Settings/PlayerTuning.asset");
 const float dt = 0.02f, arrive = 0.5f, legTime = 200f, eyeH = 1.6f, floorY = -18f;
-const float railOff = 1.2f, railTol = 0.25f, footTol = 0.2f, stripTop = 0.3f, coverMin = 3.5f, lidMax = 0.1f, shovelMax = 0.3f, clearTop = 0.3f, headUp = 1.5f, talkCone = 10f, narrowMin = 1.4f, gapMax = 0.6f, rimStep = 2f;
+const float railOff = 1.2f, railTol = 0.25f, footTol = 0.2f, stripTop = 0.3f, coverMin = 3.5f, lidMax = 0.1f, shovelMax = 0.3f, clearTop = 0.3f, landSpan = 30f, tallStep = 0.25f, wallFace = 88.95f, roomFace = 89.55f, headUp = 1.5f, talkCone = 10f, narrowMin = 1.4f, gapMax = 0.6f, rimStep = 2f;
 var sb = new System.Text.StringBuilder(); int fails = 0; void Line(bool ok, string s) { if (!ok) fails++; sb.Append((ok ? "PASS " : "FAIL ") + s + "\n"); }
 var temps = new System.Collections.Generic.List<UnityEngine.Collider>();
 var cave = Root("Cave") != null ? Root("Cave").transform : null; var L = cave != null ? cave.Find("Layout827") : null; var poiRoot = Root("PointsOfInterest").transform; var trails = Root("Trails").transform;
@@ -65,12 +66,27 @@ bool ClearLine(UnityEngine.Vector3 a, UnityEngine.Vector3 b, UnityEngine.Transfo
 System.Collections.Generic.List<string> Tall(UnityEngine.Rect strip, float top, float floorAt, System.Func<UnityEngine.Renderer, bool> skip)
 {
     var o = new System.Collections.Generic.List<string>();
+    // LOD0 and plain meshes only, and nothing land-sized (the terrain bands, rims and backdrop, over landSpan m across): those are the
+    // ground itself, not a thing standing in the strip (8.27 first run: Band_S_W, Rims, OuterGround, LOD3 copies)
+    var notLod0T = new System.Collections.Generic.HashSet<UnityEngine.Renderer>(); foreach (var lod in UnityEngine.Object.FindObjectsByType<UnityEngine.LODGroup>(UnityEngine.FindObjectsSortMode.None)) { var l = lod.GetLODs(); for (int i = 1; i < l.Length; i++) foreach (var rr in l[i].renderers) if (rr != null) notLod0T.Add(rr); }
     foreach (var r in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshRenderer>(UnityEngine.FindObjectsSortMode.None))
     {
-        if (!r.enabled || !r.gameObject.activeInHierarchy || r.transform.IsChildOf(pc.transform) || (skip != null && skip(r))) continue; var b = r.bounds;
+        if (!r.enabled || !r.gameObject.activeInHierarchy || r.transform.IsChildOf(pc.transform) || notLod0T.Contains(r) || (skip != null && skip(r))) continue; var b = r.bounds; if (UnityEngine.Mathf.Max(b.size.x, b.size.z) > landSpan) continue;
         if (b.max.x < strip.xMin || b.min.x > strip.xMax || b.max.z < strip.yMin || b.min.z > strip.yMax) continue;
-        float g = float.IsNaN(floorAt) ? H(b.center.x, b.center.z) : floorAt; if (b.max.y - g <= top || b.min.y - g > 2.0f) continue;   // over 2 m up is overhead
-        o.Add(WalkIns.PathOf(r.transform) + " " + F(b.max.y - g) + " m");
+        // the mesh itself, not its box: rays down every tallStep m over the strip, from overhead (2 m up) to top over the ground, against a
+        // temporary exact collider on this mesh alone (8.27 first run: a pine's crown box and boulders' boxes crossed the strip, not the things)
+        var mf = r.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue;
+        var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; UnityEngine.Physics.SyncTransforms(); float worst = float.MinValue;
+        try
+        {
+            for (float x = UnityEngine.Mathf.Max(strip.xMin, b.min.x); x <= UnityEngine.Mathf.Min(strip.xMax, b.max.x) + 1e-3f; x += tallStep) for (float z = UnityEngine.Mathf.Max(strip.yMin, b.min.z); z <= UnityEngine.Mathf.Min(strip.yMax, b.max.z) + 1e-3f; z += tallStep)
+            {
+                float g = float.IsNaN(floorAt) ? H(x, z) : floorAt; var from = V(x, g + 2.0f, z);
+                if (mc.Raycast(new UnityEngine.Ray(from, UnityEngine.Vector3.down), out var hit, 2.0f - top)) worst = UnityEngine.Mathf.Max(worst, hit.point.y - g);
+            }
+        }
+        finally { UnityEngine.Object.DestroyImmediate(mc); UnityEngine.Physics.SyncTransforms(); }
+        if (worst > top) o.Add(WalkIns.PathOf(r.transform) + " " + F(worst) + " m");
     }
     return o;
 }
@@ -115,7 +131,7 @@ try
     }
     // ---- KEEP CLEAR
     {
-        var a = Tall(new UnityEngine.Rect(71f, 10.8f, 18.25f, 2.4f), clearTop, floorY, r => r.bounds.min.y > floorY + 2.0f); var b = Tall(new UnityEngine.Rect(89.25f, 11f, 3.15f, 2f), clearTop, floorY, r => r.bounds.min.y > floorY + 2.0f);
+        var a = Tall(new UnityEngine.Rect(71f, 10.8f, wallFace - 71f, 2.4f), clearTop, floorY, r => r.bounds.min.y > floorY + 2.0f); var b = Tall(new UnityEngine.Rect(roomFace, 11f, 92.4f - roomFace, 2f), clearTop, floorY, r => r.bounds.min.y > floorY + 2.0f);
         Line(a.Count == 0 && b.Count == 0, "KEEP CLEAR: chamber strip " + (a.Count == 0 ? "clear" : string.Join(", ", a)) + "; side-room strip " + (b.Count == 0 ? "clear" : string.Join(", ", b)));
     }
     // ---- TALK
@@ -180,12 +196,12 @@ try
         else
         {
             var targets = new[] { V(52f, -4.0f, 37.6f), V(50.6f, -5.0f, 37.9f), V(53.4f, -5.0f, 37.9f), V(52f, -5.9f, 38.4f) };   // the board, the void's edges, the floor
-            var eyes = new System.Collections.Generic.List<UnityEngine.Vector3>(); var lineZ = new System.Collections.Generic.Dictionary<int, float>();
-            foreach (UnityEngine.Transform t in hedge) if (t.name == "HedgeCollider") { var b = t.GetComponent<UnityEngine.Collider>().bounds; lineZ[UnityEngine.Mathf.RoundToInt(b.center.x)] = b.max.z; }
+            var eyes = new System.Collections.Generic.List<UnityEngine.Vector3>(); var lineZ = new System.Collections.Generic.Dictionary<int, float>(); var lineMinZ = new System.Collections.Generic.Dictionary<int, float>();
+            foreach (UnityEngine.Transform t in hedge) if (t.name == "HedgeCollider") { var b = t.GetComponent<UnityEngine.Collider>().bounds; int kx = UnityEngine.Mathf.RoundToInt(b.center.x); lineZ[kx] = b.max.z; lineMinZ[kx] = lineMinZ.TryGetValue(kx, out var mz) ? UnityEngine.Mathf.Min(mz, b.min.z) : b.min.z; }
             for (float x = 58f; x <= 78f + 1e-3f; x += rimStep) { int k = UnityEngine.Mathf.RoundToInt(x); if (!lineZ.ContainsKey(k)) continue; float z = lineZ[k] + 0.6f; eyes.Add(V(x, H(x, z) + eyeH, z)); }
             var rays = new System.Collections.Generic.List<(UnityEngine.Vector3, UnityEngine.Vector3)>(); foreach (var e in eyes) foreach (var t in targets) rays.Add((e, t)); TempColliders(rays);
             int seen = 0; foreach (var e in eyes) foreach (var t in targets) if (ClearLine(e, t, null)) seen++; DropTemps();
-            int crossed = 0; foreach (var e in eyes) { var from = e - V(0f, eyeH, 0f); Put(from); for (float t = 0f; t < 3f; t += dt) pc.Step(V(0f, 0f, -1f), true, true, dt); if (pc.transform.position.z < from.z - 1.2f) crossed++; }
+            int crossed = 0; foreach (var e in eyes) { var from = e - V(0f, eyeH, 0f); Put(from); for (float t = 0f; t < 3f; t += dt) pc.Step(V(0f, 0f, -1f), true, true, dt); var end = pc.transform.position; int ke = UnityEngine.Mathf.RoundToInt(end.x); if (lineMinZ.TryGetValue(ke, out var southZ) ? end.z < southZ : end.z < from.z - 1.2f) crossed++; }   // past: south of the band's boxes at the end's own x (round 2: a 1.2 m drop alone counted walks along a zigzag line)
             Line(eyes.Count > 0 && seen == 0 && crossed == 0, "RIM: " + eyes.Count + " eyes on the band's north side, clear lines to the mouth " + seen + " of " + (eyes.Count * targets.Length) + "; sprint-jumps south past the band " + crossed);
         }
     }

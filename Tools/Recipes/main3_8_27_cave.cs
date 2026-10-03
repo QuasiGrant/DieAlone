@@ -186,7 +186,7 @@ const float r7BodyR = 0.3f, r7BodyH = 1.0f;
 }
 
 // ================= V6: the side room =================
-const float bulbDoorH = 1.9f; int bulbs = 0;
+const float bulbDoorH = 1.9f, bbWestMin = 89.6f; int bulbs = 0;
 {
     var room = cave.Find("SideRoom"); var tbl = room.Find("RouletteTable");
     // his chair: the chair on the far side (local z > 0) to local yaw 180, world 270
@@ -200,7 +200,8 @@ const float bulbDoorH = 1.9f; int bulbs = 0;
     var crate = Child(room, "C_Crate_Small_1", 96.6f, 14.6f, 1f) ?? Child(room, "C_Crate_Small_1", 89.75f, 15.25f, 1f);
     if (crate != null) { crate.rotation = UnityEngine.Quaternion.identity; var cb = PlaceKit.MeshBounds(crate.gameObject); crate.position += V(89.5f - cb.min.x, 0f, 15.5f - cb.max.z); PlaceKit.FitExact(crate.gameObject); } else notes.Add("no side-room crate");
     // BigBoulders_0 1.0 m east, out of the chamber
-    var bb0 = Child(room, "BigBoulders_0", 89.50f, 9.51f, 0.3f); if (bb0 != null) bb0.position += V(1.0f, 0f, 0f); else if (Child(room, "BigBoulders_0", 90.50f, 9.51f, 0.3f) == null) notes.Add("no SideRoom BigBoulders_0");
+    var bb0 = Child(room, "BigBoulders_0", 89.50f, 9.51f, 0.3f) ?? Child(room, "BigBoulders_0", 90.50f, 9.51f, 1.5f);   // its mesh, not its pivot, clear of the chamber wall: west edge at bbWestMin (first run: 89.03)
+    if (bb0 != null) { float west = PlaceKit.MeshBounds(bb0.gameObject).min.x; if (west < bbWestMin) bb0.position += V(bbWestMin - west, 0f, 0f); } else notes.Add("no SideRoom BigBoulders_0");
     // the bulb string: from the chamber through the doorway at bulbDoorH to over the table, two sagging runs
     foreach (var t in System.Linq.Enumerable.ToArray(room.GetComponentsInChildren<UnityEngine.Transform>())) if (t != null && (t.name == "BulbLine" || t.name == "Bulb")) PlaceKit.Remove(t);
     var bulbGlow = kit.Glow("Places_BulbGlow", kit.Look.practicalColor, kit.Look.cabWindowGlowIntensity); var steel = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Slice/Slice_Steel.mat");
@@ -214,7 +215,7 @@ const float bulbDoorH = 1.9f; int bulbs = 0;
 }
 
 // ================= V9: the deeper passage =================
-const float deadH = 1.4f, deadD = 0.3f, dz0 = 13.2f, dz1 = 14.4f, deepH = 2.1f, dxA0 = 97.5f, dxA1 = 101.6f, dxB0 = 100.4f, dzB1 = 16.1f;
+const float deadH = 2.0f, deadD = 0.3f, dz0 = 13.2f, dz1 = 14.4f, deepH = 2.1f, dxA0 = 97.5f, dxA1 = 101.6f, dxB0 = 100.4f, dzB1 = 16.1f;
 {
     var room = cave.Find("SideRoom"); var fut = room.Find("Wall_E_Future"); var deep = kit.Group("Deeper", L, V(99.5f, floorY, 14f), 0f);
     if (fut != null)
@@ -242,7 +243,7 @@ const float deadH = 1.4f, deadD = 0.3f, dz0 = 13.2f, dz1 = 14.4f, deepH = 2.1f, 
 }
 
 // ================= V10: the narrow =================
-const float narrowNear = 1.5f, narrowH = 4f, narrowStep = 2.6f, narrowX0 = 61f, narrowX1 = 72f; int narrowRocks = 0;
+const float narrowOver = 3.0f, narrowNear = 1.5f, narrowH = 4f, narrowStep = 2.6f, narrowX0 = 61f, narrowX1 = 72f; int narrowRocks = 0;
 {
     var row = kit.Group("NarrowRow", L, L.position, 0f); var line = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (var (n, p) in tread) if (p.x >= narrowX0 - 1f && p.x <= narrowX1 + 1f) line.Add(p);
     line.Sort((a, b) => b.x.CompareTo(a.x));
@@ -259,6 +260,9 @@ const float narrowNear = 1.5f, narrowH = 4f, narrowStep = 2.6f, narrowX0 = 61f, 
             g.transform.rotation = UnityEngine.Quaternion.Euler(0f, q.x * 37f, 0f); var b0 = PlaceKit.MeshBounds(g); g.transform.localScale *= narrowH / UnityEngine.Mathf.Max(0.1f, b0.size.y);
             var b = PlaceKit.MeshBounds(g); float back = UnityEngine.Mathf.Abs(north.x) * b.extents.x + UnityEngine.Mathf.Abs(north.z) * b.extents.z;   // the box's half-depth across the tread
             var at = q + north * (narrowNear + back); g.transform.position += V(at.x - b.center.x, G(at.x, at.z) - 0.3f - b.min.y, at.z - b.center.z);
+            // its top at least narrowOver over the tread (first run: east-end tops 1.1 m over the tread made a ledge with no way back, a trap):
+            // scaled up about its foot, then set off again by its new half-depth
+            { var nb = PlaceKit.MeshBounds(g); float want = q.y + narrowOver; if (nb.max.y < want) { g.transform.localScale *= (want - nb.min.y) / UnityEngine.Mathf.Max(0.1f, nb.size.y); var sb2 = PlaceKit.MeshBounds(g); float back2 = UnityEngine.Mathf.Abs(north.x) * sb2.extents.x + UnityEngine.Mathf.Abs(north.z) * sb2.extents.z; var at2 = q + north * (narrowNear + back2); g.transform.position += V(at2.x - sb2.center.x, nb.min.y - sb2.min.y, at2.z - sb2.center.z); } }
             foreach (var r in g.GetComponentsInChildren<UnityEngine.MeshRenderer>()) { var lodg = g.GetComponentInChildren<UnityEngine.LODGroup>(); if (lodg != null && lodg.GetLODs().Length > 0 && System.Array.IndexOf(lodg.GetLODs()[0].renderers, r) < 0) continue; var mf = r.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; mc.convex = true; }
             narrowRocks++;
         }
@@ -266,18 +270,22 @@ const float narrowNear = 1.5f, narrowH = 4f, narrowStep = 2.6f, narrowX0 = 61f, 
 }
 
 // ================= V11: the rim band =================
-const float rimX0 = 54f, rimX1 = 80f, rimStep = 1f, rimZ0 = 55f, rimZ1 = 62f, rimTop = 15.5f, rimTie = 2f, hedgeH = 2f, hedgeT = 0.6f, brushH = 1.5f, brushStep = 1.4f; int hedgeBoxes = 0, brush = 0;
+// hedgeT 1.2 (first run 0.6): the thin boxes left a one-place pocket where two met at an angle, (71.8, 57.8), a trap
+const float rimUp = 3f, rimUpStep = 0.5f, rimX0 = 54f, rimX1 = 80f, rimStep = 1f, rimZ0 = 55f, rimZ1 = 62f, rimTop = 15.5f, rimTie = 2f, hedgeH = 2f, hedgeT = 1.2f, brushH = 1.5f, brushStep = 1.4f; int hedgeBoxes = 0, brush = 0;
 {
     var stops = ground815 != null ? ground815.Find("Stops") : null; if (stops == null) { notes.Add("no Ground815/Stops"); }
     else
     {
         var hedge = kit.Fresh("Hedge_CaveRim", stops, V((rimX0 + rimX1) * 0.5f, 0f, 58.5f), 0f);
+        // a box's top hedgeH over the highest ground rimUp m north of it (uphill): the flood stood on boxes whose top was hedgeH over the
+        // face's own lip (8.27 first run: 78 stands on Hedge_CaveRim)
+        float Uphill(UnityEngine.Vector3 p) { float m = p.y; for (float dz = 0f; dz <= rimUp + 1e-3f; dz += rimUpStep) m = UnityEngine.Mathf.Max(m, G(p.x, p.z + dz)); return m; }
         // the band's line: at each x, the first z (going north from rimZ0) where the ground reaches rimTop, the top of the steep face
         var line = new System.Collections.Generic.List<UnityEngine.Vector3>();
         for (float x = rimX0 - rimTie; x <= rimX1 + rimTie + 1e-3f; x += rimStep) { float zz = rimZ1; for (float z = rimZ0; z <= rimZ1; z += 0.25f) if (G(UnityEngine.Mathf.Clamp(x, rimX0, rimX1), z) >= rimTop) { zz = z; break; } line.Add(V(x, G(x, zz), zz)); }
         for (int i = 1; i < line.Count; i++)
         {
-            var a = line[i - 1]; var b = line[i]; var mid = (a + b) * 0.5f; float l = new UnityEngine.Vector2(b.x - a.x, b.z - a.z).magnitude; float lo = UnityEngine.Mathf.Min(a.y, b.y) - 0.3f, hi = UnityEngine.Mathf.Max(a.y, b.y) + hedgeH;
+            var a = line[i - 1]; var b = line[i]; var mid = (a + b) * 0.5f; float l = new UnityEngine.Vector2(b.x - a.x, b.z - a.z).magnitude; float lo = UnityEngine.Mathf.Min(a.y, b.y) - 0.3f, hi = UnityEngine.Mathf.Max(Uphill(a), Uphill(b)) + hedgeH;
             var box = kit.Blocker("HedgeCollider", hedge, hedge.InverseTransformPoint(V(mid.x, (lo + hi) * 0.5f, mid.z)), V(hedgeT, hi - lo, l + 0.1f)); box.transform.rotation = UnityEngine.Quaternion.LookRotation(V(b.x - a.x, 0f, b.z - a.z).normalized); box.layer = 2; hedgeBoxes++;
         }
         float lastB = -brushStep; float run = 0f;

@@ -104,6 +104,9 @@ try
     var good = new System.Collections.Generic.HashSet<long>();   // seeds and exits
     var q = new System.Collections.Generic.Queue<long>(); int moves = 0; var leaks = new System.Collections.Generic.List<string>(); var fell = new System.Collections.Generic.List<string>();
     var warpsRoot = Root("DevWarps").transform; int seeds = 0;
+    // fell through: under the terrain by fellUnder with no collider of a floor under the feet (8.27: a cave floor 20 m under the terrain is
+    // ground; the flood had marked every cave place fallen and never spread inside)
+    bool Fell(UnityEngine.Vector3 e) { if (e.y >= H(e.x, e.z) - set.fellUnder) return false; foreach (var h in UnityEngine.Physics.RaycastAll(e + UnityEngine.Vector3.up * 0.3f, UnityEngine.Vector3.down, set.fellProbe, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) if (!(h.collider is UnityEngine.TerrainCollider) && !h.collider.transform.IsChildOf(pc.transform)) return false; return true; }
     void Seed(UnityEngine.Vector3 p) { Put(p); for (int s = 0; s < landSteps * 5; s++) pc.Step(UnityEngine.Vector3.zero, false, false, dt); var e = pc.transform.position; long k = Key(e); if (pos.ContainsKey(k)) return; pos[k] = e; good.Add(k); q.Enqueue(k); seeds++; }
     foreach (var w in A.warps) { var t = warpsRoot.Find(w); if (t != null) Seed(t.position); else sb.Append("note: no warp " + w + "\n"); }
     foreach (var p in trailPts) if (A.Contains(p)) Seed(p + UnityEngine.Vector3.up * 0.5f);
@@ -117,7 +120,7 @@ try
             if (!back.TryGetValue(ek, out var lst)) { lst = new System.Collections.Generic.List<long>(); back[ek] = lst; } if (!lst.Contains(k)) lst.Add(k);
             if (pos.ContainsKey(ek)) continue;
             pos[ek] = e;
-            if (e.y < H(e.x, e.z) - set.fellUnder) { fell.Add(P3(e) + " from " + P3(from)); continue; }
+            if (Fell(e)) { fell.Add(P3(e) + " from " + P3(from)); continue; }
             if (Closed(e)) { leaks.Add(P3(e) + " from " + P3(from)); continue; }
             if (!InRegion(e)) { good.Add(ek); continue; }   // an exit: the rest of the map is the next area's
             q.Enqueue(ek);
@@ -147,7 +150,7 @@ try
     // ---- TRAPS
     var ok = new System.Collections.Generic.HashSet<long>(good); var rq = new System.Collections.Generic.Queue<long>(good);
     while (rq.Count > 0) { long k = rq.Dequeue(); if (!back.TryGetValue(k, out var lst)) continue; foreach (var f in lst) if (ok.Add(f)) rq.Enqueue(f); }
-    var cand = new System.Collections.Generic.List<long>(); foreach (var kv in pos) if (!ok.Contains(kv.Key) && A.Contains(kv.Value) && !Closed(kv.Value) && kv.Value.y >= H(kv.Value.x, kv.Value.z) - set.fellUnder) cand.Add(kv.Key);
+    var cand = new System.Collections.Generic.List<long>(); foreach (var kv in pos) if (!ok.Contains(kv.Key) && A.Contains(kv.Value) && !Closed(kv.Value) && !Fell(kv.Value)) cand.Add(kv.Key);
     var groups = new System.Collections.Generic.List<System.Collections.Generic.List<UnityEngine.Vector3>>();
     foreach (var k in cand) { var p = pos[k]; System.Collections.Generic.List<UnityEngine.Vector3> into = null; foreach (var g in groups) foreach (var gp in g) if ((gp - p).magnitude < 3f * set.floodCell) { into = g; break; } if (into == null) { into = new System.Collections.Generic.List<UnityEngine.Vector3>(); groups.Add(into); } into.Add(p); }
     int traps = 0; var trapLines = new System.Text.StringBuilder(); var trapPlaces = new System.Collections.Generic.List<UnityEngine.Vector3>();
