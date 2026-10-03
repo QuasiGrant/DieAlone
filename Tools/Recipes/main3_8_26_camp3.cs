@@ -173,7 +173,7 @@ UnityEngine.Physics.SyncTransforms();
     var faces = kit.Group("Faces", fc, fc.position, 0f); foreach (var p in System.Linq.Enumerable.ToArray(fc.GetComponentsInChildren<UnityEngine.Transform>())) if (p.name == "Painting") p.SetParent(faces, true);
     // the fills (Marlow's area flood found pockets between the new hulls, the tent and the canvases): collider-only boxes (no renderer:
     // Vesper's grey faces at the bank are the canvas backs), each top no more than fillOver over the highest rock beside it (Wren 2026-10-03)
-    const float fillOver = 0.3f, fillNear = 0.5f, fillStep = 0.25f;
+    const float fillOver = 0.05f, fillNear = 0.5f, fillStep = 0.25f;   // Wren 2026-10-03 (8.26 rim ruling): 0.05 over the visible rock, was 0.3, so no fill top stands in air
     // the visible surface beside a fill: the first drawn mesh or terrain under wantTop, every fillStep m over the footprint widened by fillNear
     // (rays from wantTop down against temporary exact colliders on the drawn meshes there; colliders and blockers do not count)
     float RockTop(float x0, float x1, float z0, float z1, float from)
