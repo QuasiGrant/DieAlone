@@ -6,7 +6,8 @@
 //   V9Open_FromSideRoom: from the standing point (92.0, 12.0) at the opening, open.   V9Shut_FromChamber: from (80, 12) at the shut rock.
 //   DoorwayToExit: from the doorway (89.25, 12.0) heading 270, toward the exit passage (71, 12).
 //   MouthDayTwo: from F1's spot (56.31, 46.60) at the mouth, the day-one board down and the day-2 boards up.
-//   BulbsTrail: from F2's spot at the trail's bulbs (they have no lit state yet: no day system turns them on).
+//   BulbsTrail: from F2's spot at the bulb tree; its Day2String on for the Day two look. BULBS: on day two, bulbsMin or more bulbs read bulbOver
+//   grey over the frame mean (CaveRock.md D, Gate.md N1).
 // CABLE (Sable): in the frame from F3's eye (52, 24) heading 180, the cable's pixels at the leg 1 turn (x 53.35, z cableZ0 to cableZ1) read
 //   cableOver grey or more over the wall cablePx px above them (the mean of each).
 string look = "";
@@ -21,7 +22,7 @@ string lookName = pv != null ? pv.CurrentLabel : "scene"; string tag = lookName.
 UnityEngine.GameObject Root(string n) { foreach (var r in scene.GetRootGameObjects()) if (r.name == n) return r; return null; }
 UnityEngine.Vector3 V(float x, float y, float z) => new UnityEngine.Vector3(x, y, z);
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y;
-const float eyeH = 1.6f, floorY = -18f, cableZ0 = 21.0f, cableZ1 = 23.5f, cableX = 53.35f, cableY = -5.94f, cableOver = 20f; const int shotW = 1920, shotH = 988, cablePx = 20, cablePad = 2;
+const float eyeH = 1.6f, floorY = -18f, cableZ0 = 21.0f, cableZ1 = 23.5f, cableX = 53.35f, cableY = -5.94f, cableOver = 20f, bulbOver = 40f; const int shotW = 1920, shotH = 988, cablePx = 20, cablePad = 2, bulbPad = 3, bulbsMin = 6;
 var pc = UnityEngine.Object.FindFirstObjectByType<PlayerController>(); var cc = pc.GetComponent<UnityEngine.CharacterController>();
 var cam = UnityEngine.Camera.main; var camLocal = cam.transform.localPosition; var camRot = cam.transform.localRotation;
 var start = pc.transform.position; var startRot = pc.transform.rotation; bool pcWas = pc.enabled; pc.enabled = false;
@@ -57,7 +58,22 @@ try
     Pose(V(56.31f, H(56.31f, 46.60f) + eyeH, 46.60f), V(52f, -4.5f, 37.9f)); Shoot("MouthDayTwo");
     if (board1 != null) board1.gameObject.SetActive(b1Was); if (board2 != null) board2.gameObject.SetActive(b2Was);
     // the trail's bulbs
-    var bulbs = Root("PointsOfInterest").transform.Find("POI_Coloured_bulbs/BulbString"); if (bulbs != null) { Pose(V(91.3f, H(91.3f, 47.4f) + eyeH, 47.4f), bulbs.position); Shoot("BulbsTrail"); }
+    // the bulb tree: its string on for a Day two look only (the day system's state), then BULBS on day two: bulbsMin or more bulbs read
+    // bulbOver grey or more over the frame mean (Gate.md N1), each its brightest pixel in a bulbPad px box round its centre
+    var bulbPoi = Root("PointsOfInterest").transform.Find("POI_Coloured_bulbs"); var str = bulbPoi != null ? bulbPoi.Find("Day2String") : null; bool strWas = str != null && str.gameObject.activeSelf; bool dayTwo = lookName.ToLowerInvariant().Contains("two");
+    if (bulbPoi != null)
+    {
+        if (str != null) str.gameObject.SetActive(dayTwo);
+        Pose(V(91.3f, H(91.3f, 47.4f) + eyeH, 47.4f), bulbPoi.position + V(0f, 3f, 0f)); Shoot("BulbsTrail");
+        if (dayTwo)
+        {
+            var bp = shot.GetPixels32(); double sum = 0; foreach (var c in bp) sum += (c.r + c.g + c.b) / 3.0; float mean = (float)(sum / bp.Length); int lit = 0, n = 0; cam.targetTexture = rt;
+            if (str != null) foreach (UnityEngine.Transform b in str) { if (b.name != "Bulb") continue; n++; var sp = cam.WorldToScreenPoint(b.position); if (sp.z <= 0f) continue; int sx = (int)sp.x, sy = (int)sp.y; float best = 0f; for (int dy = -bulbPad; dy <= bulbPad; dy++) for (int dx = -bulbPad; dx <= bulbPad; dx++) { int x = sx + dx, y = sy + dy; if (x < 0 || y < 0 || x >= shotW || y >= shotH) continue; var c = bp[y * shotW + x]; best = UnityEngine.Mathf.Max(best, (c.r + c.g + c.b) / 3f); } if (best - mean >= bulbOver) lit++; }
+            cam.targetTexture = null;
+            Line(lit >= bulbsMin, "BULBS (" + lookName + "): " + lit + " of " + n + " bulbs read " + bulbOver.ToString("F0") + " grey or more over the frame mean " + mean.ToString("F0") + " in BulbsTrail (at least " + bulbsMin + ")");
+        }
+        if (str != null) str.gameObject.SetActive(strWas);
+    }
     // CABLE: the cable's pixels against the wall's, at the leg 1 turn
     Pose(V(52f, -6f + eyeH, 24f), V(52f, -6f + eyeH, 14f)); Shoot("Cable_Leg1Turn");
     var px = shot.GetPixels32(); double cSum = 0, wSum = 0; int cN = 0, wN = 0; cam.targetTexture = rt;

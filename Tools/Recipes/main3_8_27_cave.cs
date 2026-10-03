@@ -121,7 +121,7 @@ const float railH = 1.5f, postW = 0.1f, postStep = 2f, railOff = 1.2f, railT = 0
 }
 
 // ================= V2: the bulbs =================
-const float bulbsOff = 1.8f, treeW = 1.0f, treeH = 3.0f;
+const float bulbsOff = 1.8f, treeYaw = 40f, bulbTreeStep = 0.25f, treeMore = 2.5f, trunkClear = 1.5f, windLow = 1.2f, windHigh = 3.0f, windTurns = 3f, windOff = 0.03f, tipOut = 1.0f, tipLow = 2.6f, tipApart = 90f, tipOffLine = 0.6f, swag = 0.3f, bulbOverTread = 2.3f, bulbSize = 0.14f; const int bulbN = 14, windBulbsN = 6, windSegs = 36, wireSegs = 8; string bulbNote = "none";
 {
     // beside the tread, bulbsOff m to its north (Wren 2026-10-03: V2 stood the dead branch on the centre line and its collider stopped the walk)
     var bulbsPoi = poiRoot.Find("POI_Coloured_bulbs"); var to = P(82.15f, 52.96f);
@@ -129,11 +129,58 @@ const float bulbsOff = 1.8f, treeW = 1.0f, treeH = 3.0f;
     if (bulbsPoi == null) notes.Add("no POI_Coloured_bulbs");
     else { var branch = bulbsPoi.Find("DeadBranch"); var foot = branch != null ? branch.position.y - branch.lossyScale.y : bulbsPoi.position.y;   // the cylinder's foot from its transform, so a hidden branch reads the same
            float rise = G(to.x, to.y) - foot; bulbsPoi.position += V(to.x - bulbsPoi.position.x, rise, to.y - bulbsPoi.position.z); }
-    // the branch a real dead tree (round 2, Vesper: the grey capsule was an untextured primitive): the pack's Tree_Dead filled to treeW by
-    // treeH by treeW on the branch's foot, a box from its meshes; the capsule hidden
-    if (bulbsPoi != null) { var branch = bulbsPoi.Find("DeadBranch"); PlaceKit.Remove(bulbsPoi.Find("DeadTree")); if (branch != null) { var foot = V(branch.position.x, branch.position.y - branch.lossyScale.y, branch.position.z); branch.gameObject.SetActive(false); var dt = kit.Fill(PlaceKit.CE + "Decoration_Out/Tree_Dead", bulbsPoi, bulbsPoi.InverseTransformPoint(foot), V(treeW, treeH, treeW), 0f, true); if (dt != null) dt.name = "DeadTree"; else notes.Add("no Tree_Dead"); } }
-    // the string is overhead decor: no collider (8.27 build round: beside the tread, its 2.6 m box made a step up the north slope, 18 trapped places)
-    if (bulbsPoi != null) { var str = bulbsPoi.Find("BulbString"); if (str != null) foreach (var c in str.GetComponents<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c); }
+    // ---- the bulb tree (CaveRock.md D, Vesper 8.27a): the dead tree, the hidden capsule and 8.3's grey string bar go; the map's own
+    // Valley_Aspen1Leafless stands unscaled at yaw treeYaw on the bulbs' foot, its own collider, moved north (away from the drop) bulbTreeStep m
+    // at a time, up to treeMore m, until its trunk is trunkClear m or more off the tread (CaveLayout 4).
+    // the string (Day2String, off on day one; the day system turns it on, as the day-2 boards): bulbN bulbs, red, amber, green and blue in
+    // turn. Run 1 winds the trunk from windLow to windHigh m in windTurns turns; runs 2 to 4 swag from the trunk at windHigh to the three
+    // lowest branch tips (LOD0 vertices tipOut m or more off the trunk, tipLow m or more over the ground, tipApart degrees or more apart, none
+    // over the tread line), sagging swag m. No bulb under bulbOverTread m over the tread; each bulbSize m, no collider, an unlit glow.
+    if (bulbsPoi != null)
+    {
+        foreach (var n in new[] { "DeadTree", "DeadBranch", "BulbString", "BulbTree", "Day2String" }) PlaceKit.Remove(bulbsPoi.Find(n));
+        float TreadDist(UnityEngine.Vector2 q) { float bd = float.MaxValue; for (int i = 1; i < tread.Count; i++) { var a = P(tread[i - 1].p.x, tread[i - 1].p.z); var ab = P(tread[i].p.x, tread[i].p.z) - a; float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(q - a, ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude)); bd = UnityEngine.Mathf.Min(bd, UnityEngine.Vector2.Distance(q, a + ab * t)); } return bd; }
+        var foot2 = P(bulbsPoi.position.x, bulbsPoi.position.z); var north = P(0f, 1f);
+        for (float more = 0f; more <= treeMore + 1e-3f && TreadDist(foot2) < trunkClear; more += bulbTreeStep) foot2 = P(bulbsPoi.position.x, bulbsPoi.position.z) + north * more;
+        if (TreadDist(foot2) < trunkClear) notes.Add("bulb tree trunk " + F(TreadDist(foot2)) + " m off the tread after " + F(treeMore) + " m north");
+        bulbsPoi.position = V(foot2.x, G(foot2.x, foot2.y), foot2.y);
+        var tree = kit.Ground("Prefabs/Forest/Valley_Aspen1Leafless", bulbsPoi, foot2.x, foot2.y, treeYaw, 1f, false);
+        if (tree == null) notes.Add("no Valley_Aspen1Leafless");
+        else
+        {
+            tree.name = "BulbTree";
+            // the trunk's axis and radius, and the branch tips, from the LOD0 meshes' vertices
+            var lodg = tree.GetComponentInChildren<UnityEngine.LODGroup>(); var rs = lodg != null && lodg.GetLODs().Length > 0 ? lodg.GetLODs()[0].renderers : tree.GetComponentsInChildren<UnityEngine.Renderer>();
+            var verts = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (var r in rs) { var mf = r != null ? r.GetComponent<UnityEngine.MeshFilter>() : null; if (mf == null || mf.sharedMesh == null) continue; foreach (var v in mf.sharedMesh.vertices) verts.Add(r.transform.TransformPoint(v)); }
+            float gy = G(foot2.x, foot2.y); var axis = foot2; float trunkR = 0.15f;
+            { var low = verts.FindAll(v => v.y > gy + windLow && v.y < gy + windLow + 0.5f); if (low.Count > 0) { var c = UnityEngine.Vector2.zero; foreach (var v in low) c += P(v.x, v.z); axis = c / low.Count; var ds = new System.Collections.Generic.List<float>(); foreach (var v in low) ds.Add(UnityEngine.Vector2.Distance(P(v.x, v.z), axis)); ds.Sort(); trunkR = ds[ds.Count / 2]; } }
+            float treadY = tread.Count > 0 ? tread[0].p.y : gy; { float bd = float.MaxValue; foreach (var (n2, p) in tread) { float d = UnityEngine.Vector2.Distance(P(p.x, p.z), axis); if (d < bd) { bd = d; treadY = p.y; } } }
+            var tips = new System.Collections.Generic.List<UnityEngine.Vector3>();
+            foreach (var v in System.Linq.Enumerable.OrderBy(verts.FindAll(v => UnityEngine.Vector2.Distance(P(v.x, v.z), axis) >= tipOut && v.y >= gy + tipLow && v.y >= treadY + bulbOverTread && TreadDist(P(v.x, v.z)) >= tipOffLine), v => v.y))
+            { float az = UnityEngine.Mathf.Atan2(v.z - axis.y, v.x - axis.x) * UnityEngine.Mathf.Rad2Deg; bool apart = true; foreach (var t in tips) if (UnityEngine.Mathf.Abs(UnityEngine.Mathf.DeltaAngle(az, UnityEngine.Mathf.Atan2(t.z - axis.y, t.x - axis.x) * UnityEngine.Mathf.Rad2Deg)) < tipApart) apart = false; if (apart) tips.Add(v); if (tips.Count == 3) break; }
+            if (tips.Count < 3) notes.Add("bulb tree: " + tips.Count + " branch tips found (3 wanted)");
+            var str = new UnityEngine.GameObject("Day2String").transform; str.SetParent(bulbsPoi, true);
+            var cols = new[] { Hex("#FF2A1E"), Hex("#FFA62B"), Hex("#3CFF5A"), Hex("#3C7CFF") }; var cn = new[] { "Red", "Amber", "Green", "Blue" };
+            var mats = new UnityEngine.Material[4]; for (int i = 0; i < 4; i++) mats[i] = kit.Glow("Places_BulbGlow" + cn[i], cols[i], kit.Look.cabWindowGlowIntensity);
+            var wire = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Slice/Slice_Steel.mat");
+            int nb = 0; void Bulb(UnityEngine.Vector3 p) { var b = Slab("Bulb", str, p, V(bulbSize, bulbSize, bulbSize), mats[nb % 4]); b.GetComponent<UnityEngine.Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; nb++; }
+            void Wire(UnityEngine.Vector3 a, UnityEngine.Vector3 b) { var w = Slab("Wire", str, (a + b) * 0.5f, V(0.015f, 0.015f, UnityEngine.Vector3.Distance(a, b)), wire); w.transform.rotation = UnityEngine.Quaternion.LookRotation((b - a).normalized); }
+            // run 1: the wind round the trunk
+            int windBulbs = windBulbsN; var prev = UnityEngine.Vector3.zero;
+            for (int k = 0; k <= windSegs; k++) { float u = k / (float)windSegs, ang = u * windTurns * 360f * UnityEngine.Mathf.Deg2Rad; var p = V(axis.x + UnityEngine.Mathf.Cos(ang) * (trunkR + windOff), gy + UnityEngine.Mathf.Lerp(windLow, windHigh, u), axis.y + UnityEngine.Mathf.Sin(ang) * (trunkR + windOff)); if (k > 0) Wire(prev, p); prev = p; }
+            for (int k = 0; k < windBulbs; k++) { float u = (k + 0.5f) / windBulbs, ang = u * windTurns * 360f * UnityEngine.Mathf.Deg2Rad; Bulb(V(axis.x + UnityEngine.Mathf.Cos(ang) * (trunkR + windOff + bulbSize * 0.5f), gy + UnityEngine.Mathf.Lerp(windLow, windHigh, u), axis.y + UnityEngine.Mathf.Sin(ang) * (trunkR + windOff + bulbSize * 0.5f))); }
+            // runs 2 to 4: the swags, the bulbs left shared out
+            var fork = V(axis.x, gy + windHigh, axis.y); int left = bulbN - windBulbs;
+            for (int t = 0; t < tips.Count; t++)
+            {
+                int here = left / (tips.Count - t); left -= here; UnityEngine.Vector3 At(float u) => UnityEngine.Vector3.Lerp(fork, tips[t], u) - V(0f, swag * 4f * u * (1f - u), 0f);
+                for (int s = 1; s <= wireSegs; s++) Wire(At((s - 1) / (float)wireSegs), At(s / (float)wireSegs));
+                for (int k = 1; k <= here; k++) { var p = At(k / (here + 1f)); if (p.y < treadY + bulbOverTread) p.y = treadY + bulbOverTread; Bulb(p - V(0f, bulbSize * 0.6f, 0f)); }
+            }
+            str.gameObject.SetActive(false);
+            bulbNote = "bulb tree at (" + F(foot2.x) + ", " + F(foot2.y) + "), trunk " + F(TreadDist(foot2)) + " m off the tread, " + nb + " bulbs on " + (1 + tips.Count) + " runs";
+        }
+    }
 }
 
 // ================= V3: the passage =================
@@ -338,12 +385,14 @@ const float rimWest = 26f, rimEast = 92f, rimLook = 6f, rimBelowTop = 1f, rimUp 
 // ================= V13: the cave reads as rock (round 2, Vesper and Sable, Wren 2026-10-03) =================
 // the void: the near-black void material only on the first voidLen m inside the mouth (z voidZ0 to the mouth); the rest of the entrance
 // passage takes the cave rock. The entrance's Floor, Ceiling and Wall_W span both, so each is hidden and built again as two boxes under
-// Layout827/VoidSplit (rerun-safe: the originals are read from their transforms); the niche's north wall piece takes the void.
+// Layout827/VoidSplit (rerun-safe: the originals are read from their transforms); every niche face takes the rock.
 // the chamber floor: its own seamless ground material (Ground054; the cave rock texture is not seamless, and its tile edge ran down the walk
 // line), tinted floorHex, tiled floorTile with an offset. The pack boulders take the cave's tint (boulderHex): untinted they read pale and floating.
-// rock against the box: pack boulders at the passage's west wall and ceiling, round the leg 1 opening (a ragged edge), and at the chamber's
-// walls, corners and ceiling, kept off the strips, the cable, the openings and his things. Those a body can reach carry convex hulls.
-const float voidZ0 = 33.4f, floorTile = 3f, floorOffX = 0.21f, floorOffZ = 0.37f; int rockPieces = 0; const string groundPath = "Assets/Materials/Ground054_25.0x25.0.mat", floorHex = "#6A655E", boulderHex = "#6E6862";
+// rock as the wall: CaveRock.md draft 1 (Vesper, 8.27a), 51 placed boulders and 5 rubble patches under Layout827/CaveRock, in place of
+// round 2's RockBreakup; see the block for the method.
+const float voidZ0 = 33.4f, floorTile = 3f, floorOffX = 0.21f, floorOffZ = 0.37f, hullUnder = 2.5f, rubbleW = 3f, rubbleH = 0.25f, stripZ0 = 10.8f, deadFront = 0.05f, shutS = 1.6f; int rockPieces = 0;
+// the NARROWS pieces' depths and switches (CaveRock.md: if a check fails, cut d to 0.1, then drop the piece; never move it)
+const float p1d = 0.8f, p2d = 0.4f, p4d = 0.4f, l14d = 0.4f, v1d = 0.5f, v2d = 0.4f, v3d = 0.4f, v5d = 0.2f; const bool v1On = true, v2On = true, v3On = true, v5On = true, v6On = true; const string groundPath = "Assets/Materials/Ground054_25.0x25.0.mat", floorHex = "#6A655E", boulderHex = "#6E6862";
 {
     var voidMat = kit.Tinted("Places_CaveVoid", rocks, Hex("#101214"), UnityEngine.Vector2.one);
     var vs = kit.Group("VoidSplit", L, L.position, 0f); var ent2 = cave.Find("Entrance");
@@ -357,31 +406,100 @@ const float voidZ0 = 33.4f, floorTile = 3f, floorOffX = 0.21f, floorOffZ = 0.37f
     }
     // every other entrance box (the south end wall, the short east wall by leg 1): void only if it lies wholly in the first voidLen m
     if (ent2 != null) foreach (UnityEngine.Transform t in ent2) if (t.gameObject.activeSelf) { var r = t.GetComponent<UnityEngine.Renderer>(); if (r != null) r.sharedMaterial = BoxOf(t).min.z >= voidZ0 ? voidMat : rockMat; }
-    var wen = L.Find("Niche/Wall_E_N"); if (wen != null) wen.GetComponent<UnityEngine.Renderer>().sharedMaterial = voidMat;
+    // the niche's faces all take the cave rock (CaveRock.md A: a void face read as flat dark wall, not a recess)
+    var wen = L.Find("Niche/Wall_E_N"); if (wen != null) wen.GetComponent<UnityEngine.Renderer>().sharedMaterial = rockMat;
     var cf = cave.Find("Chamber/Floor"); if (cf != null) { var fm = kit.Tinted("Places_CaveFloor_Chamber", groundPath, Hex(floorHex), new UnityEngine.Vector2(floorTile, floorTile)); fm.SetTextureOffset("_BaseMap", new UnityEngine.Vector2(floorOffX, floorOffZ)); cf.GetComponent<UnityEngine.Renderer>().sharedMaterial = fm; } else notes.Add("no Chamber/Floor");
-    // the pieces: (prefab, world centre, largest side, yaw, a body reaches it)
-    var rg = kit.Group("RockBreakup", L, L.position, 0f); var boulderMat = kit.Tinted("Places_CaveBoulder", rocks, Hex(boulderHex), UnityEngine.Vector2.one);
-    var rockSet = new (string pf, UnityEngine.Vector3 c, float s, float yaw, bool solid)[] {
-        // entrance passage: the west wall (clear of the drip at z 28 and the day-2 boards at z 34 to 37.2), the ceiling, the leg 1 opening
-        ("BigBoulders_1", V(50.2f, -5.2f, 22.6f), 1.6f, 20f, true), ("BigBoulders_3", V(50.2f, -5.3f, 25.6f), 1.4f, 110f, true), ("BigBoulders_4", V(50.2f, -5.2f, 30.8f), 1.6f, 250f, true),
-        ("Boulder_2", V(52.0f, -1.9f, 24.0f), 1.6f, 40f, false), ("Boulder_4", V(51.4f, -1.9f, 28.6f), 1.4f, 160f, false), ("Boulder_1", V(52.4f, -1.9f, 32.2f), 1.5f, 300f, false),
-        ("BigBoulders_2", V(53.7f, -4.2f, 20.1f), 1.4f, 70f, true), ("BigBoulders_0", V(53.8f, -2.5f, 22.0f), 1.8f, 200f, false), ("BigBoulders_5", V(53.7f, -4.8f, 23.9f), 1.3f, 330f, true),
-        // chamber: south wall, west wall south of the opening, the south-east corner, the east wall between the doorway and the stack, behind
-        // the seat shelf, the north-east corner behind the stack
-        ("BigBoulders_1", V(74.5f, -17.2f, 2.6f), 2.6f, 15f, true), ("BigBoulders_3", V(79.0f, -17.3f, 2.6f), 2.2f, 95f, true), ("BigBoulders_4", V(89.4f, -17.0f, 2.6f), 2.4f, 140f, true),
-        ("BigBoulders_2", V(70.6f, -17.1f, 6.5f), 2.4f, 220f, true), ("BigBoulders_5", V(89.3f, -17.4f, 15.0f), 1.8f, 280f, true), ("BigBoulders_0", V(90.2f, -16.6f, 6.0f), 3.0f, 60f, true),
-        ("BigBoulders_3", V(89.5f, -17.0f, 21.5f), 2.5f, 175f, true),
-        // chamber: high on the walls (over every reach) and the ceiling, so the hall is not a box
-        ("BigBoulders_4", V(82.0f, -13.0f, 2.9f), 3.0f, 35f, false), ("BigBoulders_1", V(77.0f, -12.8f, 21.2f), 3.5f, 250f, false), ("BigBoulders_2", V(70.8f, -13.0f, 17.0f), 3.0f, 125f, false),
-        ("BigBoulders_5", V(89.2f, -13.0f, 12.0f), 3.0f, 10f, false), ("BigBoulders_0", V(75.0f, -10.3f, 7.0f), 4.0f, 75f, false), ("BigBoulders_3", V(80.0f, -10.5f, 17.0f), 4.5f, 200f, false),
-        ("BigBoulders_4", V(84.0f, -10.2f, 9.0f), 3.5f, 310f, false), ("BigBoulders_1", V(77.0f, -10.6f, 13.0f), 3.0f, 130f, false), ("BigBoulders_2", V(86.5f, -10.4f, 15.0f), 3.0f, 45f, false) };
-    foreach (var (pf, c, s, yaw, solid) in rockSet)
+    // ---- CaveRock.md draft 1 (Vesper, 2026-10-03; PLAN 8.27a): the rock is the wall. Each piece: the prefab turned to yaw, scaled so its mesh
+    // bounds' largest side is S, then placed by its bounds: along the wall at its along coordinate, its centre at y (or its bottom at the given
+    // bottom), and its face nearest the room d m inside the room from the wall face (a corner piece: from both faces). minBottom raises a
+    // piece whose bottom would sit lower (the cable, the stack). Pieces whose bottom is under hullUnder m over the local floor get convex hulls
+    // from LOD0; the rest have none. NARROWS pieces are judged by the area and cave checks (cut d to 0.1, then drop; never moved).
+    var rg = kit.Group("CaveRock", L, L.position, 0f); var boulderMat = kit.Tinted("Places_CaveBoulder", rocks, Hex(boulderHex), UnityEngine.Vector2.one);
+    void Tint(UnityEngine.GameObject g) { foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) { var ms = r.sharedMaterials; for (int i = 0; i < ms.Length; i++) ms[i] = boulderMat; r.sharedMaterials = ms; } }
+    UnityEngine.GameObject Piece(string id, string pf, float S, float yaw)
     {
-        var g = kit.Spawn(PlaceKit.BK + "Rocks/" + pf, rg); if (g == null) continue; PlaceKit.StripColliders(g); foreach (var r in g.GetComponentsInChildren<UnityEngine.Renderer>()) { var ms = r.sharedMaterials; for (int i = 0; i < ms.Length; i++) ms[i] = boulderMat; r.sharedMaterials = ms; }
-        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, yaw, 0f); var b0 = PlaceKit.MeshBounds(g); g.transform.localScale *= s / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b0.size.x, UnityEngine.Mathf.Max(b0.size.y, b0.size.z)));
-        var b1 = PlaceKit.MeshBounds(g); g.transform.position += c - b1.center;
-        if (solid) { var lodg = g.GetComponentInChildren<UnityEngine.LODGroup>(); foreach (var r in g.GetComponentsInChildren<UnityEngine.MeshRenderer>()) { if (lodg != null && lodg.GetLODs().Length > 0 && System.Array.IndexOf(lodg.GetLODs()[0].renderers, r) < 0) continue; var mf = r.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; mc.convex = true; } }
+        var g = kit.Spawn(PlaceKit.BK + "Rocks/" + pf, rg); if (g == null) { notes.Add("no " + pf); return null; } g.name = id + "_" + pf; PlaceKit.StripColliders(g); Tint(g);
+        g.transform.rotation = UnityEngine.Quaternion.Euler(0f, yaw, 0f); var b0 = PlaceKit.MeshBounds(g); g.transform.localScale *= S / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b0.size.x, UnityEngine.Mathf.Max(b0.size.y, b0.size.z)));
+        return g;
+    }
+    void Finish(UnityEngine.GameObject g, float floor, float minBottom, bool solidRule)
+    {
+        var b = PlaceKit.MeshBounds(g); if (!float.IsNaN(minBottom) && b.min.y < minBottom) g.transform.position += V(0f, minBottom - b.min.y, 0f);
+        b = PlaceKit.MeshBounds(g);
+        if (solidRule && b.min.y < floor + hullUnder) { var lodg = g.GetComponentInChildren<UnityEngine.LODGroup>(); foreach (var r in g.GetComponentsInChildren<UnityEngine.MeshRenderer>()) { if (lodg != null && lodg.GetLODs().Length > 0 && System.Array.IndexOf(lodg.GetLODs()[0].renderers, r) < 0) continue; var mf = r.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; mc.convex = true; } }
         rockPieces++;
+    }
+    float Y(UnityEngine.Bounds b, float yc, float yb) => !float.IsNaN(yb) ? yb - b.min.y : yc - b.center.y;
+    // a wall piece: axis 'x' (the face is x = face, along runs in z) or 'z' (the face is z = face, along runs in x); inward +1 or -1
+    UnityEngine.GameObject Wall(string id, string pf, float S, float yaw, char axis, float face, float inward, float along, float yc, float yb, float d, float floor, float minBottom = float.NaN, bool solidRule = true)
+    {
+        var g = Piece(id, pf, S, yaw); if (g == null) return null; var b = PlaceKit.MeshBounds(g); float dy = Y(b, yc, yb);
+        if (axis == 'x') { float nearX = inward > 0f ? b.max.x : b.min.x; g.transform.position += V(face + inward * d - nearX, dy, along - b.center.z); }
+        else { float nearZ = inward > 0f ? b.max.z : b.min.z; g.transform.position += V(along - b.center.x, dy, face + inward * d - nearZ); }
+        Finish(g, floor, minBottom, solidRule); return g;
+    }
+    UnityEngine.GameObject Corner(string id, string pf, float S, float yaw, float faceX, float inX, float faceZ, float inZ, float yc, float d, float floor, float minBottom = float.NaN)
+    {
+        var g = Piece(id, pf, S, yaw); if (g == null) return null; var b = PlaceKit.MeshBounds(g);
+        float nearX = inX > 0f ? b.max.x : b.min.x, nearZ = inZ > 0f ? b.max.z : b.min.z; g.transform.position += V(faceX + inX * d - nearX, yc - b.center.y, faceZ + inZ * d - nearZ);
+        Finish(g, floor, minBottom, true); return g;
+    }
+    UnityEngine.GameObject Ceil(string id, string pf, float S, float yaw, float x, float z, float bottom, float floor)
+    {
+        var g = Piece(id, pf, S, yaw); if (g == null) return null; var b = PlaceKit.MeshBounds(g); g.transform.position += V(x - b.center.x, bottom - b.min.y, z - b.center.z);
+        Finish(g, floor, float.NaN, true); return g;
+    }
+    const float N = float.NaN, fE = -6f, fC = -18f;
+    // A. entrance passage (box x 50.5 to 53.5, z 20.5 to 37.4, floor -6, ceiling -2)
+    Corner("P1", "BigBoulders_1", 4.0f, 20f, 50.5f, 1f, 20.5f, 1f, -4.2f, p1d, fE);
+    { var p2 = Wall("P2", "BigBoulders_5", 2.6f, 330f, 'x', 53.5f, -1f, 24.6f, -4.4f, N, p2d, fE); if (p2 != null) { var b = PlaceKit.MeshBounds(p2); if (b.min.z < 23.2f) p2.transform.position += V(0f, 0f, 23.2f - b.min.z); } }
+    Ceil("P3", "Boulder_2", 3.5f, 0f, 54.25f, 22.0f, -2.8f, fE);
+    Wall("P4", "BigBoulders_2", 3.0f, 70f, 'z', 20.5f, 1f, 54.5f, -5.0f, N, p4d, fE);
+    Wall("P5", "BigBoulders_3", 4.0f, 110f, 'x', 50.5f, 1f, 25.0f, -4.0f, N, 0.4f, fE);
+    Wall("P6", "BigBoulders_4", 4.0f, 250f, 'x', 50.5f, 1f, 31.0f, -4.0f, N, 0.4f, fE);
+    Wall("P7", "BigBoulders_0", 3.0f, 200f, 'x', 53.5f, -1f, 30.0f, -4.5f, N, 0.4f, fE, -5.6f);
+    Ceil("P8", "Boulder_4", 3.5f, 160f, 52.0f, 24.5f, -2.5f, fE); Ceil("P9", "Boulder_1", 3.5f, 300f, 52.0f, 29.5f, -2.5f, fE); Ceil("P10", "Boulder_2", 3.0f, 40f, 52.0f, 32.5f, -2.4f, fE);
+    // B1. chamber low band (box x 71 to 89, z 3 to 21, floor -18, ceiling -10)
+    Wall("L1", "BigBoulders_1", 6.0f, 15f, 'z', 3f, 1f, 74.0f, -15.8f, N, 1.0f, fC); Wall("L2", "BigBoulders_3", 5.5f, 95f, 'z', 3f, 1f, 78.5f, -16.0f, N, 0.9f, fC);
+    Wall("L3", "Boulder_2", 5.0f, 200f, 'z', 3f, 1f, 82.8f, -16.2f, N, 0.3f, fC); Wall("L4", "BigBoulders_4", 6.0f, 140f, 'z', 3f, 1f, 87.6f, -15.8f, N, 0.3f, fC);
+    Wall("L5", "BigBoulders_2", 6.0f, 220f, 'x', 71f, 1f, 6.0f, -15.8f, N, 1.0f, fC); Wall("L6", "BigBoulders_5", 4.5f, 300f, 'x', 71f, 1f, 8.0f, -16.3f, N, 0.8f, fC);
+    Wall("L7", "BigBoulders_0", 4.5f, 30f, 'x', 71f, 1f, 15.8f, -16.3f, N, 0.4f, fC); Wall("L8", "BigBoulders_3", 6.0f, 175f, 'x', 71f, 1f, 19.2f, -15.8f, N, 0.9f, fC);
+    Wall("L9", "BigBoulders_1", 6.0f, 250f, 'z', 21f, -1f, 75.5f, -15.6f, N, 0.2f, fC, -17.4f); Wall("L10", "BigBoulders_4", 5.5f, 35f, 'z', 21f, -1f, 80.5f, -15.8f, N, 0.2f, fC, -17.4f);
+    Corner("L11", "BigBoulders_3", 6.0f, 175f, 89f, -1f, 21f, -1f, -14.8f, 0.2f, fC, -15.0f);
+    Wall("L12", "BigBoulders_0", 5.0f, 60f, 'x', 89f, -1f, 6.0f, N, -17.4f, 0.3f, fC);
+    Wall("L13", "BigBoulders_5", 4.5f, 280f, 'x', 89f, -1f, 8.4f, -16.3f, N, 0.6f, fC); Wall("L14", "BigBoulders_2", 4.5f, 45f, 'x', 89f, -1f, 15.6f, -16.3f, N, l14d, fC);
+    { var l15 = Wall("L15", "BigBoulders_1", 3.0f, 10f, 'x', 89f, -1f, 9.3f, -16.6f, N, 0.3f, fC); if (l15 != null) { var b = PlaceKit.MeshBounds(l15); if (b.max.z > stripZ0) l15.transform.position += V(0f, 0f, stripZ0 - b.max.z); } }
+    // B2. high band and lintels (over reach)
+    Wall("H1", "Boulder_0", 7.0f, 0f, 'z', 3f, 1f, 75.5f, -12.0f, N, 0.8f, fC); Wall("H2", "Boulder_3", 7.0f, 180f, 'z', 3f, 1f, 83.5f, -11.8f, N, 0.8f, fC);
+    Wall("H3", "Boulder_1", 7.0f, 90f, 'x', 71f, 1f, 5.5f, -11.5f, N, 0.8f, fC); Wall("H4", "Boulder_4", 5.0f, 90f, 'x', 71f, 1f, 12.0f, N, -14.3f, 0.5f, fC);
+    Wall("H5", "Boulder_5", 7.0f, 270f, 'x', 71f, 1f, 18.5f, -11.5f, N, 0.8f, fC); Wall("H6", "Boulder_2", 7.0f, 0f, 'z', 21f, -1f, 76.0f, -11.5f, N, 0.9f, fC);
+    Wall("H7", "Boulder_0", 7.0f, 180f, 'z', 21f, -1f, 84.0f, -11.5f, N, 0.9f, fC, -13.8f); Wall("H8", "Boulder_5", 7.0f, 90f, 'x', 89f, -1f, 6.0f, -11.5f, N, 0.8f, fC, -14.2f);
+    Wall("H9", "Boulder_3", 4.5f, 90f, 'x', 89f, -1f, 12.0f, N, -15.5f, 0.4f, fC); Wall("H10", "Boulder_1", 7.0f, 270f, 'x', 89f, -1f, 18.0f, -11.5f, N, 0.8f, fC);
+    // B3. ceiling
+    Ceil("C1", "Boulder_0", 8.0f, 75f, 75.5f, 7.0f, -11.0f, fC); Ceil("C2", "Boulder_2", 8.0f, 10f, 82.5f, 7.5f, -11.2f, fC); Ceil("C3", "Boulder_4", 7.0f, 130f, 76.5f, 16.5f, -10.8f, fC);
+    Ceil("C4", "Boulder_1", 8.0f, 200f, 84.0f, 16.0f, -11.0f, fC); Ceil("C5", "Boulder_3", 6.0f, 45f, 80.0f, 12.0f, -10.6f, fC);
+    // B4. floor: rubble flattened to rubbleH at the wall feet, no collider
+    {
+        var rubble = new (string pf, float x, float z, float yaw)[] { ("RubbleSparse_1", 73.2f, 5.0f, 0f), ("RubbleSparse_2", 79.0f, 4.4f, 70f), ("RubbleSparse_3", 72.4f, 8.6f, 140f), ("RubbleSparse_1", 77.5f, 18.9f, 210f), ("RubbleSparse_2", 82.0f, 18.6f, 280f) };
+        foreach (var (pf, x, z, yaw) in rubble) { var g = kit.Fill(PlaceKit.BK + "Rocks/" + pf, rg, rg.InverseTransformPoint(V(x, fC, z)), V(rubbleW, rubbleH, rubbleW), yaw); if (g != null) { Tint(g); rockPieces++; } }
+    }
+    // C. V9: jambs, lintel, the dead end's rock face, the turn, the deeper passage's lid
+    if (v1On) Wall("V1", "BigBoulders_2", 2.4f, 30f, 'x', 97.5f, -1f, 12.4f, -16.8f, N, v1d, fC);
+    if (v2On) Wall("V2", "BigBoulders_4", 2.4f, 200f, 'x', 97.5f, -1f, 15.2f, -16.8f, N, v2d, fC);
+    if (v3On) Wall("V3", "Boulder_3", 3.0f, 90f, 'x', 97.5f, -1f, 13.8f, N, -16.0f, v3d, fC);
+    var v4 = Wall("V4", "Boulder_5", 2.5f, 0f, 'z', 15.8f, -1f, 101.0f, fC + deepH * 0.5f, N, 0.15f, fC, float.NaN, false);
+    if (v5On) Corner("V5", "BigBoulders_0", 2.0f, 120f, 101.6f, -1f, 13.2f, 1f, -17.0f, v5d, fC);
+    if (v6On) Ceil("V6", "Boulder_1", 3.0f, 0f, 99.5f, 13.8f, -16.05f, fC);
+    // the dead end slab: renderer off, its face moved deadFront m in front of V4's nearest point (the rock is its visible reason; Examine stays)
+    { var de = L.Find("Deeper/DeadEnd"); if (de != null && v4 != null) { var vb = PlaceKit.MeshBounds(v4); var db = BoxOf(de); de.position += V(0f, 0f, (vb.min.z - deadFront) - db.min.z); de.GetComponent<UnityEngine.Renderer>().enabled = false; } }
+    // shut days: DeeperClosed's renderer off; a Boulder_2 child at shutS fills the opening, its face 0.1 behind the wall face, and toggles with it
+    {
+        var dc = L.Find("Deeper/DeeperClosed");
+        if (dc != null)
+        {
+            dc.GetComponent<UnityEngine.Renderer>().enabled = false; var g = kit.Spawn(PlaceKit.BK + "Rocks/Boulder_2", dc);
+            if (g != null) { g.name = "ShutRock"; PlaceKit.StripColliders(g); Tint(g); g.transform.rotation = UnityEngine.Quaternion.identity; var b0 = PlaceKit.MeshBounds(g); g.transform.localScale *= shutS / UnityEngine.Mathf.Max(0.1f, UnityEngine.Mathf.Max(b0.size.x, UnityEngine.Mathf.Max(b0.size.y, b0.size.z))); var b = PlaceKit.MeshBounds(g); g.transform.position += V(97.6f - b.min.x, (fC + 1.05f) - b.center.y, 13.8f - b.center.z); rockPieces++; }
+        }
     }
 }
 
@@ -422,4 +540,4 @@ UnityEngine.Physics.SyncTransforms();
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " | removed " + removed + (missing.Count > 0 ? " (not found, likely gone already: " + string.Join(", ", missing) + ")" : "") + " | rail posts " + posts + " | cable runs " + cableRuns + " | bulbs " + bulbs + " | narrow rocks " + narrowRocks
-    + " | rim hedge boxes " + hedgeBoxes + ", brush " + brush + " | usables " + uses + " | mouth strip trees: " + treeNote + " | rock pieces " + rockPieces + " | " + p84Note + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    + " | rim hedge boxes " + hedgeBoxes + ", brush " + brush + " | usables " + uses + " | mouth strip trees: " + treeNote + " | rock pieces " + rockPieces + " | " + bulbNote + " | " + p84Note + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

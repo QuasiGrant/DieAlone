@@ -1954,10 +1954,10 @@ MonoBehaviour:
       look: {x: 49.618694, y: -4.6, z: 39.16855}
     - label: 'F2 HEADING 300: THE BULBS'
       eye: {x: 91.3, y: -999, z: 47.4}
-      look: {x: 80.283714, y: 3.6372733, z: 54.373226}
-    - label: 'F3 HEADING 180: THE LEG 1 OPENING AND THE CABLE'
-      eye: {x: 52, y: -4.4, z: 24}
-      look: {x: 52, y: -5.6, z: 14}
+      look: {x: 81.45774, y: 4.0372734, z: 54.621555}
+    - label: 'F3 HEADING 165: THE TURN, THE LEG 1 OPENING AND THE CABLE'
+      eye: {x: 52, y: -4.4, z: 27.5}
+      look: {x: 54.588192, y: -5, z: 17.840742}
     - label: 'F4 HEADING 90: STACK, DOORWAY, R7'
       eye: {x: 71, y: -16.4, z: 12}
       look: {x: 81, y: -16.8, z: 12}

@@ -264,7 +264,7 @@ var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Ca
 // on trees); the rim must-hide is the 8.27 check's RIM line. The chamber and side-room floor is -18.
 const string cvL = "Cave/Layout827/";
 // the bulbs read from the scene (their string): Wren 2026-10-03 moved them off the tread's centre line, and F2 must still hold them
-var bulbsAt = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), "PointsOfInterest/POI_Coloured_bulbs/BulbString") is UnityEngine.Transform bst ? bst.position : V(82.15f, 6.5f, 52.96f);
+var bulbsAt = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), "PointsOfInterest/POI_Coloured_bulbs") is UnityEngine.Transform bst ? bst.position + V(0f, 3f, 0f) : V(82.15f, 6.5f, 52.96f);   // the bulb tree at its fork (8.27a)
 var caveArea = new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave and ravine", bounds = new[] { R(40f, 0f, 132f, 72f) }, warps = new[] { "Cave_Mouth", "Cave_Chamber", "Cave_SideRoom", "Spur_Descent" },   // the closed campground is the front's (8.22, Wren 2026-10-02)
     places = new[] { PO("Mouth", 52f, -6f, 37.9f, 2.25f, "Cave/Mouth"), PO("Boards", 52f, -5.4f, 37.6f, 1.8f, "Cave/Mouth/DayOneBoard"), POn("Bulbs", "PointsOfInterest/POI_Coloured_bulbs", 2.8f),
         POm("Rope rail", "PointsOfInterest/RopeRail827", 1.0f), Hid(PO("Toilet", 47.64f, G, 41.20f, 0.1f, cvL + "Toilet"), "CaveLayout V4: the lid unseen from every tread point P40 to P84; Wren 2026-10-03, as the Snag pieces"), PO("Drip", 51.2f, -6f, 28f, 0.3f, cvL + "Drip"), PO("Niche", 54.5f, -6f, 32.5f, 2f, cvL + "Niche"),
@@ -276,7 +276,7 @@ var caveArea = new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave
         IAp("event 16 (deeper)", cvL + "Deeper/DeadEnd", 101.0f, -18f, 14.0f, "Examine", 0f, 0f) },
     frames = new[] { FR("F1 HEADING 222: THE OPENING (FOUND AT 10 M)", V(56.31f, G, 46.60f), Hd(V(56.31f, 0f, 46.60f), 222f, -4.6f)),
         FR("F2 HEADING 300: THE BULBS", V(91.3f, G, 47.4f), bulbsAt),
-        FR("F3 HEADING 180: THE LEG 1 OPENING AND THE CABLE", V(52f, -6f + eyeH, 24f), Hd(V(52f, 0f, 24f), 180f, -5.6f)),
+        FR("F3 HEADING 165: THE TURN, THE LEG 1 OPENING AND THE CABLE", V(52f, -6f + eyeH, 27.5f), Hd(V(52f, 0f, 27.5f), 165f, -5.0f)),   // CaveRock.md A: moved back so the turn sits in the frame
         FR("F4 HEADING 90: STACK, DOORWAY, R7", V(71f, -18f + eyeH, 12f), Hd(V(71f, 0f, 12f), 90f, -16.8f)),
         FR("F5 THE DOORWAY HEADING 90: THE GUEST CHAIR", V(89.25f, -18f + eyeH, 12f), V(92.85f, -17.4f, 11.5f)),
         FR("F6 THE STANDING POINT HEADING 270", V(92.0f, -18f + eyeH, 12f), Hd(V(92.0f, 0f, 12f), 270f, -16.6f)),
