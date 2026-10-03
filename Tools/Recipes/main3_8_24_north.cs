@@ -308,7 +308,9 @@ var screenNotes = new System.Collections.Generic.List<string>();
     var ts = kit.Group("TowerScreen", loop, V(174f, 0f, 262f), 0f); var cabP = kit.Root("Camp").transform.Find("Tower/Cab").position;
     var legC = kit.Root("Trails").transform.Find("Camp 1 to J"); var tread = new System.Collections.Generic.List<UnityEngine.Vector2>(); if (legC != null) foreach (UnityEngine.Transform p in legC) tread.Add(P(p.position.x, p.position.z));
     float TreadD(UnityEngine.Vector2 q) { float best = float.MaxValue; for (int i = 1; i < tread.Count; i++) { var a0 = tread[i - 1]; var ab = tread[i] - a0; float tt = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(q - a0, ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude)); best = UnityEngine.Mathf.Min(best, UnityEngine.Vector2.Distance(q, a0 + ab * tt)); } return best; }
-    foreach (var (n, path, scale, x, z) in new[] { ("TS1", "RedFir8", 1.5f, 169.1f, 260.9f), ("TS2", "RedFir5", 1.0f, 178.5f, 263.8f) })
+    // each at the height NorthLayout 5a gives (TS1 about 16 m, TS2 about 9 m), its scale from the prefab's own height (RedFir8 at the
+    // doc's 1.5 stood 13.35 m, under the doorway line's 13.4 to 14.1 m crossing)
+    foreach (var (n, path, tall, x, z) in new[] { ("TS1", "RedFir8", 16f, 169.1f, 260.9f), ("TS2", "RedFir5", 9f, 178.5f, 263.8f) })
     {
         var along = (P(cabP.x, cabP.z) - P(x, z)).normalized; UnityEngine.Vector2 at = P(x, z); bool ok = false; float used = 0f;
         foreach (var off in new[] { 0f, 0.1f, -0.1f, 0.2f, -0.2f, 0.3f, -0.3f, 0.4f, -0.4f, 0.5f, -0.5f })
@@ -318,7 +320,7 @@ var screenNotes = new System.Collections.Generic.List<string>();
             if (clear) { at = q; used = off; ok = true; break; }
         }
         if (!ok) screenNotes.Add(n + " has no spot within " + F(screenNudge) + " m with " + F(screenGap) + " m clear; placed as drawn");
-        var g = kit.Spawn(PlaceKit.BK + "Trees/" + path, ts); if (g == null) continue; PlaceKit.StripColliders(g); g.name = n;
+        var g = kit.Spawn(PlaceKit.BK + "Trees/" + path, ts); if (g == null) continue; PlaceKit.StripColliders(g); g.name = n; g.transform.localScale = UnityEngine.Vector3.one; float scale = tall / UnityEngine.Mathf.Max(0.5f, PlaceKit.MeshBounds(g).size.y);
         g.transform.SetPositionAndRotation(V(at.x, G(at.x, at.y) - screenSink * scale, at.y), UnityEngine.Quaternion.Euler(0f, n == "TS1" ? 40f : 160f, 0f)); g.transform.localScale = UnityEngine.Vector3.one * scale;
         PlaceKit.PackTrunkCapsule(g, 0.01f, 0.06f, 0.4f, 8, 0.3f); UnityEngine.Physics.SyncTransforms();
         screenNotes.Add(n + " at (" + F(at.x) + ", " + F(at.y) + "), nudged " + F(used) + " m, top " + F(PlaceKit.MeshBounds(g).max.y - G(at.x, at.y)) + " m");
