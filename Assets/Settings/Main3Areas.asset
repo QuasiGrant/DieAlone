@@ -1839,10 +1839,10 @@ MonoBehaviour:
       facing: 98
       pitchDown: 18
     - label: event 16 (deeper)
-      path: Cave/Layout827/Deeper/Wall_End
+      path: Cave/Layout827/Deeper/DeadEnd
       approach: {x: 101, y: -18, z: 14}
-      prompt: 
-      facing: NaN
+      prompt: Examine
+      facing: 0
       pitchDown: 0
     frames:
     - label: 'F1 HEADING 222: THE OPENING (FOUND AT 10 M)'

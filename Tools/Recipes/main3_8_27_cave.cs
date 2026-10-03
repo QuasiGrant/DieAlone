@@ -58,6 +58,8 @@ UnityEngine.Transform Child(UnityEngine.Transform parent, string name, float x, 
     return best;
 }
 var L = kit.Fresh("Layout827", cave, cave.position, 0f);
+// an axis-aligned box's world bounds from its transform (the cube's scale is its size), so a hidden original reads the same as a shown one
+UnityEngine.Bounds BoxOf(UnityEngine.Transform t) => new UnityEngine.Bounds(t.position, t.lossyScale);
 // the stand-in usables (Wren 2026-10-03, the standing prompt rule): ToggleColorInteractable with the CaveLayout_UI word on each interactable
 int uses = 0; void Use(UnityEngine.GameObject g, string prompt, UnityEngine.Renderer target) { if (g == null) return; var u = g.GetComponent<ToggleColorInteractable>() ?? g.AddComponent<ToggleColorInteractable>(); var so = new UnityEditor.SerializedObject(u); so.FindProperty("prompt").stringValue = prompt; so.FindProperty("target").objectReferenceValue = target != null ? target : g.GetComponentInChildren<UnityEngine.Renderer>(); so.ApplyModifiedPropertiesWithoutUndo(); uses++; }
 
@@ -112,16 +114,16 @@ const float postH = 1.0f, ropeH = 0.6f, postW = 0.1f, postStep = 2f, railOff = 1
 const float nx0 = 53.5f, nx1 = 55.5f, nz0 = 31.6f, nz1 = 33.4f, nFloor = -6f, nCeil = -4f;
 {
     // the niche: the entrance's east wall split round it, its own floor, ceiling, back and side walls
-    var ent = cave.Find("Entrance"); UnityEngine.Transform eastWall = null; if (ent != null) foreach (UnityEngine.Transform t in ent) if (t.name == "Wall_E") { var b = t.GetComponent<UnityEngine.Collider>().bounds; if (b.min.z <= nz0 && b.max.z >= nz1) eastWall = t; }
+    var ent = cave.Find("Entrance"); UnityEngine.Transform eastWall = null; if (ent != null) foreach (UnityEngine.Transform t in ent) if (t.name == "Wall_E") { var b = BoxOf(t); if (b.min.z <= nz0 && b.max.z >= nz1) eastWall = t; }
     var niche = kit.Group("Niche", L, V((nx0 + nx1) * 0.5f, nFloor, (nz0 + nz1) * 0.5f), 0f);
-    if (eastWall == null && L.Find("Niche/Wall_E_S") == null) notes.Add("no Entrance/Wall_E across the niche");
+    if (eastWall == null) notes.Add("no Entrance/Wall_E across the niche");
     if (eastWall != null)
     {
-        var b = eastWall.GetComponent<UnityEngine.Collider>().bounds; float x = b.center.x, lo = b.min.y, hi = b.max.y;
+        var b = BoxOf(eastWall); float x = b.center.x, lo = b.min.y, hi = b.max.y;
         Rock("Wall_E_S", niche, V(x, (lo + hi) * 0.5f, (b.min.z + nz0) * 0.5f), V(b.size.x, hi - lo, nz0 - b.min.z));
         Rock("Wall_E_N", niche, V(x, (lo + hi) * 0.5f, (nz1 + b.max.z) * 0.5f), V(b.size.x, hi - lo, b.max.z - nz1));
         Rock("Wall_E_Over", niche, V(x, (nCeil + hi) * 0.5f, (nz0 + nz1) * 0.5f), V(b.size.x, hi - nCeil, nz1 - nz0));
-        PlaceKit.Remove(eastWall);
+        eastWall.gameObject.SetActive(false);   // kept, hidden: a rerun splits it again (Remove left a rerun nothing to split)
     }
     Rock("Floor", niche, V((nx0 + nx1) * 0.5f + T * 0.5f, nFloor - T * 0.5f, (nz0 + nz1) * 0.5f), V(nx1 - nx0 + T, T, nz1 - nz0 + 2f * T));
     Rock("Ceiling", niche, V((nx0 + nx1) * 0.5f + T * 0.5f, nCeil + T * 0.5f, (nz0 + nz1) * 0.5f), V(nx1 - nx0 + T, T, nz1 - nz0 + 2f * T));
@@ -217,13 +219,13 @@ const float deadH = 1.4f, deadD = 0.3f, dz0 = 13.2f, dz1 = 14.4f, deepH = 2.1f, 
     var room = cave.Find("SideRoom"); var fut = room.Find("Wall_E_Future"); var deep = kit.Group("Deeper", L, V(99.5f, floorY, 14f), 0f);
     if (fut != null)
     {
-        var b = fut.GetComponent<UnityEngine.Collider>().bounds; float x = b.center.x, lo = b.min.y, hi = b.max.y;
+        var b = BoxOf(fut); float x = b.center.x, lo = b.min.y, hi = b.max.y;
         Rock("Wall_E_Future_S", deep, V(x, (lo + hi) * 0.5f, (b.min.z + dz0) * 0.5f), V(b.size.x, hi - lo, dz0 - b.min.z));
         Rock("Wall_E_Future_N", deep, V(x, (lo + hi) * 0.5f, (dz1 + b.max.z) * 0.5f), V(b.size.x, hi - lo, b.max.z - dz1));
         Rock("Wall_E_Future_Lintel", deep, V(x, (floorY + deepH + hi) * 0.5f, (dz0 + dz1) * 0.5f), V(b.size.x, hi - floorY - deepH, dz1 - dz0));
-        PlaceKit.Remove(fut);
+        fut.gameObject.SetActive(false);   // kept, hidden, as the niche's wall
     }
-    else if (L.Find("Deeper/Wall_E_Future_S") == null) notes.Add("no SideRoom/Wall_E_Future");
+    else notes.Add("no SideRoom/Wall_E_Future");
     float xa0 = dxA0 + T; // the room's east wall face
     Rock("Floor", deep, V((xa0 + dxA1) * 0.5f, floorY - T * 0.5f, (dz0 + dzB1) * 0.5f), V(dxA1 - xa0 + T, T, dzB1 - dz0 + 2f * T));
     Rock("Ceiling", deep, V((xa0 + dxA1) * 0.5f, floorY + deepH + T * 0.5f, (dz0 + dzB1) * 0.5f), V(dxA1 - xa0 + T, T, dzB1 - dz0 + 2f * T));
