@@ -107,3 +107,25 @@
 | every warp in it lands | PASS (Rook; the Spur_Descent and Cave_SideRoom frames read) |
 
 Marlow
+
+## Round 2 (Play retest, 2026-10-03)
+Marlow. Scene at fe701d9 (Rook's round 2 build). Play from 10:26 to 10:49; I changed nothing.
+
+**PASS: 0 jumps over the rail and 0 slides to the ravine floor or mouth from ground a player can reach.** One open question remains, at the far west ridge (item 2).
+
+1. **The rail. PASS.** I reran round 1's tread test (P52 to P76, every 0.5 m at -0.6, 0 and +0.6 m; 24 headings; four modes; 19,872 runs).
+   - **On a rope or post:** 0 ends.
+   - **P52 to P66:** 0 runs reach the ravine floor east of the mouth strip (x 57 to 84, z under 44.5). Round 1 had 1,771 over P52 to P76, counted against the floor out to x 44, so the two totals are not directly comparable.
+   - **P68 to P76** (west of the rail's last post at P70, x 62): 530 runs reach the floor at x 57 to 60, z 42 to 44. They walk down the open bank, about 27 degrees, 3 m east of the mouth strip.
+     - Example: from (62.08, -2.00, 48.30), heading 210, sprint lands at (58.72, -5.00, 42.85).
+     - That ground is the floor beside the mouth approach, at the end of the trail itself. No rail is there and none is asked for.
+2. **The band. PASS for the reachable rim; one question at the west ridge.**
+   - **The rim, in front of the band:** I swept every 1 m over x 18 to 100, z 49 to 68 (22,848 runs). 0 runs that start north of the band on the rim plateau (ground 14 to 18) get down to the floor.
+   - **Behind the band:** 336 starts where the band stands between them and the ravine, sprint and sprint-jump on 13 headings from 90 to 270 degrees, then up to 4 more sprints. That is 8,736 runs.
+     - **East end (x 75 to 105):** every run that drops ends on the W1 side (x 113 to 130), not in the ravine.
+     - **West end:** 81 runs from the west ridge at x 21 to 37, ground 45 to 74 (west of and above the band's turn up the ridge, boxes x 25.4 to 38.6), reach the ravine floor at (44 to 50, 40 to 45), by the mouth. 49 of them do it by landing on a HedgeCollider top first.
+     - Example: from (21.04, 73.84, 60.02), heading 105, a sprint-jump lands on the hedge box x 25.4 to 27.6 at (26.76, 67.66, 58.51), then rolls on to (50.07, -5.82, 45.39).
+   - **Can a player reach that ridge?** A flood from the rim plateau, seeded at (45, 14, 61), covered x 10 to 60, z 50 to 90 in three modes. It found 724 places and never got west of x 38, so it never reached the ridge. That ridge cannot be reached from the cave rim. I did not test other ways onto it, from the north or the west.
+3. **Standing on the band:** 93 cells in the 1 m sweep end standing on a HedgeCollider top, mostly at the west ridge. All walk off. The area flood fails any place standing on a stop; this is for Rook's flood to confirm.
+
+Marlow
