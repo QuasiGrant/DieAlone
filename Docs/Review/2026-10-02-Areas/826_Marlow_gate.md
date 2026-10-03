@@ -115,7 +115,7 @@ The done-check passes, but the task is still weak at eye height: the steps read 
 Marlow
 
 ## Round 2 (Play retest, 2026-10-03)
-Marlow. Scene at f576d8d, unchanged by me. Play entered at 05:27 (Editor stopped, not compiling) and stopped at 05:47. Frames are in the scratchpad (g826b 41 to 45, deck2) and not committed. "Screenshots" are Camera.main rendered to a texture at the player's own eye: the Game view camera, look filter on, no HUD.
+Marlow. Scene at f576d8d, unchanged by me. Play entered after 05:32, time not logged (Editor stopped, not compiling) and stopped at 05:47. Frames are in the scratchpad (g826b 41 to 45, deck2) and not committed. "Screenshots" are Camera.main rendered to a texture at the player's own eye: the Game view camera, look filter on, no HUD.
 
 ### 1. West rim retest: FAIL (16 landings, 0 traps)
 Same sweep as round 1: every 0.5 m over x 64 to 102, z 128 to 168, 12 headings, four modes. 192,000 runs, 0 traps.
