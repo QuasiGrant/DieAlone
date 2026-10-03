@@ -23,6 +23,8 @@
 //   blanket and bowl, judged as the office door); loose ones are reported, never failed.
 //   An area with no deck list prints "no deck list" and does
 //   not pass.
+// COLLIDER SIZE (8.33): every box, sphere or capsule collider over a drawn mesh in the bounds whose faces stand past the mesh by more
+//   than colliderSlack m or colliderShare of it (ColliderFit) fails; invisible blockers and Ignore Raycast stops are not measured.
 // INVENTORY: the area's items, expected and found; a zero fails.
 string area = "camp";
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
@@ -169,6 +171,20 @@ try
     }
     if (wiFail > 0) fails++;
     sb.Append((wiFail == 0 ? "PASS" : "FAIL") + " WALK-INTO: " + wiFail + " meshes the body enters with no collider (stop visuals, walk decks and tread meshes apart: " + wiApart + ")\n" + wiLines);
+    // ---- COLLIDER SIZE (8.33, ColliderFit): every box, sphere and capsule collider in the area (not a trigger, not Ignore Raycast) whose
+    // faces stand past its drawn mesh by more than colliderSlack m or colliderShare of the mesh, the turned-prop inflation
+    {
+        int measured = 0; var big = new System.Collections.Generic.List<string>();
+        foreach (var c in UnityEngine.Object.FindObjectsByType<UnityEngine.Collider>(UnityEngine.FindObjectsSortMode.None))
+        {
+            if (!c.enabled || c.isTrigger || c.gameObject.layer == 2 || !c.gameObject.activeInHierarchy || c.transform.IsChildOf(pc.transform) || !A.Contains(c.bounds.center)) continue;
+            var r = ColliderFit.Measure(c, set.colliderSlack, set.colliderShare); if (!r.measured) continue; measured++;
+            if (r.inflated) big.Add(WalkIns.PathOf(c.transform) + " (" + c.GetType().Name + " " + F1(r.colliderSize.x) + " x " + F1(r.colliderSize.y) + " x " + F1(r.colliderSize.z) + " over a mesh of " + F1(r.meshSize.x) + " x " + F1(r.meshSize.y) + " x " + F1(r.meshSize.z) + ", a face " + F1(r.excess) + " m out)");
+        }
+        if (big.Count > 0) fails++;
+        sb.Append((big.Count == 0 ? "PASS" : "FAIL") + " COLLIDER SIZE: " + measured + " colliders over drawn meshes, " + big.Count + " standing more than " + F1(set.colliderSlack) + " m or " + (set.colliderShare * 100f).ToString("F0", inv) + " percent past their mesh\n");
+        foreach (var l in big) sb.Append("  BIG " + l + "\n");
+    }
     // ---- the drawn trees block sight from here on (temporary MeshColliders on each tree's first LOD; removed in finally)
     var tower = Root("Camp").transform.Find("Tower"); float deckTop = tower.Find("Cab").position.y;
     var eyes = new System.Collections.Generic.List<UnityEngine.Vector3>();

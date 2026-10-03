@@ -94,6 +94,15 @@ public static class WalkIns
 
     public static string PathOf(Transform t) { var s = t.name; for (var p = t.parent; p != null; p = p.parent) s = p.name + "/" + s; return s; }
 
+    /// True for a look-only renderer by name (foliage, trees, ropes, glows, glass...: the names above, on it, its parents or its materials, or
+    /// under a skipped root), for ColliderFit (8.33). Shaders are not judged: pack tent canvas draws with a Particles shader yet is solid.
+    public static bool LooksOnly(MeshRenderer mr)
+    {
+        for (var t = mr.transform; t != null; t = t.parent) { if (SkipName.IsMatch(t.name)) return true; if (t.parent == null && SkipRoots.Contains(t.name)) return true; }
+        foreach (var m in mr.sharedMaterials) if (m != null && SkipName.IsMatch(m.name)) return true;
+        return false;
+    }
+
     static bool Skip(MeshRenderer mr, Transform player, Transform fireRoot)
     {
         for (var t = mr.transform; t != null; t = t.parent) { if (SkipName.IsMatch(t.name)) return true; if (t.parent == null && SkipRoots.Contains(t.name)) return true; }

@@ -184,6 +184,10 @@ public class Main3AreaSet : ScriptableObject
     [Tooltip("Closed water (8.23 round 2): a reached place below a fill's surface inside the water its seed reaches is a leak.")] public ClosedFill[] closedFills;
     [Tooltip("Stops (8.22 round 2, Marlow 1: a jump onto the brush band and off its far side): a flood place standing on a collider under one of these scene paths, or on the Ignore Raycast layer (hedge boxes, invisible walls), is an escape over a stop and fails.")] public string[] stopRoots = { "FrontZone/BrushBands", "FrontZone/ShiftWalls", "FrontZone/Gate/PlayerBlocker", "Ground815/Stops", "Fence", "Lake/WadeLimit", "Lake/Boathouse/Layout823/StakeLine" };
 
+    [Header("Collider size (PLAN 8.33, ColliderFit)")]
+    [Tooltip("A collider face may stand this many metres past its drawn mesh, or colliderShare of the mesh size on that axis, whichever is larger, before it counts as inflated (the turned-prop boxes: the Camp 1 tent stood 1.46 m out).")]
+    public float colliderSlack = 0.3f, colliderShare = 0.25f;
+
     [Header("Reach and found (Pim, Wren 2026-10-02)")]
     [Tooltip("A place counts as reached when a flood place lies within this many metres (xz) of its point.")] public float reachRadius = 4f;
     [Tooltip("And within this many metres in height.")] public float reachRise = 3f;
