@@ -154,14 +154,17 @@ UnityEngine.Physics.SyncTransforms();
     // the ground sheet at the door, no collider
     const float shX0 = 74.25f, shX1 = 75.75f, shZ0 = 141.77f, shZ1 = 143.27f; float shG = G((shX0 + shX1) * 0.5f, (shZ0 + shZ1) * 0.5f);
     Slab("GroundSheet", L, V((shX0 + shX1) * 0.5f, shG + 0.01f, (shZ0 + shZ1) * 0.5f), V(shX1 - shX0, 0.02f, shZ1 - shZ0), sheetMat);
-    // the faced canvases: four on the west wall's foot, painted faces (local -z) to the rock (west: yaw 90), tops leaning onto it
+    // the faced canvases: four on the west wall's foot, painted faces (local -z) to the rock (west: yaw 90), tops leaning onto it; each
+    // its own width, height, lean, turn and set-off, with a fcGap m gap between them (gate round 2, Wren 2026-10-03 item 3: read as one slab)
     PlaceKit.Remove(d.Find("FacedCanvases"));
-    const float fcX = 70.3f, fcZ0 = 144.5f, fcZ1 = 147.4f, fcLean = -12f; const int fcN = 4;
+    const float fcX = 70.3f, fcZ0 = 144.5f, fcZ1 = 147.4f, fcLean = -12f, fcGap = 0.17f; const int fcN = 4;
+    var fcW = new[] { 0.6f, 0.55f, 0.65f, 0.58f }; var fcH = new[] { 1.1f, 0.85f, 1.3f, 0.95f }; var fcLeanOff = new[] { 0f, -5f, 4f, -3f }; var fcYawOff = new[] { 6f, -5f, 3f, -7f }; var fcXOff = new[] { 0f, 0.12f, -0.05f, 0.08f };
+    float fcRun = 0f; for (int i = 0; i < fcN; i++) fcRun += fcW[i]; float fcStart = (fcZ0 + fcZ1) * 0.5f - (fcRun + fcGap * (fcN - 1)) * 0.5f;
     var fc = kit.Group("FacedCanvases", L, V(fcX, G(fcX, (fcZ0 + fcZ1) * 0.5f), (fcZ0 + fcZ1) * 0.5f), 0f);
     for (int i = 0; i < fcN; i++)
     {
-        float w = 0.7f + 0.1f * (i % 2), h = 1.1f + 0.2f * (i % 3), z = UnityEngine.Mathf.Lerp(fcZ0 + w * 0.5f, fcZ1 - w * 0.5f, i / (float)(fcN - 1));
-        var g = kit.Group("Canvas", fc, V(fcX, G(fcX, z), z), 0f); g.rotation = UnityEngine.Quaternion.Euler(fcLean, 90f, 0f);
+        float w = fcW[i], h = fcH[i], z = fcStart + w * 0.5f; fcStart += w + fcGap; float cx = fcX + fcXOff[i];
+        var g = kit.Group("Canvas", fc, V(cx, G(cx, z), z), 0f); g.rotation = UnityEngine.Quaternion.Euler(fcLean + fcLeanOff[i], 90f + fcYawOff[i], 0f);
         kit.Slab("Back", g, V(0f, h * 0.5f, 0.02f), V(w, h, 0.03f), linen);
         foreach (var (c, s) in new[] { (V(0f, 0.02f, 0f), V(w, 0.04f, 0.05f)), (V(0f, h - 0.02f, 0f), V(w, 0.04f, 0.05f)), (V(-w * 0.5f + 0.02f, h * 0.5f, 0f), V(0.04f, h, 0.05f)), (V(w * 0.5f - 0.02f, h * 0.5f, 0f), V(0.04f, h, 0.05f)) }) kit.Slab("Stretcher", g, c, s, planks);
         kit.Slab("Painting", g, V(0f, h * 0.5f, -0.005f), V(w - 0.06f, h - 0.06f, 0.005f), paint);
@@ -198,7 +201,9 @@ UnityEngine.Physics.SyncTransforms();
         kit.Blocker(n, L, L.InverseTransformPoint(V((x0 + x1) * 0.5f, (bottom + top) * 0.5f, (z0 + z1) * 0.5f)), V(x1 - x0, top - bottom, z1 - z0)); fillNote += n + " top " + F(top) + " (rock " + F(rt) + "); ";
     }
     // behind the canvases, to the rock (the first flood found a 20-place pocket at (69.5, -3.2, 146.0) there)
-    var fcb = PlaceKit.MeshBounds(fc.gameObject); Fill("BehindCanvases", 68.0f, fcb.max.x, fcb.min.z - 0.1f, fcb.max.z + 0.1f, fcb.min.y, fcb.max.y);
+    // its east face at the nearest canvas's foot (fcBackIn m behind it), not the row's bounds: the box past the canvases took the found lines (round 2)
+    const float fcBackIn = 0.05f; float fcFoot = fcX; foreach (var o in fcXOff) fcFoot = UnityEngine.Mathf.Min(fcFoot, fcX + o);
+    var fcb = PlaceKit.MeshBounds(fc.gameObject); Fill("BehindCanvases", 68.0f, fcFoot - fcBackIn, fcb.min.z - 0.1f, fcb.max.z + 0.1f, fcb.min.y, fcb.max.y);
     // the fire: one box from its meshes, so its interaction ray has something to meet
     if (fire != null) PlaceKit.FitExact(fire.gameObject); if (fire != null) Use(fire.gameObject, "Sit by the fire", null);
     // the slot along the tent's south face over BigBoulders_3, and along its west face over Boulder_2's foot (traps at (72.6, -3.3, 139.6),
@@ -210,7 +215,7 @@ UnityEngine.Physics.SyncTransforms();
 // ================= C3: the Snag line and the hoist =================
 const float pieceClear = 2.85f; string ropeNote = "none"; const float snagRopeUp = 3.4f, stakeUp = 3.6f, stakeW = 0.12f, pieceSide = 0.5f, pieceDrop = 0.2f, ropeT = 0.03f, hoistUp = 12f, cleatH = 1.2f, cleatW = 0.12f, cleatOff = 0.3f, barkR = 2.5f;
 var pegs = new[] { P(92.8f, 149.8f), P(89.6f, 153.1f), P(86.4f, 156.4f), P(83.2f, 159.7f) }; var stakeAt = P(80f, 163f); var cleatAt = P(98.86f, 144.85f);
-int pieceN = 0;
+int pieceN = 0, f6Cells = 0;
 {
     var snag = kit.Root("Giants") != null ? kit.Root("Giants").transform.Find("Heroes/Snag") : null; var trunk = snag != null ? snag.Find("Trunk") : null;
     if (snag == null || trunk == null) notes.Add("no Giants/Heroes/Snag/Trunk");
@@ -396,9 +401,10 @@ int carved = 0, stonesN = 0, rocksN = 0;
     for (int k = 0; k < upper.Count; k += 4) kit.ClearDetail(V(upper[k].p.x, 0f, upper[k].p.y), waterHalf + 0.5f);
     for (int k = 0; k < lower.Count; k += 4) kit.ClearDetail(V(lower[k].p.x, 0f, lower[k].p.y), waterHalf + 0.5f);
     kit.ClearDetail(V((poolX0 + poolX1) * 0.5f, 0f, (poolZ0 + poolZ1) * 0.5f), 2.2f);
-    // frame F6's line, its eye on the W1 leg to the spring, cleared of fern (the 8.26 gate: a fern filled the frame)
-    var f6Eye = P(84.43f, 122.24f); const float f6Step = 0.75f, f6Clear = 0.9f; float f6Len = UnityEngine.Vector2.Distance(f6Eye, spring);
-    for (float s = 0f; s <= f6Len; s += f6Step) { var q = UnityEngine.Vector2.Lerp(f6Eye, spring, s / f6Len); kit.ClearDetail(V(q.x, 0f, q.y), f6Clear); }
+    // frame F6's line, its eye on the W1 tread at P72 to the spring, cleared of grass and fern
+    var f6Eye = P(81.65f, 126.0f);   // the W1 tread at P72 (the old eye stood in RedFir6's boughs)
+    const float f6Step = 0.75f, f6Clear = 2.5f, f6EyeClear = 4.5f; float f6Len = UnityEngine.Vector2.Distance(f6Eye, spring);
+    f6Cells += kit.ClearDetail(V(f6Eye.x, 0f, f6Eye.y), f6EyeClear); for (float s = 0f; s <= f6Len; s += f6Step) { var q = UnityEngine.Vector2.Lerp(f6Eye, spring, s / f6Len); f6Cells += kit.ClearDetail(V(q.x, 0f, q.y), f6Clear); }   // fern cards 1.5 m tall up to 4 m out still filled the lens (round 2: 0.9 m, then 2.0 and 2.5 m, were too narrow)
 }
 
 // ================= C6, C7, C9 =================
@@ -443,8 +449,9 @@ const float hollowR = 14f; int hullsAdded = 0;
 // ================= the west rim's stop (8.26 gate, Marlow 4, Wren 2026-10-03) =================
 // a sprint off the west rim landed on the tent's, the fire's and the fills' tops: a brush band with a hedge box (Ground815/Stops, a stop, as
 // the other hedges) along the rim's crest over the camp, from bearing rimFrom to rimTo round the hollow's centre: on each bearing (every
-// rimStep degrees) the first ground at rimLevel or over going out from rimIn m, set rimBack m further out
-const float rimFrom = 200f, rimTo = 340f, rimStepDeg = 4f, rimIn = 8f, rimOut = 22f, rimLevel = 3.5f, rimBack = 0.6f, hedgeH = 2f, hedgeT = 0.6f, brushH = 1.5f, brushStep = 1.4f; int rimBoxes = 0, rimBrush = 0;
+// rimStep degrees) the first ground at rimLevel or over going out from rimIn m, set rimBack m further out; on the south rim it runs east
+// to x rimEastX (gate round 2, Wren 2026-10-03 item 2: 15 of Marlow's 16 last landings started east of its old end at (74.02, 134.3))
+const float rimFrom = 170f, rimTo = 340f, rimEastX = 76.0f, rimStepDeg = 4f, rimIn = 8f, rimOut = 22f, rimLevel = 3.5f, rimBack = 0.6f, hedgeH = 2f, hedgeT = 0.6f, brushH = 1.5f, brushStep = 1.4f; int rimBoxes = 0, rimBrush = 0;
 {
     var stops = kit.Root("Ground815") != null ? kit.Root("Ground815").transform.Find("Stops") : null;
     if (stops == null) notes.Add("no Ground815/Stops");
@@ -454,7 +461,7 @@ const float rimFrom = 200f, rimTo = 340f, rimStepDeg = 4f, rimIn = 8f, rimOut = 
         for (float b = rimFrom; b <= rimTo + 1e-3f; b += rimStepDeg)
         {
             var dir = V(UnityEngine.Mathf.Sin(b * UnityEngine.Mathf.Deg2Rad), 0f, UnityEngine.Mathf.Cos(b * UnityEngine.Mathf.Deg2Rad));
-            for (float r = rimIn; r <= rimOut; r += 0.25f) { var q = V(78f, 0f, 146f) + dir * r; if (G(q.x, q.z) >= rimLevel) { q += dir * rimBack; crest.Add(V(q.x, G(q.x, q.z), q.z)); break; } }
+            for (float r = rimIn; r <= rimOut; r += 0.25f) { var q = V(78f, 0f, 146f) + dir * r; if (G(q.x, q.z) >= rimLevel) { q += dir * rimBack; if (q.x <= rimEastX) crest.Add(V(q.x, G(q.x, q.z), q.z)); break; } }
         }
         for (int i = 1; i < crest.Count; i++)
         {
@@ -493,4 +500,4 @@ UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " | removed by name " + namedGone + " of " + named.Length + (namedMissing.Count > 0 ? " (not found: " + string.Join(", ", namedMissing) + ")" : "") + ", in keep-out zones " + zoneGone + (zoneNames.Count > 0 ? " (" + string.Join("; ", zoneNames) + ")" : "")
     + ", leftover props " + propsGone + ", footbridge " + (bridgeGone ? "gone" : "absent") + " | Snag line pieces " + pieceN + " (rope " + ropeNote + ") | FaceRock hulls added " + hullsAdded + " | log steps " + logsMade + " | creek: upper " + upper.Count + " and lower " + lower.Count + " samples, cells cut " + carved + ", stones " + stonesN + ", cascade rocks " + rocksN
-    + (pushNotes.Count > 0 ? ", AT THE VALLEY EDGE: " + string.Join("; ", pushNotes) : "") + " | tent " + tentNote + " | fills " + fillNote + "| usables " + uses + " | west rim hedge boxes " + rimBoxes + ", brush " + rimBrush + " | Snag bark materials " + snagMats + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    + (pushNotes.Count > 0 ? ", AT THE VALLEY EDGE: " + string.Join("; ", pushNotes) : "") + " | tent " + tentNote + " | fills " + fillNote + "| usables " + uses + " | F6 detail cells cleared " + f6Cells + " | west rim hedge boxes " + rimBoxes + ", brush " + rimBrush + " | Snag bark materials " + snagMats + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

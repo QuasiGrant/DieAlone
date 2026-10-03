@@ -230,6 +230,8 @@ public class Main3AreaSet : ScriptableObject
     [Tooltip("Eye grid spacing over the deck, metres.")] public float deckGrid = 1f;
     [Tooltip("Half the deck's side, metres.")] public float deckHalf = 3.5f;
     [Tooltip("Eye and jump heights over the deck floor.")] public float deckEye = 1.6f, deckJump = 2.2f;
+    [Tooltip("Rail eyes for must-see (Wren 2026-10-03, Marlow in Play): standing eyes this far inside each deck rail's inner face (the body centre's stop), metres.")] public float railEyeInset = 0.38f;
+    [Tooltip("Spacing of the rail eyes along each side of the walkway, metres.")] public float railEyeStep = 1f;
     [Tooltip("Must-see passes when this share of rays is clear (Wren 2026-10-02: 25 percent).")] public float mustSeeShare = 0.25f;    [Tooltip("A ray stops this short of its target, so the target's own collider never blocks it.")] public float rayEndSkip = 1.5f;
     [Tooltip("Tree-cover test: frame size and field of view toward the target, and the pixel change that counts as seen.")] public int pixelSize = 512;
     public float pixelFov = 10f;

@@ -20,7 +20,8 @@
 //   main3_review_capture.sh --area runs in batches and adds to the summary. Hard must-see targets (8.22, FrontLayout.md 5.4) are tested
 //   against every drawn mesh (temporary exact colliders on the meshes the deck rays cross), the tower's own included in every area
 //   (Wren 2026-10-03; soft targets count the tower's colliders too); a must-see passes when one standing (deckEye) eye sees it, the
-//   lake's rule for every area (jump-height eyes are reported, never counted); loose ones are reported, never failed.
+//   lake's rule for every area, rail eyes included (railEyeInset inside each rail; jump-height eyes are reported, never counted); loose
+//   ones are reported, never failed.
 //   An area with no deck list prints "no deck list" and does
 //   not pass.
 // COLLIDER SIZE (8.33): every box, sphere or capsule collider over a drawn mesh in the bounds whose faces stand past the mesh by more
@@ -336,8 +337,23 @@ try
         // whatever stands in the way): every drawn mesh blocks. Each enabled LOD0 or plain MeshRenderer with no collider whose bounds a
         // deck ray to a hard target crosses gets a temporary exact MeshCollider (removed in finally); a hit on the target's own object
         // (objectPath) reaches it
+        // the must-see eyes: the deck grid, plus standing rail eyes railEyeInset inside each rail's inner face every railEyeStep m along each
+        // side (Wren 2026-10-03: Marlow at the rail in Play, the body centre stops 0.38 m from it); must-hide keeps the grid alone
+        var seeEyes = new System.Collections.Generic.List<UnityEngine.Vector3>(eyes); int railEyes = 0;
+        {
+            var rails = tower.Find("DeckRails"); UnityEngine.Bounds RB(string n) { var r = rails != null ? rails.Find(n) : null; var c = r != null ? r.GetComponent<UnityEngine.Collider>() : null; return c != null ? c.bounds : new UnityEngine.Bounds(); }
+            var rw = RB("RailW"); var re = RB("RailE"); var rs = RB("RailS"); var rn = RB("RailN");
+            if (rw.size != UnityEngine.Vector3.zero && re.size != UnityEngine.Vector3.zero && rs.size != UnityEngine.Vector3.zero && rn.size != UnityEngine.Vector3.zero)
+            {
+                float x0 = rw.max.x + set.railEyeInset, x1 = re.min.x - set.railEyeInset, z0 = rs.max.z + set.railEyeInset, z1 = rn.min.z - set.railEyeInset, y = deckTop + set.deckEye;
+                for (float x = x0; x <= x1 + 1e-3f; x += set.railEyeStep) { seeEyes.Add(new UnityEngine.Vector3(x, y, z0)); seeEyes.Add(new UnityEngine.Vector3(x, y, z1)); railEyes += 2; }
+                for (float z = z0 + set.railEyeStep; z < z1 - 1e-3f; z += set.railEyeStep) { seeEyes.Add(new UnityEngine.Vector3(x0, y, z)); seeEyes.Add(new UnityEngine.Vector3(x1, y, z)); railEyes += 2; }
+            }
+            else deckLines.Append("  (no DeckRails RailN, RailS, RailE and RailW colliders: no rail eyes)\n");
+        }
+        int standingN = 0; foreach (var e in seeEyes) if (UnityEngine.Mathf.Abs(e.y - (deckTop + set.deckEye)) < 0.01f) standingN++;
         var hardSegs = new System.Collections.Generic.List<UnityEngine.Ray>(); var hardLens = new System.Collections.Generic.List<float>();
-        foreach (var t in A.deckSee) if (t.hard) { var p = Pt(t.point); foreach (var e in eyes) { var d = p - e; hardSegs.Add(new UnityEngine.Ray(e, d.normalized)); hardLens.Add(d.magnitude); } }
+        foreach (var t in A.deckSee) if (t.hard) { var p = Pt(t.point); foreach (var e in seeEyes) { var d = p - e; hardSegs.Add(new UnityEngine.Ray(e, d.normalized)); hardLens.Add(d.magnitude); } }
         int meshTemps = 0;
         if (hardSegs.Count > 0)
         {
@@ -377,16 +393,16 @@ try
             if (t.hard && !string.IsNullOrEmpty(t.objectPath) && own == null) { deckFails++; deckLines.Append("  HIDDEN see " + t.label + ": no object " + t.objectPath + "\n"); continue; }
             // Wren 2026-10-03 (8.26 round 2, B): the tower's own meshes block in every area, and a must-see passes when one standing deck
             // eye (deckEye high; jump-height eyes do not count) sees it, the lake's rule
-            int clear = 0, standClear = 0; foreach (var e in eyes) if (t.hard ? ClearHard(e, p, own) : Clear(e, p, null, own)) { clear++; if (UnityEngine.Mathf.Abs(e.y - (deckTop + set.deckEye)) < 0.01f) standClear++; }
-            float share = clear / (float)eyes.Count; bool pass = standClear > 0; if (!pass && !t.loose) deckFails++;
+            int clear = 0, standClear = 0; foreach (var e in seeEyes) if (t.hard ? ClearHard(e, p, own) : Clear(e, p, null, own)) { clear++; if (UnityEngine.Mathf.Abs(e.y - (deckTop + set.deckEye)) < 0.01f) standClear++; }
+            float share = clear / (float)seeEyes.Count; bool pass = standClear > 0; if (!pass && !t.loose) deckFails++;
             var centreEye = new UnityEngine.Vector3(tower.position.x, deckTop + set.deckEye, tower.position.z);
-            deckLines.Append("  " + (pass ? "ok   " : t.loose ? "low  " : "HIDDEN ") + "see " + (t.loose ? "(loose) " : t.hard ? "(hard, every mesh) " : "") + t.label + " " + P3(p) + ": " + clear + " of " + eyes.Count + " rays clear (" + (share * 100f).ToString("F0", inv) + " percent, " + standClear + " of " + (eyes.Count / 2) + " standing eyes; passes from one standing eye, Wren 2026-10-03)" + (pass ? "" : "; from the deck centre the first block is " + (t.hard ? HardBlocker(centreEye, p, own) : Blocker(centreEye, p, null))) + "\n");
+            deckLines.Append("  " + (pass ? "ok   " : t.loose ? "low  " : "HIDDEN ") + "see " + (t.loose ? "(loose) " : t.hard ? "(hard, every mesh) " : "") + t.label + " " + P3(p) + ": " + clear + " of " + seeEyes.Count + " rays clear (" + (share * 100f).ToString("F0", inv) + " percent, " + standClear + " of " + standingN + " standing eyes, rail eyes included; passes from one standing eye, Wren 2026-10-03)" + (pass ? "" : "; from the deck centre the first block is " + (t.hard ? HardBlocker(centreEye, p, own) : Blocker(centreEye, p, null))) + "\n");
         }
         // the pixel check runs in main3_deck_pixel_check.cs, a batch of eyes per job (one job of every render ran the GPU out of memory);
         // main3_review_capture.sh --area adds its PIXEL lines under this one
         int pixelTargets = 0; foreach (var t in A.deckHide) if (!string.IsNullOrEmpty(t.treeCoverPath)) { pixelTargets++; deckLines.Append("  (pixel) hide " + t.label + " (" + t.treeCoverPath + "): main3_deck_pixel_check.cs\n"); }
         if (deckFails > 0) fails++;
-        sb.Append((deckFails == 0 ? "PASS" : "FAIL") + " DECK: " + (A.deckSee.Length + A.deckHide.Length) + " targets from " + eyes.Count + " eyes (" + (eyes.Count / 2) + " at eye and jump height)\n" + deckLines);
+        sb.Append((deckFails == 0 ? "PASS" : "FAIL") + " DECK: " + (A.deckSee.Length + A.deckHide.Length) + " targets from " + eyes.Count + " deck eyes (" + (eyes.Count / 2) + " at eye and jump height), and for must-see " + railEyes + " standing rail eyes\n" + deckLines);
     }
     // ---- INVENTORY
     var items = set.ItemsFor(A); int zeros = 0; var invLines = new System.Text.StringBuilder();

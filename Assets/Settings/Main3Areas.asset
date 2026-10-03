@@ -80,6 +80,8 @@ MonoBehaviour:
   deckHalf: 3.5
   deckEye: 1.6
   deckJump: 2.2
+  railEyeInset: 0.38
+  railEyeStep: 1
   mustSeeShare: 0.25
   rayEndSkip: 1.5
   pixelSize: 512
@@ -1431,7 +1433,7 @@ MonoBehaviour:
       height: 0.75
       objectPath: Campsites/Camp_3/Layout826/PlankTable
     - label: Faced canvases
-      point: {x: 70.3, y: -999, z: 145.95}
+      point: {x: 70.3, y: -999, z: 146.32}
       height: 1.3
       objectPath: Campsites/Camp_3/Layout826/FacedCanvases
     - label: Snag
@@ -1618,7 +1620,7 @@ MonoBehaviour:
       look: {x: 77.5, y: -3.9, z: 146.5}
     - label: 'THE STEPS'' TOP VIEWPOINT: THE SNAG LINE'
       eye: {x: 96, y: -999, z: 140.8}
-      look: {x: 86.4, y: 6.9, z: 156.4}
+      look: {x: 86.4, y: 12, z: 156.4}
     - label: THE TENT'S SOUTH FACE
       eye: {x: 75, y: -999, z: 137.6}
       look: {x: 75, y: -3.3, z: 139.64}
@@ -1631,17 +1633,17 @@ MonoBehaviour:
     - label: 'F2 W1 ARRIVAL HEADING 342: FIRE, EASEL BACK'
       eye: {x: 84, y: -999, z: 132}
       look: {x: 80.90983, y: -3, z: 141.51056}
-    - label: 'F3 THE FLOOR HEADING 60: THE LINE''S BACKS'
+    - label: 'F3 THE FLOOR: THE LINE''S BACKS (AIMED AT PIECE 2)'
       eye: {x: 78, y: -999, z: 147}
-      look: {x: 86.660255, y: 2, z: 152}
+      look: {x: 89.598, y: 7.1236916, z: 153.1}
     - label: 'F4 THE STONES HEADING 250: THE W1 SIGN'
       eye: {x: 131.71, y: -999, z: 72.82}
       look: {x: 122.31308, y: -3, z: 69.399796}
     - label: 'F5 W1 HEADING 300: THE BLAZE'
       eye: {x: 128, y: -999, z: 70}
       look: {x: 119.339745, y: -3, z: 75}
-    - label: 'F6 W1 LEG AT THE SPRING HEADING 20: WATER OUT OF THE ROCKS'
-      eye: {x: 84.43, y: -999, z: 122.24}
+    - label: 'F6 W1 LEG AT P72 HEADING 90: WATER OUT OF THE ROCKS'
+      eye: {x: 81.65, y: -999, z: 126}
       look: {x: 85.8, y: -3.8, z: 126}
     - label: CAMP_3 WARP LANDING, FACING 30
       eye: {x: 75, y: -999, z: 143.6}
@@ -1744,7 +1746,7 @@ MonoBehaviour:
     - label: Guest chair
       point: {x: 92.85, y: -18, z: 11.5}
       height: 1
-      objectPath: Cave/SideRoom/RouletteTable/Chair
+      objectPath: Cave/SideRoom/RouletteTable/GuestChair
     - label: His chair
       point: {x: 95.05, y: -18, z: 11.3}
       height: 1
@@ -1825,11 +1827,17 @@ MonoBehaviour:
       anyEye: 0
     interactions:
     - label: guest chair
-      path: Cave/SideRoom/RouletteTable/Chair
-      approach: {x: 91, y: -18, z: 12}
-      prompt: 
+      path: Cave/SideRoom/RouletteTable/GuestChair
+      approach: {x: 92, y: -18, z: 12}
+      prompt: Sit
       facing: NaN
       pitchDown: 0
+    - label: R7
+      path: Cave/Resident_Cave_Spot/StandInBody
+      approach: {x: 86.9, y: -18, z: 6.2}
+      prompt: Talk
+      facing: 98
+      pitchDown: 18
     - label: event 16 (deeper)
       path: Cave/Layout827/Deeper/Wall_End
       approach: {x: 101, y: -18, z: 14}
@@ -2284,7 +2292,7 @@ MonoBehaviour:
       height: 0.75
       objectPath: Campsites/Camp_3/Layout826/PlankTable
     - label: Faced canvases
-      point: {x: 70.3, y: -999, z: 145.95}
+      point: {x: 70.3, y: -999, z: 146.32}
       height: 1.3
       objectPath: Campsites/Camp_3/Layout826/FacedCanvases
     - label: Snag
@@ -2394,7 +2402,7 @@ MonoBehaviour:
     - label: Guest chair
       point: {x: 92.85, y: -18, z: 11.5}
       height: 1
-      objectPath: Cave/SideRoom/RouletteTable/Chair
+      objectPath: Cave/SideRoom/RouletteTable/GuestChair
     - label: His chair
       point: {x: 95.05, y: -18, z: 11.3}
       height: 1

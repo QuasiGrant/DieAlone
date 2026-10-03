@@ -216,7 +216,8 @@ Main3AreaSet.Place POn(string l, string obj, float h) { var t = Main3AreaSet.At(
 var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Camp 3 and the west trails", bounds = new[] { R(50f, 62f, 160f, 207f) }, warps = new[] { "Camp_3", "Camp_3_Rim", "Junction_W1" },
     places = new[] { P("Camp 3", 75.0f, G, 143.6f), PO("Fire", 76.0f, G, 150.5f, 0.6f, c3D + "Fire"), PO("Seat log", 73.8f, G, 150.2f, 0.45f, c3D + "CS_Log_Large_Long_Seat_1"),
         PO("Tent", 75.0f, G, 140.7f, 1.65f, c3D + "CS_Tent_Old_2"), PO("Easel", 80.3f, G, 148.8f, 1.8f, c3D + "Easel"), PO("Table", 78.5f, G, 147.3f, 0.75f, c3L + "PlankTable"),
-        PO("Faced canvases", 70.3f, G, 145.95f, 1.3f, c3L + "FacedCanvases"), PO("Snag", 96f, G, 146.5f, 54f, "Giants/Heroes/Snag"),
+        PO("Faced canvases", 70.3f, G, 146.32f, 1.3f, c3L + "FacedCanvases"),   // on the tallest canvas (the third): the row's middle is now a gap (round 2 split)
+        PO("Snag", 96f, G, 146.5f, 54f, "Giants/Heroes/Snag"),
         // the Snag line's pieces hang 2.85 m or more over the ground and over the ravine: deck targets (deckSee), not places to reach
         PO("Hoist cleat", 98.86f, G, 144.85f, 1.2f, c3L + "Hoist"), PO("Stake", 80f, G, 163f, 3.6f, c3L + "SnagLine/Stake"), P("East rim spot", 94f, G, 138.5f), P("Steps' top viewpoint", 96.0f, G, 140.8f),   // slid 2.06 m south of the steps' top: the nearest spot off the tread that sees the Snag line (main3_8_26_search.cs, pieces 2 to 4)
        
@@ -231,14 +232,14 @@ var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Ca
     // F1, the rim spot and the viewpoint from main3_8_26_search.cs; the tent faces and the canvas backs from clear eyes found by drawn-mesh lines
     frames = new[] { FR("F1 DOWN THE STEPS: FIRE, POOL, CANVASES", V(90.0f, G, 145.3f), V(76.6f, -3.7f, 148.7f)),
         FR("THE EAST RIM SPOT: THE CAMP FLOOR", V(94f, G, 138.5f), V(77.5f, -3.9f, 146.5f)),
-        FR("THE STEPS' TOP VIEWPOINT: THE SNAG LINE", V(96.0f, G, 140.8f), V(86.4f, 6.9f, 156.4f)),
+        FR("THE STEPS' TOP VIEWPOINT: THE SNAG LINE", V(96.0f, G, 140.8f), V(86.4f, 12.0f, 156.4f)),   // pitched up 15 degrees (round 2: the line was cut off at the top edge)
         FR("THE TENT'S SOUTH FACE", V(75.0f, G, 137.6f), V(75.0f, -3.3f, 139.64f)), FR("THE TENT'S WEST FACE", V(70.0f, G, 140.7f), V(72.96f, -3.3f, 140.7f)),
         FR("THE CANVAS BACKS FROM THE FLOOR", V(74.3f, G, 146.0f), V(70.33f, -3.25f, 145.95f)),
         FR("F2 W1 ARRIVAL HEADING 342: FIRE, EASEL BACK", V(84f, G, 132f), Hd(V(84f, 0f, 132f), 342f, -3.0f)),
-        FR("F3 THE FLOOR HEADING 60: THE LINE'S BACKS", V(78f, G, 147f), Hd(V(78f, 0f, 147f), 60f, 2.0f)),
+        FR("F3 THE FLOOR: THE LINE'S BACKS (AIMED AT PIECE 2)", V(78f, G, 147f), sp2),   // round 2: heading 60 at 2.0 showed the rope, no pieces
         FR("F4 THE STONES HEADING 250: THE W1 SIGN", V(131.71f, G, 72.82f), Hd(V(131.71f, 0f, 72.82f), 250f, -3.0f)),
         FR("F5 W1 HEADING 300: THE BLAZE", V(128f, G, 70f), Hd(V(128f, 0f, 70f), 300f, -3.0f)),
-        FR("F6 W1 LEG AT THE SPRING HEADING 20: WATER OUT OF THE ROCKS", V(84.43f, G, 122.24f), V(85.8f, -3.8f, 126.0f)),
+        FR("F6 W1 LEG AT P72 HEADING 90: WATER OUT OF THE ROCKS", V(81.65f, G, 126.0f), V(85.8f, -3.8f, 126.0f)),   // round 2: the old eye (84.43, 122.24) stood inside RedFir6's lower boughs (the "fern cards")
         FR("CAMP_3 WARP LANDING, FACING 30", V(75.0f, G, 143.6f), Hd(V(75.0f, 0f, 143.6f), 30f, -2.6f)),
         FR("CAMP_3_RIM WARP LANDING, FACING 268", V(97.8f, G, 142.0f), Hd(V(97.8f, 0f, 142.0f), 268f, 2.0f)) },
     // the arrival to the dam stand: the walk to clear the dam (the 8.26 check's WALK line), from which the pool and the sink are found; from the
@@ -259,8 +260,10 @@ var caveArea = new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave
         POn("Rope rail", "PointsOfInterest/RopeRail827", 1.0f), PO("Toilet", 47.64f, G, 41.20f, 0.1f, cvL + "Toilet"), PO("Drip", 51.2f, -6f, 28f, 0.3f, cvL + "Drip"), PO("Niche", 54.5f, -6f, 32.5f, 2f, cvL + "Niche"),
         P("Chamber", 80f, -18f, 12f), PO("Seat shelf", 88.4f, -18f, 6.0f, 0.6f, cvL + "Chamber/SeatShelf"), PO("Sleep", 85f, -18f, 4f, 0.5f, cvL + "Chamber/Sleep"), PO("Food", 73f, -18f, 14.75f, 0.5f, cvL + "Chamber/Food"),
         PO("Stack", 86.75f, -18f, 18.75f, 3f, cvL + "Chamber/Stack"), PO("Battery bank", 84.5f, -18f, 20.7f, 0.8f, cvL + "Chamber/BatteryBank"), P("Side room", 93.5f, -18f, 11.5f),
-        PO("Guest chair", 92.85f, -18f, 11.5f, 1.0f, "Cave/SideRoom/RouletteTable/Chair"), PO("His chair", 95.05f, -18f, 11.3f, 1.0f, "Cave/SideRoom/RouletteTable"), PO("Deeper opening", 97.75f, -18f, 13.8f, 2.1f, cvL + "Deeper/DeeperClosed") },
-    interactions = new[] { IA("guest chair", "Cave/SideRoom/RouletteTable/Chair", 91.0f, -18f, 12.0f), IA("event 16 (deeper)", cvL + "Deeper/Wall_End", 101.0f, -18f, 14.0f) },
+        PO("Guest chair", 92.85f, -18f, 11.5f, 1.0f, "Cave/SideRoom/RouletteTable/GuestChair"), PO("His chair", 95.05f, -18f, 11.3f, 1.0f, "Cave/SideRoom/RouletteTable"), PO("Deeper opening", 97.75f, -18f, 13.8f, 2.1f, cvL + "Deeper/DeeperClosed") },
+    // prompt words from CaveLayout_UI (1.3 Talk, 1.5 Sit); event 16's inspect word is not fixed yet (UI 1.8 GAP): no PROMPT line until it is
+    interactions = new[] { IAp("guest chair", "Cave/SideRoom/RouletteTable/GuestChair", 92.0f, -18f, 12.0f, "Sit"), IAp("R7", "Cave/Resident_Cave_Spot/StandInBody", 86.9f, -18f, 6.2f, "Talk", 98f, 18f),
+        IA("event 16 (deeper)", cvL + "Deeper/Wall_End", 101.0f, -18f, 14.0f) },
     frames = new[] { FR("F1 HEADING 222: THE OPENING (FOUND AT 10 M)", V(56.31f, G, 46.60f), Hd(V(56.31f, 0f, 46.60f), 222f, -4.6f)),
         FR("F2 HEADING 300: THE BULBS", V(91.3f, G, 47.4f), V(82.15f, 6.5f, 52.96f)),
         FR("F3 HEADING 180: THE LEG 1 OPENING AND THE CABLE", V(52f, -6f + eyeH, 24f), Hd(V(52f, 0f, 24f), 180f, -5.6f)),

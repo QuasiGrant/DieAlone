@@ -58,6 +58,8 @@ UnityEngine.Transform Child(UnityEngine.Transform parent, string name, float x, 
     return best;
 }
 var L = kit.Fresh("Layout827", cave, cave.position, 0f);
+// the stand-in usables (Wren 2026-10-03, the standing prompt rule): ToggleColorInteractable with the CaveLayout_UI word on each interactable
+int uses = 0; void Use(UnityEngine.GameObject g, string prompt, UnityEngine.Renderer target) { if (g == null) return; var u = g.GetComponent<ToggleColorInteractable>() ?? g.AddComponent<ToggleColorInteractable>(); var so = new UnityEditor.SerializedObject(u); so.FindProperty("prompt").stringValue = prompt; so.FindProperty("target").objectReferenceValue = target != null ? target : g.GetComponentInChildren<UnityEngine.Renderer>(); so.ApplyModifiedPropertiesWithoutUndo(); uses++; }
 
 // ================= REMOVALS =================
 const float removeTol = 0.3f; int removed = 0; var missing = new System.Collections.Generic.List<string>();
@@ -156,11 +158,15 @@ const float lidH = 0.1f;
 }
 
 // ================= V5: the chamber =================
+const float r7BodyR = 0.3f, r7BodyH = 1.0f;
 {
     var ch = kit.Group("Chamber", L, V(80f, floorY, 12f), 0f);
     // the seat shelf (rock) where Boulder_1 was, R7's spot on it, the talk stand
     Rock("SeatShelf", ch, V(88.4f, floorY + 0.3f, 6.0f), V(1.2f, 0.6f, 2.0f));
+    var shelf = ch.Find("SeatShelf");
     var spot = cave.Find("Resident_Cave_Spot"); if (spot != null) { spot.position = V(88.4f, floorY + 0.6f, 6.0f); spot.rotation = UnityEngine.Quaternion.LookRotation(V(86.9f - 88.4f, 0f, 6.2f - 6.0f)); } else notes.Add("no Resident_Cave_Spot");
+    // R7's stand-in body (no figure yet): a capsule r7BodyR by r7BodyH seated on the shelf, `Talk` (CaveLayout_UI 1.3); the shelf takes its colour
+    if (spot != null) { PlaceKit.Remove(spot.Find("StandInBody")); var body = new UnityEngine.GameObject("StandInBody"); body.transform.SetParent(spot, false); body.transform.localPosition = V(0f, r7BodyH * 0.5f, 0f); var cap = body.AddComponent<UnityEngine.CapsuleCollider>(); cap.radius = r7BodyR; cap.height = r7BodyH; Use(body, "Talk", shelf != null ? shelf.GetComponent<UnityEngine.Renderer>() : null); }
     kit.Marker("TalkStand", ch, ch.InverseTransformPoint(V(86.9f, floorY, 6.2f)), 98f);
     // sleep: a mattress on a crate base, a heater
     var bed = kit.Group("Sleep", ch, V(85f, floorY, 4f), 0f);
@@ -184,6 +190,10 @@ const float bulbDoorH = 1.9f; int bulbs = 0;
     // his chair: the chair on the far side (local z > 0) to local yaw 180, world 270
     UnityEngine.Transform his = null; if (tbl != null) foreach (UnityEngine.Transform t in tbl) if (t.name.StartsWith("Chair") && t.localPosition.z > 0f) his = t;
     if (his != null) { var c0 = PlaceKit.MeshBounds(his.gameObject).center; his.localRotation = UnityEngine.Quaternion.Euler(0f, 180f, 0f); his.position += c0 - PlaceKit.MeshBounds(his.gameObject).center; } else notes.Add("no his chair under RouletteTable");
+    // the guest chair (the near side, local z under 0), named GuestChair so its path is not his; `Sit` (CaveLayout_UI 1.5), a box from its
+    // meshes when it has no collider
+    UnityEngine.Transform guest = null; if (tbl != null) foreach (UnityEngine.Transform t in tbl) if ((t.name.StartsWith("Chair") || t.name == "GuestChair") && t.localPosition.z <= 0f) guest = t;
+    if (guest != null) { guest.name = "GuestChair"; if (guest.GetComponentInChildren<UnityEngine.Collider>() == null) PlaceKit.FitExact(guest.gameObject); Use(guest.gameObject, "Sit", null); } else notes.Add("no guest chair under RouletteTable");
     // the crate at yaw 0, flush in the north-west corner, a box from its mesh
     var crate = Child(room, "C_Crate_Small_1", 96.6f, 14.6f, 1f) ?? Child(room, "C_Crate_Small_1", 89.75f, 15.25f, 1f);
     if (crate != null) { crate.rotation = UnityEngine.Quaternion.identity; var cb = PlaceKit.MeshBounds(crate.gameObject); crate.position += V(89.5f - cb.min.x, 0f, 15.5f - cb.max.z); PlaceKit.FitExact(crate.gameObject); } else notes.Add("no side-room crate");
@@ -288,4 +298,4 @@ UnityEngine.Physics.SyncTransforms();
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " | removed " + removed + (missing.Count > 0 ? " (not found, likely gone already: " + string.Join(", ", missing) + ")" : "") + " | rail posts " + posts + " | cable runs " + cableRuns + " | bulbs " + bulbs + " | narrow rocks " + narrowRocks
-    + " | rim hedge boxes " + hedgeBoxes + ", brush " + brush + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    + " | rim hedge boxes " + hedgeBoxes + ", brush " + brush + " | usables " + uses + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
