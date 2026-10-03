@@ -35,6 +35,7 @@ The roulette side room (Valley M10: x 90 to 97, z 8 to 15, floor -18, doorway (8
 Story beats and event sites
 22. L. His seat (13) in view from the end of the level passage: one beat opens on him there, mid-sentence, the day after he loses. Frame from (71, 12).
 23. L. The side room's east wall: room for one further passage east (Valley M10), for one event. Nothing shows by default; plain rock, ground over it stays 0.
+    Prompt (UI 1.8, draft, Grant): shut days none, the rock box is not a point. Event day none at the opening (walked through); `Examine` at the dead end, (101.0, 14.0) facing 0.
 24. L. The boards: on day 1 across the mouth; from day 2 stacked to one side of the mouth, still in sight, so the player knows someone took them down.
 25. L. The dead branch at 68 (item 15): in sight of the spur, reachable, so its bulbs can be gone the day an event puts them on the keeper's door. Draft, Grant.
 26. L. Chant spots: W1 (128, 70) and the rope rail (107, 58), from night 1. On days an event carries it further, the trail spots are the same; only sound changes (Hollis).
