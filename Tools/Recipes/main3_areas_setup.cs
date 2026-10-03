@@ -158,13 +158,18 @@ var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Ca
 // Campsites/Camp_2/Layout825 and StackTop/Layout825); the frames at the doc's eyes and headings; deck must-see hard: the lamp's cold
 // core, every mesh; the rest loose; must-hide none. The top is 24.00, the camp floor about 4.
 const float c2Top = 24f; const string c2L = "Campsites/Camp_2/Layout825/", c2T = "Campsites/Camp_2/StackTop/Layout825/";
+// a place over an object's own collider, read from the scene: its foot at the collider's bottom, its height the collider's (the phone stands
+// 1.2 m up the booth's back wall, so a foot on the ground puts the found lines under it); the ring box's centre for its frame
+Main3AreaSet.Place POb(string l, string obj) { var t = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), obj); var c = t != null ? t.GetComponentInChildren<UnityEngine.Collider>() : null; if (c == null) return new Main3AreaSet.Place { label = l, point = V(0f, G, 0f), objectPath = obj }; var b = c.bounds; return new Main3AreaSet.Place { label = l, point = V(b.center.x, b.min.y, b.center.z), height = b.size.y, objectPath = obj }; }
+var coreT = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), c2T + "Lamp/LampCore"); var coreAt = coreT != null ? coreT.position : V(291.6f, 25.3f, 107.4f);
+var ringT = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), c2T + "RingBox"); var ringAt = ringT != null ? ringT.position : V(289.3f, c2Top + 0.79f, 108.0f);
 UnityEngine.Vector3 Hd(UnityEngine.Vector3 eye, float heading, float lookY) { float r = heading * UnityEngine.Mathf.Deg2Rad; return V(eye.x + UnityEngine.Mathf.Sin(r) * 10f, lookY, eye.z + UnityEngine.Mathf.Cos(r) * 10f); }
 var c2F5 = V(298.3f, c2Top + eyeH, 107.25f);
 var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Camp 2", bounds = new[] { R(262f, 56f, 345f, 172f) }, warps = new[] { "Camp_2", "Camp_2_Top" },
     places = new[] { P("Camp 2", 294.3f, G, 95.0f), PO("Granite stack (south face)", 292f, G, 101.6f, 20f, "Campsites/Camp_2/GraniteStack"), P("Ramp foot", 298.9f, G, 107.8f),
         PO("Landing top", 298.3f, c2Top, 107.25f, 1.05f, "Campsites/Camp_2/StackPath/LandingTop"), PO("His chair on top", 294.94f, c2Top, 110.30f, 1.2f, c2T + "HisChair"),
         PO("Tent", 288.86f, c2Top, 108.0f, 1.5f, c2T + "Tent"), PO("Lamp", 291.6f, c2Top, 107.4f, 1.9f, c2T + "Lamp"), PO("Payphone", 300f, G, 99f, 3.2f, "Campsites/Camp_2/Dressing/Payphone"),
-        PO("Hook", 299.63f, G, 98.40f, 1.5f, "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset"), PO("Card table", 298.555f, G, 97.755f, 0.98f, c2L + "CardTable"),
+        POb("Hook", "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset"), PO("Card table", 298.555f, G, 97.755f, 0.98f, c2L + "CardTable"),
         PO("His seat at the table", 299.40f, G, 97.76f, 1.2f, c2L + "CardTable/HisChair"), PO("Your seat", 297.71f, G, 97.76f, 1.2f, c2L + "CardTable/YourChair"), PO("Third place", 298.55f, G, 96.91f, 1.2f, c2L + "CardTable/ThirdPlace"),
         PO("Barrel", 291.4f, G, 101.4f, 1.19f, c2L + "Barrel"), PO("Phone pole", 272.8f, G, 72f, 8f, "PointsOfInterest/POI_Phone_pole"), PO("Food lockers", 317.2f, G, 136.0f, 1.2f, "PointsOfInterest/POI_Food_lockers"),
         PO("Start blaze", 304.4f, G, 106.4f, 1.8f, "Campsites/Camp_2/Dressing/StartBlaze"), PO("PS1", 288.14f, c2Top + 1.05f, 109.6f, 0.3f, c2L + "PaperSpots/PS1"), PO("PS2", 288.8f, c2Top + 1.05f, 111.2f, 0.3f, c2L + "PaperSpots/PS2"),
@@ -179,7 +184,7 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Ca
         FR("F6 THE PHONE POLE FROM THE BOATHOUSE LEG", V(278.22f, G, 73.70f), V(272.8f, 7.0f, 72.0f)),
         FR("F7 THE FOOD LOCKERS FROM THE T LEG", V(310.15f, G, 129.43f), V(317.2f, 4.8f, 136.0f)),
         FR("THE PHONE FROM THE BOOTH MOUTH, FACING THE BACK WALL", V(299.65f, G, 99.05f), V(300.4f, 5.6f, 99.05f)),
-        FR("THE RING BOX FROM THE TENT DOOR, FACING 270", V(290.3f, c2Top + eyeH, 108.0f), V(289.8f, c2Top + 0.04f, 108.0f)),
+        FR("THE RING BOX FROM THE TENT DOOR, FACING 270", V(290.3f, c2Top + eyeH, 108.0f), ringAt),
         FR("CAMP_2 WARP LANDING, FACING 55", V(294.3f, G, 95.0f), Hd(V(294.3f, 0f, 95.0f), 55f, 5.6f)),
         FR("CAMP_2_TOP WARP LANDING, FACING 20", V(294.5f, c2Top + eyeH, 107.2f), Hd(V(294.5f, 0f, 107.2f), 20f, c2Top + eyeH)) },
     // walk lines where no trail runs, for the found rule (doc 4: the ramp foot up the stair to his chair; your seat to the booth door): the
@@ -194,7 +199,7 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Ca
     spacingExceptions = new[] { new Main3AreaSet.SpacingException { a = "hook", b = "R2 at the table", reason = "he answers the phone from his seat (Camp2Layout C2, Wren 2026-10-02)", maxEdge = 0.5f } },
     playChecks = new[] { "main3_8_25_camp2_check.cs", "main3_8_25_camp2_frames.cs?look=Day_one", "main3_8_25_camp2_frames.cs?look=Night" },
     inventory = new[] { "Lanterns and lamps" }, deckListWritten = true,
-    deckSee = new[] { DH("lamp core", 291.6f, 25.3f, 107.4f, c2T + "Lamp"), DLO("top rail, west faces", 287.82f, 24.8f, 108.0f, c2T + "TopRail"), DLO("his chair on top", 294.94f, 24.8f, 110.30f, c2T + "HisChair"),
+    deckSee = new[] { DH("lamp core", coreAt.x, coreAt.y, coreAt.z, c2T + "Lamp"), DLO("top rail, west faces", 287.82f, 24.8f, 108.0f, c2T + "TopRail"), DLO("his chair on top", 294.94f, 24.8f, 110.30f, c2T + "HisChair"),
         DLO("tent", 288.86f, 25.0f, 108.0f, c2T + "Tent"), DL("PS1", 288.14f, 24.1f, 109.6f), DL("PS2", 288.8f, 24.1f, 111.2f), DL("PS3", 284.95f, 4.6f, 107.40f), DL("booth hood light", 299.0f, 6.6f, 99.0f) },
     deckHide = none };
 // camp 3 (8.26; Camp3Layout.md draft 2 section 6, Sable 2026-10-02): places on their objects, read from the scene where main3_8_26_camp3.cs

@@ -80,7 +80,7 @@ var named = new (string n, float x, float z, string why)[] {
     ("RedFir8", 96.52f, 155.38f, "C3"), ("RedFir7", 113.01f, 94.22f, "C5"), ("RedFir5", 101.99f, 107.99f, "C5"), ("RedPine4", 105.75f, 103.63f, "C5"), ("RedFir6", 106.67f, 101.34f, "C5"),
     ("RedFir8", 121.07f, 84.02f, "C5"), ("RedPine4", 123.53f, 83.08f, "C5"), ("RedPine2", 121.03f, 86.24f, "C5"), ("RedPine3", 107.85f, 98.90f, "C5"), ("RedFir5", 101.47f, 110.04f, "C5"),
     ("RedFir8", 88.32f, 124.22f, "C5"), ("RedFir8", 98.20f, 115.78f, "C5"), ("RedPine5", 103.25f, 194.99f, "C5"), ("RedwoodHollowLog_0", 129.05f, 75.92f, "C5") };
-var keep = new[] { ("RedwoodHollowLog_2", 114.97f, 93.11f) };   // stays as a log across the water, 9 m from the tread (C5)
+var keep = new[] { ("RedwoodHollowLog_2", 114.97f, 93.11f), ("CITW_Tree_Stump", 56.25f, 151.14f) };   // the log stays across the water, 9 m from the tread (C5); the stump 2.09 m from the lamppost spot stays (C7)
 string[] keepOutKinds = { "RedFir", "RedPine", "Bush", "CS_Bush", "ThinFern", "Fern", "DeadLeaves", "Branchs", "RedwoodHollowLog", "CITW_Tree_Stump", "Grass", "Nettle", "Mushroom" };
 bool Kind(string n) { foreach (var k in keepOutKinds) if (n.StartsWith(k)) return true; return false; }
 bool Kept(UnityEngine.Transform t) { foreach (var (n, x, z) in keep) if (t.name.StartsWith(n) && UnityEngine.Vector2.Distance(P(t.position.x, t.position.z), P(x, z)) < removeTol) return true; return false; }
@@ -126,19 +126,20 @@ UnityEngine.Physics.SyncTransforms();
     foreach (var (lx, lz) in new[] { (tblX0 + legW, tblZ0 + legW), (tblX1 - legW, tblZ0 + legW), (tblX0 + legW, tblZ1 - legW), (tblX1 - legW, tblZ1 - legW) }) Slab("Leg", table, V(lx, tg + (tblTop - tblT) * 0.5f, lz), V(legW, tblTop - tblT, legW), planks);
     PlaceKit.FitExact(table.gameObject);
     var form = d.Find("JobForm"); if (form != null) { form.position = V(tx, tg + tblTop, tz); form.rotation = UnityEngine.Quaternion.Euler(0f, 10f, 0f); } else notes.Add("no Dressing/JobForm");
-    // the tent at scale 1.0: the yaw that lays its long side east-west with its door (the hidden _Open flaps) north
+    // the tent at scale 1.0: the yaw that lays its long side east-west (the doc's box, x 72.97 to 77.04, z 139.64 to 141.77) with its door (the
+    // hidden _Open flaps, on a short end of the pack mesh, so "door north" cannot also hold) toward the fire
     var tent = Child(d, "CS_Tent_Old_2", 80.5f, 153f, 3f) ?? Child(d, "CS_Tent_Old_2", 75.0f, 140.7f, 3f);
     if (tent == null) notes.Add("no tent");
     else
     {
-        tent.localScale = UnityEngine.Vector3.one; float pick = float.NaN;
+        tent.localScale = UnityEngine.Vector3.one; float pick = float.NaN, bestDot = float.MinValue; var toFire = new UnityEngine.Vector2(76.0f - 75.0f, 150.5f - 140.7f).normalized;
         foreach (var yaw in new[] { 0f, 90f, 180f, 270f })
         {
             tent.rotation = UnityEngine.Quaternion.Euler(0f, yaw, 0f); var b = PlaceKit.MeshBounds(tent.gameObject); if (b.size.x < b.size.z) continue;
             var door = UnityEngine.Vector3.zero; int n = 0; foreach (var mf in tent.GetComponentsInChildren<UnityEngine.MeshFilter>(true)) if (mf.name.EndsWith("_Open") && mf.sharedMesh != null) { door += mf.transform.TransformPoint(mf.sharedMesh.bounds.center); n++; }
-            if (n > 0 && door.z / n > b.center.z) { pick = yaw; break; }
+            if (n == 0) continue; var dd = new UnityEngine.Vector2(door.x / n - b.center.x, door.z / n - b.center.z).normalized; float dot = UnityEngine.Vector2.Dot(dd, toFire); if (dot > bestDot) { bestDot = dot; pick = yaw; }
         }
-        if (float.IsNaN(pick)) { notes.Add("tent: no yaw with the long side east-west and the door north"); pick = 0f; }
+        if (float.IsNaN(pick)) { notes.Add("tent: no yaw lays its long side east-west"); pick = 90f; }
         PlaceMeshCentre(tent, 75.0f, 140.7f, pick); PlaceKit.FitExact(tent.gameObject, "Rope");
         var tb = tent.GetComponent<UnityEngine.BoxCollider>().bounds; tentNote = ("yaw " + F(pick) + ", box x " + F(tb.min.x) + " to " + F(tb.max.x) + ", z " + F(tb.min.z) + " to " + F(tb.max.z) + ", top " + F(tb.max.y - tb.min.y));
     }
@@ -160,7 +161,7 @@ UnityEngine.Physics.SyncTransforms();
 }
 
 // ================= C3: the Snag line and the hoist =================
-const float snagRopeUp = 3.4f, stakeUp = 3.6f, stakeW = 0.12f, pieceSide = 0.5f, pieceDrop = 0.2f, ropeT = 0.03f, hoistUp = 12f, cleatH = 1.2f, cleatW = 0.12f, barkR = 2.5f;
+const float snagRopeUp = 3.4f, stakeUp = 3.6f, stakeW = 0.12f, pieceSide = 0.5f, pieceDrop = 0.2f, ropeT = 0.03f, hoistUp = 12f, cleatH = 1.2f, cleatW = 0.12f, cleatOff = 0.3f, barkR = 2.5f;
 var pegs = new[] { P(92.8f, 149.8f), P(89.6f, 153.1f), P(86.4f, 156.4f), P(83.2f, 159.7f) }; var stakeAt = P(80f, 163f); var cleatAt = P(98.86f, 144.85f);
 int pieceN = 0;
 {
@@ -187,9 +188,10 @@ int pieceN = 0;
         var tower = kit.Root("Camp") != null ? kit.Root("Camp").transform.Find("Tower") : null; var toTower = tower != null ? (P(tower.position.x, tower.position.z) - sc).normalized : P(1f, 0.3f).normalized;
         var hoist = kit.Group("Hoist", L, L.position, 0f); var pa = sc + toTower * barkR; var pulley = V(pa.x, G(sc.x, sc.y) + hoistUp, pa.y);
         Slab("Pulley", hoist, pulley, V(0.2f, 0.2f, 0.1f), planks);
+        cleatAt = sc + (cleatAt - sc).normalized * (trunkR + cleatOff + cleatW * 0.5f);   // the doc's bearing, cleatOff off the trunk collider as built
         float cg = G(cleatAt.x, cleatAt.y); Slab("Cleat", hoist, V(cleatAt.x, cg + cleatH * 0.5f, cleatAt.y), V(cleatW, cleatH, cleatW), planks, true);
         Rope(hoist, pulley, V(cleatAt.x, cg + cleatH, cleatAt.y), "Rope");
-        float cleatOff = UnityEngine.Vector2.Distance(cleatAt, sc) - trunkR - cleatW * 0.5f; if (cleatOff < 0.25f) notes.Add("cleat " + F(cleatOff) + " m off the trunk collider (doc 0.3)");
+
     }
 }
 
@@ -229,7 +231,7 @@ var creek8 = new[] { P(104, 215.2f), P(104.8f, 203.2f), P(100, 175.2f), P(84, 15
 var creekBed8 = new[] { 9.5f, 8f, 3.5f, -4.1f, -4.1f, -4.3f, -4.8f, -5.3f, -5.8f };
 const float bedUnder8 = 0.1f, bankCut = 0.4f, bankProbe = 2.5f, waterHalf = 0.6f, bankW = 1.0f, bankSlope = 0.6f, waterDepth = 0.25f, sampleStep = 0.25f, stoneStep = 4f, cascadeDrop = 0.3f;
 const float poolX0 = 82.1f, poolX1 = 85.1f, poolZ0 = 148.45f, poolZ1 = 150.95f, poolSurf = -4.1f, poolBed = -4.4f, poolBank = 0.5f;
-const float shiftNE = 1.5f, shiftZHi = 123f, shiftZLo = 110f, shiftTaper = 2f, treadHalf = 1.2f, edgeToTread = 1.0f, crossR = 3f, valleyHalf = 4f, heightTol = 0.005f;
+const float treadKeep = 0.3f; const float shiftNE = 1.5f, shiftZHi = 123f, shiftZLo = 110f, shiftTaper = 2f, treadHalf = 1.2f, edgeToTread = 1.0f, crossR = 3f, valleyHalf = 4f, heightTol = 0.005f;
 float SegDist(UnityEngine.Vector2 q, UnityEngine.Vector2 a, UnityEngine.Vector2 b, out float t) { var ab = b - a; t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(q - a, ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude)); return UnityEngine.Vector2.Distance(q, a + ab * t); }
 float Bed8(UnityEngine.Vector2 q, out float off) { float best = float.MaxValue, bed = 0f; for (int i = 0; i < creek8.Length - 1; i++) { float dd = SegDist(q, creek8[i], creek8[i + 1], out float t); if (dd < best) { best = dd; bed = UnityEngine.Mathf.Lerp(creekBed8[i], creekBed8[i + 1], t); } } off = best; return bed; }
 var plank = poiRoot.Find("POI_Plank_bridge"); var plankAt = plank != null ? P(plank.position.x, plank.position.z) : P(105.32f, 205.23f);
@@ -283,7 +285,7 @@ int carved = 0, stonesN = 0, rocksN = 0;
         {
             var q = P(org.x + (i0 + i) * cx, org.z + (j0 + j) * cz); float best = float.MaxValue, bed = 0f;
             for (int k = 0; k < run.Count; k++) { float dd = (run[k].p - q).sqrMagnitude; if (dd < best) { best = dd; bed = run[k].bed; } }
-            float dist = UnityEngine.Mathf.Sqrt(best); if (dist > reach) continue;
+            float dist = UnityEngine.Mathf.Sqrt(best); if (dist > reach) continue; if (TrailDist(q, out _) < treadHalf + treadKeep) continue;   // a tread is never cut: at the plank bridge and the stepping stones the trail stays over the water (the first run cut 1.3 m at J)
             float want = bed + UnityEngine.Mathf.Max(0f, dist - waterHalf) * bankSlope, now = hs[j, i] * data.size.y + org.y;
             if (now <= want + heightTol) continue; hs[j, i] = (want - org.y) / data.size.y; carved++;
         }

@@ -45,8 +45,29 @@ public static class KeepOuts
         new Zone("K6 booth", new Vector2(299.2f, 98.2f), 3f),
     };
 
+    /// Camp3Layout.md draft 2 (PLAN 8.26): K1 the creek, 1.5 m each side of the water (the water 0.6 m each side of its line; the lower run's
+    /// shifted stretch, z 123 to 110, gets 0.5 m more for the tread rule's push), K2 the Snag line's cleared fir, K3 the lamppost spot, K4 the
+    /// W1 sign, K5 the east rim spot plus 1 m.
+    public static readonly Zone[] Camp3 =
+    {
+        new Zone("K1 creek, plank bridge", new Vector2(105.32f, 205.23f), new Vector2(104.8f, 203.2f), 2.1f),
+        new Zone("K1 creek, upper", new Vector2(104.8f, 203.2f), new Vector2(100.0f, 175.2f), 2.1f),
+        new Zone("K1 creek, ravine", new Vector2(100.0f, 175.2f), new Vector2(84.3f, 150.95f), 2.1f),
+        new Zone("K1 pool", new Vector2(82.1f, 149.7f), new Vector2(85.1f, 149.7f), 2.75f),
+        new Zone("K1 creek, spring", new Vector2(85.8f, 126.0f), new Vector2(89.57f, 123.99f), 2.6f),
+        new Zone("K1 creek, shifted", new Vector2(89.57f, 123.99f), new Vector2(101.13f, 110.99f), 2.6f),
+        new Zone("K1 creek, lower", new Vector2(101.13f, 110.99f), new Vector2(128.0f, 78.0f), 2.6f),
+        new Zone("K1 creek, stones", new Vector2(128.0f, 78.0f), new Vector2(131.71f, 72.82f), 2.1f),
+        new Zone("K1 creek, mouth", new Vector2(131.71f, 72.82f), new Vector2(136.5f, 66.0f), 2.1f),
+        new Zone("K2 Snag line", new Vector2(96.52f, 155.38f), 2f),
+        new Zone("K3 lamppost spot", new Vector2(58f, 150f), 3f),
+        new Zone("K4 W1 sign", new Vector2(127.0f, 72.8f), 2f),
+        new Zone("K5 east rim spot", new Vector2(93f, 138.5f), new Vector2(95f, 138.5f), 2.5f),   // x 92 to 96, z 137 to 140, plus 1 m
+    };
+
     public static bool Contains(Vector2 p) => Which(p) != null;
     public static bool Contains(Vector3 p) => Contains(new Vector2(p.x, p.z));
-    public static string Which(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return z.label; return WhichCamp2(p); }
+    public static string Which(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return z.label; var c2 = WhichCamp2(p); return c2 ?? WhichCamp3(p); }
     public static string WhichCamp2(Vector2 p) { foreach (var z in Camp2) if (z.Contains(p)) return z.label; return null; }
+    public static string WhichCamp3(Vector2 p) { foreach (var z in Camp3) if (z.Contains(p)) return z.label; return null; }
 }

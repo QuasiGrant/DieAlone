@@ -18,7 +18,7 @@ var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Set
 // steps stalled the walker (hand walk 2026-10-01)
 // BandScree: the scree on the rock bands (8.1), which are stops; the Camp 2 ladder against the stack (its two rail hulls made a pocket at
 // its foot, BOULDER POCKETS 2026-10-01); KnobRock: the bare knob on the crest, which no player reaches (a hull there only makes pockets the BOULDER POCKETS drops find)
-string[] laterRoots = { }; string[] rimRoots = { "Rock/ClimbRing/RimBoulders", "Ground815/Stops/", "Rock/KnobRock", "Rock/BandScree", "Campsites/Camp_2/Ladder" }; string[] lowWalkables = { "PointsOfInterest/POI_Footbridge", "PointsOfInterest/POI_Stepping_stones" };
+string[] laterRoots = { }; string[] rimRoots = { "Rock/ClimbRing/RimBoulders", "Ground815/Stops/", "Rock/KnobRock", "Rock/BandScree", "Campsites/Camp_2/Ladder" }; string[] lowWalkables = { "PointsOfInterest/POI_Stepping_stones" };   // 8.26 (Camp3Layout C8): the footbridge is gone (main3_8_26_camp3.cs), so it leaves this list (a missing root stops the loop below)
 const int maxPasses = 3;
 int added = 0, exactN = 0; var groups = new System.Collections.Generic.SortedDictionary<string, int>();
 // no collider may close a trail tread (8.20 check, 2026-10-01: hulls of the boulders by the chute gap and in the cleft did): a hull that

@@ -1146,8 +1146,8 @@ MonoBehaviour:
       height: 3.2
       objectPath: Campsites/Camp_2/Dressing/Payphone
     - label: Hook
-      point: {x: 299.63, y: -999, z: 98.4}
-      height: 1.5
+      point: {x: 300.3709, y: 5.227619, z: 99}
+      height: 0.8074856
       objectPath: Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset
     - label: Card table
       point: {x: 298.555, y: -999, z: 97.755}
@@ -1199,7 +1199,7 @@ MonoBehaviour:
     hardSeesTower: 0
     deckSee:
     - label: lamp core
-      point: {x: 291.6, y: 25.3, z: 107.4}
+      point: {x: 291.6, y: 26.131414, z: 107.4}
       treeCoverPath: 
       hard: 1
       loose: 0
@@ -1306,7 +1306,7 @@ MonoBehaviour:
       look: {x: 300.4, y: 5.6, z: 99.05}
     - label: THE RING BOX FROM THE TENT DOOR, FACING 270
       eye: {x: 290.3, y: 25.6, z: 108}
-      look: {x: 289.8, y: 24.04, z: 108}
+      look: {x: 289.33, y: 24.685, z: 108}
     - label: CAMP_2 WARP LANDING, FACING 55
       eye: {x: 294.3, y: -999, z: 95}
       look: {x: 302.49152, y: 5.6, z: 100.73576}
@@ -1963,8 +1963,8 @@ MonoBehaviour:
       height: 3.2
       objectPath: Campsites/Camp_2/Dressing/Payphone
     - label: Hook
-      point: {x: 299.63, y: -999, z: 98.4}
-      height: 1.5
+      point: {x: 300.3709, y: 5.227619, z: 99}
+      height: 0.8074856
       objectPath: Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset
     - label: Card table
       point: {x: 298.555, y: -999, z: 97.755}

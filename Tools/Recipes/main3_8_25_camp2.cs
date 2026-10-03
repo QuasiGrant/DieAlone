@@ -91,17 +91,33 @@ void RailRun(UnityEngine.Transform parent, UnityEngine.Vector3 a, UnityEngine.Ve
     var chair = kit.On(PlaceKit.CS + "CS_Chair_2", LT, LT.InverseTransformPoint(V(294.94f, topY, 110.30f)), 66f, 1f, false, null, true); if (chair != null) { chair.name = "HisChair"; PlaceKit.FitExact(chair); Use(chair, "Talk", null); }
     kit.On(PlaceKit.CS + "Drinks/CS_Drink_Thermos_1", LT, LT.InverseTransformPoint(V(294.2f, topY, 110.9f)), 0f, 1f, false, null, true);
     kit.On(PlaceKit.CS + "Tableware/CS_Tableware_Mug_Metal_1", LT, LT.InverseTransformPoint(V(294.0f, topY, 110.6f)), 30f, 1f, false, null, true);
-    // the tent, door east (its door is on its own -z: yaw 270 faces it east), box from its fabric; the ring box in its doorway, outside the
-    // fabric's box, a box of its own, reached from the door (290.3, 108.0) facing 270 (gate round 2, Wren 4)
-    var tent = kit.On(PlaceKit.CS + "CS_Tent_Modern_2", LT, LT.InverseTransformPoint(V(288.86f, topY, 108.0f)), 270f, 1f, false, null, true); if (tent != null) { tent.name = "Tent"; PlaceKit.FitExact(tent, "Rope"); }
-    var ringMat = kit.Tinted("Places_RingBox", "Assets/Materials/Concrete034_1.0x1.0.mat", Hex("#5A1E22"), UnityEngine.Vector2.one);
-    const float ringOut = 0.06f; float ringX = tent != null ? tent.GetComponent<UnityEngine.BoxCollider>().bounds.max.x + ringOut : 289.80f;   // just out of the fabric's box, in the doorway
-    var ringBox = kit.Slab("RingBox", LT, LT.InverseTransformPoint(V(ringX, topY + 0.035f, 108.0f)), V(0.07f, 0.07f, 0.07f), ringMat, default, true); Use(ringBox, "Examine", ringBox.GetComponent<UnityEngine.Renderer>());
+    // the tent: its door (the flap and net meshes) faces east to the lamp and the landing at yaw 90 (at 270 it faced the west rail; gate
+    // round 2), the closed flap and net hidden so the door reads open; its box from its fabric, cut back to doorCut m short of the door, and
+    // a doorway box on Ignore Raycast over the cut, the tent's full height (the body cannot enter or climb onto anything inside; the
+    // interactor's mask skips that layer, so a look passes it; a sill the body could stand on made a step to the roof, gate round 2 rerun);
+    // on a crate crateH high just inside the door, the ring box: a look of 45 degrees or less from the door (290.3, 108.0) facing 270 reaches it
+    const float doorCut = 0.9f, crateH = 0.65f, crateW = 0.4f, crateIn = 0.65f, ringSide = 0.07f;
+    var tent = kit.On(PlaceKit.CS + "CS_Tent_Modern_2", LT, LT.InverseTransformPoint(V(288.86f, topY, 108.0f)), 90f, 1f, false, null, true);
+    if (tent != null)
+    {
+        tent.name = "Tent"; foreach (var mf in tent.GetComponentsInChildren<UnityEngine.MeshFilter>(true)) if (mf.name.EndsWith("_Flap") || mf.name.EndsWith("_Net")) mf.gameObject.SetActive(false);
+        var bc = PlaceKit.FitExact(tent, "Rope"); var wb = bc.bounds; float doorX = wb.max.x, cutX = doorX - doorCut;
+        var lo = tent.transform.InverseTransformPoint(V(wb.min.x, wb.min.y, wb.min.z)); var hi = tent.transform.InverseTransformPoint(V(cutX, wb.max.y, wb.max.z));
+        bc.center = (lo + hi) * 0.5f; bc.size = V(UnityEngine.Mathf.Abs(hi.x - lo.x), UnityEngine.Mathf.Abs(hi.y - lo.y), UnityEngine.Mathf.Abs(hi.z - lo.z));
+        var doorway = kit.Blocker("Doorway", LT, LT.InverseTransformPoint(V((cutX + doorX) * 0.5f, wb.center.y, wb.center.z)), V(doorX - cutX, wb.size.y, wb.size.z)); doorway.layer = 2;
+        float crateX = doorX - crateIn; var crate = kit.Fill(PlaceKit.CI + "Props/CITW_Crate", LT, LT.InverseTransformPoint(V(crateX, topY, 108.0f)), V(crateW, crateH, crateW));
+        var ringMat = kit.Tinted("Places_RingBox", "Assets/Materials/Concrete034_1.0x1.0.mat", Hex("#5A1E22"), UnityEngine.Vector2.one);
+        var ringBox = kit.Slab("RingBox", LT, LT.InverseTransformPoint(V(crateX, topY + crateH + ringSide * 0.5f, 108.0f)), V(ringSide, ringSide, ringSide), ringMat, default, true); Use(ringBox, "Examine", ringBox.GetComponent<UnityEngine.Renderer>());
+    }
     // the lamp on a 1.2 m pole 2.0 m east of the door, its cold core the deck's hard target
-    const float poleH = 1.2f; var lamp = kit.Group("Lamp", LT, V(291.6f, topY, 107.4f), 0f);
+    // the core's glow lampGlow (gate round 2, Wren 3: at farMarkerIntensity it was a 1 to 2 px grey speck from the deck at night; the light's range unchanged)
+    const float poleH = 1.2f, lampGlow = 12f; var lamp = kit.Group("Lamp", LT, V(291.6f, topY, 107.4f), 0f);
     kit.Fill(PlaceKit.CI + "Building/CITW_Wood_Pillar", lamp, V(0f, 0f, 0f), V(0.09f, poleH, 0.09f)); kit.Blocker("PoleCollider", lamp, V(0f, poleH * 0.5f, 0f), V(0.09f, poleH, 0.09f));
-    kit.On(PlaceKit.CS + "CS_Lantern_Modern", lamp, V(0f, poleH, 0f), 0f, 1.4f, false, null, true);
-    var core = kit.Slab("LampCore", lamp, V(0f, poleH + 0.1f, 0f), V(0.12f, 0.18f, 0.12f), kit.Glow("Places_ColdLamp", Hex("#DDE6F0"), kit.Look.farMarkerIntensity)); core.GetComponent<UnityEngine.Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+    var lantern = kit.On(PlaceKit.CS + "CS_Lantern_Modern", lamp, V(0f, poleH, 0f), 0f, 1.4f, false, null, true);
+    // the core sits on the lantern's top, in the open (inside it the housing hid it from the deck), coreW x coreH: at 0.12 x 0.18 and at 0.3 x
+    // 0.4 the frame's downsampling left it under 40 grey over the night frame's mean from the deck; 0.35 x 0.45 gives 74 (gate round 2)
+    const float coreH = 0.45f, coreW = 0.35f; float coreY = lantern != null ? lamp.InverseTransformPoint(PlaceKit.MeshBounds(lantern).max).y + coreH * 0.5f : poleH + 0.1f;
+    var core = kit.Slab("LampCore", lamp, V(0f, coreY, 0f), V(coreW, coreH, coreW), kit.Glow("Places_Camp2LampCore", Hex("#DDE6F0"), lampGlow)); core.GetComponent<UnityEngine.Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
     kit.Practical("LampLight", lamp, V(0f, poleH + 0.1f, 0f), 6f, PracticalLight.Kind.Lantern, PracticalLight.ByDay.Off);   // lit at night (gate round 2, Wren 6)
     // the letters under stones, by the tent's south side
     if (topD != null) { int k = 0; foreach (UnityEngine.Transform t in topD) if (t.name.StartsWith("Paper") || t.name.StartsWith("CS_Stone_")) { int slot = k / 2; t.position = V(288.4f + (slot % 3) * 0.35f, t.position.y, 106.75f - (slot / 3) * 0.3f + (t.name.StartsWith("CS_Stone_") ? 0.01f : 0f)); k++; } }
@@ -147,8 +163,8 @@ const float tblX0 = 298.10f, tblX1 = 299.01f, tblZ0 = 97.30f, tblZ1 = 98.21f;
             if (proud < 0.01f || proud > phoneDepth || up < phoneLow || up > phoneHigh || w.z < all.min.z + 0.12f + sideIn || w.z > all.max.z - 0.12f - sideIn) continue;
             xs.Add(w.x); ys.Add(w.y); zs.Add(w.z); any = true;
         }
-        // its body: the phoneTrim to 1 - phoneTrim spread of those vertices on each axis (the extremes are the wall's shelf edges)
-        const float phoneTrim = 0.05f; float Q(System.Collections.Generic.List<float> l, float q) { l.Sort(); return l[UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(q * (l.Count - 1)), 0, l.Count - 1)]; }
+        // its body: the phoneTrim to 1 - phoneTrim spread of those vertices on each axis
+        const float phoneTrim = 0f; float Q(System.Collections.Generic.List<float> l, float q) { l.Sort(); return l[UnityEngine.Mathf.Clamp(UnityEngine.Mathf.RoundToInt(q * (l.Count - 1)), 0, l.Count - 1)]; }   // phoneTrim 0, the whole spread: the mesh phone's two cord rings stand at its edges (gate round 2, Wren 4: cover them too)
         if (any) { var lo = V(Q(xs, phoneTrim), Q(ys, phoneTrim), Q(zs, phoneTrim)); var hi = V(Q(xs, 1f - phoneTrim), Q(ys, 1f - phoneTrim), Q(zs, 1f - phoneTrim)); ph = new UnityEngine.Bounds((lo + hi) * 0.5f, hi - lo); }
         if (!any) notes.Add("no phone found on the booth's back wall");
         else

@@ -41,7 +41,7 @@ try
     // ---- PROMPTS (gate round 2, Wren 3 and 4): from each stand, eye 1.6, the interactor's own test (its mask, triggers ignored,
     // interactReach) aimed at the usable's collider centre meets an Interactable whose prompt is the doc's word
     {
-        var phone = cd2 != null ? cd2.Find("Payphone/Telephone_Booth/Handset") : null; var ring = LT.Find("RingBox"); var barrel = L.Find("Barrel"); var tableChair = L.Find("CardTable/HisChair");
+        const float ringLook = 45f; var phone = cd2 != null ? cd2.Find("Payphone/Telephone_Booth/Handset") : null; var ring = LT.Find("RingBox"); var barrel = L.Find("Barrel"); var tableChair = L.Find("CardTable/HisChair");
         foreach (var (label, t, x, z, floorY, word) in new[] { ("hook", phone, 299.65f, 99.05f, float.NaN, "Lift the receiver"), ("barrel", barrel, 292.3f, 100.4f, float.NaN, "Take water"),
             ("R2 at the table", tableChair, 298.5f, 98.7f, float.NaN, "Talk"), ("R2 on top", chair, 293.8f, 109.5f, topY, "Talk"), ("ring box", ring, 290.3f, 108.0f, topY, "Examine") })
         {
@@ -49,7 +49,8 @@ try
             var eye = V(x, (float.IsNaN(floorY) ? H(x, z) : floorY) + eyeH, z); var col = t.GetComponentInChildren<UnityEngine.Collider>(); var aim = col != null ? col.bounds.center : t.position;
             string got = "nothing within " + F1(reach) + " m"; bool ok = false;
             if (UnityEngine.Physics.Raycast(eye, (aim - eye).normalized, out var hit, reach, mask, UnityEngine.QueryTriggerInteraction.Ignore)) { var it = hit.collider.GetComponentInParent<Interactable>(); got = WalkIns.PathOf(hit.collider.transform) + " at " + F(hit.distance) + " m, prompt \"" + (it != null ? it.Prompt : "none") + "\""; ok = it != null && it.Prompt == word && hit.collider.transform.IsChildOf(t); }
-            Line(ok, "PROMPT " + label + " (\"" + word + "\"): from (" + F1(x) + ", " + F1(z) + ") the interactor's ray meets " + got);
+            var dv = aim - eye; float down = UnityEngine.Mathf.Atan2(-dv.y, new UnityEngine.Vector2(dv.x, dv.z).magnitude) * UnityEngine.Mathf.Rad2Deg; if (label == "ring box" && down > ringLook) ok = false;   // ring box: a look of ringLook or less (gate round 2)
+            Line(ok, "PROMPT " + label + " (\"" + word + "\"): from (" + F1(x) + ", " + F1(z) + "), " + F1(down) + " degrees down, the interactor's ray meets " + got);
         }
         // HOOK LOOKS (Marlow 825 gate 4: 0 to 6 of 1,224 looks met the old receiver): from the booth stand, looks within hookCone degrees of
         // the phone's centre (every hookStep in yaw and pitch): the share whose first hit within reach is the phone

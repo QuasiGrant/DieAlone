@@ -1,6 +1,8 @@
+diff --git a/Assets/Editor/KeepOuts.cs b/Assets/Editor/KeepOuts.cs
+index fb7ecec..4d7b4b9 100644
 --- a/Assets/Editor/KeepOuts.cs
 +++ b/Assets/Editor/KeepOuts.cs
-@@ -45,8 +45,29 @@
+@@ -45,8 +45,29 @@ public static class KeepOuts
          new Zone("K6 booth", new Vector2(299.2f, 98.2f), 3f),
      };
  
@@ -21,7 +23,7 @@
 +        new Zone("K2 Snag line", new Vector2(96.52f, 155.38f), 2f),
 +        new Zone("K3 lamppost spot", new Vector2(58f, 150f), 3f),
 +        new Zone("K4 W1 sign", new Vector2(127.0f, 72.8f), 2f),
-+        new Zone("K5 east rim spot", new Vector2(92f, 138.5f), new Vector2(96f, 138.5f), 2.5f),
++        new Zone("K5 east rim spot", new Vector2(93f, 138.5f), new Vector2(95f, 138.5f), 2.5f),   // x 92 to 96, z 137 to 140, plus 1 m
 +    };
 +
      public static bool Contains(Vector2 p) => Which(p) != null;
