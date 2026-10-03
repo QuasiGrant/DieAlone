@@ -190,11 +190,11 @@ try
     var eyes = new System.Collections.Generic.List<UnityEngine.Vector3>();
     for (float gx = -set.deckHalf; gx <= set.deckHalf + 0.01f; gx += set.deckGrid) for (float gz = -set.deckHalf; gz <= set.deckHalf + 0.01f; gz += set.deckGrid)
         foreach (var hgt in new[] { set.deckEye, set.deckJump }) eyes.Add(new UnityEngine.Vector3(tower.position.x + gx, deckTop + hgt, tower.position.z + gz));
-    bool Clear(UnityEngine.Vector3 a, UnityEngine.Vector3 b, UnityEngine.Transform ignore)
+    bool Clear(UnityEngine.Vector3 a, UnityEngine.Vector3 b, UnityEngine.Transform ignore, UnityEngine.Transform own = null)   // own: the target's own object, never its own blocker (8.24 gate: the tent's own mesh hid it)
     {
         var d = b - a; float len = d.magnitude - set.rayEndSkip; if (len <= 0f) return true;
         foreach (var h in UnityEngine.Physics.RaycastAll(a, d.normalized, len, UnityEngine.Physics.DefaultRaycastLayers, UnityEngine.QueryTriggerInteraction.Ignore))
-            if ((ignore == null || !h.collider.transform.IsChildOf(ignore)) && !h.collider.transform.IsChildOf(pc.transform)) return false;
+            if ((ignore == null || !h.collider.transform.IsChildOf(ignore)) && (own == null || !h.collider.transform.IsChildOf(own)) && !h.collider.transform.IsChildOf(pc.transform)) return false;
         return true;
     }
     string Blocker(UnityEngine.Vector3 a, UnityEngine.Vector3 b, UnityEngine.Transform ignore)   // the nearest blocking collider, for the report
@@ -335,7 +335,7 @@ try
         {
             var p = Pt(t.point); var own = string.IsNullOrEmpty(t.objectPath) ? null : Main3AreaSet.At(scene, t.objectPath);
             if (t.hard && !string.IsNullOrEmpty(t.objectPath) && own == null) { deckFails++; deckLines.Append("  HIDDEN see " + t.label + ": no object " + t.objectPath + "\n"); continue; }
-            int clear = 0; foreach (var e in eyes) if (t.hard ? ClearHard(e, p, own) : Clear(e, p, tower)) clear++;
+            int clear = 0; foreach (var e in eyes) if (t.hard ? ClearHard(e, p, own) : Clear(e, p, tower, own)) clear++;
             float share = clear / (float)eyes.Count; bool pass = t.anyEye ? clear > 0 : share >= set.mustSeeShare; if (!pass && !t.loose) deckFails++;
             var centreEye = new UnityEngine.Vector3(tower.position.x, deckTop + set.deckEye, tower.position.z);
             deckLines.Append("  " + (pass ? "ok   " : t.loose ? "low  " : "HIDDEN ") + "see " + (t.loose ? "(loose) " : t.hard ? "(hard, every mesh) " : "") + t.label + " " + P3(p) + ": " + clear + " of " + eyes.Count + " rays clear (" + (share * 100f).ToString("F0", inv) + " percent, " + (t.anyEye ? "passes from any deck eye, Wren 2026-10-02" : "bar " + (set.mustSeeShare * 100f).ToString("F0", inv)) + ")" + (pass ? "" : "; from the deck centre the first block is " + (t.hard ? HardBlocker(centreEye, p, own) : Blocker(centreEye, p, tower))) + "\n");

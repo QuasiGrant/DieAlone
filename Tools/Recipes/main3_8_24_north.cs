@@ -14,7 +14,7 @@
 // N8  forage C: five shrubs on r 1.0 round (229.5, 273.5) (BurnLayout draft tightens NorthLayout's 1.4) under Places/ForageC (named Bush_ForageC_1 to 5), each with a solid capsule and
 //     the "Forage" stand-in usable (the interact ray skips triggers); the
 //     stand marker facing 0.
-// N9, N10, N12  the search spots SS1 to SS3 under Places/NorthLoop: SS1 a low boulder at the fir foot, SS2 an owned stump at scale 0.3
+// N9, N10, N12  the search spots SS1 to SS3 under Places/NorthLoop: SS1 a low boulder and a root hollow at the fir foot, SS2 an owned stump at scale 0.5
 //     with its box fitted, SS3 a leaf bed behind the giant.
 // N11 the fallen giant under Places/NorthLoop/FallenGiant: a Sequoia laid along (145.8, 271.1) to (131.5, 257.3) as in 8.20, its
 //     capsule giantColR round and sunk giantSink, tilted to the ground; the root plate at the NE end, a 4.0 m disc 0.8 thick facing NE,
@@ -28,6 +28,8 @@
 //     runs to 4.5 m over the floor (N14's approach target).
 // N15 the sky gap: no fir or pine under skyTop m tall within skyR m of the ruin (giants stay); the K zone keeps it.
 // WARPS (doc 5.1): Camp_1 (268, 226) facing 49, North_Loop_Ruin (165.8, 267.7) facing 25.
+// Round 2 (Wren's 8.24 gate list): forage C's ring moved to the tread edge with bare litter round it, SS1's root hollow, SS2 at 0.5, the
+// lumber log's and kid's table's boxes fitted in their own axes (8.33), the white rubble at Camp 1 to J m 184 to 186 gone.
 if (UnityEngine.Application.isPlaying) return "stop play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -152,33 +154,63 @@ kit.Ground(PlaceKit.FT + "Canister", water, 277.7f, 230.6f, 110f, 1f, false);
 // ================= N8, N9, N10, N12, N11: forage C, the search spots, the fallen giant =================
 var olive = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Slice/Slice_Olive_Foliage512.mat"); if (olive == null) notes.Add("no Slice_Olive_Foliage512.mat");
 const string SUF = "suffercord/PSX Autumn Forest Asset Pack/Models/";
-const float forageX = 229.5f, forageZ = 273.5f, forageR = 1.0f, shrubLow = 0.6f, shrubHigh = 1.0f, shrubR = 0.3f; const int shrubs = 5;
+// forage C (round 2, Wren's gate list 1 and 2; Marlow 824 gate 1: no prompt from the tread): the r 1.0 ring moves toward the Camp 1 to J
+// tread, two shrubs straddling the line to it, so their capsules stand treadHalf m off the centre line (the tread Marlow walked runs
+// 1.2 m either side) and the prompt shows from the tread centre within reach; inside clearR m of the ring centre the ground is bare
+// litter (terrain detail, 8.9f cover and the forest's plants off). The stand marker is the nearest tread centre point.
+const float forageX = 229.5f, forageZ = 273.5f, forageR = 1.0f, shrubLow = 0.6f, shrubHigh = 1.0f, shrubR = 0.3f, treadHalf = 1.2f, clearR = 3f; const int shrubs = 5;
+string forageAt = "";
 {
-    var fc = kit.Fresh("ForageC", places.transform, V(forageX, G(forageX, forageZ), forageZ), 0f); var rng = new System.Random(8240);
+    // the tread point nearest NorthLayout's patch, and the side the patch lies on
+    var legC = kit.Root("Trails").transform.Find("Camp 1 to J"); var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(); if (legC != null) foreach (UnityEngine.Transform p in legC) pts.Add(p.position);
+    var doc = P(forageX, forageZ); var near = doc; float best = float.MaxValue;
+    for (int i = 1; i < pts.Count; i++) { var a0 = P(pts[i - 1].x, pts[i - 1].z); var ab = P(pts[i].x, pts[i].z) - a0; float tt = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(doc - a0, ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude)); var q = a0 + ab * tt; float d = UnityEngine.Vector2.Distance(doc, q); if (d < best) { best = d; near = q; } }
+    if (pts.Count < 2) notes.Add("no Trails/Camp 1 to J");
+    var outN = (doc - near).normalized; float half = 360f / shrubs * 0.5f;
+    var centre = near + outN * (treadHalf + shrubR + forageR * UnityEngine.Mathf.Cos(half * UnityEngine.Mathf.Deg2Rad));
+    float faceDeg = UnityEngine.Mathf.Atan2(-outN.x, -outN.y) * UnityEngine.Mathf.Rad2Deg;   // the bearing from the ring centre to the tread
+    forageAt = "forage C centre (" + F(centre.x) + ", " + F(centre.y) + "), tread point (" + F(near.x) + ", " + F(near.y) + ")";
+    var fc = kit.Fresh("ForageC", places.transform, V(centre.x, G(centre.x, centre.y), centre.y), 0f); var rng = new System.Random(8240);
     for (int i = 0; i < shrubs; i++)
     {
-        float a = (180f + i * 360f / shrubs) * UnityEngine.Mathf.Deg2Rad, x = forageX + UnityEngine.Mathf.Sin(a) * forageR, z = forageZ + UnityEngine.Mathf.Cos(a) * forageR, h = shrubLow + (float)rng.NextDouble() * (shrubHigh - shrubLow);
+        float a = (faceDeg + half + i * 360f / shrubs) * UnityEngine.Mathf.Deg2Rad, x = centre.x + UnityEngine.Mathf.Sin(a) * forageR, z = centre.y + UnityEngine.Mathf.Cos(a) * forageR;
+        float h = i == 0 || i == shrubs - 1 ? shrubHigh : shrubLow + (float)rng.NextDouble() * (shrubHigh - shrubLow);   // the two by the tread stand tallest
         var s = kit.Spawn(SUF + "Bush" + (1 + i % 4), fc); if (s == null) continue; PlaceKit.StripColliders(s); s.name = "Bush_ForageC_" + (i + 1);
         s.transform.rotation = UnityEngine.Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f); var b = PlaceKit.MeshBounds(s); s.transform.localScale = UnityEngine.Vector3.one * (h / UnityEngine.Mathf.Max(0.1f, b.size.y));
         b = PlaceKit.MeshBounds(s); s.transform.position += V(x - b.center.x, G(x, z) - b.min.y - 0.03f, z - b.center.z);
         if (olive != null) foreach (var r in s.GetComponentsInChildren<UnityEngine.Renderer>()) { var ms = r.sharedMaterials; for (int k = 0; k < ms.Length; k++) ms[k] = olive; r.sharedMaterials = ms; }
-        // 8.24 (Pim, Wren 2026-10-02): the interactor's ray skips triggers (PlayerInteractor: QueryTriggerInteraction.Ignore) and meets
-        // colliders only, so each shrub gets a solid capsule shrubR round, its own height, and the stand-in usable (8.5's
-        // ToggleColorInteractable) with the prompt "Forage" until the forage system exists; on r 1.0 (BurnLayout draft, Sable: the ring
-        // tightened from 1.4) the capsules stand 1.18 m apart, 0.58 m gaps, under the 0.6 to 1.0 band
+        // the interactor's ray skips triggers (PlayerInteractor: QueryTriggerInteraction.Ignore) and meets colliders only, so each shrub
+        // gets a solid capsule shrubR round, its own height, and the stand-in usable (8.5's ToggleColorInteractable) with the prompt
+        // "Forage" until the forage system exists; on r 1.0 the capsules stand 1.18 m apart, 0.58 m gaps, under the 0.6 to 1.0 band
         b = PlaceKit.MeshBounds(s); float sk = s.transform.lossyScale.x; var col = s.AddComponent<UnityEngine.CapsuleCollider>(); col.radius = shrubR / sk; col.height = UnityEngine.Mathf.Max(b.size.y, 2f * shrubR) / sk; col.center = s.transform.InverseTransformPoint(b.center);
         var use = s.AddComponent<ToggleColorInteractable>(); var so = new UnityEditor.SerializedObject(use); so.FindProperty("prompt").stringValue = "Forage"; so.FindProperty("target").objectReferenceValue = s.GetComponentInChildren<UnityEngine.Renderer>(); so.ApplyModifiedPropertiesWithoutUndo();
     }
-    kit.Marker("ForageC_Stand", fc, fc.InverseTransformPoint(V(229.2f, G(229.2f, 270.6f), 270.6f)), 0f);
-    kit.ClearDetail(V(forageX, 0f, forageZ), forageR + 0.8f);
+    kit.Marker("ForageC_Stand", fc, fc.InverseTransformPoint(V(near.x, G(near.x, near.y), near.y)), faceDeg + 180f);
+    // bare litter inside clearR: the terrain's detail, 8.9f's cover and the forest's plants
+    kit.ClearDetail(V(centre.x, 0f, centre.y), clearR); kit.ClearCover(V(centre.x, 0f, centre.y), clearR);
+    foreach (var t in pieces) { if (t == null || gone.Contains(t) || !Kind(t.name, keepOutKinds) || t.name.StartsWith("Sequoia") || t.name.StartsWith("Red")) continue; if (UnityEngine.Vector2.Distance(P(t.position.x, t.position.z), centre) > clearR) continue; gone.Add(t); UnityEngine.Object.DestroyImmediate(t.gameObject); zoneGone++; }
 }
-const float ssTall = 0.5f;
+const float ssTall = 0.5f, ss2Scale = 0.5f, hollowLen = 1.8f, hollowTall = 0.6f, hollowSink = 0.35f;
 var loop = kit.Fresh("NorthLoop", places.transform, V(150f, 0f, 270f), 0f);
 {
-    // SS1 at the fir foot: a pile of branches; SS2 an owned stump at scale 0.3, its box fitted; SS3 a leaf bed behind the giant
+    // SS2 an owned stump at scale ss2Scale (gate round 2, Vesper: 0.3 did not show over the ferns), its box fitted; SS3 a leaf bed behind the giant
     // SS1 a low boulder ssTall m tall a kid could sit on (a branch pile 0.1 m tall subtended under 1 degree from the trail, Pim's found bar)
     var s1 = kit.Group("SS1", loop, V(251.6f, G(251.6f, 272.0f), 272.0f), 0f); var rk = kit.Fill(PlaceKit.BK + "Rocks/Boulder_0", s1, V(0f, -0.05f, 0f), V(0.7f, ssTall, 0.6f), 30f); if (rk != null) ExactBox(rk, null);
-    var s2 = kit.Group("SS2", loop, V(150.5f, G(150.5f, 276.5f), 276.5f), 0f); var st = kit.Ground(PlaceKit.CI + "Vegetation/CITW_Tree_Stump", s2, 150.5f, 276.5f, 40f, 0.3f); if (st != null) ExactBox(st, null);
+    // SS1's root hollow (gate round 2, Vesper): a hollow log half sunk at the fir foot, hollowTall m showing, lying across the line to the
+    // loop so its open lip faces the trail (263.5, 253.4); its box fitted in its own axes
+    {
+        var toLoop = (P(263.5f, 253.4f) - P(251.6f, 272.0f)).normalized; var across = P(toLoop.y, -toLoop.x); var hc = P(251.6f, 272.0f) - toLoop * 0.7f;
+        var hl = kit.Spawn(PlaceKit.BK + "HollowLogs/RedwoodHollowLog_1", s1);
+        if (hl != null)
+        {
+            PlaceKit.StripColliders(hl); hl.transform.rotation = UnityEngine.Quaternion.identity; hl.transform.localScale = UnityEngine.Vector3.one; var lb = PlaceKit.MeshBounds(hl);
+            bool alongX = lb.size.x >= lb.size.z; float len = alongX ? lb.size.x : lb.size.z, girth = lb.size.y;
+            hl.transform.localScale = V(alongX ? hollowLen / len : (hollowTall + hollowSink) / girth, (hollowTall + hollowSink) / girth, alongX ? (hollowTall + hollowSink) / girth : hollowLen / len);
+            float yaw = UnityEngine.Mathf.Atan2(across.x, across.y) * UnityEngine.Mathf.Rad2Deg - (alongX ? 90f : 0f); hl.transform.rotation = UnityEngine.Quaternion.Euler(0f, yaw, 0f);
+            lb = PlaceKit.MeshBounds(hl); hl.transform.position += V(hc.x - lb.center.x, G(hc.x, hc.y) - hollowSink - lb.min.y, hc.y - lb.center.z); hl.name = "RootHollow"; ExactBox(hl, null);
+        }
+    }
+    var s2 = kit.Group("SS2", loop, V(150.5f, G(150.5f, 276.5f), 276.5f), 0f); var st = kit.Ground(PlaceKit.CI + "Vegetation/CITW_Tree_Stump", s2, 150.5f, 276.5f, 40f, ss2Scale); if (st != null) ExactBox(st, null);
     var s3 = kit.Group("SS3", loop, V(132.3f, G(132.3f, 262.3f), 262.3f), 0f); kit.Ground(PlaceKit.BK + "Plants/DeadLeaves1", s3, 132.3f, 262.3f, 0f, 1.2f);
 }
 const float plateD = 4.0f, plateT = 0.8f, plateSink = 0.5f, trunkBand = 0.03f;
@@ -262,6 +294,21 @@ int wallBoxes = 0; string slabDeg = "";
     kit.ClearDetail(ruin.position, floorX + 1f);
 }
 
+// ================= round 2: 8.33's flags and the white rubble =================
+// 8.33 (gate round 2, Wren 8): the lumber log and the kid's table had 8.17's PlaceKit.FitCollider boxes, fitted to world bounds on turned
+// props; boxes fitted to their meshes in their own axes. Marlow 824 gate 7: the GapClumps RubbleSparse piles at Camp 1 to J m 184 to 186
+// (near-white and shiny against the floor, the nearest over the tread edge) go, every one within rubbleR m of that stretch.
+const float rubbleR = 7f; int rubbleGone = 0, refit = 0;
+foreach (var path in new[] { "Lumber/CS_Log_Large_Long", "KidTable/CS_Table_Small_Modern_1" }) { var t = cd.Find(path); if (t == null) { notes.Add("no Camp_1/Dressing/" + path); continue; } if (ExactBox(t.gameObject, null) != null) refit++; }
+{
+    var legC = kit.Root("Trails").transform.Find("Camp 1 to J"); var stretch = new System.Collections.Generic.List<UnityEngine.Vector2>(); float m = 0f; UnityEngine.Vector3? prev = null;
+    if (legC != null) foreach (UnityEngine.Transform p in legC) { if (prev.HasValue) m += UnityEngine.Vector3.Distance(prev.Value, p.position); if (m >= 182f && m <= 188f) stretch.Add(P(p.position.x, p.position.z)); prev = p.position; }
+    var gaps = forest.transform.Find("GapClumps");
+    if (gaps != null && stretch.Count > 0) foreach (var t in System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Cast<UnityEngine.Transform>(gaps)))
+    { if (!t.name.StartsWith("RubbleSparse")) continue; bool close = false; foreach (var q in stretch) if (UnityEngine.Vector2.Distance(q, P(t.position.x, t.position.z)) <= rubbleR) close = true; if (close) { UnityEngine.Object.DestroyImmediate(t.gameObject); rubbleGone++; } }
+    else notes.Add("no Forest/GapClumps or Camp 1 to J m 182 to 188");
+}
+
 // ================= WARPS (doc 5.1) =================
 var warps = kit.Root("DevWarps").transform;
 foreach (var (n, x, z, yaw) in new[] { ("Camp_1", 268f, 226f, 49f), ("North_Loop_Ruin", 165.8f, 267.7f, 25f) })
@@ -272,4 +319,4 @@ UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 var zones = new System.Collections.Generic.List<string>(); foreach (var kv in zoneBy) zones.Add(kv.Key + " " + kv.Value);
 return "saved=" + saved + " | removed by name " + namedGone + " of " + named.Length + (namedMissing.Count > 0 ? " (not found, likely gone already: " + string.Join(", ", namedMissing) + ")" : "") + ", in keep-out zones " + zoneGone + (zones.Count > 0 ? " (" + string.Join(", ", zones) + ")" : "") + ", sky gap " + skyGone
-    + " | tent box " + tentBox + " | ruin wall boxes " + wallBoxes + ", roof slab " + slabDeg + " degrees | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    + " | " + forageAt + " | refit boxes " + refit + ", rubble piles removed " + rubbleGone + " | tent box " + tentBox + " | ruin wall boxes " + wallBoxes + ", roof slab " + slabDeg + " degrees | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

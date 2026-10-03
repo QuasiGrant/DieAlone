@@ -3,7 +3,8 @@
 // RUIN ROOM (N13, Marlow 824 block 1): standing cells on a roomGrid m grid of the room floor (ruin local x -2.85 to 2.85, z -1.85 to
 //   1.85) where the capsule fits clear of every collider; the doorway step (the ground outside against the floor slab's top).
 // REPORT BOX: the interactor's ray (its mask, interactReach) from the stand (170.16, 277.32) toward the box meets the box or its post.
-// FORAGE: the interactor's ray from the forage stand toward the south shrub meets a usable with the prompt "Forage".
+// FORAGE: along 5 m of tread centre beside the patch, how many points get the "Forage" prompt looking at a shrub 0 to 30 degrees down.
+// NO TOWER FROM THE RUIN: from the warp, the doorway, the report box stand and the room's centre, 0 tower pixels aimed at the cab.
 // N14 STOVEPIPE: from the eye (192.7, G+1.6, 276.6) to the pipe's top, past every drawn mesh (temporary exact colliders, as 8.22): the
 //   first thing met is the pipe.
 // WALKS (doc 4): Jg to Camp 1 and Camp 1 to J along their trails; the side path from its mouth in at the doorway to the bunk, the
@@ -54,22 +55,44 @@ try
             Line(ok, "REPORT BOX: from the stand (170.16, 277.32) the interactor's ray meets " + first);
         }
     }
-    // ---- FORAGE (Pim, Wren 2026-10-02): from the stand at the trail edge (229.2, 270.6), the interactor's own test (camera ray, its mask,
-    // triggers ignored, interactReach) toward the south shrub (229.3, 272.1) meets an Interactable whose prompt is "Forage"
+    // ---- FORAGE (Pim, Wren 2026-10-02; gate round 2, Wren 1): along forageSpan m of tread centre beside the patch (every forageStep m,
+    // centred on the stand marker, the nearest tread point), eye 1.6 m, looking at each shrub with pitch 0 to forageDown degrees down
+    // (foragePitchStep steps): the interactor's own test (its mask, triggers ignored, interactReach) meets a usable whose prompt is "Forage"
+    // from how many points. Fails when none does; the count is the measure.
     {
+        const float forageSpan = 5f, forageStep = 0.5f, forageDown = 30f, foragePitchStep = 2f;
         var pi = UnityEngine.Object.FindFirstObjectByType<PlayerInteractor>(); var maskF = typeof(PlayerInteractor).GetField("mask", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-        var fc = Root("Places") != null ? Root("Places").transform.Find("ForageC") : null; UnityEngine.Transform south = null; float bestD = float.MaxValue;
-        if (fc != null) foreach (UnityEngine.Transform s in fc) { if (!s.name.StartsWith("Bush_ForageC_")) continue; float d = UnityEngine.Vector2.Distance(new UnityEngine.Vector2(s.position.x, s.position.z), new UnityEngine.Vector2(229.3f, 272.1f)); if (d < bestD) { bestD = d; south = s; } }
-        if (pi == null || maskF == null || tuning == null || south == null) Line(false, "FORAGE: no PlayerInteractor, its mask, PlayerTuning or a Places/ForageC shrub");
+        var fc = Root("Places") != null ? Root("Places").transform.Find("ForageC") : null; var stand = fc != null ? fc.Find("ForageC_Stand") : null;
+        var shrubs = new System.Collections.Generic.List<UnityEngine.Transform>(); if (fc != null) foreach (UnityEngine.Transform s in fc) if (s.name.StartsWith("Bush_ForageC_")) shrubs.Add(s);
+        var leg = Root("Trails").transform.Find("Camp 1 to J"); var tp = new System.Collections.Generic.List<UnityEngine.Vector3>(); if (leg != null) foreach (UnityEngine.Transform p in leg) tp.Add(p.position);
+        if (pi == null || maskF == null || tuning == null || stand == null || shrubs.Count == 0 || tp.Count < 2) Line(false, "FORAGE: no PlayerInteractor, its mask, PlayerTuning, Places/ForageC with its stand and shrubs, or Trails/Camp 1 to J");
         else
         {
-            int mask = ((UnityEngine.LayerMask)maskF.GetValue(pi)).value; var eye = V(229.2f, H(229.2f, 270.6f) + eyeH, 270.6f); var aim = PlaceKit.MeshBounds(south.gameObject).center;
-            string got = "nothing within " + F1(tuning.interactReach) + " m"; bool ok = false;
-            if (UnityEngine.Physics.Raycast(eye, (aim - eye).normalized, out var hit, tuning.interactReach, mask, UnityEngine.QueryTriggerInteraction.Ignore))
-            { var it = hit.collider.GetComponentInParent<Interactable>(); ok = it != null && it.Prompt == "Forage"; got = WalkIns.PathOf(hit.collider.transform) + " at " + F(hit.distance) + " m, prompt " + (it != null ? "\"" + it.Prompt + "\"" : "none"); }
-            Line(ok, "FORAGE: from the stand (229.2, 270.6) toward " + south.name + " the interactor's ray meets " + got);
+            int mask = ((UnityEngine.LayerMask)maskF.GetValue(pi)).value;
+            // the tread's direction at the stand: the nearest segment of Camp 1 to J
+            var sp = stand.position; UnityEngine.Vector3 dir = UnityEngine.Vector3.forward; float bestS = float.MaxValue;
+            for (int i = 1; i < tp.Count; i++) { var a = tp[i - 1]; var ab = tp[i] - a; ab.y = 0f; float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector3.Dot(V(sp.x - a.x, 0f, sp.z - a.z), ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude)); var q = a + ab * t; float d = V(sp.x - q.x, 0f, sp.z - q.z).magnitude; if (d < bestS) { bestS = d; dir = ab.normalized; } }
+            int points = 0, hits = 0; string first = "", miss = "";
+            for (float u = -forageSpan * 0.5f; u <= forageSpan * 0.5f + 1e-3f; u += forageStep)
+            {
+                var foot = sp + dir * u; var eye = V(foot.x, H(foot.x, foot.z) + eyeH, foot.z); points++; bool got = false;
+                foreach (var s in shrubs)
+                {
+                    var c = s.GetComponent<UnityEngine.Collider>(); if (c == null) continue; var toS = c.bounds.center - eye; float yaw = UnityEngine.Mathf.Atan2(toS.x, toS.z) * UnityEngine.Mathf.Rad2Deg;
+                    for (float pitch = 0f; pitch <= forageDown + 1e-3f && !got; pitch += foragePitchStep)
+                    {
+                        var look = UnityEngine.Quaternion.Euler(pitch, yaw, 0f) * UnityEngine.Vector3.forward;
+                        if (!UnityEngine.Physics.Raycast(eye, look, out var hit, tuning.interactReach, mask, UnityEngine.QueryTriggerInteraction.Ignore)) continue;
+                        var it = hit.collider.GetComponentInParent<Interactable>(); if (it == null || it.Prompt != "Forage") continue;
+                        got = true; if (first == "") first = " (first at " + F1(u) + " m: " + s.name + ", " + F1(pitch) + " down, " + F(hit.distance) + " m)";
+                    }
+                    if (got) break;
+                }
+                if (got) hits++; else miss += " " + F1(u);
+            }
+            Line(hits > 0, "FORAGE: from " + hits + " of " + points + " tread centre points along " + F1(forageSpan) + " m beside the patch (every " + F1(forageStep) + " m, 0 to " + F1(forageDown) + " down at each shrub) the prompt is \"Forage\"" + first + (miss != "" ? "; none at m" + miss : ""));
             // the gaps between the shrubs' colliders: none in the 0.6 to 1.0 m band (a slot the body cannot pass but a view says it can)
-            var caps = new System.Collections.Generic.List<UnityEngine.Bounds>(); foreach (UnityEngine.Transform s in fc) { var c = s.GetComponent<UnityEngine.Collider>(); if (c != null) caps.Add(c.bounds); }
+            var caps = new System.Collections.Generic.List<UnityEngine.Bounds>(); foreach (var s in shrubs) { var c = s.GetComponent<UnityEngine.Collider>(); if (c != null) caps.Add(c.bounds); }
             float least = float.MaxValue; int band = 0;
             for (int i = 0; i < caps.Count; i++) for (int j = i + 1; j < caps.Count; j++) { float gap = new UnityEngine.Vector2(caps[i].center.x - caps[j].center.x, caps[i].center.z - caps[j].center.z).magnitude - (caps[i].extents.x + caps[j].extents.x); least = UnityEngine.Mathf.Min(least, gap); if (gap >= 0.6f && gap < 1.0f) band++; }
             Line(caps.Count == 5 && band == 0, "FORAGE GAPS: " + caps.Count + " shrub colliders, least gap " + F(least) + " m, gaps in the 0.6 to 1.0 m band " + band);
@@ -95,6 +118,39 @@ try
             Line(fo == float.MaxValue || fp < fo, "N14 STOVEPIPE: from (192.7, " + F1(eye.y) + ", 276.6) to the pipe top (" + F1(top.x) + ", " + F1(top.y) + ", " + F1(top.z) + "), " + F1(d.magnitude) + " m, every drawn mesh: " + (fo == float.MaxValue || fp < fo ? "clear" : "first " + what));
             foreach (var t in temps) if (t != null) UnityEngine.Object.DestroyImmediate(t); temps.Clear(); UnityEngine.Physics.SyncTransforms();
         }
+    }
+    // ---- NO TOWER FROM THE RUIN (NorthLayout 5.5; Sable 824 gate 4.2): from the North_Loop_Ruin warp, the doorway, the report box stand
+    // and the room's centre, eye 1.6 m, the game camera aimed at the tower cab renders the scene twice, with and without Camp/Tower's
+    // renderers; any pixel changed by more than the pixel tolerance is tower in view. The bar is 0 px from every eye. The GPU Resident
+    // Drawer is off for the renders (Camera.Render skips its objects) and restored after.
+    {
+        var tower = Root("Camp").transform.Find("Tower"); var cab = tower.Find("Cab"); var set = Main3AreaSet.Load();
+        var cam = UnityEngine.Camera.main; var camParent = cam.transform.parent; var camPos = cam.transform.localPosition; var camRot = cam.transform.localRotation;
+        var urp = (UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline; var grdWas = urp.gpuResidentDrawerMode; urp.gpuResidentDrawerMode = UnityEngine.Rendering.GPUResidentDrawerMode.Disabled;
+        const int pxW = 1920, pxH = 988; var rt = new UnityEngine.RenderTexture(pxW, pxH, 24); var shot = new UnityEngine.Texture2D(pxW, pxH, UnityEngine.TextureFormat.RGB24, false);
+        var rends = tower.GetComponentsInChildren<UnityEngine.Renderer>(); var warp = Root("DevWarps").transform.Find("North_Loop_Ruin");
+        var eyes = new System.Collections.Generic.List<(string, UnityEngine.Vector3)>();
+        if (warp != null) eyes.Add(("the warp", V(warp.position.x, H(warp.position.x, warp.position.z) + eyeH, warp.position.z)));
+        eyes.Add(("the doorway", V(169.88f, H(169.88f, 278.88f) + eyeH, 278.88f))); eyes.Add(("the report box stand", V(170.16f, H(170.16f, 277.32f) + eyeH, 277.32f)));
+        var rc = ruin.position; eyes.Add(("the room's centre", V(rc.x, slab.bounds.max.y + eyeH, rc.z)));
+        var seenAt = new System.Collections.Generic.List<string>(); int worst = 0;
+        try
+        {
+            cam.transform.SetParent(null, true); cam.targetTexture = rt;
+            UnityEngine.Color32[] Shoot(UnityEngine.Vector3 e) { cam.transform.position = e; cam.transform.rotation = UnityEngine.Quaternion.LookRotation(cab.position + V(0f, 1.5f, 0f) - e); cam.Render(); UnityEngine.RenderTexture.active = rt; shot.ReadPixels(new UnityEngine.Rect(0, 0, pxW, pxH), 0, 0); shot.Apply(false); UnityEngine.RenderTexture.active = null; return shot.GetPixels32(); }
+            foreach (var (name, e) in eyes)
+            {
+                Shoot(e); var on = Shoot(e); foreach (var r in rends) r.forceRenderingOff = true; var off = Shoot(e); foreach (var r in rends) r.forceRenderingOff = false;
+                int px = 0; for (int i = 0; i < on.Length; i++) if (System.Math.Abs(on[i].r - off[i].r) > set.pixelTolerance || System.Math.Abs(on[i].g - off[i].g) > set.pixelTolerance || System.Math.Abs(on[i].b - off[i].b) > set.pixelTolerance) px++;
+                if (px > 0) seenAt.Add(name + " " + px + " px"); worst = UnityEngine.Mathf.Max(worst, px);
+            }
+        }
+        finally
+        {
+            foreach (var r in rends) r.forceRenderingOff = false; cam.targetTexture = null; cam.transform.SetParent(camParent, false); cam.transform.localPosition = camPos; cam.transform.localRotation = camRot;
+            urp.gpuResidentDrawerMode = grdWas; rt.Release(); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(shot);
+        }
+        Line(seenAt.Count == 0, "NO TOWER FROM THE RUIN: aimed at the cab from " + eyes.Count + " eyes (the warp, the doorway, the report box stand, the room's centre), tower pixels " + (seenAt.Count == 0 ? "0 from every eye" : string.Join(", ", seenAt)));
     }
     // ---- WALKS
     {

@@ -21,6 +21,8 @@ if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
 string step = "day";
 // area (main3_review_capture.sh --area <id>; Assets/Settings/Main3Areas.asset): only frames that stand in the area's bounds, plus the
 // compass views and Deck_<id>.jpg (the deck toward each target of the area's deck list); "" captures the whole map
+// Every found and deck frame of an area is also written alone at full size (1920 x 988) as Found_<id>_<nn>_<label>.jpg and
+// Deck_<id>_<nn>_<label>.jpg (8.24 gate, Wren).
 string area = "";
 Main3AreaSet.Area areaSel = null;
 if (area != "") { var areaSet = Main3AreaSet.Load(); areaSel = areaSet != null ? areaSet.Find(area) : null; if (areaSel == null) return "no area " + area + " in Assets/Settings/Main3Areas.asset"; }
@@ -144,8 +146,17 @@ void SaveCanvas(string file, string what, int frames)
     System.IO.File.WriteAllBytes(System.IO.Path.Combine(outDir, file), file.EndsWith(".png") ? tex.EncodeToPNG() : tex.EncodeToJPG(jpgQuality));
     UnityEngine.Object.DestroyImmediate(tex); canvas = null; written.Add((file, what, frames));
 }
+// one frame as its own full-size file next to the sheets (8.24 gate, Wren: Vesper and Pim got the sheets at 1/5 to 1/8 scale), for every
+// found and deck frame of an area
+int singles = 0;
+void SaveSingle(string file, UnityEngine.Color32[] px)
+{
+    var tex = new UnityEngine.Texture2D(shotW, shotH, UnityEngine.TextureFormat.RGB24, false); tex.SetPixels32(px); tex.Apply();
+    var safe = new System.Text.StringBuilder(); foreach (var ch in file) safe.Append(char.IsLetterOrDigit(ch) || ch == '_' || ch == '-' || ch == '.' ? ch : '_');
+    System.IO.File.WriteAllBytes(System.IO.Path.Combine(outDir, safe.ToString()), tex.EncodeToJPG(jpgQuality)); UnityEngine.Object.DestroyImmediate(tex); singles++;
+}
 // one frame spec: camera, look-at, label
-void Sheet(string file, string title, System.Collections.Generic.List<(UnityEngine.Vector3 cam, UnityEngine.Vector3 look, string label)> frames, int div, int cols)
+void Sheet(string file, string title, System.Collections.Generic.List<(UnityEngine.Vector3 cam, UnityEngine.Vector3 look, string label)> frames, int div, int cols, string singlePrefix = null)
 {
     if (areaSel != null && !file.StartsWith("Deck_") && !file.StartsWith("AreaFrames_") && !file.StartsWith("Found_") && file != "Compass_Views.jpg") { frames = frames.FindAll(f => areaSel.Contains(f.cam)); if (frames.Count == 0) return; }
     int tw = shotW / div, th = shotH / div; int rows = (frames.Count + cols - 1) / cols;
@@ -154,7 +165,8 @@ void Sheet(string file, string title, System.Collections.Generic.List<(UnityEngi
     for (int i = 0; i < frames.Count; i++)
     {
         int x = gap + (i % cols) * (tw + gap), y = headH + (i / cols) * (labelH + th + gap);
-        Pose(frames[i].cam, frames[i].look); Blit(Render(div), tw, th, x, y + labelH); Text(x + 2, y + 4, frames[i].label, 2, white);
+        Pose(frames[i].cam, frames[i].look); var full = Capture(); Blit(Shrink(full, div), tw, th, x, y + labelH); Text(x + 2, y + 4, frames[i].label, 2, white);
+        if (singlePrefix != null) SaveSingle(singlePrefix + (i + 1).ToString("00") + "_" + frames[i].label + ".jpg", full);
     }
     SaveCanvas(file, title, frames.Count);
 }
@@ -536,7 +548,7 @@ try
             UnityEngine.Vector3 Walkway(UnityEngine.Vector3 at) { var d = new UnityEngine.Vector3(at.x - deckEye.x, 0f, at.z - deckEye.z).normalized; return deckEye + d * compassOut; }   // on the walkway on the target's side, outside the cab (as the compass views)
             foreach (var t in areaSel.deckSee) deckFrames.Add((Walkway(Aim(t.point)), Aim(t.point), "MUST SEE: " + t.label.ToUpperInvariant()));
             foreach (var t in areaSel.deckHide) deckFrames.Add((Walkway(Aim(t.point)), Aim(t.point), "MUST HIDE: " + t.label.ToUpperInvariant()));
-            Sheet("Deck_" + areaSel.id + ".jpg", "From the tower deck toward " + areaSel.title + " (" + areaSel.task + "): every target of its deck list", deckFrames, pairDiv, 3);
+            Sheet("Deck_" + areaSel.id + ".jpg", "From the tower deck toward " + areaSel.title + " (" + areaSel.task + "): every target of its deck list", deckFrames, pairDiv, 3, "Deck_" + areaSel.id + "_");
         }
         // the area's own frames, full size (8.21 gate: the wake frame, the woodpile and stump), each labelled with the first hit of a 2 m
         // eye ray straight ahead (Pim: none within 2 m at the wake)
@@ -575,7 +587,8 @@ try
                     var mark = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere); UnityEngine.Object.DestroyImmediate(mark.GetComponent<UnityEngine.Collider>());
                     mark.GetComponent<UnityEngine.Renderer>().sharedMaterial = markMat; mark.transform.position = ff[i].Item2;
                     mark.transform.localScale = UnityEngine.Vector3.one * UnityEngine.Mathf.Max(markMin, UnityEngine.Vector3.Distance(ff[i].Item1, ff[i].Item2) * markSize);
-                    int y = headH + i * (labelH + th + gap); Pose(ff[i].Item1, ff[i].Item2); Blit(Render(1), tw, th, gap, y + labelH); Text(gap + 2, y + 4, ff[i].Item3, 2, white);
+                    int y = headH + i * (labelH + th + gap); Pose(ff[i].Item1, ff[i].Item2); var full = Render(1); Blit(full, tw, th, gap, y + labelH); Text(gap + 2, y + 4, ff[i].Item3, 2, white);
+                    SaveSingle("Found_" + areaSel.id + "_" + (i + 1).ToString("00") + "_" + ff[i].Item3 + ".jpg", full);
                     UnityEngine.Object.DestroyImmediate(mark);
                 }
                 UnityEngine.Object.DestroyImmediate(markMat);

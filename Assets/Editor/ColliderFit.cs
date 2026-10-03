@@ -3,8 +3,8 @@ using UnityEngine;
 
 /// How far a box, sphere or capsule collider reaches past the visible meshes it stands for (PLAN 8.33: the turned-prop inflation that
 /// broke the Camp 3 tent, the cave props and the Hollow Giant, where a box fitted to world bounds grew when its object was turned).
-/// Measured in the collider's own axes: the drawn meshes under the collider's object (look-only ones and those with a collider of their
-/// own left out, WalkIns.LooksOnly) are boxed by their exact mesh bounds, and each of the six faces of the collider is compared with
+/// Measured in the collider's own axes: every drawn mesh under the collider's object (look-only ones left out by name, WalkIns.LooksOnly;
+/// pieces with colliders of their own included, as the 8.24 gate workbenches showed: their tables carry their own) are boxed by their exact mesh bounds, and each of the six faces of the collider is compared with
 /// that box. A face that stands out by more than slack m, or by more than share of the mesh's size on that axis, whichever is larger,
 /// makes the collider inflated. Invisible blockers (no drawn mesh under them) are not measured. Editor only.
 public static class ColliderFit
@@ -28,7 +28,6 @@ public static class ColliderFit
         foreach (var mf in c.GetComponentsInChildren<MeshFilter>())
         {
             var mr = mf.GetComponent<MeshRenderer>(); if (mf.sharedMesh == null || mr == null || !mr.enabled || !mr.gameObject.activeInHierarchy || WalkIns.LooksOnly(mr)) continue;
-            if (mf.transform != t && mf.GetComponent<Collider>() != null) continue;   // a piece with its own collider is measured on its own
             var lb = mf.sharedMesh.bounds;
             for (int i = 0; i < 8; i++)
             {

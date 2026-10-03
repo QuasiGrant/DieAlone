@@ -57,6 +57,8 @@ MonoBehaviour:
   - Lake/Dock/Rail
   - Lake/Dock/Layout823/RailStops
   - Lake/Boathouse/Layout823/SlipRails
+  colliderSlack: 0.3
+  colliderShare: 0.25
   reachRadius: 4
   reachRise: 3
   foundReach: 30
@@ -896,8 +898,8 @@ MonoBehaviour:
       height: 1.4
       objectPath: Ground815/JunctionMarkers/Blaze_Camp1_Stump
     - label: Forage C
-      point: {x: 229.5, y: -999, z: 273.5}
-      height: 0.8
+      point: {x: 228.73, y: -999, z: 271.05}
+      height: 1
       objectPath: Places/ForageC
     - label: SS1
       point: {x: 251.6, y: -999, z: 272}
@@ -945,7 +947,7 @@ MonoBehaviour:
       treeCoverPath: 
       hard: 0
       loose: 1
-      objectPath: 
+      objectPath: Campsites/Camp_1/Dressing/KidTable
       controlRaise: 0
       anyEye: 0
     - label: tent
@@ -953,7 +955,7 @@ MonoBehaviour:
       treeCoverPath: 
       hard: 0
       loose: 1
-      objectPath: 
+      objectPath: Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1
       controlRaise: 0
       anyEye: 0
     - label: tripod
@@ -961,7 +963,7 @@ MonoBehaviour:
       treeCoverPath: 
       hard: 0
       loose: 1
-      objectPath: 
+      objectPath: Campsites/Camp_1/Dressing/Cookfire
       controlRaise: 0
       anyEye: 0
     deckHide:
@@ -1003,7 +1005,7 @@ MonoBehaviour:
       approach: {x: 170.16, y: -999, z: 277.32}
     - label: forage C
       path: Places/ForageC
-      approach: {x: 229.2, y: -999, z: 270.6}
+      approach: {x: 228.03, y: -999, z: 268.85}
     frames:
     - label: 'F1 JG TRAIL INTO THE CLEARING, HEADING 31: TABLE, COOKFIRE, SPAR'
       eye: {x: 276.5, y: -999, z: 221.5}
@@ -1011,9 +1013,9 @@ MonoBehaviour:
     - label: 'F2 THE KID''S TABLE HEADING NW: THE BLAZE'
       eye: {x: 284.2, y: -999, z: 237.5}
       look: {x: 271.7, y: 5.5, z: 247.3}
-    - label: 'F3 HEADING 298: FORAGE C, 14.9 M'
+    - label: 'F3 HEADING 298: FORAGE C (ROUND 2: AT THE TREAD EDGE)'
       eye: {x: 239.8, y: -999, z: 261.5}
-      look: {x: 229.3, y: 4.8, z: 272.1}
+      look: {x: 228.73, y: 4.9, z: 271.05}
     - label: F4 THE STOVEPIPE OVER THE RUIN (N14)
       eye: {x: 192.7, y: -999, z: 276.6}
       look: {x: 171.43, y: 8, z: 283.4}
@@ -1029,9 +1031,9 @@ MonoBehaviour:
     - label: F8 THE GIANT'S SW END
       eye: {x: 142.9, y: -999, z: 260.7}
       look: {x: 131.5, y: 7, z: 257.3}
-    - label: F9 SS3 BEHIND THE GIANT
-      eye: {x: 130.5, y: -999, z: 259.5}
-      look: {x: 132.3, y: 6.5, z: 262.3}
+    - label: 'F9 FROM SS3 TOWARD THE FALLEN GIANT (VESPER: THE FAR SIDE OF THE LOG)'
+      eye: {x: 132.3, y: -999, z: 262.3}
+      look: {x: 134.4, y: 7.6, z: 260.1}
     - label: THE RUIN FROM ITS DOORWAY
       eye: {x: 169.6, y: -999, z: 278.6}
       look: {x: 172.4, y: 4.5, z: 281.4}
@@ -1453,8 +1455,8 @@ MonoBehaviour:
       height: 1.4
       objectPath: Ground815/JunctionMarkers/Blaze_Camp1_Stump
     - label: Forage C
-      point: {x: 229.5, y: -999, z: 273.5}
-      height: 0.8
+      point: {x: 228.73, y: -999, z: 271.05}
+      height: 1
       objectPath: Places/ForageC
     - label: SS1
       point: {x: 251.6, y: -999, z: 272}

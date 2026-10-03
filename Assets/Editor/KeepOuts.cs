@@ -23,7 +23,7 @@ public static class KeepOuts
     {
         new Zone("N4 tent", new Vector2(271f, 234.5f), 6f),
         new Zone("N7 drag lane", new Vector2(292f, 247f), new Vector2(304f, 252f), 2.5f),
-        new Zone("N8 forage C", new Vector2(229.5f, 273.5f), 3f),
+        new Zone("N8 forage C", new Vector2(228.73f, 271.05f), 3f),   // 8.24 gate round 2: the ring moved to the tread edge (main3_8_24_north.cs)
         new Zone("N9 SS1", new Vector2(251.6f, 272.0f), 1.5f),
         new Zone("N9 SS1 found line", new Vector2(263.5f, 253.4f), new Vector2(251.6f, 272.0f), 1f),
         new Zone("N10 SS2", new Vector2(150.5f, 276.5f), 1.5f),

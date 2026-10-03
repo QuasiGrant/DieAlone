@@ -21,6 +21,7 @@ Main3AreaSet.Frame FR(string l, UnityEngine.Vector3 eye, UnityEngine.Vector3 loo
 Main3AreaSet.DeckTarget D(string l, float x, float y, float z, string cover = "") => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), treeCoverPath = cover };
 Main3AreaSet.DeckTarget DH(string l, float x, float y, float z, string obj) => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), hard = true, objectPath = obj };   // hard must-see, every mesh (8.22)
 Main3AreaSet.DeckTarget DL(string l, float x, float y, float z) => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), loose = true };   // loose must-see, reported only (8.22)
+Main3AreaSet.DeckTarget DLO(string l, float x, float y, float z, string obj) => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), loose = true, objectPath = obj };   // loose, its own object never hides it (8.24 gate)
 Main3AreaSet.DeckTarget DHA(string l, float x, float y, float z, string obj) => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), hard = true, objectPath = obj, anyEye = true };   // hard, passes from any deck eye (Wren 2026-10-02: the lake's blanket and bowl, as the office door)
 Main3AreaSet.WalkLine WL(string l, params UnityEngine.Vector3[] pts) => new Main3AreaSet.WalkLine { label = l, points = pts };
 Main3AreaSet.InventoryItem I(string l, string p, string k, string n, int e) => new Main3AreaSet.InventoryItem { label = l, path = p, kind = k, name = n, expected = e };
@@ -133,24 +134,24 @@ var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Ca
     places = new[] { P("Camp 1", 282f, G, 238f), PO("Spar", 284f, G, 240f, 24f, "Campsites/Camp_1/Dressing/Spar"), PO("Kid's table", 285.2f, G, 236.5f, 0.8f, "Campsites/Camp_1/Dressing/KidTable"),
         P("R1's spot", 285f, G, 244f), PO("Tent", 271f, G, 234.5f, 3.0f, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), PO("Cookfire", 276f, G, 232f, 1.0f, "Campsites/Camp_1/Dressing/Cookfire"),
         PO("Latrine shed", 264f, G, 207f, 2.2f, "PointsOfInterest/POI_Latrine_shed"), PO("Blaze stump", 271.7f, G, 247.3f, 1.4f, "Ground815/JunctionMarkers/Blaze_Camp1_Stump"),
-        PO("Forage C", 229.5f, G, 273.5f, 0.8f, "Places/ForageC"), PO("SS1", 251.6f, G, 272.0f, 0.5f, "Places/NorthLoop/SS1"), PO("SS2", 150.5f, G, 276.5f, 0.45f, "Places/NorthLoop/SS2"),
+        PO("Forage C", 228.73f, G, 271.05f, 1.0f, "Places/ForageC"), PO("SS1", 251.6f, G, 272.0f, 0.5f, "Places/NorthLoop/SS1"), PO("SS2", 150.5f, G, 276.5f, 0.45f, "Places/NorthLoop/SS2"),
         PO("SS3", 132.3f, G, 262.3f, 0.3f, "Places/NorthLoop/SS3"), PO("Fallen giant", 138.65f, G, 264.2f, 2.7f, "Places/NorthLoop/FallenGiant"), PO("North ruin", 172f, G, 281f, 3.0f, "Places/NorthRuin"),
         PO("Ruin doorway", 169.88f, G, 278.88f, 2.15f, "Places/NorthRuin"), PO("Report post", 171.22f, G, 278.38f, 1.3f, "Places/NorthRuin/Layout824/ReportPost") },
-    interactions = new[] { IA("report box", "Places/NorthRuin/Layout824/ReportPost", 170.16f, G, 277.32f), IA("forage C", "Places/ForageC", 229.2f, G, 270.6f) },   // forage C has solid shrubs since 8.24 (Pim, Wren)
+    interactions = new[] { IA("report box", "Places/NorthRuin/Layout824/ReportPost", 170.16f, G, 277.32f), IA("forage C", "Places/ForageC", 228.03f, G, 268.85f) },   // forage C has solid shrubs since 8.24 (Pim, Wren)
     frames = new[] { FR("F1 JG TRAIL INTO THE CLEARING, HEADING 31: TABLE, COOKFIRE, SPAR", V(276.5f, G, 221.5f), V(285.2f, 6.0f, 236.5f)),
         FR("F2 THE KID'S TABLE HEADING NW: THE BLAZE", V(284.2f, G, 237.5f), V(271.7f, 5.5f, 247.3f)),
-        FR("F3 HEADING 298: FORAGE C, 14.9 M", V(239.8f, G, 261.5f), V(229.3f, 4.8f, 272.1f)),
+        FR("F3 HEADING 298: FORAGE C (ROUND 2: AT THE TREAD EDGE)", V(239.8f, G, 261.5f), V(228.73f, 4.9f, 271.05f)),
         FR("F4 THE STOVEPIPE OVER THE RUIN (N14)", V(192.7f, G, 276.6f), V(171.43f, 8.0f, 283.40f)),
         FR("F5 SIDE-PATH MOUTH HEADING 9: DOORWAY AND REPORT BOX", V(168.1f, G, 267.1f), V(169.88f, 5.0f, 278.88f)),
         FR("F6 SS1 FROM THE LOOP", V(263.5f, G, 253.4f), V(251.6f, 5.0f, 272.0f)),
         FR("F7 SS2 FROM THE LOOP", V(161.2f, G, 269.4f), V(150.5f, 4.5f, 276.5f)),
         FR("F8 THE GIANT'S SW END", V(142.9f, G, 260.7f), V(131.5f, 7.0f, 257.3f)),
-        FR("F9 SS3 BEHIND THE GIANT", V(130.5f, G, 259.5f), V(132.3f, 6.5f, 262.3f)),
+        FR("F9 FROM SS3 TOWARD THE FALLEN GIANT (VESPER: THE FAR SIDE OF THE LOG)", V(132.3f, G, 262.3f), V(134.4f, 7.6f, 260.1f)),
         FR("THE RUIN FROM ITS DOORWAY", V(169.6f, G, 278.6f), V(172.4f, 4.5f, 281.4f)) },
     walkLines = new[] { WL("side path to the ruin", V(168.1f, G, 267.1f), V(169.88f, G, 278.88f)) },   // the report box is found from the side path in (NorthLayout_UI 5)
     playChecks = new[] { "main3_8_24_north_check.cs" },
     inventory = new[] { "North ruin" }, deckListWritten = true,
-    deckSee = new[] { DH("spar top", 284f, 29f, 240f, "Campsites/Camp_1/Dressing/Spar"), DL("kid's table", 285.2f, 5.8f, 236.5f), DL("tent", 271f, 6.5f, 234.5f), DL("tripod", 276f, 6.3f, 232f) },
+    deckSee = new[] { DH("spar top", 284f, 29f, 240f, "Campsites/Camp_1/Dressing/Spar"), DLO("kid's table", 285.2f, 5.8f, 236.5f, "Campsites/Camp_1/Dressing/KidTable"), DLO("tent", 271f, 6.5f, 234.5f, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), DLO("tripod", 276f, 6.3f, 232f, "Campsites/Camp_1/Dressing/Cookfire") },
     deckHide = new[] { D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"), new Main3AreaSet.DeckTarget { label = "SS1", point = V(251.6f, G, 272.0f), treeCoverPath = "Places/NorthLoop/SS1", controlRaise = 60f }, D("SS2", 150.5f, G, 276.5f, "Places/NorthLoop/SS2"), D("SS3", 132.3f, G, 262.3f, "Places/NorthLoop/SS3") } };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,
