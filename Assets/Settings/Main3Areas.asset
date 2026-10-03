@@ -69,6 +69,7 @@ MonoBehaviour:
   foundReach: 30
   foundMaxAngle: 45
   foundMinDeg: 1
+  raisedWalk: 1
   spacingCentre: 1.2
   spacingEdge: 0.5
   approachRay: 2
@@ -1044,7 +1045,40 @@ MonoBehaviour:
       look: {x: 172.4, y: 4.5, z: 281.4}
     playChecks:
     - main3_8_24_north_check.cs
-  - walkLines: []
+  - walkLines:
+    - label: the stair to the top
+      points:
+      - {x: 298.9, y: -999, z: 107.8}
+      - {x: 298.9, y: 9, z: 118.75}
+      - {x: 300.4, y: 9, z: 118.75}
+      - {x: 300.4, y: 14, z: 107.25}
+      - {x: 298.9, y: 14, z: 107.25}
+      - {x: 298.9, y: 19, z: 118.75}
+      - {x: 300.4, y: 19, z: 118.75}
+      - {x: 300.4, y: 24, z: 107.25}
+      - {x: 296, y: 24, z: 107.25}
+    - label: round the top
+      points:
+      - {x: 295.3, y: 24, z: 106.6}
+      - {x: 292, y: 24, z: 104.4}
+      - {x: 290.3, y: 24, z: 105.6}
+      - {x: 290.3, y: 24, z: 110.4}
+      - {x: 292, y: 24, z: 111.6}
+      - {x: 294, y: 24, z: 109.6}
+      - {x: 295.3, y: 24, z: 106.6}
+    - label: to PS1 on the west rail
+      points:
+      - {x: 291.6, y: 24, z: 109.7}
+      - {x: 288.8, y: 24, z: 109.7}
+    - label: to PS2 at the NW vertex
+      points:
+      - {x: 291.6, y: 24, z: 111.3}
+      - {x: 289.4, y: 24, z: 111.3}
+    - label: the table to the booth mouth
+      points:
+      - {x: 297.5, y: -999, z: 98.6}
+      - {x: 299, y: -999, z: 99}
+      - {x: 299.6, y: -999, z: 99.2}
     id: camp2
     task: 8.25
     title: Camp 2
@@ -1127,11 +1161,11 @@ MonoBehaviour:
       height: 1.8
       objectPath: Campsites/Camp_2/Dressing/StartBlaze
     - label: PS1
-      point: {x: 288.14, y: 24, z: 109.6}
+      point: {x: 288.14, y: 25.05, z: 109.6}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS1
     - label: PS2
-      point: {x: 288.8, y: 24, z: 111.2}
+      point: {x: 288.8, y: 25.05, z: 111.2}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS2
     - label: PS3
@@ -1148,7 +1182,7 @@ MonoBehaviour:
       treeCoverPath: 
       hard: 1
       loose: 0
-      objectPath: Campsites/Camp_2/StackTop/Layout825/Lamp/LampCore
+      objectPath: Campsites/Camp_2/StackTop/Layout825/Lamp
       controlRaise: 0
       anyEye: 0
     - label: top rail, west faces
@@ -1719,11 +1753,11 @@ MonoBehaviour:
       height: 1.8
       objectPath: Campsites/Camp_2/Dressing/StartBlaze
     - label: PS1
-      point: {x: 288.14, y: 24, z: 109.6}
+      point: {x: 288.14, y: 25.05, z: 109.6}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS1
     - label: PS2
-      point: {x: 288.8, y: 24, z: 111.2}
+      point: {x: 288.8, y: 25.05, z: 111.2}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS2
     - label: PS3

@@ -167,7 +167,7 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Ca
         PO("Hook", 299.63f, G, 98.40f, 1.5f, c2L + "Handset"), PO("Card table", 298.555f, G, 97.755f, 0.98f, c2L + "CardTable"),
         PO("His seat at the table", 299.40f, G, 97.76f, 1.2f, c2L + "CardTable/HisChair"), PO("Your seat", 297.71f, G, 97.76f, 1.2f, c2L + "CardTable/YourChair"), PO("Third place", 298.55f, G, 96.91f, 1.2f, c2L + "CardTable/ThirdPlace"),
         PO("Barrel", 291.4f, G, 101.4f, 1.19f, c2L + "Barrel"), PO("Phone pole", 272.8f, G, 72f, 8f, "PointsOfInterest/POI_Phone_pole"), PO("Food lockers", 317.2f, G, 136.0f, 1.2f, "PointsOfInterest/POI_Food_lockers"),
-        PO("Start blaze", 304.4f, G, 106.4f, 1.8f, "Campsites/Camp_2/Dressing/StartBlaze"), PO("PS1", 288.14f, c2Top, 109.6f, 0.3f, c2L + "PaperSpots/PS1"), PO("PS2", 288.8f, c2Top, 111.2f, 0.3f, c2L + "PaperSpots/PS2"),
+        PO("Start blaze", 304.4f, G, 106.4f, 1.8f, "Campsites/Camp_2/Dressing/StartBlaze"), PO("PS1", 288.14f, c2Top + 1.05f, 109.6f, 0.3f, c2L + "PaperSpots/PS1"), PO("PS2", 288.8f, c2Top + 1.05f, 111.2f, 0.3f, c2L + "PaperSpots/PS2"),
         PO("PS3", 285.7f, G, 109.9f, 0.3f, c2L + "PaperSpots/PS3") },
     interactions = new[] { IA("hook", c2L + "Handset", 299.6f, G, 99.2f), IA("R2 at the table", c2L + "CardTable/HisChair", 298.5f, G, 98.7f),
         IA("R2 on top", c2T + "HisChair", 293.8f, c2Top, 109.5f), IA("barrel", c2L + "Barrel", 292.3f, G, 100.4f) },
@@ -178,9 +178,15 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Ca
         FR("F5 TOP LANDING HEADING 300: CHAIR, TENT, LAMP", c2F5, Hd(c2F5, 300f, c2Top + 0.8f)),
         FR("F6 THE PHONE POLE FROM THE BOATHOUSE LEG", V(278.22f, G, 73.70f), V(272.8f, 7.0f, 72.0f)),
         FR("F7 THE FOOD LOCKERS FROM THE T LEG", V(310.15f, G, 129.43f), V(317.2f, 4.8f, 136.0f)) },
+    // walk lines where no trail runs, for the found rule (doc 4: the ramp foot up the stair to his chair; your seat to the booth door): the
+    // stair, the top round inside its rail, the table to the booth mouth
+    walkLines = new[] { WL("the stair to the top", V(298.9f, G, 107.8f), V(298.9f, 9f, 118.75f), V(300.4f, 9f, 118.75f), V(300.4f, 14f, 107.25f), V(298.9f, 14f, 107.25f), V(298.9f, 19f, 118.75f), V(300.4f, 19f, 118.75f), V(300.4f, c2Top, 107.25f), V(296.0f, c2Top, 107.25f)),
+        WL("round the top", V(295.3f, c2Top, 106.6f), V(292f, c2Top, 104.4f), V(290.3f, c2Top, 105.6f), V(290.3f, c2Top, 110.4f), V(292f, c2Top, 111.6f), V(294.0f, c2Top, 109.6f), V(295.3f, c2Top, 106.6f)),
+        WL("to PS1 on the west rail", V(291.6f, c2Top, 109.7f), V(288.8f, c2Top, 109.7f)), WL("to PS2 at the NW vertex", V(291.6f, c2Top, 111.3f), V(289.4f, c2Top, 111.3f)),
+        WL("the table to the booth mouth", V(297.5f, G, 98.6f), V(299.0f, G, 99.0f), V(299.6f, G, 99.2f)) },
     playChecks = new[] { "main3_8_25_camp2_check.cs" },
     inventory = new[] { "Lanterns and lamps" }, deckListWritten = true,
-    deckSee = new[] { DH("lamp core", 291.6f, 25.3f, 107.4f, c2T + "Lamp/LampCore"), DLO("top rail, west faces", 287.82f, 24.8f, 108.0f, c2T + "TopRail"), DLO("his chair on top", 294.76f, 24.8f, 110.31f, c2T + "HisChair"),
+    deckSee = new[] { DH("lamp core", 291.6f, 25.3f, 107.4f, c2T + "Lamp"), DLO("top rail, west faces", 287.82f, 24.8f, 108.0f, c2T + "TopRail"), DLO("his chair on top", 294.76f, 24.8f, 110.31f, c2T + "HisChair"),
         DLO("tent", 288.86f, 25.0f, 108.0f, c2T + "Tent"), DL("PS1", 288.14f, 24.1f, 109.6f), DL("PS2", 288.8f, 24.1f, 111.2f), DL("PS3", 285.7f, 4.5f, 109.9f), DL("booth hood light", 299.0f, 6.6f, 99.0f) },
     deckHide = none };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {

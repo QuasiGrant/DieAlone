@@ -196,6 +196,7 @@ public class Main3AreaSet : ScriptableObject
     [Tooltip("Found: a trail point within this many metres with a clear eye line to the place.")] public float foundReach = 30f;
     [Tooltip("Found (Pim, 8.21 gate): the place within this many degrees of the direction of travel along the trail.")] public float foundMaxAngle = 45f;
     [Tooltip("Found: the place subtends at least this many degrees vertically from the trail eye.")] public float foundMinDeg = 1f;
+    [Tooltip("Found: a walk point more than this many metres over the terrain (a stair, a stack top) puts the eye on the point, not the terrain.")] public float raisedWalk = 1f;
     [Header("Interaction spacing (CampLayout_UI rule 1)")]
     public float spacingCentre = 1.2f, spacingEdge = 0.5f, approachRay = 2f;
 
@@ -264,7 +265,7 @@ public class Main3AreaSet : ScriptableObject
                 var p = pts[i]; var to = new Vector2(pl.point.x - p.x, pl.point.z - p.z); float d = to.magnitude; if (d > foundReach || d < 0.5f) continue;
                 var a = pts[Mathf.Max(0, i - 1)]; var b = pts[Mathf.Min(pts.Count - 1, i + 1)]; var dir = new Vector2(b.x - a.x, b.z - a.z); if (dir.sqrMagnitude < 1e-4f) continue;
                 float ang = Mathf.Min(Vector2.Angle(dir, to), Vector2.Angle(-dir, to)); if (ang > foundMaxAngle) continue;
-                var eye = new Vector3(p.x, ground(p.x, p.z) + 1.6f, p.z); float tall = Vector3.Angle(footP - eye, footP + Vector3.up * h - eye); if (tall < foundMinDeg) continue;
+                float g = ground(p.x, p.z); var eye = new Vector3(p.x, (p.y > g + raisedWalk ? p.y : g) + 1.6f, p.z); float tall = Vector3.Angle(footP - eye, footP + Vector3.up * h - eye); if (tall < foundMinDeg) continue;   // a walk line over the terrain (a stair, a stack top) keeps its own height
                 r.tried++;
                 if (r.found && d <= r.dist) continue;
                 if (!clear(eye, centre) || !clear(eye, top)) continue;

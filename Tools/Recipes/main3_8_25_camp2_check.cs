@@ -3,10 +3,11 @@
 // HOOK (C2): the interactor's ray (its mask, interactReach) from the booth mouth (299.6, G+1.6, 99.2) facing 180, pitch 17 down, meets the handset.
 // BARREL (C5): the interactor's ray from the stand (292.3, 100.4) toward the barrel's centre meets the barrel.
 // TOP CHAIR: his chair on the top has box colliders only (no hull: a hulled seat is a perch over the rail; doc 4.2).
-// T3 TOP RAIL: from points on the top, on the landing and on his chair's seat, walking, sprinting and sprint-jumping out on every railHeadings
-//   heading for railTime s, the body never drops under the top (24) less railDrop.
-// S1 SIGHTLINE: seated at his chair (294.76, 25.2, 110.31), to the T (337, 170) and the highway on heading 66 (x 430), past the terrain,
-//   every collider and every drawn mesh (temporary exact colliders, as 8.24's stovepipe): reported clear or the first thing met.
+// T3 TOP RAIL: from points on the top, on the landing and in front of his chair (and on its seat if a jump reaches it: TOP CHAIR SEAT), walking, sprinting and sprint-jumping out on every railHeadings
+//   heading for railTime s: none crosses the top rail (leaves the top for neither the top nor the stair); down the stair is no fall; runs that go
+//   onto the stair and then over a stair rail are listed apart (T3 STAIR RAILS).
+// S1 SIGHTLINE: seated at his chair (294.76, 25.2, 110.31), to the T (337, 170) and the highway on heading 66 (x 430), past the terrain, every drawn collider (not the invisible rail boxes),
+//   and every drawn mesh (temporary exact colliders, as 8.24's stovepipe): reported clear or the first thing met.
 // WALKS (doc 4): boathouse to Camp 2 and Camp 2 to T along their trails; the ramp foot up the stair to his top chair; your seat to the
 //   booth door; the table to the ramp foot. Each arrives within arrive m, with times.
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
@@ -64,20 +65,40 @@ try
         var starts = new System.Collections.Generic.List<(string, UnityEngine.Vector3)> { ("top centre", V(292f, topY, 108f)) };
         for (int k = 0; k < 8; k++) { float b = (22.5f + k * 45f) * UnityEngine.Mathf.Deg2Rad; starts.Add(("top, bearing " + F1(22.5f + k * 45f) + " at 3.6 m", V(292f + UnityEngine.Mathf.Sin(b) * 3.6f, topY, 108f + UnityEngine.Mathf.Cos(b) * 3.6f))); }
         starts.Add(("landing west", V(296.9f, topY, 107.25f))); starts.Add(("landing east", V(300.4f, topY, 107.25f)));
-        if (chair != null) { var cb = new UnityEngine.Bounds(chair.position, UnityEngine.Vector3.zero); bool any = false; foreach (var c in chair.GetComponentsInChildren<UnityEngine.Collider>()) { if (!any) { cb = c.bounds; any = true; } else cb.Encapsulate(c.bounds); } starts.Add(("his chair's seat", V(cb.center.x, cb.max.y, cb.center.z))); }
-        var falls = new System.Collections.Generic.List<string>(); int runs = 0; float least = float.MaxValue;
+        // his chair: the body starts in front of it (the doc's "from the chair"); its seat box is a start only if a jump reaches it
+        starts.Add(("in front of his chair", V(294.0f, topY, 109.6f)));
+        if (chair != null && tuning != null)
+        {
+            var cb = new UnityEngine.Bounds(chair.position, UnityEngine.Vector3.zero); bool any = false; foreach (var c in chair.GetComponentsInChildren<UnityEngine.Collider>()) { if (!any) { cb = c.bounds; any = true; } else cb.Encapsulate(c.bounds); }
+            float seat = cb.max.y - topY, reachUp = tuning.jumpHeight + cc.stepOffset; bool up = seat <= reachUp;
+            Line(!up, "TOP CHAIR SEAT: its box " + F(seat) + " m over the top, a jump and a step reach " + F(reachUp) + " m: " + (up ? "the body gets on it (a perch over the rail)" : "the body cannot get on it"));
+            if (up) starts.Add(("his chair's seat", V(cb.center.x, cb.max.y, cb.center.z)));
+        }
+        // a run leaves by the top rail when the body is first outside both the top (topR m from the stack centre) and the stair's footprint
+        // (stairBox) while still near the top's height; by a stair rail when it was on the stair first; going down the stair is no fall
+        const float topR = 4.6f; var stairBox = new UnityEngine.Rect(295.4f, 106.4f, 301.2f - 295.4f, 119.6f - 106.4f);
+        bool OnTop(UnityEngine.Vector3 q) => new UnityEngine.Vector2(q.x - 292f, q.z - 108f).magnitude <= topR;
+        bool OnStair(UnityEngine.Vector3 q) => stairBox.Contains(new UnityEngine.Vector2(q.x, q.z));
+        var falls = new System.Collections.Generic.List<string>(); var stairFalls = new System.Collections.Generic.List<string>(); int runs = 0, downStair = 0; float least = float.MaxValue;
         foreach (var (name, p) in starts)
         {
             if (UnityEngine.Physics.OverlapCapsule(p + V(0f, cc.radius + 0.12f, 0f), p + V(0f, cc.height - cc.radius + 0.1f, 0f), cc.radius, ~0, UnityEngine.QueryTriggerInteraction.Ignore).Length > 0 && name != "his chair's seat") { sb.Append("note: T3 start " + name + " is not clear, skipped\n"); continue; }
             for (int h = 0; h < railHeadings; h++) foreach (var (jump, sprint, how) in new[] { (false, false, "walk"), (false, true, "sprint"), (true, true, "sprint-jump") })
             {
                 Put(p); float yaw = h * 360f / railHeadings * UnityEngine.Mathf.Deg2Rad; var dir = V(UnityEngine.Mathf.Sin(yaw), 0f, UnityEngine.Mathf.Cos(yaw)); float low = float.MaxValue; runs++;
-                for (float t = 0f; t < railTime; t += dt) { pc.Step(dir, jump, sprint, dt); low = UnityEngine.Mathf.Min(low, pc.transform.position.y); }
-                least = UnityEngine.Mathf.Min(least, low);
-                if (low < topY - railDrop) falls.Add(name + " " + how + " heading " + F1(h * 360f / railHeadings) + " to (" + F1(pc.transform.position.x) + ", " + F1(pc.transform.position.y) + ", " + F1(pc.transform.position.z) + ")");
+                bool wasStair = false; string left = null;
+                for (float t = 0f; t < railTime; t += dt)
+                {
+                    pc.Step(dir, jump, sprint, dt); var q = pc.transform.position; low = UnityEngine.Mathf.Min(low, q.y);
+                    if (left == null) { if (OnStair(q) && !OnTop(q)) wasStair = true; else if (!OnTop(q) && !OnStair(q)) left = wasStair ? "stair" : "top"; }
+                }
+                least = UnityEngine.Mathf.Min(least, low); var e = pc.transform.position;
+                string s = name + " " + how + " heading " + F1(h * 360f / railHeadings) + " to (" + F1(e.x) + ", " + F1(e.y) + ", " + F1(e.z) + ")";
+                if (left == "top") falls.Add(s); else if (left == "stair") stairFalls.Add(s); else if (low < topY - railDrop) downStair++;
             }
         }
-        Line(falls.Count == 0, "T3 TOP RAIL: " + runs + " runs (walk, sprint, sprint-jump on " + railHeadings + " headings for " + F1(railTime) + " s from " + starts.Count + " starts), lowest " + F(least) + ", off the top " + falls.Count + (falls.Count > 0 ? ": " + string.Join("; ", falls.GetRange(0, UnityEngine.Mathf.Min(6, falls.Count))) : ""));
+        Line(falls.Count == 0, "T3 TOP RAIL: " + runs + " runs (walk, sprint, sprint-jump on " + railHeadings + " headings for " + F1(railTime) + " s from " + starts.Count + " starts), lowest " + F(least) + ", over the top rail " + falls.Count + (falls.Count > 0 ? ": " + string.Join("; ", falls.GetRange(0, UnityEngine.Mathf.Min(8, falls.Count))) : "") + "; down the stair (no fall) " + downStair);
+        Line(stairFalls.Count == 0, "T3 STAIR RAILS (from the top): runs that went onto the stair and then off its footprint " + stairFalls.Count + (stairFalls.Count > 0 ? ": " + string.Join("; ", stairFalls.GetRange(0, UnityEngine.Mathf.Min(8, stairFalls.Count))) : ""));
     }
     // ---- S1 SIGHTLINE
     {
@@ -95,7 +116,7 @@ try
             }
             UnityEngine.Physics.SyncTransforms(); float fo = float.MaxValue; string what = "";
             foreach (var hh in UnityEngine.Physics.RaycastAll(eye, d.normalized, d.magnitude, ~0, UnityEngine.QueryTriggerInteraction.Ignore))
-            { var ht = hh.collider.transform; if (ht.IsChildOf(pc.transform) || ht.gameObject.layer == 2 || (chair != null && ht.IsChildOf(chair))) continue; if (hh.distance < fo) { fo = hh.distance; what = WalkIns.PathOf(ht) + " at " + F1(hh.distance) + " m"; } }
+            { var ht = hh.collider.transform; if (ht.IsChildOf(pc.transform) || ht.gameObject.layer == 2 || (chair != null && ht.IsChildOf(chair)) || (!(hh.collider is UnityEngine.TerrainCollider) && ht.GetComponent<UnityEngine.Renderer>() == null)) continue; if (hh.distance < fo) { fo = hh.distance; what = WalkIns.PathOf(ht) + " at " + F1(hh.distance) + " m"; } }   // what is drawn: an invisible box (a rail run's collider) hides nothing
             Line(fo == float.MaxValue, "S1 SIGHTLINE: seated at his chair to " + label + ", " + F1(d.magnitude) + " m: " + (fo == float.MaxValue ? "clear" : "first " + what));
             foreach (var t in temps) if (t != null) UnityEngine.Object.DestroyImmediate(t); temps.Clear(); UnityEngine.Physics.SyncTransforms();
         }

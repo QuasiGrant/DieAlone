@@ -595,14 +595,15 @@ try
             {
                 const float markSize = 0.012f, markMin = 0.25f;
                 var markMat = new UnityEngine.Material(UnityEngine.Shader.Find("Universal Render Pipeline/Unlit")); markMat.SetColor("_BaseColor", UnityEngine.Color.magenta);
-                int tw = shotW, th = shotH; NewCanvas(tw + 2 * gap, headH + ff.Count * (labelH + th + gap) + gap);
+                int sheetDiv = 1; while (headH + ff.Count * (labelH + shotH / sheetDiv + gap) + gap > UnityEngine.SystemInfo.maxTextureSize) sheetDiv++;   // a long list shrinks the sheet (a texture is at most maxTextureSize high: 17 places at full size were not); the singles stay full size
+                int tw = shotW / sheetDiv, th = shotH / sheetDiv; NewCanvas(tw + 2 * gap, headH + ff.Count * (labelH + th + gap) + gap);
                 string title = "Places found from their trails (Pim's rule): " + areaSel.title + ", the magenta ball on each target's centre"; Text(gap + 4, 12, title, 3, gold);
                 for (int i = 0; i < ff.Count; i++)
                 {
                     var mark = UnityEngine.GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Sphere); UnityEngine.Object.DestroyImmediate(mark.GetComponent<UnityEngine.Collider>());
                     mark.GetComponent<UnityEngine.Renderer>().sharedMaterial = markMat; mark.transform.position = ff[i].Item2;
                     mark.transform.localScale = UnityEngine.Vector3.one * UnityEngine.Mathf.Max(markMin, UnityEngine.Vector3.Distance(ff[i].Item1, ff[i].Item2) * markSize);
-                    int y = headH + i * (labelH + th + gap); Pose(ff[i].Item1, ff[i].Item2); var full = Render(1); MarkAt(full, ff[i].Item2); Blit(full, tw, th, gap, y + labelH); Text(gap + 2, y + 4, ff[i].Item3, 2, white);
+                    int y = headH + i * (labelH + th + gap); Pose(ff[i].Item1, ff[i].Item2); var full = Render(1); MarkAt(full, ff[i].Item2); Blit(sheetDiv == 1 ? full : Shrink(full, sheetDiv), tw, th, gap, y + labelH); Text(gap + 2, y + 4, ff[i].Item3, 2, white);
                     SaveSingle("Found_" + areaSel.id + "_" + (i + 1).ToString("00") + "_" + ff[i].Item3 + ".jpg", full);
                     UnityEngine.Object.DestroyImmediate(mark);
                 }
