@@ -321,7 +321,22 @@ try
     }
     // ---- PROMPTS (Wren 2026-10-03, a standing rule for every area): each interaction with a prompt word: from its approach (eye 1.6) at its
     // facing and pitch (or at its body's centre), the interactor's own test (its mask, triggers ignored, interactReach) meets an Interactable
-    // under the interaction's path whose prompt is the word
+    // under the interaction's path whose prompt is the word; and the target (every solid collider under the path that carries an
+    // Interactable) subtends promptMinDeg or more from the eye, the smaller of its widths across and up the look (Wren 2026-10-03: the
+    // ring box was a 3 by 3 degree target from the tent door)
+    const float promptMinDeg = 5f;
+    float AngSize(UnityEngine.Vector3 angEye, UnityEngine.Bounds angB)
+    {
+        var angF = (angB.center - angEye).normalized; var angR = UnityEngine.Vector3.Cross(UnityEngine.Vector3.up, angF); if (angR.sqrMagnitude < 1e-6f) angR = UnityEngine.Vector3.right; angR.Normalize(); var angU = UnityEngine.Vector3.Cross(angF, angR);
+        float ax0 = float.MaxValue, ax1 = float.MinValue, ay0 = float.MaxValue, ay1 = float.MinValue;
+        for (int ak = 0; ak < 8; ak++)
+        {
+            var av = new UnityEngine.Vector3((ak & 1) == 0 ? angB.min.x : angB.max.x, (ak & 2) == 0 ? angB.min.y : angB.max.y, (ak & 4) == 0 ? angB.min.z : angB.max.z) - angEye; float afz = UnityEngine.Vector3.Dot(av, angF); if (afz <= 0.01f) return 180f;
+            float aax = UnityEngine.Mathf.Atan2(UnityEngine.Vector3.Dot(av, angR), afz), aay = UnityEngine.Mathf.Atan2(UnityEngine.Vector3.Dot(av, angU), afz);
+            ax0 = UnityEngine.Mathf.Min(ax0, aax); ax1 = UnityEngine.Mathf.Max(ax1, aax); ay0 = UnityEngine.Mathf.Min(ay0, aay); ay1 = UnityEngine.Mathf.Max(ay1, aay);
+        }
+        return UnityEngine.Mathf.Min(ax1 - ax0, ay1 - ay0) * UnityEngine.Mathf.Rad2Deg;
+    }
     if (A.interactions != null)
     {
         var piP = UnityEngine.Object.FindFirstObjectByType<PlayerInteractor>(); var maskF = typeof(PlayerInteractor).GetField("mask", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -339,7 +354,10 @@ try
                 var it = hit.collider.GetComponentInParent<Interactable>(); bool own = false; foreach (var pt in parts) if (hit.collider.transform.IsChildOf(pt)) own = true;
                 got = WalkIns.PathOf(hit.collider.transform) + " at " + F1(hit.distance) + " m, prompt \"" + (it != null ? it.Prompt : "none") + "\""; pOk = own && it != null && it.Prompt == ia.prompt;
             }
-            if (!pOk) pFail++; pLines.Append("  " + (pOk ? "ok   " : "FAIL ") + "PROMPT " + ia.label + " (\"" + ia.prompt + "\") from " + P3(ap) + (float.IsNaN(ia.facing) ? " at its centre" : " facing " + F1(ia.facing) + ", " + F1(ia.pitchDown) + " down") + ": " + got + "\n");
+            // the target's angular size: every solid collider under the path that carries an Interactable
+            var tB = new UnityEngine.Bounds(); bool tAny = false; foreach (var pt in parts) foreach (var c in pt.GetComponentsInChildren<UnityEngine.Collider>()) { if (c.isTrigger || c.GetComponentInParent<Interactable>() == null) continue; if (!tAny) { tB = c.bounds; tAny = true; } else tB.Encapsulate(c.bounds); }
+            float tDeg = tAny ? AngSize(eye, tB) : 0f; if (tDeg < promptMinDeg) pOk = false;
+            if (!pOk) pFail++; pLines.Append("  " + (pOk ? "ok   " : "FAIL ") + "PROMPT " + ia.label + " (\"" + ia.prompt + "\") from " + P3(ap) + (float.IsNaN(ia.facing) ? " at its centre" : " facing " + F1(ia.facing) + ", " + F1(ia.pitchDown) + " down") + ": " + got + "; the target " + F1(tDeg) + " degrees (" + F1(promptMinDeg) + " or more)\n");
         }
         if (pN > 0) { if (pFail > 0) fails++; sb.Append((pFail == 0 ? "PASS" : "FAIL") + " PROMPTS: " + pN + " interactions with a prompt word\n" + pLines); }
     }

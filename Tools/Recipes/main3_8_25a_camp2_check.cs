@@ -7,12 +7,13 @@
 //   inside every edge of the flat top. HEAD CLEAR (K2): nothing over the top within headR m of the scramble head.
 // T3 EDGES: from points edgeIn m inside every edge of the flat top (not the gully), walk, sprint and sprint-jump out at 0 and +-edgeSpread
 //   degrees for edgeTime s: each lands on the floor or the scramble, or stays on the top; a landing on the floor must escape (below); one
-//   that ends perched over the floor (climbTop m or more over the ground, off the knob and the scramble) fails.
+//   that ends perched over the floor (climbTop m or more over the ground, off the knob and the scramble) must walk off (RIM ESCAPE).
 // T9 POCKETS: Marlow's grid, every podStep m from podNear to podFar m out from the knob's footprint, a walk straight at the knob's centre for
 //   podTime s, then the escape test; none trapped.
 // T11 WEDGES: from both inner corners of each rockfall boulder against the east face, the 48-heading escape test; at least one escapes.
 //   ESCAPE: a walk on each heading for escTime s; escaped when one ends escDist m or more from the start on the floor.
-// T12 GULLY: the foot to the head by the landing and back, walking and sprint-jumping; each arrives within arrive m (no stall at the turn).
+// T12 GULLY: the foot to the head by the landing and back on three lanes (centre and laneOff m either side), walking, sprinting and
+//   sprint-jumping; each arrives within arrive m (no stall at the turn or the joints).
 // WALKS (doc 4): boathouse to Camp 2 and Camp 2 to T along their trails; the trail end across the floor and up the scramble to the talk
 //   stand; your seat to the booth door; the table to the trail end. Each arrives within arrive m, with times.
 // K-TOP (doc 2.2): no tree trunk within kTopR m of (293, 121); no tree's LOD0 vertex over the flat top (no crown over it).
@@ -35,6 +36,9 @@ const float dt = 0.02f, arrive = 0.5f, legTime = 200f, eyeH = 1.6f, topY = 9f, c
 // the knob (Camp2Layout K1, K2): footprint, flat top, the scramble's points
 const float kx0 = 288.8f, kx1 = 299f, kz0 = 116f, kz1 = 127f, tx0 = 289f, tx1 = 297.5f, tz0 = 117f, tz1 = 125.5f, rampHalf = 0.8f;
 var foot = V(288.0f, 4.0f, 114.5f); var landS = V(288.0f, 7.0f, 120.7f); var land = V(288.0f, 7.0f, 121.5f); var head = V(291.0f, topY, 120.6f); var talk = V(291.3f, topY, 123.2f);
+// the head as Marlow walked it (8.25a gate 1: "up leg 2 to the head (291.2, 120.7), across the top to the talk stand"): the walk turns for the
+// stand on the top, 0.2 m on from where the ramp ends; a turn before the gully's end meets its north wall (reported, Wren 2026-10-03)
+var headOn = V(291.2f, topY, 120.7f);
 var sb = new System.Text.StringBuilder(); int fails = 0; void Line(bool ok, string s) { if (!ok) fails++; sb.Append((ok ? "PASS " : "FAIL ") + s + "\n"); }
 var temps = new System.Collections.Generic.List<UnityEngine.Object>();
 var c2 = Root("Campsites") != null ? Root("Campsites").transform.Find("Camp_2") : null; var L = c2 != null ? c2.Find("Layout825") : null; var K = c2 != null ? c2.Find("Layout825a") : null; var KT = K != null ? K.Find("Top") : null; var cd2 = c2 != null ? c2.Find("Dressing") : null;
@@ -47,6 +51,9 @@ bool Clear(UnityEngine.Vector3 p) => UnityEngine.Physics.OverlapCapsule(p + V(0f
 // ESCAPE: from p, a walk on each of n headings for escTime s; how many end escDist m or more away on the floor
 const float escTime = 2f, escDist = 2f;
 int Escapes(UnityEngine.Vector3 p, int n) { int k = 0; for (int h = 0; h < n; h++) { Put(p); var s = pc.transform.position; float yaw = h * 360f / n * UnityEngine.Mathf.Deg2Rad; var dir = V(UnityEngine.Mathf.Sin(yaw), 0f, UnityEngine.Mathf.Cos(yaw)); for (float t = 0f; t < escTime; t += dt) pc.Step(dir, false, false, dt); var e = pc.transform.position; if (P2(e.x - s.x, e.z - s.z).magnitude >= escDist && OnFloor(e)) k++; } return k; }
+// RIM ESCAPE (8.25a gate: the skin's boulders rise over the top's edge, so a run can stop on one): from p, the same walks; escaped when one
+// ends escDist m or more away on the floor or on the knob's top
+int RimEscapes(UnityEngine.Vector3 p, int n) { int k = 0; for (int h = 0; h < n; h++) { Put(p); var s = pc.transform.position; float yaw = h * 360f / n * UnityEngine.Mathf.Deg2Rad; var dir = V(UnityEngine.Mathf.Sin(yaw), 0f, UnityEngine.Mathf.Cos(yaw)); for (float t = 0f; t < escTime; t += dt) pc.Step(dir, false, false, dt); var e = pc.transform.position; if (P2(e.x - s.x, e.z - s.z).magnitude >= escDist && (OnFloor(e) || OnKnob(e))) k++; } return k; }
 try
 {
     if (L == null || K == null || KT == null) return "no Campsites/Camp_2/Layout825 or Layout825a/Top (run main3_8_25_camp2.cs and main3_8_25a_knob.cs)";
@@ -57,6 +64,21 @@ try
     // ---- PROMPTS
     {
         const float ringLook = 45f, talkFacing = 150f, talkCone = 10f; var phone = cd2 != null ? cd2.Find("Payphone/Telephone_Booth/Handset") : null; var ring = KT.Find("RingBox"); var barrel = L.Find("Barrel"); var tableChair = L.Find("CardTable/HisChair");
+        // each target's angular size from its stand (Wren 2026-10-03, a standing rule): every solid collider under it that carries an
+        // Interactable, the smaller of its widths across and up the look; under promptMinDeg fails
+        const float promptMinDeg = 5f;
+        float AngSize(UnityEngine.Vector3 angEye, UnityEngine.Bounds angB)
+        {
+            var angF = (angB.center - angEye).normalized; var angR = UnityEngine.Vector3.Cross(UnityEngine.Vector3.up, angF); if (angR.sqrMagnitude < 1e-6f) angR = UnityEngine.Vector3.right; angR.Normalize(); var angU = UnityEngine.Vector3.Cross(angF, angR);
+            float ax0 = float.MaxValue, ax1 = float.MinValue, ay0 = float.MaxValue, ay1 = float.MinValue;
+            for (int ak = 0; ak < 8; ak++)
+            {
+                var av = new UnityEngine.Vector3((ak & 1) == 0 ? angB.min.x : angB.max.x, (ak & 2) == 0 ? angB.min.y : angB.max.y, (ak & 4) == 0 ? angB.min.z : angB.max.z) - angEye; float afz = UnityEngine.Vector3.Dot(av, angF); if (afz <= 0.01f) return 180f;
+                float aax = UnityEngine.Mathf.Atan2(UnityEngine.Vector3.Dot(av, angR), afz), aay = UnityEngine.Mathf.Atan2(UnityEngine.Vector3.Dot(av, angU), afz);
+                ax0 = UnityEngine.Mathf.Min(ax0, aax); ax1 = UnityEngine.Mathf.Max(ax1, aax); ay0 = UnityEngine.Mathf.Min(ay0, aay); ay1 = UnityEngine.Mathf.Max(ay1, aay);
+            }
+            return UnityEngine.Mathf.Min(ax1 - ax0, ay1 - ay0) * UnityEngine.Mathf.Rad2Deg;
+        }
         foreach (var (label, t, x, z, floorY, word) in new[] { ("hook", phone, 299.65f, 99.05f, float.NaN, "Lift the receiver"), ("barrel", barrel, 292.3f, 100.4f, float.NaN, "Take water"),
             ("R2 at the table", tableChair, 298.5f, 98.7f, float.NaN, "Talk"), ("R2 on top", chair, talk.x, talk.z, topY, "Talk"), ("ring box", ring, 295.6f, 120.3f, topY, "Examine") })
         {
@@ -67,7 +89,9 @@ try
             var dv = aim - eye; float down = UnityEngine.Mathf.Atan2(-dv.y, new UnityEngine.Vector2(dv.x, dv.z).magnitude) * UnityEngine.Mathf.Rad2Deg; if (label == "ring box" && down > ringLook) ok = false;
             // R2 on top: the stand faces talkFacing (Wren 2026-10-03: the chair centre's bearing; the doc's 120 met nothing); the look to the chair lies within talkCone of it
             float bearing = (UnityEngine.Mathf.Atan2(dv.x, dv.z) * UnityEngine.Mathf.Rad2Deg + 360f) % 360f; if (label == "R2 on top" && UnityEngine.Mathf.Abs(UnityEngine.Mathf.DeltaAngle(bearing, talkFacing)) > talkCone) ok = false;
-            Line(ok, "PROMPT " + label + " (\"" + word + "\"): from (" + F1(x) + ", " + F1(z) + "), bearing " + F1(bearing) + ", " + F1(down) + " degrees down, the interactor's ray meets " + got);
+            var tB = new UnityEngine.Bounds(); bool tAny = false; foreach (var c in t.GetComponentsInChildren<UnityEngine.Collider>()) { if (c.isTrigger || c.GetComponentInParent<Interactable>() == null) continue; if (!tAny) { tB = c.bounds; tAny = true; } else tB.Encapsulate(c.bounds); }
+            float tDeg = tAny ? AngSize(eye, tB) : 0f; if (tDeg < promptMinDeg) ok = false;
+            Line(ok, "PROMPT " + label + " (\"" + word + "\"): from (" + F1(x) + ", " + F1(z) + "), bearing " + F1(bearing) + ", " + F1(down) + " degrees down, the interactor's ray meets " + got + "; the target " + F1(tDeg) + " degrees (" + F1(promptMinDeg) + " or more)");
         }
         const float hookCone = 10f, hookStep = 2f, hookShare = 0.5f; int looks = 0, met = 0; var by = new System.Collections.Generic.SortedDictionary<string, int>();
         if (phone != null)
@@ -106,7 +130,7 @@ try
         var starts = new System.Collections.Generic.List<(string, UnityEngine.Vector3, float)>();
         for (float x = tx0 + edgeIn; x <= tx1 - edgeIn + 1e-3f; x += edgeStep) { starts.Add(("south edge x " + F1(x), V(x, topY, tz0 + edgeIn), 180f)); starts.Add(("north edge x " + F1(x), V(x, topY, tz1 - edgeIn), 0f)); }
         for (float z = tz0 + edgeIn; z <= tz1 - edgeIn + 1e-3f; z += edgeStep) { starts.Add(("east edge z " + F1(z), V(tx1 - edgeIn, topY, z), 90f)); if (Off(P2(tx0 + edgeIn, z), P2(land.x, land.z), P2(head.x, head.z)) > rampHalf + edgeIn) starts.Add(("west edge z " + F1(z), V(tx0 + edgeIn, topY, z), 270f)); }
-        int runs = 0, stayed = 0, floor = 0, scramble = 0; var bad = new System.Collections.Generic.List<string>(); var escaped = new System.Collections.Generic.Dictionary<string, int>();
+        int runs = 0, stayed = 0, floor = 0, scramble = 0, rim = 0; var bad = new System.Collections.Generic.List<string>(); var escaped = new System.Collections.Generic.Dictionary<string, int>();
         foreach (var (name, p, outward) in starts)
         {
             if (!Clear(p)) { sb.Append("note: T3 start " + name + " is not clear, skipped\n"); continue; }
@@ -117,11 +141,11 @@ try
                 var e = pc.transform.position; string s = name + " " + how + " heading " + F1((outward + spread + 360f) % 360f) + " to (" + F1(e.x) + ", " + F1(e.y) + ", " + F1(e.z) + ")";
                 if (OnKnob(e)) { stayed++; continue; }
                 if (OnScramble(e)) { scramble++; continue; }
-                if (!OnFloor(e)) { bad.Add(s + ", perched " + F(e.y - H(e.x, e.z)) + " m over the ground"); continue; }
+                if (!OnFloor(e)) { if (RimEscapes(e, escN) == 0) bad.Add(s + ", perched " + F(e.y - H(e.x, e.z)) + " m over the ground, no way off"); else rim++; continue; }
                 floor++; var key = F1(e.x) + "," + F1(e.z); if (!escaped.ContainsKey(key)) escaped[key] = Escapes(e, escN); if (escaped[key] == 0) bad.Add(s + ", trapped (0 of " + escN + " escapes)");
             }
         }
-        Line(bad.Count == 0, "T3 EDGES: " + runs + " runs (walk, sprint, sprint-jump at 0 and +-" + F1(edgeSpread) + " degrees out of " + starts.Count + " edge points): stayed on top " + stayed + ", onto the scramble " + scramble + ", landed on the floor and escaped " + floor + ", failed " + bad.Count + (bad.Count > 0 ? ": " + string.Join("; ", bad.GetRange(0, UnityEngine.Mathf.Min(8, bad.Count))) : ""));
+        Line(bad.Count == 0, "T3 EDGES: " + runs + " runs (walk, sprint, sprint-jump at 0 and +-" + F1(edgeSpread) + " degrees out of " + starts.Count + " edge points): stayed on top " + stayed + ", stopped on the rim and walked off " + rim + ", onto the scramble " + scramble + ", landed on the floor and escaped " + floor + ", failed " + bad.Count + (bad.Count > 0 ? ": " + string.Join("; ", bad.GetRange(0, UnityEngine.Mathf.Min(8, bad.Count))) : ""));
     }
     // ---- T9 POCKETS (Marlow's grid round the whole foot)
     {
@@ -133,7 +157,7 @@ try
             if (o < podNear || o > podFar) continue; var p = V(x, H(x, z), z); if (!Clear(p) || OnScramble(p)) continue;
             Put(p); var dir = V(kc.x - x, 0f, kc.z - z).normalized; runs++; for (float t = 0f; t < podTime; t += dt) pc.Step(dir, false, false, dt);
             var e = pc.transform.position; if (OnKnob(e) || OnScramble(e)) continue;
-            if (!OnFloor(e)) { trapped.Add("from (" + F1(x) + ", " + F1(z) + ") perched at (" + F1(e.x) + ", " + F1(e.y) + ", " + F1(e.z) + ")"); continue; }
+            if (!OnFloor(e)) { if (RimEscapes(e, escN) == 0) trapped.Add("from (" + F1(x) + ", " + F1(z) + ") perched at (" + F1(e.x) + ", " + F1(e.y) + ", " + F1(e.z) + ")"); continue; }
             if (Escapes(e, escN) == 0) trapped.Add("from (" + F1(x) + ", " + F1(z) + ") trapped at (" + F1(e.x) + ", " + F1(e.y) + ", " + F1(e.z) + ")");
         }
         Line(trapped.Count == 0, "T9 POCKETS: " + runs + " walks at the knob's centre from " + F1(podNear) + " to " + F1(podFar) + " m out every " + F1(podStep) + " m, perched or trapped " + trapped.Count + (trapped.Count > 0 ? ": " + string.Join("; ", trapped.GetRange(0, UnityEngine.Mathf.Min(8, trapped.Count))) : ""));
@@ -154,28 +178,38 @@ try
     }
     // ---- T12 GULLY, WALKS
     {
-        bool Walk(UnityEngine.Vector3 to, bool jump, ref float time, out float left)
+        bool Walk(UnityEngine.Vector3 to, bool jump, bool sprint, ref float time, out float left)
         {
-            for (float t = 0f; t < legTime; t += dt) { var p = pc.transform.position; var d = V(to.x - p.x, 0f, to.z - p.z); if (d.magnitude < arrive * 0.5f) break; pc.Step(d.normalized, jump, jump, dt); time += dt; }
+            for (float t = 0f; t < legTime; t += dt) { var p = pc.transform.position; var d = V(to.x - p.x, 0f, to.z - p.z); if (d.magnitude < arrive * 0.5f) break; pc.Step(d.normalized, jump, sprint, dt); time += dt; }
             var e = pc.transform.position; left = new UnityEngine.Vector2(e.x - to.x, e.z - to.z).magnitude; return left <= arrive;
         }
         UnityEngine.Vector3 G(float x, float z) => V(x, H(x, z), z);
-        var legs = new System.Collections.Generic.List<(string, UnityEngine.Vector3[], bool)>
-        {
-            ("T12 GULLY up, walking", new[] { foot, land, head }, false), ("T12 GULLY down, walking", new[] { head, land, foot }, false),
-            ("T12 GULLY up, sprint-jumping", new[] { foot, land, head }, true), ("T12 GULLY down, sprint-jumping", new[] { head, land, foot }, true)
-        };
-        foreach (var n in new[] { "Boathouse to Camp 2", "Camp 2 to T" }) { var leg = Root("Trails").transform.Find(n); if (leg == null) { Line(false, "WALK: no Trails/" + n); continue; } var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform p in leg) pts.Add(p.position); legs.Add(("WALK: " + n + ", the trail", pts.ToArray(), false)); }
-        legs.Add(("WALK: the trail end across the floor and up the scramble to the talk stand", new[] { G(298.9f, 107.8f), foot, land, head, talk }, false));
-        legs.Add(("WALK: your seat round the table's north side to the booth door", new[] { G(297.5f, 98.6f), G(299.0f, 99.0f), G(299.6f, 99.2f) }, false));
-        legs.Add(("WALK: the table to the trail end", new[] { G(298.5f, 98.7f), G(298.9f, 107.8f) }, false));
+        string[] modeName = { "walking", "sprinting", "sprint-jumping" };
+        var legs = new System.Collections.Generic.List<(string, UnityEngine.Vector3[], int)>();
+        // T12 lanes (8.25a gate, Marlow 1: the east lane stalled at leg 1's joint with the landing, and a sprint on leg 2's north edge): the
+        // centre and laneOff m either side of it (+ to the right going up: east on leg 1), walking, sprinting and sprint-jumping, up and down
+        const float laneOff = 0.5f;
+        var d1 = new UnityEngine.Vector2(land.x - foot.x, land.z - foot.z).normalized; var d2 = new UnityEngine.Vector2(head.x - land.x, head.z - land.z).normalized;
+        var r1 = new UnityEngine.Vector2(d1.y, -d1.x); var r2 = new UnityEngine.Vector2(d2.y, -d2.x); var rc = (r1 + r2).normalized;
+        UnityEngine.Vector3 Sh(UnityEngine.Vector3 p, UnityEngine.Vector2 r, float o) => V(p.x + r.x * o, p.y, p.z + r.y * o);
+        foreach (var o in new[] { -laneOff, 0f, laneOff })
+            for (int m = 0; m < 3; m++)
+            {
+                string lane = o == 0f ? "centre" : (o > 0f ? "east lane +" : "west lane ") + F1(o);
+                var up = new[] { Sh(foot, r1, o), Sh(land, rc, o), Sh(head, r2, o) };
+                legs.Add(("T12 GULLY up, " + lane + ", " + modeName[m], up, m)); legs.Add(("T12 GULLY down, " + lane + ", " + modeName[m], new[] { up[2], up[1], up[0] }, m));
+            }
+        foreach (var n in new[] { "Boathouse to Camp 2", "Camp 2 to T" }) { var leg = Root("Trails").transform.Find(n); if (leg == null) { Line(false, "WALK: no Trails/" + n); continue; } var pts = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (UnityEngine.Transform p in leg) pts.Add(p.position); legs.Add(("WALK: " + n + ", the trail", pts.ToArray(), 0)); }
+        legs.Add(("WALK: the trail end across the floor and up the scramble to the talk stand", new[] { G(298.9f, 107.8f), foot, land, head, headOn, talk }, 0));
+        legs.Add(("WALK: your seat round the table's north side to the booth door", new[] { G(297.5f, 98.6f), G(299.0f, 99.0f), G(299.6f, 99.2f) }, 0));
+        legs.Add(("WALK: the table to the trail end", new[] { G(298.5f, 98.7f), G(298.9f, 107.8f) }, 0));
         float speed = tuning != null ? tuning.walkSpeed : 2.5f;
-        foreach (var (name, pts, jump) in legs)
+        foreach (var (name, pts, mode) in legs)
         {
             Put(pts[0]); float time = 0f, len = 0f; bool ok = true; string where = ""; for (int i = 1; i < pts.Length; i++) len += V(pts[i].x - pts[i - 1].x, 0f, pts[i].z - pts[i - 1].z).magnitude;
-            for (int i = 1; i < pts.Length && ok; i++) if (!Walk(pts[i], jump, ref time, out float left)) { ok = false; where = ", stops " + F(left) + " m short of (" + F1(pts[i].x) + ", " + F1(pts[i].z) + ") at (" + F1(pc.transform.position.x) + ", " + F1(pc.transform.position.y) + ", " + F1(pc.transform.position.z) + ")"; }
+            for (int i = 1; i < pts.Length && ok; i++) if (!Walk(pts[i], mode == 2, mode >= 1, ref time, out float left)) { ok = false; where = ", stops " + F(left) + " m short of (" + F1(pts[i].x) + ", " + F1(pts[i].z) + ") at (" + F1(pc.transform.position.x) + ", " + F1(pc.transform.position.y) + ", " + F1(pc.transform.position.z) + ")"; }
             var e = pc.transform.position; if (ok && pts[pts.Length - 1].y >= topY - 0.1f && e.y < topY - 0.3f) { ok = false; where = ", arrives below the top at y " + F(e.y); }
-            Line(ok, name + ", " + F1(len) + " m, " + F1(time) + " s" + (jump ? "" : " at " + F1(speed) + " m/s") + where);
+            Line(ok, name + ", " + F1(len) + " m, " + F1(time) + " s" + (mode == 0 ? " at " + F1(speed) + " m/s" : "") + where);
         }
     }
     // ---- K-TOP: trunks and crowns

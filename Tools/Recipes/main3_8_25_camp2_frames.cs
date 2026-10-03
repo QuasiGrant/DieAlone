@@ -4,7 +4,7 @@
 // Drawer. Frames at Grant's size (shotW x shotH) in outDir, per look: from the deck eye on the cab side nearest Camp 2 (deck floor plus
 // eyeH, deckIn m in from the cab's centre toward the lamp), aimed at the lamp's core, the naked eye and binoculars (binoFov degrees).
 // LAMP: at night the lamp's practical light is on. CORE (gate round 2, Wren 3): at night the core's brightest pixel in the naked-eye frame
-// stands coreAbove grey or more over the frame's mean.
+// stands coreAbove grey or more over the frame's mean. CLIP (8.25a gate): from F5's and F9's eyes the core's brightest grey stays under clipMax.
 string look = "";
 string outDir = System.IO.Path.GetFullPath("Docs/Captures/Main3Review_camp2");
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
@@ -70,6 +70,20 @@ try
         cam.targetTexture = null; float best = 0f;
         for (int y = UnityEngine.Mathf.Max(0, (int)y0 - corePad); y <= UnityEngine.Mathf.Min(shotH - 1, (int)y1 + corePad); y++) for (int x = UnityEngine.Mathf.Max(0, (int)x0 - corePad); x <= UnityEngine.Mathf.Min(shotW - 1, (int)x1 + corePad); x++) { var c = px[y * shotW + x]; best = UnityEngine.Mathf.Max(best, (c.r + c.g + c.b) / 3f); }
         coreOver = best - frameMean;
+    }
+    // CLIP (8.25a gate, Vesper 4 and Wren 1): from the T leg (F5) and from the scramble head (F9), the core's brightest grey stays under
+    // clipMax (no clipped white but the sun); frames CoreClip_<look>_F5.jpg and _F9.jpg
+    const float clipMax = 230f; var terr = UnityEngine.Terrain.activeTerrain;
+    foreach (var (fl, fx, fz, fy) in new[] { ("F5", 308.6f, 123.6f, float.NaN), ("F9", 291.0f, 120.6f, 9f) })
+    {
+        if (core == null) break;
+        float gy = float.IsNaN(fy) ? terr.SampleHeight(V(fx, 0f, fz)) + terr.transform.position.y : fy; var fe = V(fx, gy + eyeH, fz);
+        cam.fieldOfView = camFov; Pose(fe, at); Shoot("CoreClip_" + tag + "_" + fl + ".jpg"); var cpx = shot.GetPixels32();
+        cam.targetTexture = rt; var ccb = core.GetComponent<UnityEngine.Renderer>().bounds; float cx0 = float.MaxValue, cy0 = float.MaxValue, cx1 = float.MinValue, cy1 = float.MinValue;
+        for (int k = 0; k < 8; k++) { var w = V((k & 1) == 0 ? ccb.min.x : ccb.max.x, (k & 2) == 0 ? ccb.min.y : ccb.max.y, (k & 4) == 0 ? ccb.min.z : ccb.max.z); var sp = cam.WorldToScreenPoint(w); cx0 = UnityEngine.Mathf.Min(cx0, sp.x); cy0 = UnityEngine.Mathf.Min(cy0, sp.y); cx1 = UnityEngine.Mathf.Max(cx1, sp.x); cy1 = UnityEngine.Mathf.Max(cy1, sp.y); }
+        cam.targetTexture = null; float cbest = 0f;
+        for (int y = UnityEngine.Mathf.Max(0, (int)cy0); y <= UnityEngine.Mathf.Min(shotH - 1, (int)cy1); y++) for (int x = UnityEngine.Mathf.Max(0, (int)cx0); x <= UnityEngine.Mathf.Min(shotW - 1, (int)cx1); x++) { var c = cpx[y * shotW + x]; cbest = UnityEngine.Mathf.Max(cbest, (c.r + c.g + c.b) / 3f); }
+        Line(cbest < clipMax, "CLIP (" + lookName + ", " + fl + " from (" + fx.ToString("F1") + ", " + fz.ToString("F1") + ")): the lamp core's brightest grey is " + cbest.ToString("F0") + " (under " + clipMax.ToString("F0") + ")");
     }
     if (lookName.ToLowerInvariant().Contains("night")) Line(!float.IsNaN(coreOver) && coreOver >= coreAbove, "CORE (" + lookName + "): the lamp core's brightest pixel in DeckLamp_" + tag + "_Eye is " + (float.IsNaN(coreOver) ? "not measured" : coreOver.ToString("F0") + " grey over the frame mean " + frameMean.ToString("F0")) + " (at least " + coreAbove.ToString("F0") + ")");
     var light = lamp.GetComponentInChildren<UnityEngine.Light>(true); bool night = lookName.ToLowerInvariant().Contains("night");

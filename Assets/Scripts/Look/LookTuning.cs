@@ -167,6 +167,8 @@ public class LookTuning : ScriptableObject
     [Range(0f, 10f)] public float cabLampBulbIntensity = 3.0f;
     [Tooltip("Brightness of the cab's lit windows at night, drawn without fog so the tower reads from the Ward pass.")]
     [Range(0f, 4f)] public float cabWindowGlowIntensity = 0.6f;
+    [Tooltip("Brightness of the Camp 2 lamp's cold core (8.25a gate): 40 grey or more over the night frame from the deck, under clipped white (230) from 10 m.")]
+    [Range(0f, 4f)] public float camp2LampCoreIntensity = 0.8f;
 
     [Header("Far markers (drawn without fog so they mark places at night; Style.md 2.4)")]
     [Tooltip("Office lot lights, sodium. Style #F08A2A.")]

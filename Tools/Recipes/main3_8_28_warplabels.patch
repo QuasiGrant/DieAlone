@@ -1,5 +1,5 @@
 diff --git a/Assets/Scripts/Dev/DevWarpLabels.cs b/Assets/Scripts/Dev/DevWarpLabels.cs
-index 36b9250..15502d6 100644
+index d89bdd1..41791ae 100644
 --- a/Assets/Scripts/Dev/DevWarpLabels.cs
 +++ b/Assets/Scripts/Dev/DevWarpLabels.cs
 @@ -30,6 +30,7 @@ public static class DevWarpLabels
@@ -9,7 +9,7 @@ index 36b9250..15502d6 100644
 +        new Row("CAMPS", "Old_Burn", "Old burn, forage A"),   // 8.28 BurnLayout_UI 5 (Pim): under the burn fork
          new Row("CAMPS", "North_Loop_Ruin", "North loop: ruin"),   // Valley.md 14, 8.17
          new Row("CAMPS", "Camp_2", "Camp 2"),
-         new Row("CAMPS", "Camp_2_Top", "Camp 2, top of the stack"),
+         new Row("CAMPS", "Camp_2_Top", "Camp 2 knob"),   // 8.25a gate (Pim, Wren): the stack is now a knob
 @@ -41,7 +42,6 @@ public static class DevWarpLabels
          new Row("FRONT", "Trailhead_T", "Parking lot trailhead"),
          new Row("FRONT", "Lot_Highway", "Lot, facing the highway"),

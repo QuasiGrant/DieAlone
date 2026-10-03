@@ -1290,7 +1290,7 @@ MonoBehaviour:
       objectPath: Campsites/Camp_2/Layout825a/PaperSpots/PaperSpot_K2
       hiddenBy: 
     - label: PS3
-      point: {x: 300, y: 5.3802476, z: 126.5}
+      point: {x: 300, y: 7.1903076, z: 126.5}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825a/PaperSpots/PaperSpot_K3
       hiddenBy: 
@@ -1415,6 +1415,15 @@ MonoBehaviour:
     - label: 'F9 THE HEAD HEADING 70: THE TOP'
       eye: {x: 291, y: 10.6, z: 120.6}
       look: {x: 300.3969, y: 9.8, z: 124.0202}
+    - label: 'F10 THE WAY UP FROM THE BOATHOUSE LEG''S END: THE CAIRN AND LEG 1'
+      eye: {x: 298.9, y: -999, z: 106.3}
+      look: {x: 286.5, y: 5, z: 113.5}
+    - label: 'F11 THE WAY UP FROM THE T LEG''S START: THE CAIRN AND LEG 1'
+      eye: {x: 298.9, y: -999, z: 107.8}
+      look: {x: 286.5, y: 5, z: 113.5}
+    - label: F12 THE SCRAMBLE FROM ITS FOOT, UP THE LINE
+      eye: {x: 288, y: -999, z: 113.2}
+      look: {x: 288, y: 8, z: 121.5}
     - label: THE PHONE FROM THE BOOTH MOUTH, FACING THE BACK WALL
       eye: {x: 299.65, y: -999, z: 99.05}
       look: {x: 300.4, y: 5.6, z: 99.05}
@@ -1961,43 +1970,175 @@ MonoBehaviour:
     - main3_8_27_cave_frames.cs?look=Day_two
   - acceptedStops: []
     spacingExceptions: []
-    walkLines: []
+    walkLines:
+    - label: Camp to pump P60 to the hollow
+      points:
+      - {x: 186.69, y: -999, z: 133.44}
+      - {x: 203.9, y: -999, z: 143.6}
     id: burn
     task: 8.28
     title: Old burn and forage
     bounds:
     - serializedVersion: 2
-      x: 205
-      y: 140
-      width: 130
-      height: 60
+      x: 180
+      y: 100
+      width: 165
+      height: 140
     warps:
     - Old_Burn
     - Junction_Jg
     places:
-    - label: Old burn
-      point: {x: 240, y: -999, z: 160}
-      height: 0
-      objectPath: 
+    - label: Forage A
+      point: {x: 239.59, y: -999, z: 163.04}
+      height: 0.95
+      objectPath: PointsOfInterest/POI_Forage_patch_A
       hiddenBy: 
-    - label: Forage patch A
-      point: {x: 240, y: -999, z: 163}
-      height: 0
-      objectPath: 
+    - label: Hollow Giant hollow
+      point: {x: 0, y: -999, z: 0}
+      height: 2.25
+      objectPath: Places/Burn828/Hollow
       hiddenBy: 
-    - label: Jg
-      point: {x: 262, y: -999, z: 170}
-      height: 0
-      objectPath: 
+    - label: Jg signpost
+      point: {x: 263.8, y: -999, z: 170.2}
+      height: 2.6
+      objectPath: Ground815/JunctionMarkers/Sign_Jg
+      hiddenBy: 
+    - label: Gate Tree stub
+      point: {x: 290, y: -999, z: 176}
+      height: 15
+      objectPath: Giants/Heroes/Gate_Tree
+      hiddenBy: 
+    - label: Trailhead board
+      point: {x: 338, y: -999, z: 172.5}
+      height: 2.1
+      objectPath: Ground815/JunctionMarkers/Trailhead_Board
+      hiddenBy: 
+    - label: Trailhead arms
+      point: {x: 0, y: -999, z: 0}
+      height: 2
+      objectPath: Places/Burn828/T_Arms
+      hiddenBy: 
+    - label: Firebreak
+      point: {x: 0, y: -999, z: 0}
+      height: 0.45
+      objectPath: Places/Burn828/Firebreak
+      hiddenBy: 
+    - label: First-sight stake
+      point: {x: 327.3, y: -999, z: 168.2}
+      height: 1.2
+      objectPath: PointsOfInterest/POI_First_sight_of_the_lot
       hiddenBy: 
     inventory: []
-    deckListWritten: 0
+    deckListWritten: 1
     hardSeesTower: 0
-    deckSee: []
-    deckHide: []
-    interactions: []
-    frames: []
-    playChecks: []
+    deckSee:
+    - label: office west door opening
+      point: {x: 344, y: 4.3, z: 199}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: FrontZone/Office/WestDoor
+      controlRaise: 0
+      anyEye: 0
+    - label: verge tree
+      point: {x: 419, y: 25, z: 139}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: FrontZone/VergeTree
+      controlRaise: 0
+      anyEye: 0
+    deckHide:
+    - label: forage A bush tops
+      point: {x: 239.59, y: 5.95, z: 163.04}
+      treeCoverPath: PointsOfInterest/POI_Forage_patch_A
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: forage B bush tops
+      point: {x: 140.75, y: 9.2, z: 167.12}
+      treeCoverPath: PointsOfInterest/POI_Forage_patch_B
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: forage C shrub tops
+      point: {x: 229.5, y: 5.3, z: 273.5}
+      treeCoverPath: Places/ForageC
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: the inside of the Hollow Giant hollow
+      point: {x: 203.2, y: 7, z: 142.3}
+      treeCoverPath: Places/Burn828/Hollow/Recess
+      hard: 0
+      loose: 0
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    interactions:
+    - label: forage A
+      path: PointsOfInterest/POI_Forage_patch_A
+      approach: {x: 241.6, y: -999, z: 160.6}
+      prompt: Forage
+      facing: 301
+      pitchDown: 36
+    - label: T board
+      path: Ground815/JunctionMarkers/Trailhead_Board/Board
+      approach: {x: 339.5, y: -999, z: 172.5}
+      prompt: Examine
+      facing: 270
+      pitchDown: 0
+    frames:
+    - label: FORAGE A FROM THE CAMP SIDE
+      eye: {x: 233.4, y: -999, z: 148.3}
+      look: {x: 239.59, y: 5.6, z: 163.04}
+    - label: FORAGE A FROM THE JG SIDE
+      eye: {x: 247.8, y: -999, z: 174.3}
+      look: {x: 239.59, y: 5.6, z: 163.04}
+    - label: FORAGE B AT 12 M, FROM CAMP
+      eye: {x: 153.32278, y: -999, z: 170.97601}
+      look: {x: 140.75, y: 8.9, z: 167.12}
+    - label: FORAGE B AT 11 M, FROM CAMP 3
+      eye: {x: 136.73843, y: -999, z: 155.82216}
+      look: {x: 140.75, y: 8.9, z: 167.12}
+    - label: THE GATE TREE FROM JG
+      eye: {x: 267, y: -999, z: 180.7}
+      look: {x: 290, y: 16, z: 176}
+    - label: THE GATE TREE FROM T AT 17 M, ITS UPPER TRUNK
+      eye: {x: 307.60562, y: -999, z: 172.19362}
+      look: {x: 290, y: 16, z: 176}
+    - label: JG SIGN FROM THE CAMP LEG AT 30 M
+      eye: {x: 237.27888, y: -999, z: 153.40367}
+      look: {x: 265, y: 7.2000265, z: 169}
+    - label: JG SIGN FROM THE T LEG AT 30 M
+      eye: {x: 291.78165, y: -999, z: 182.23819}
+      look: {x: 265, y: 7.2000265, z: 169}
+    - label: JG SIGN FROM THE CAMP 1 LEG AT 30 M
+      eye: {x: 268.01767, y: -999, z: 203.27504}
+      look: {x: 265, y: 7.2000265, z: 169}
+    - label: JG SIGN FROM THE JUNCTION FACING 135
+      eye: {x: 262, y: -999, z: 172}
+      look: {x: 269.07108, y: 7.2000265, z: 164.92894}
+    - label: THE T BOARD FROM THE LOT FACING 270
+      eye: {x: 358, y: -999, z: 170}
+      look: {x: 348, y: 5, z: 170}
+    - label: THE HOLLOW FROM M 30 HEADING 200
+      eye: {x: 211.94537, y: -999, z: 155.23952}
+      look: {x: 208.52518, y: 7, z: 145.84259}
+    - label: JUNCTION_JG WARP LANDING, FACING 40
+      eye: {x: 262, y: -999, z: 168}
+      look: {x: 268.4279, y: 6.8, z: 175.66045}
+    - label: OLD_BURN WARP LANDING, FACING 5
+      eye: {x: 239.6, y: -999, z: 157.8}
+      look: {x: 240.47156, y: 6.9, z: 167.76195}
+    playChecks:
+    - main3_8_28_burn_check.cs
   - acceptedStops: []
     spacingExceptions: []
     walkLines: []
@@ -2430,7 +2571,7 @@ MonoBehaviour:
       objectPath: Campsites/Camp_2/Layout825a/PaperSpots/PaperSpot_K2
       hiddenBy: 
     - label: PS3
-      point: {x: 300, y: 5.3802476, z: 126.5}
+      point: {x: 300, y: 7.1903076, z: 126.5}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825a/PaperSpots/PaperSpot_K3
       hiddenBy: 
@@ -2615,20 +2756,45 @@ MonoBehaviour:
       height: 2.1
       objectPath: Cave/Layout827/Deeper/DeeperClosed
       hiddenBy: 
-    - label: Old burn
-      point: {x: 240, y: -999, z: 160}
-      height: 0
-      objectPath: 
+    - label: Forage A
+      point: {x: 239.59, y: -999, z: 163.04}
+      height: 0.95
+      objectPath: PointsOfInterest/POI_Forage_patch_A
       hiddenBy: 
-    - label: Forage patch A
-      point: {x: 240, y: -999, z: 163}
-      height: 0
-      objectPath: 
+    - label: Hollow Giant hollow
+      point: {x: 0, y: -999, z: 0}
+      height: 2.25
+      objectPath: Places/Burn828/Hollow
       hiddenBy: 
-    - label: Jg
-      point: {x: 262, y: -999, z: 170}
-      height: 0
-      objectPath: 
+    - label: Jg signpost
+      point: {x: 263.8, y: -999, z: 170.2}
+      height: 2.6
+      objectPath: Ground815/JunctionMarkers/Sign_Jg
+      hiddenBy: 
+    - label: Gate Tree stub
+      point: {x: 290, y: -999, z: 176}
+      height: 15
+      objectPath: Giants/Heroes/Gate_Tree
+      hiddenBy: 
+    - label: Trailhead board
+      point: {x: 338, y: -999, z: 172.5}
+      height: 2.1
+      objectPath: Ground815/JunctionMarkers/Trailhead_Board
+      hiddenBy: 
+    - label: Trailhead arms
+      point: {x: 0, y: -999, z: 0}
+      height: 2
+      objectPath: Places/Burn828/T_Arms
+      hiddenBy: 
+    - label: Firebreak
+      point: {x: 0, y: -999, z: 0}
+      height: 0.45
+      objectPath: Places/Burn828/Firebreak
+      hiddenBy: 
+    - label: First-sight stake
+      point: {x: 327.3, y: -999, z: 168.2}
+      height: 1.2
+      objectPath: PointsOfInterest/POI_First_sight_of_the_lot
       hiddenBy: 
     - label: J
       point: {x: 106, y: -999, z: 203}
