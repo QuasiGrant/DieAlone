@@ -266,34 +266,42 @@ MonoBehaviour:
       point: {x: 178, y: -999, z: 165}
       height: 2.1
       objectPath: Camp/Cabin
+      hiddenBy: 
     - label: Fire pit
       point: {x: 169, y: -999, z: 156}
       height: 1
       objectPath: Camp/FirePit
+      hiddenBy: 
     - label: Generator
       point: {x: 181, y: -999, z: 172.8}
       height: 0.9
       objectPath: Camp/Generator
+      hiddenBy: 
     - label: Stump (chopping block)
       point: {x: 182.8, y: -999, z: 165.4}
       height: 0.6
       objectPath: Camp/Cabin/Woodpile/CITW_Tree_Stump
+      hiddenBy: 
     - label: Privy
       point: {x: 176.5, y: -999, z: 178}
       height: 2.6
       objectPath: Camp/Privy
+      hiddenBy: 
     - label: Woodpile
       point: {x: 181.7, y: -999, z: 168}
       height: 1
       objectPath: Camp/Cabin/Woodpile
+      hiddenBy: 
     - label: Tower stair foot
       point: {x: 164, y: -999, z: 160}
       height: 2.5
       objectPath: Camp/Tower
+      hiddenBy: 
     - label: Forage patch B
       point: {x: 141, y: -999, z: 167}
       height: 1
       objectPath: 
+      hiddenBy: 
     inventory:
     - Lanterns and lamps
     - Cabin
@@ -556,42 +564,52 @@ MonoBehaviour:
       point: {x: 344.1, y: -999, z: 199}
       height: 2.15
       objectPath: FrontZone/Office
+      hiddenBy: 
     - label: Store door
       point: {x: 365, y: -999, z: 195.6}
       height: 2.1
       objectPath: FrontZone/Store/StoreDoor
+      hiddenBy: 
     - label: Booth door
       point: {x: 391.9, y: -999, z: 164.2}
       height: 2.5
       objectPath: FrontZone/GateBooth
+      hiddenBy: 
     - label: Lot centre
       point: {x: 358, y: -999, z: 170}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Trailhead board
       point: {x: 338, y: -999, z: 172.5}
       height: 2.1
       objectPath: Ground815/JunctionMarkers/Trailhead_Board
+      hiddenBy: 
     - label: First sight of the lot
       point: {x: 327, y: -999, z: 168}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Ice chest
       point: {x: 368.8, y: -999, z: 194.9}
       height: 0.85
       objectPath: FrontZone/Store/Front/Ice_Cream_Freezer
+      hiddenBy: 
     - label: R6's car
       point: {x: 370, y: -999, z: 179.4}
       height: 1.55
       objectPath: FrontZone/Resident_Car
+      hiddenBy: 
     - label: Toilet door
       point: {x: 342, y: -999, z: 186}
       height: 2.4
       objectPath: FrontZone/VaultToilet
+      hiddenBy: 
     - label: Chain
       point: {x: 390, y: -999, z: 238}
       height: 1
       objectPath: FrontZone/Chain
+      hiddenBy: 
     inventory:
     - Lanterns and lamps
     - Office
@@ -743,46 +761,57 @@ MonoBehaviour:
       point: {x: 190, y: -4.8, z: 94.8}
       height: 1.3
       objectPath: Lake/Dock/Pump
+      hiddenBy: 
     - label: Dock end rail
       point: {x: 190, y: -4.8, z: 86.44}
       height: 1
       objectPath: Lake/Dock/RailEnd
+      hiddenBy: 
     - label: Rowboat
       point: {x: 226.47, y: -999, z: 87.28}
       height: 0.8
       objectPath: PointsOfInterest/POI_Overturned_rowboat
+      hiddenBy: 
     - label: Water tank
       point: {x: 186.34, y: -999, z: 124.53}
       height: 3
       objectPath: PointsOfInterest/POI_Water_tank
+      hiddenBy: 
     - label: East doorway
       point: {x: 243.2, y: -3.8, z: 52.4}
       height: 2
       objectPath: Lake/Boathouse
+      hiddenBy: 
     - label: Step
       point: {x: 240, y: -3.8, z: 56.1}
       height: 1
       objectPath: Lake/Boathouse/Dressing/Step
+      hiddenBy: 
     - label: Slip rest
       point: {x: 240.85, y: -3.8, z: 52.4}
       height: 1.3
       objectPath: Lake/Boathouse/Layout823/SlipRest
+      hiddenBy: 
     - label: Reeds rest
       point: {x: 243.6, y: -999, z: 62}
       height: 1.3
       objectPath: Lake/Boathouse/Layout823/ReedsRest
+      hiddenBy: 
     - label: Beach
       point: {x: 243.6, y: -999, z: 57}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Stake line
       point: {x: 240, y: -999, z: 60.4}
       height: 1.3
       objectPath: Lake/Boathouse/Layout823/StakeLine
+      hiddenBy: 
     - label: Soft ground
       point: {x: 250, y: -999, z: 58.35}
       height: 0.3
       objectPath: Lake/Boathouse/Layout823/SoftGround
+      hiddenBy: 
     inventory:
     - Lanterns and lamps
     deckListWritten: 1
@@ -931,66 +960,82 @@ MonoBehaviour:
       point: {x: 282, y: -999, z: 238}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Spar
       point: {x: 284, y: -999, z: 240}
       height: 24
       objectPath: Campsites/Camp_1/Dressing/Spar
+      hiddenBy: 
     - label: Kid's table
       point: {x: 285.2, y: -999, z: 236.5}
       height: 0.8
       objectPath: Campsites/Camp_1/Dressing/KidTable
+      hiddenBy: 
     - label: R1's spot
       point: {x: 285, y: -999, z: 244}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Tent
       point: {x: 271, y: -999, z: 234.5}
       height: 3
       objectPath: Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1
+      hiddenBy: 
     - label: Cookfire
       point: {x: 276, y: -999, z: 232}
       height: 1
       objectPath: Campsites/Camp_1/Dressing/Cookfire
+      hiddenBy: 
     - label: Latrine shed
       point: {x: 264, y: -999, z: 207}
       height: 2.2
       objectPath: PointsOfInterest/POI_Latrine_shed
+      hiddenBy: 
     - label: Blaze stump
       point: {x: 271.7, y: -999, z: 247.3}
       height: 1.4
       objectPath: Ground815/JunctionMarkers/Blaze_Camp1_Stump
+      hiddenBy: 
     - label: Forage C
       point: {x: 228.73, y: -999, z: 271.05}
       height: 1
       objectPath: Places/ForageC
+      hiddenBy: 
     - label: SS1
       point: {x: 251.6, y: -999, z: 272}
       height: 0.5
       objectPath: Places/NorthLoop/SS1
+      hiddenBy: 
     - label: SS2
       point: {x: 150.5, y: -999, z: 276.5}
       height: 0.45
       objectPath: Places/NorthLoop/SS2
+      hiddenBy: 
     - label: SS3
       point: {x: 132.3, y: -999, z: 262.3}
       height: 0.3
       objectPath: Places/NorthLoop/SS3
+      hiddenBy: 
     - label: Fallen giant
       point: {x: 138.65, y: -999, z: 264.2}
       height: 2.7
       objectPath: Places/NorthLoop/FallenGiant
+      hiddenBy: 
     - label: North ruin
       point: {x: 172, y: -999, z: 281}
       height: 3
       objectPath: Places/NorthRuin
+      hiddenBy: 
     - label: Ruin doorway
       point: {x: 169.88, y: -999, z: 278.88}
       height: 2.15
       objectPath: Places/NorthRuin
+      hiddenBy: 
     - label: Report post
       point: {x: 171.22, y: -999, z: 278.38}
       height: 1.3
       objectPath: Places/NorthRuin/Layout824/ReportPost
+      hiddenBy: 
     inventory:
     - North ruin
     deckListWritten: 1
@@ -1168,82 +1213,102 @@ MonoBehaviour:
       point: {x: 294.3, y: -999, z: 95}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Granite stack (south face)
       point: {x: 292, y: -999, z: 101.6}
       height: 20
       objectPath: Campsites/Camp_2/GraniteStack
+      hiddenBy: 
     - label: Ramp foot
       point: {x: 298.9, y: -999, z: 107.8}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Landing top
       point: {x: 298.3, y: 24, z: 107.25}
       height: 1.05
       objectPath: Campsites/Camp_2/StackPath/LandingTop
+      hiddenBy: 
     - label: His chair on top
       point: {x: 294.94, y: 24, z: 110.3}
       height: 1.2
       objectPath: Campsites/Camp_2/StackTop/Layout825/HisChair
+      hiddenBy: 
     - label: Tent
       point: {x: 288.86, y: 24, z: 108}
       height: 1.5
       objectPath: Campsites/Camp_2/StackTop/Layout825/Tent
+      hiddenBy: 
     - label: Lamp
       point: {x: 291.6, y: 24, z: 107.4}
       height: 1.9
       objectPath: Campsites/Camp_2/StackTop/Layout825/Lamp
+      hiddenBy: 
     - label: Payphone
       point: {x: 300, y: -999, z: 99}
       height: 3.2
       objectPath: Campsites/Camp_2/Dressing/Payphone
+      hiddenBy: 
     - label: Hook
       point: {x: 300.3709, y: 5.227619, z: 99}
       height: 0.8074856
       objectPath: Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset
+      hiddenBy: 
     - label: Card table
       point: {x: 298.555, y: -999, z: 97.755}
       height: 0.98
       objectPath: Campsites/Camp_2/Layout825/CardTable
+      hiddenBy: 
     - label: His seat at the table
       point: {x: 299.4, y: -999, z: 97.76}
       height: 1.2
       objectPath: Campsites/Camp_2/Layout825/CardTable/HisChair
+      hiddenBy: 
     - label: Your seat
       point: {x: 297.71, y: -999, z: 97.76}
       height: 1.2
       objectPath: Campsites/Camp_2/Layout825/CardTable/YourChair
+      hiddenBy: 
     - label: Third place
       point: {x: 298.55, y: -999, z: 96.91}
       height: 1.2
       objectPath: Campsites/Camp_2/Layout825/CardTable/ThirdPlace
+      hiddenBy: 
     - label: Barrel
       point: {x: 291.4, y: -999, z: 101.4}
       height: 1.19
       objectPath: Campsites/Camp_2/Layout825/Barrel
+      hiddenBy: 
     - label: Phone pole
       point: {x: 272.8, y: -999, z: 72}
       height: 8
       objectPath: PointsOfInterest/POI_Phone_pole
+      hiddenBy: 
     - label: Food lockers
       point: {x: 317.2, y: -999, z: 136}
       height: 1.2
       objectPath: PointsOfInterest/POI_Food_lockers
+      hiddenBy: 
     - label: Start blaze
       point: {x: 304.4, y: -999, z: 106.4}
       height: 1.8
       objectPath: Campsites/Camp_2/Dressing/StartBlaze
+      hiddenBy: 
     - label: PS1
       point: {x: 288.14, y: 25.05, z: 109.6}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS1
+      hiddenBy: 
     - label: PS2
       point: {x: 288.8, y: 25.05, z: 111.2}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS2
+      hiddenBy: 
     - label: PS3
       point: {x: 284.95, y: 4.43, z: 107.4}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS3
+      hiddenBy: 
     inventory:
     - Lanterns and lamps
     deckListWritten: 1
@@ -1413,78 +1478,97 @@ MonoBehaviour:
       point: {x: 75, y: -999, z: 143.6}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Fire
       point: {x: 76, y: -999, z: 150.5}
       height: 0.6
       objectPath: Campsites/Camp_3/Dressing/Fire
+      hiddenBy: 
     - label: Seat log
       point: {x: 73.8, y: -999, z: 150.2}
       height: 0.45
       objectPath: Campsites/Camp_3/Dressing/CS_Log_Large_Long_Seat_1
+      hiddenBy: 
     - label: Tent
       point: {x: 75, y: -999, z: 140.7}
       height: 1.65
       objectPath: Campsites/Camp_3/Dressing/CS_Tent_Old_2
+      hiddenBy: 
     - label: Easel
       point: {x: 80.3, y: -999, z: 148.8}
       height: 1.8
       objectPath: Campsites/Camp_3/Dressing/Easel
+      hiddenBy: 
     - label: Table
       point: {x: 78.5, y: -999, z: 147.3}
       height: 0.75
       objectPath: Campsites/Camp_3/Layout826/PlankTable
+      hiddenBy: 
     - label: Faced canvases
       point: {x: 70.3, y: -999, z: 146.32}
       height: 1.3
       objectPath: Campsites/Camp_3/Layout826/FacedCanvases
+      hiddenBy: 
     - label: Snag
       point: {x: 96, y: -999, z: 146.5}
       height: 54
       objectPath: Giants/Heroes/Snag
+      hiddenBy: 
     - label: Hoist cleat
       point: {x: 98.86, y: -999, z: 144.85}
       height: 1.2
       objectPath: Campsites/Camp_3/Layout826/Hoist
+      hiddenBy: 
     - label: Stake
       point: {x: 80, y: -999, z: 163}
       height: 3.6
       objectPath: Campsites/Camp_3/Layout826/SnagLine/Stake
+      hiddenBy: 
     - label: East rim spot
       point: {x: 94, y: -999, z: 138.5}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Steps' top viewpoint
       point: {x: 96, y: -999, z: 140.8}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Pool
       point: {x: 83.6, y: -999, z: 149.7}
       height: 0.3
       objectPath: Campsites/Camp_3/Layout826/Creek/Pool
+      hiddenBy: 
     - label: Sink
       point: {x: 83.6, y: -999, z: 148.45}
       height: 0.4
       objectPath: Campsites/Camp_3/Layout826/Dam
+      hiddenBy: 
     - label: Spring
       point: {x: 85.8, y: -999, z: 126}
       height: 0.6
       objectPath: Campsites/Camp_3/Layout826/Spring
+      hiddenBy: 
     - label: W1 sign
       point: {x: 127, y: -999, z: 72.8}
       height: 2
       objectPath: Campsites/Camp_3/Layout826/W1Sign
+      hiddenBy: 
     - label: Blaze_W1_Camp3
       point: {x: 120.44989, y: -999, z: 72.9174}
       height: 1.8
       objectPath: Ground815/JunctionMarkers/Blaze_W1_Camp3
+      hiddenBy: 
     - label: Camper trailer
       point: {x: 89.06148, y: -999, z: 112.119156}
       height: 2.4
       objectPath: PointsOfInterest/POI_Camper_trailer
+      hiddenBy: 
     - label: Stepping stones
       point: {x: 131.71031, y: -999, z: 72.82208}
       height: 0.3
       objectPath: PointsOfInterest/POI_Stepping_stones
+      hiddenBy: 
     inventory:
     - Camp 3 tent
     - Camp 3 fire
@@ -1692,70 +1776,88 @@ MonoBehaviour:
       point: {x: 52, y: -6, z: 37.9}
       height: 2.25
       objectPath: Cave/Mouth
+      hiddenBy: 
     - label: Boards
       point: {x: 52, y: -5.4, z: 37.6}
       height: 1.8
       objectPath: Cave/Mouth/DayOneBoard
+      hiddenBy: 
     - label: Bulbs
-      point: {x: 82.15, y: -999, z: 52.96}
+      point: {x: 81.45774, y: -999, z: 54.621555}
       height: 2.8
       objectPath: PointsOfInterest/POI_Coloured_bulbs
+      hiddenBy: 
     - label: Rope rail
       point: {x: 69.9953, y: -999, z: 45.779366}
       height: 1
       objectPath: PointsOfInterest/RopeRail827
+      hiddenBy: 
     - label: Toilet
       point: {x: 47.64, y: -999, z: 41.2}
       height: 0.1
       objectPath: Cave/Layout827/Toilet
+      hiddenBy: 'CaveLayout V4: the lid unseen from every tread point P40 to P84;
+        Wren 2026-10-03, as the Snag pieces'
     - label: Drip
       point: {x: 51.2, y: -6, z: 28}
       height: 0.3
       objectPath: Cave/Layout827/Drip
+      hiddenBy: 
     - label: Niche
       point: {x: 54.5, y: -6, z: 32.5}
       height: 2
       objectPath: Cave/Layout827/Niche
+      hiddenBy: 
     - label: Chamber
       point: {x: 80, y: -18, z: 12}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Seat shelf
       point: {x: 88.4, y: -18, z: 6}
       height: 0.6
       objectPath: Cave/Layout827/Chamber/SeatShelf
+      hiddenBy: 
     - label: Sleep
       point: {x: 85, y: -18, z: 4}
       height: 0.5
       objectPath: Cave/Layout827/Chamber/Sleep
+      hiddenBy: 
     - label: Food
       point: {x: 73, y: -18, z: 14.75}
       height: 0.5
       objectPath: Cave/Layout827/Chamber/Food
+      hiddenBy: 
     - label: Stack
       point: {x: 86.75, y: -18, z: 18.75}
       height: 3
       objectPath: Cave/Layout827/Chamber/Stack
+      hiddenBy: 
     - label: Battery bank
       point: {x: 84.5, y: -18, z: 20.7}
       height: 0.8
       objectPath: Cave/Layout827/Chamber/BatteryBank
+      hiddenBy: 
     - label: Side room
       point: {x: 93.5, y: -18, z: 11.5}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Guest chair
       point: {x: 92.85, y: -18, z: 11.5}
       height: 1
       objectPath: Cave/SideRoom/RouletteTable/GuestChair
+      hiddenBy: 
     - label: His chair
       point: {x: 95.05, y: -18, z: 11.3}
       height: 1
       objectPath: Cave/SideRoom/RouletteTable
+      hiddenBy: 
     - label: Deeper opening
       point: {x: 97.75, y: -18, z: 13.8}
       height: 2.1
       objectPath: Cave/Layout827/Deeper/DeeperClosed
+      hiddenBy: 
     inventory:
     - Cave lights
     deckListWritten: 1
@@ -1851,7 +1953,7 @@ MonoBehaviour:
       look: {x: 49.618694, y: -4.6, z: 39.16855}
     - label: 'F2 HEADING 300: THE BULBS'
       eye: {x: 91.3, y: -999, z: 47.4}
-      look: {x: 82.15, y: 6.5, z: 52.96}
+      look: {x: 80.283714, y: 3.6372733, z: 54.373226}
     - label: 'F3 HEADING 180: THE LEG 1 OPENING AND THE CABLE'
       eye: {x: 52, y: -4.4, z: 24}
       look: {x: 52, y: -5.6, z: 14}
@@ -1892,14 +1994,17 @@ MonoBehaviour:
       point: {x: 240, y: -999, z: 160}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Forage patch A
       point: {x: 240, y: -999, z: 163}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Jg
       point: {x: 262, y: -999, z: 170}
       height: 0
       objectPath: 
+      hiddenBy: 
     inventory: []
     deckListWritten: 0
     hardSeesTower: 0
@@ -1930,26 +2035,32 @@ MonoBehaviour:
       point: {x: 106, y: -999, z: 203}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Plank bridge
       point: {x: 105, y: -999, z: 205}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Ward stair
       point: {x: 35, y: -999, z: 248}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Lookout
       point: {x: 29, y: -999, z: 261}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Ward stones
       point: {x: -3, y: -999, z: 230}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Path end
       point: {x: -9, y: -999, z: 246}
       height: 0
       objectPath: 
+      hiddenBy: 
     inventory:
     - Ridge fire cards, night
     - Ridge fire cards, day
@@ -2012,442 +2123,553 @@ MonoBehaviour:
       point: {x: 178, y: -999, z: 165}
       height: 2.1
       objectPath: Camp/Cabin
+      hiddenBy: 
     - label: Fire pit
       point: {x: 169, y: -999, z: 156}
       height: 1
       objectPath: Camp/FirePit
+      hiddenBy: 
     - label: Generator
       point: {x: 181, y: -999, z: 172.8}
       height: 0.9
       objectPath: Camp/Generator
+      hiddenBy: 
     - label: Stump (chopping block)
       point: {x: 182.8, y: -999, z: 165.4}
       height: 0.6
       objectPath: Camp/Cabin/Woodpile/CITW_Tree_Stump
+      hiddenBy: 
     - label: Privy
       point: {x: 176.5, y: -999, z: 178}
       height: 2.6
       objectPath: Camp/Privy
+      hiddenBy: 
     - label: Woodpile
       point: {x: 181.7, y: -999, z: 168}
       height: 1
       objectPath: Camp/Cabin/Woodpile
+      hiddenBy: 
     - label: Tower stair foot
       point: {x: 164, y: -999, z: 160}
       height: 2.5
       objectPath: Camp/Tower
+      hiddenBy: 
     - label: Forage patch B
       point: {x: 141, y: -999, z: 167}
       height: 1
       objectPath: 
+      hiddenBy: 
     - label: Office west door
       point: {x: 344.1, y: -999, z: 199}
       height: 2.15
       objectPath: FrontZone/Office
+      hiddenBy: 
     - label: Store door
       point: {x: 365, y: -999, z: 195.6}
       height: 2.1
       objectPath: FrontZone/Store/StoreDoor
+      hiddenBy: 
     - label: Booth door
       point: {x: 391.9, y: -999, z: 164.2}
       height: 2.5
       objectPath: FrontZone/GateBooth
+      hiddenBy: 
     - label: Lot centre
       point: {x: 358, y: -999, z: 170}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Trailhead board
       point: {x: 338, y: -999, z: 172.5}
       height: 2.1
       objectPath: Ground815/JunctionMarkers/Trailhead_Board
+      hiddenBy: 
     - label: First sight of the lot
       point: {x: 327, y: -999, z: 168}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Ice chest
       point: {x: 368.8, y: -999, z: 194.9}
       height: 0.85
       objectPath: FrontZone/Store/Front/Ice_Cream_Freezer
+      hiddenBy: 
     - label: R6's car
       point: {x: 370, y: -999, z: 179.4}
       height: 1.55
       objectPath: FrontZone/Resident_Car
+      hiddenBy: 
     - label: Toilet door
       point: {x: 342, y: -999, z: 186}
       height: 2.4
       objectPath: FrontZone/VaultToilet
+      hiddenBy: 
     - label: Chain
       point: {x: 390, y: -999, z: 238}
       height: 1
       objectPath: FrontZone/Chain
+      hiddenBy: 
     - label: Pump
       point: {x: 190, y: -4.8, z: 94.8}
       height: 1.3
       objectPath: Lake/Dock/Pump
+      hiddenBy: 
     - label: Dock end rail
       point: {x: 190, y: -4.8, z: 86.44}
       height: 1
       objectPath: Lake/Dock/RailEnd
+      hiddenBy: 
     - label: Rowboat
       point: {x: 226.47, y: -999, z: 87.28}
       height: 0.8
       objectPath: PointsOfInterest/POI_Overturned_rowboat
+      hiddenBy: 
     - label: Water tank
       point: {x: 186.34, y: -999, z: 124.53}
       height: 3
       objectPath: PointsOfInterest/POI_Water_tank
+      hiddenBy: 
     - label: East doorway
       point: {x: 243.2, y: -3.8, z: 52.4}
       height: 2
       objectPath: Lake/Boathouse
+      hiddenBy: 
     - label: Step
       point: {x: 240, y: -3.8, z: 56.1}
       height: 1
       objectPath: Lake/Boathouse/Dressing/Step
+      hiddenBy: 
     - label: Slip rest
       point: {x: 240.85, y: -3.8, z: 52.4}
       height: 1.3
       objectPath: Lake/Boathouse/Layout823/SlipRest
+      hiddenBy: 
     - label: Reeds rest
       point: {x: 243.6, y: -999, z: 62}
       height: 1.3
       objectPath: Lake/Boathouse/Layout823/ReedsRest
+      hiddenBy: 
     - label: Beach
       point: {x: 243.6, y: -999, z: 57}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Stake line
       point: {x: 240, y: -999, z: 60.4}
       height: 1.3
       objectPath: Lake/Boathouse/Layout823/StakeLine
+      hiddenBy: 
     - label: Soft ground
       point: {x: 250, y: -999, z: 58.35}
       height: 0.3
       objectPath: Lake/Boathouse/Layout823/SoftGround
+      hiddenBy: 
     - label: Camp 1
       point: {x: 282, y: -999, z: 238}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Spar
       point: {x: 284, y: -999, z: 240}
       height: 24
       objectPath: Campsites/Camp_1/Dressing/Spar
+      hiddenBy: 
     - label: Kid's table
       point: {x: 285.2, y: -999, z: 236.5}
       height: 0.8
       objectPath: Campsites/Camp_1/Dressing/KidTable
+      hiddenBy: 
     - label: R1's spot
       point: {x: 285, y: -999, z: 244}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Tent
       point: {x: 271, y: -999, z: 234.5}
       height: 3
       objectPath: Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1
+      hiddenBy: 
     - label: Cookfire
       point: {x: 276, y: -999, z: 232}
       height: 1
       objectPath: Campsites/Camp_1/Dressing/Cookfire
+      hiddenBy: 
     - label: Latrine shed
       point: {x: 264, y: -999, z: 207}
       height: 2.2
       objectPath: PointsOfInterest/POI_Latrine_shed
+      hiddenBy: 
     - label: Blaze stump
       point: {x: 271.7, y: -999, z: 247.3}
       height: 1.4
       objectPath: Ground815/JunctionMarkers/Blaze_Camp1_Stump
+      hiddenBy: 
     - label: Forage C
       point: {x: 228.73, y: -999, z: 271.05}
       height: 1
       objectPath: Places/ForageC
+      hiddenBy: 
     - label: SS1
       point: {x: 251.6, y: -999, z: 272}
       height: 0.5
       objectPath: Places/NorthLoop/SS1
+      hiddenBy: 
     - label: SS2
       point: {x: 150.5, y: -999, z: 276.5}
       height: 0.45
       objectPath: Places/NorthLoop/SS2
+      hiddenBy: 
     - label: SS3
       point: {x: 132.3, y: -999, z: 262.3}
       height: 0.3
       objectPath: Places/NorthLoop/SS3
+      hiddenBy: 
     - label: Fallen giant
       point: {x: 138.65, y: -999, z: 264.2}
       height: 2.7
       objectPath: Places/NorthLoop/FallenGiant
+      hiddenBy: 
     - label: North ruin
       point: {x: 172, y: -999, z: 281}
       height: 3
       objectPath: Places/NorthRuin
+      hiddenBy: 
     - label: Ruin doorway
       point: {x: 169.88, y: -999, z: 278.88}
       height: 2.15
       objectPath: Places/NorthRuin
+      hiddenBy: 
     - label: Report post
       point: {x: 171.22, y: -999, z: 278.38}
       height: 1.3
       objectPath: Places/NorthRuin/Layout824/ReportPost
+      hiddenBy: 
     - label: Camp 2
       point: {x: 294.3, y: -999, z: 95}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Granite stack (south face)
       point: {x: 292, y: -999, z: 101.6}
       height: 20
       objectPath: Campsites/Camp_2/GraniteStack
+      hiddenBy: 
     - label: Ramp foot
       point: {x: 298.9, y: -999, z: 107.8}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Landing top
       point: {x: 298.3, y: 24, z: 107.25}
       height: 1.05
       objectPath: Campsites/Camp_2/StackPath/LandingTop
+      hiddenBy: 
     - label: His chair on top
       point: {x: 294.94, y: 24, z: 110.3}
       height: 1.2
       objectPath: Campsites/Camp_2/StackTop/Layout825/HisChair
+      hiddenBy: 
     - label: Tent
       point: {x: 288.86, y: 24, z: 108}
       height: 1.5
       objectPath: Campsites/Camp_2/StackTop/Layout825/Tent
+      hiddenBy: 
     - label: Lamp
       point: {x: 291.6, y: 24, z: 107.4}
       height: 1.9
       objectPath: Campsites/Camp_2/StackTop/Layout825/Lamp
+      hiddenBy: 
     - label: Payphone
       point: {x: 300, y: -999, z: 99}
       height: 3.2
       objectPath: Campsites/Camp_2/Dressing/Payphone
+      hiddenBy: 
     - label: Hook
       point: {x: 300.3709, y: 5.227619, z: 99}
       height: 0.8074856
       objectPath: Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset
+      hiddenBy: 
     - label: Card table
       point: {x: 298.555, y: -999, z: 97.755}
       height: 0.98
       objectPath: Campsites/Camp_2/Layout825/CardTable
+      hiddenBy: 
     - label: His seat at the table
       point: {x: 299.4, y: -999, z: 97.76}
       height: 1.2
       objectPath: Campsites/Camp_2/Layout825/CardTable/HisChair
+      hiddenBy: 
     - label: Your seat
       point: {x: 297.71, y: -999, z: 97.76}
       height: 1.2
       objectPath: Campsites/Camp_2/Layout825/CardTable/YourChair
+      hiddenBy: 
     - label: Third place
       point: {x: 298.55, y: -999, z: 96.91}
       height: 1.2
       objectPath: Campsites/Camp_2/Layout825/CardTable/ThirdPlace
+      hiddenBy: 
     - label: Barrel
       point: {x: 291.4, y: -999, z: 101.4}
       height: 1.19
       objectPath: Campsites/Camp_2/Layout825/Barrel
+      hiddenBy: 
     - label: Phone pole
       point: {x: 272.8, y: -999, z: 72}
       height: 8
       objectPath: PointsOfInterest/POI_Phone_pole
+      hiddenBy: 
     - label: Food lockers
       point: {x: 317.2, y: -999, z: 136}
       height: 1.2
       objectPath: PointsOfInterest/POI_Food_lockers
+      hiddenBy: 
     - label: Start blaze
       point: {x: 304.4, y: -999, z: 106.4}
       height: 1.8
       objectPath: Campsites/Camp_2/Dressing/StartBlaze
+      hiddenBy: 
     - label: PS1
       point: {x: 288.14, y: 25.05, z: 109.6}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS1
+      hiddenBy: 
     - label: PS2
       point: {x: 288.8, y: 25.05, z: 111.2}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS2
+      hiddenBy: 
     - label: PS3
       point: {x: 284.95, y: 4.43, z: 107.4}
       height: 0.3
       objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS3
+      hiddenBy: 
     - label: Camp 3
       point: {x: 75, y: -999, z: 143.6}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Fire
       point: {x: 76, y: -999, z: 150.5}
       height: 0.6
       objectPath: Campsites/Camp_3/Dressing/Fire
+      hiddenBy: 
     - label: Seat log
       point: {x: 73.8, y: -999, z: 150.2}
       height: 0.45
       objectPath: Campsites/Camp_3/Dressing/CS_Log_Large_Long_Seat_1
+      hiddenBy: 
     - label: Tent
       point: {x: 75, y: -999, z: 140.7}
       height: 1.65
       objectPath: Campsites/Camp_3/Dressing/CS_Tent_Old_2
+      hiddenBy: 
     - label: Easel
       point: {x: 80.3, y: -999, z: 148.8}
       height: 1.8
       objectPath: Campsites/Camp_3/Dressing/Easel
+      hiddenBy: 
     - label: Table
       point: {x: 78.5, y: -999, z: 147.3}
       height: 0.75
       objectPath: Campsites/Camp_3/Layout826/PlankTable
+      hiddenBy: 
     - label: Faced canvases
       point: {x: 70.3, y: -999, z: 146.32}
       height: 1.3
       objectPath: Campsites/Camp_3/Layout826/FacedCanvases
+      hiddenBy: 
     - label: Snag
       point: {x: 96, y: -999, z: 146.5}
       height: 54
       objectPath: Giants/Heroes/Snag
+      hiddenBy: 
     - label: Hoist cleat
       point: {x: 98.86, y: -999, z: 144.85}
       height: 1.2
       objectPath: Campsites/Camp_3/Layout826/Hoist
+      hiddenBy: 
     - label: Stake
       point: {x: 80, y: -999, z: 163}
       height: 3.6
       objectPath: Campsites/Camp_3/Layout826/SnagLine/Stake
+      hiddenBy: 
     - label: East rim spot
       point: {x: 94, y: -999, z: 138.5}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Steps' top viewpoint
       point: {x: 96, y: -999, z: 140.8}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Pool
       point: {x: 83.6, y: -999, z: 149.7}
       height: 0.3
       objectPath: Campsites/Camp_3/Layout826/Creek/Pool
+      hiddenBy: 
     - label: Sink
       point: {x: 83.6, y: -999, z: 148.45}
       height: 0.4
       objectPath: Campsites/Camp_3/Layout826/Dam
+      hiddenBy: 
     - label: Spring
       point: {x: 85.8, y: -999, z: 126}
       height: 0.6
       objectPath: Campsites/Camp_3/Layout826/Spring
+      hiddenBy: 
     - label: W1 sign
       point: {x: 127, y: -999, z: 72.8}
       height: 2
       objectPath: Campsites/Camp_3/Layout826/W1Sign
+      hiddenBy: 
     - label: Blaze_W1_Camp3
       point: {x: 120.44989, y: -999, z: 72.9174}
       height: 1.8
       objectPath: Ground815/JunctionMarkers/Blaze_W1_Camp3
+      hiddenBy: 
     - label: Camper trailer
       point: {x: 89.06148, y: -999, z: 112.119156}
       height: 2.4
       objectPath: PointsOfInterest/POI_Camper_trailer
+      hiddenBy: 
     - label: Stepping stones
       point: {x: 131.71031, y: -999, z: 72.82208}
       height: 0.3
       objectPath: PointsOfInterest/POI_Stepping_stones
+      hiddenBy: 
     - label: Mouth
       point: {x: 52, y: -6, z: 37.9}
       height: 2.25
       objectPath: Cave/Mouth
+      hiddenBy: 
     - label: Boards
       point: {x: 52, y: -5.4, z: 37.6}
       height: 1.8
       objectPath: Cave/Mouth/DayOneBoard
+      hiddenBy: 
     - label: Bulbs
-      point: {x: 82.15, y: -999, z: 52.96}
+      point: {x: 81.45774, y: -999, z: 54.621555}
       height: 2.8
       objectPath: PointsOfInterest/POI_Coloured_bulbs
+      hiddenBy: 
     - label: Rope rail
       point: {x: 69.9953, y: -999, z: 45.779366}
       height: 1
       objectPath: PointsOfInterest/RopeRail827
+      hiddenBy: 
     - label: Toilet
       point: {x: 47.64, y: -999, z: 41.2}
       height: 0.1
       objectPath: Cave/Layout827/Toilet
+      hiddenBy: 'CaveLayout V4: the lid unseen from every tread point P40 to P84;
+        Wren 2026-10-03, as the Snag pieces'
     - label: Drip
       point: {x: 51.2, y: -6, z: 28}
       height: 0.3
       objectPath: Cave/Layout827/Drip
+      hiddenBy: 
     - label: Niche
       point: {x: 54.5, y: -6, z: 32.5}
       height: 2
       objectPath: Cave/Layout827/Niche
+      hiddenBy: 
     - label: Chamber
       point: {x: 80, y: -18, z: 12}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Seat shelf
       point: {x: 88.4, y: -18, z: 6}
       height: 0.6
       objectPath: Cave/Layout827/Chamber/SeatShelf
+      hiddenBy: 
     - label: Sleep
       point: {x: 85, y: -18, z: 4}
       height: 0.5
       objectPath: Cave/Layout827/Chamber/Sleep
+      hiddenBy: 
     - label: Food
       point: {x: 73, y: -18, z: 14.75}
       height: 0.5
       objectPath: Cave/Layout827/Chamber/Food
+      hiddenBy: 
     - label: Stack
       point: {x: 86.75, y: -18, z: 18.75}
       height: 3
       objectPath: Cave/Layout827/Chamber/Stack
+      hiddenBy: 
     - label: Battery bank
       point: {x: 84.5, y: -18, z: 20.7}
       height: 0.8
       objectPath: Cave/Layout827/Chamber/BatteryBank
+      hiddenBy: 
     - label: Side room
       point: {x: 93.5, y: -18, z: 11.5}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Guest chair
       point: {x: 92.85, y: -18, z: 11.5}
       height: 1
       objectPath: Cave/SideRoom/RouletteTable/GuestChair
+      hiddenBy: 
     - label: His chair
       point: {x: 95.05, y: -18, z: 11.3}
       height: 1
       objectPath: Cave/SideRoom/RouletteTable
+      hiddenBy: 
     - label: Deeper opening
       point: {x: 97.75, y: -18, z: 13.8}
       height: 2.1
       objectPath: Cave/Layout827/Deeper/DeeperClosed
+      hiddenBy: 
     - label: Old burn
       point: {x: 240, y: -999, z: 160}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Forage patch A
       point: {x: 240, y: -999, z: 163}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Jg
       point: {x: 262, y: -999, z: 170}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: J
       point: {x: 106, y: -999, z: 203}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Plank bridge
       point: {x: 105, y: -999, z: 205}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Ward stair
       point: {x: 35, y: -999, z: 248}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Lookout
       point: {x: 29, y: -999, z: 261}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Ward stones
       point: {x: -3, y: -999, z: 230}
       height: 0
       objectPath: 
+      hiddenBy: 
     - label: Path end
       point: {x: -9, y: -999, z: 246}
       height: 0
       objectPath: 
+      hiddenBy: 
     inventory:
     - Ridge fire cards, night
     - Ridge fire cards, day

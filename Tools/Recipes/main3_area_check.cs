@@ -259,8 +259,9 @@ try
             return firstOther == float.MaxValue || firstOwn < firstOther;
         }
         var fr = set.Found(pl, legsOrdered, (x, z) => H(x, z), ClearTo);
-        if (!reached || !fr.found) rfFail++;
-        rfLines.Append("  " + (reached && fr.found ? "ok   " : "FAIL ") + pl.label + ": " + (reached ? "reached" : "NOT REACHED") + ", " + (fr.found ? "found from " + fr.leg + " " + F1(fr.dist) + " m out, " + F1(fr.angle) + " degrees off the way, " + F1(fr.tall) + " degrees tall" : "NOT FOUND (" + fr.tried + " trail points within " + F1(set.foundReach) + " m, " + F1(set.foundMaxAngle) + " degrees of travel and " + F1(set.foundMinDeg) + " degrees tall; none with clear lines to its centre and top)") + "\n");
+        bool hid = !string.IsNullOrEmpty(pl.hiddenBy); bool foundOk = fr.found || hid;   // a place hidden by design is not held to the found rule
+        if (!reached || !foundOk) rfFail++;
+        rfLines.Append("  " + (reached && foundOk ? "ok   " : "FAIL ") + pl.label + ": " + (reached ? "reached" : "NOT REACHED") + ", " + (hid ? "hidden from the trails by design (" + pl.hiddenBy + ")" : fr.found ? "found from " + fr.leg + " " + F1(fr.dist) + " m out, " + F1(fr.angle) + " degrees off the way, " + F1(fr.tall) + " degrees tall" : "NOT FOUND (" + fr.tried + " trail points within " + F1(set.foundReach) + " m, " + F1(set.foundMaxAngle) + " degrees of travel and " + F1(set.foundMinDeg) + " degrees tall; none with clear lines to its centre and top)") + "\n");
         foundFile.Append(pl.label + "|" + (fr.found ? "1" : "0") + "|" + fr.eye.x.ToString(inv) + "," + fr.eye.y.ToString(inv) + "," + fr.eye.z.ToString(inv) + "|" + fr.aim.x.ToString(inv) + "," + fr.aim.y.ToString(inv) + "," + fr.aim.z.ToString(inv) + "|" + fr.leg + "|" + F1(fr.dist) + "\n");
     }
     System.IO.Directory.CreateDirectory("Temp"); System.IO.File.WriteAllText("Temp/area_found_" + A.id + ".txt", foundFile.ToString());

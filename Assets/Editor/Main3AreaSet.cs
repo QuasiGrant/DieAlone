@@ -31,6 +31,8 @@ public class Main3AreaSet : ScriptableObject
         public float height;
         [Tooltip("Scene path of the place's object, if any: a ray that reaches it counts as reaching the place.")]
         public string objectPath;
+        [Tooltip("Meant to stay hidden from the trails (the cave toilet, Wren 2026-10-03): reached is still checked, found is not; the reason is printed.")]
+        public string hiddenBy;
     }
 
     [System.Serializable]

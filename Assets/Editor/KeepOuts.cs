@@ -65,9 +65,16 @@ public static class KeepOuts
         new Zone("K5 east rim spot", new Vector2(93f, 138.5f), new Vector2(95f, 138.5f), 2.5f),   // x 92 to 96, z 137 to 140, plus 1 m
     };
 
+    /// CaveLayout.md draft 2 doc 2.2 (PLAN 8.27; Wren 2026-10-03): C1 the mouth strip, x 52 to 54.5, z 38 to 46.5, kept clear of trees.
+    public static readonly Zone[] Cave =
+    {
+        new Zone("C1 mouth strip", new Vector2(53.25f, 39.25f), new Vector2(53.25f, 45.25f), 1.25f),
+    };
+
     public static bool Contains(Vector2 p) => Which(p) != null;
     public static bool Contains(Vector3 p) => Contains(new Vector2(p.x, p.z));
-    public static string Which(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return z.label; var c2 = WhichCamp2(p); return c2 ?? WhichCamp3(p); }
+    public static string Which(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return z.label; var c2 = WhichCamp2(p); return c2 ?? WhichCamp3(p) ?? WhichCave(p); }
     public static string WhichCamp2(Vector2 p) { foreach (var z in Camp2) if (z.Contains(p)) return z.label; return null; }
     public static string WhichCamp3(Vector2 p) { foreach (var z in Camp3) if (z.Contains(p)) return z.label; return null; }
+    public static string WhichCave(Vector2 p) { foreach (var z in Cave) if (z.Contains(p)) return z.label; return null; }
 }

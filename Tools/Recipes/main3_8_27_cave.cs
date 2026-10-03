@@ -104,10 +104,15 @@ const float postH = 1.0f, ropeH = 0.6f, postW = 0.1f, postStep = 2f, railOff = 1
 }
 
 // ================= V2: the bulbs =================
+const float bulbsOff = 1.8f;
 {
+    // beside the tread, bulbsOff m to its north (Wren 2026-10-03: V2 stood the dead branch on the centre line and its collider stopped the walk)
     var bulbsPoi = poiRoot.Find("POI_Coloured_bulbs"); var to = P(82.15f, 52.96f);
+    { float bd = float.MaxValue; var side = P(0f, 1f); for (int i = 1; i < tread.Count; i++) { var a = P(tread[i - 1].p.x, tread[i - 1].p.z); var ab = P(tread[i].p.x, tread[i].p.z) - a; float t = UnityEngine.Mathf.Clamp01(UnityEngine.Vector2.Dot(to - a, ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude)); float d = UnityEngine.Vector2.Distance(to, a + ab * t); if (d < bd) { bd = d; side = P(-ab.y, ab.x).normalized; if (side.y < 0f) side = -side; } } to += side * bulbsOff; }
     if (bulbsPoi == null) notes.Add("no POI_Coloured_bulbs");
     else { var branch = bulbsPoi.Find("DeadBranch"); var foot = branch != null ? branch.GetComponent<UnityEngine.Collider>().bounds.min.y : bulbsPoi.position.y; float rise = G(to.x, to.y) - foot; bulbsPoi.position += V(to.x - bulbsPoi.position.x, rise, to.y - bulbsPoi.position.z); }
+    // the string is overhead decor: no collider (8.27 build round: beside the tread, its 2.6 m box made a step up the north slope, 18 trapped places)
+    if (bulbsPoi != null) { var str = bulbsPoi.Find("BulbString"); if (str != null) foreach (var c in str.GetComponents<UnityEngine.Collider>()) UnityEngine.Object.DestroyImmediate(c); }
 }
 
 // ================= V3: the passage =================
@@ -186,7 +191,7 @@ const float r7BodyR = 0.3f, r7BodyH = 1.0f;
 }
 
 // ================= V6: the side room =================
-const float bulbDoorH = 1.9f, bbWestMin = 89.6f; int bulbs = 0;
+const float bulbDoorH = 2.05f, bulbChamberUp = 2.9f, bulbRoomUp = 2.8f, bbWestMin = 89.6f; int bulbs = 0;
 {
     var room = cave.Find("SideRoom"); var tbl = room.Find("RouletteTable");
     // his chair: the chair on the far side (local z > 0) to local yaw 180, world 270
@@ -205,7 +210,9 @@ const float bulbDoorH = 1.9f, bbWestMin = 89.6f; int bulbs = 0;
     // the bulb string: from the chamber through the doorway at bulbDoorH to over the table, two sagging runs
     foreach (var t in System.Linq.Enumerable.ToArray(room.GetComponentsInChildren<UnityEngine.Transform>())) if (t != null && (t.name == "BulbLine" || t.name == "Bulb")) PlaceKit.Remove(t);
     var bulbGlow = kit.Glow("Places_BulbGlow", kit.Look.practicalColor, kit.Look.cabWindowGlowIntensity); var steel = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Material>("Assets/Materials/Slice/Slice_Steel.mat");
-    var pts = new[] { V(86.5f, floorY + 2.4f, 12.3f), V(89.25f, floorY + bulbDoorH, 12.0f), V(96.8f, floorY + 2.6f, 11.2f) }; const float sag = 0.25f; const int perRun = 5;
+    // the string over head wherever the ceiling allows (bulbs at bulbHigh or more), just under the lintel through the doorway (Wren
+    // 2026-10-03: it has no collider; V6's 1.9 m hung bulbs at 1.81 to 1.98 m in the keep-clear strips)
+    var pts = new[] { V(86.5f, floorY + bulbChamberUp, 12.3f), V(89.25f, floorY + bulbDoorH, 12.0f), V(96.8f, floorY + bulbRoomUp, 11.2f) }; const float sag = 0.2f; const int perRun = 5;
     for (int r = 1; r < pts.Length; r++)
     {
         var a = pts[r - 1]; var b = pts[r]; var ln = Slab("BulbLine", room, (a + b) * 0.5f - V(0f, sag * 0.5f, 0f), V(0.02f, 0.02f, UnityEngine.Vector3.Distance(a, b)), steel); ln.transform.rotation = UnityEngine.Quaternion.LookRotation(b - a);
@@ -298,6 +305,30 @@ const float rimUp = 3f, rimUpStep = 0.5f, rimX0 = 54f, rimX1 = 80f, rimStep = 1f
     }
 }
 
+// ================= V12: the mouth strip kept clear of trees (KeepOuts C1; Wren 2026-10-03) =================
+// a tree whose drawn mesh stands in the strip (x 52 to 54.5, z 38 to 46.5) between stripTop and stripHigh over the ground moves west by
+// treeStep m at a time (its foot kept on the ground) until it no longer does, up to treeMax m (first run: RedPine1's low boughs, 1.93 m)
+const float sx0 = 52f, sx1 = 54.5f, sz0 = 38f, sz1 = 46.5f, stripTop = 0.3f, stripHigh = 2f, stripStep = 0.25f, treeStep = 0.25f, treeMax = 5f, treeNear = 8f; string treeNote = "none";
+{
+    var canopy = kit.Root("Forest") != null ? kit.Root("Forest").transform.Find("Dense/Canopy") : null;
+    if (canopy == null) notes.Add("no Forest/Dense/Canopy");
+    else foreach (UnityEngine.Transform t in canopy)
+    {
+        if (UnityEngine.Vector2.Distance(P(t.position.x, t.position.z), P((sx0 + sx1) * 0.5f, (sz0 + sz1) * 0.5f)) > treeNear + (sz1 - sz0) * 0.5f) continue;
+        var lod = t.GetComponentInChildren<UnityEngine.LODGroup>(); var rs = lod != null && lod.GetLODs().Length > 0 ? lod.GetLODs()[0].renderers : t.GetComponentsInChildren<UnityEngine.Renderer>();
+        var mcs = new System.Collections.Generic.List<UnityEngine.MeshCollider>(); foreach (var r in rs) { if (r == null) continue; var mf = r.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; mcs.Add(mc); }
+        bool In() { UnityEngine.Physics.SyncTransforms(); for (float x = sx0; x <= sx1 + 1e-3f; x += stripStep) for (float z = sz0; z <= sz1 + 1e-3f; z += stripStep) { float g = G(x, z); var ray = new UnityEngine.Ray(V(x, g + stripHigh, z), UnityEngine.Vector3.down); foreach (var mc in mcs) if (mc.Raycast(ray, out var hh, stripHigh - stripTop)) return true; } return false; }
+        try
+        {
+            if (!In()) continue; var start = t.position; float lift = start.y - G(start.x, start.z); float s = 0f;
+            while (s < treeMax) { s += treeStep; var p = start - V(s, 0f, 0f); t.position = V(p.x, G(p.x, p.z) + lift, p.z); if (!In()) break; }
+            treeNote = t.name + " moved " + F(s) + " m west to (" + F(t.position.x) + ", " + F(t.position.z) + ")" + (In() ? ", STILL IN THE STRIP" : "");
+            if (In()) notes.Add(t.name + " still in the mouth strip after " + F(treeMax) + " m");
+        }
+        finally { foreach (var mc in mcs) if (mc != null) UnityEngine.Object.DestroyImmediate(mc); UnityEngine.Physics.SyncTransforms(); }
+    }
+}
+
 // ================= WARPS =================
 var warps = kit.Root("DevWarps").transform;
 foreach (var (n, x, z, yaw, under) in new[] { ("Cave_Mouth", 58f, 44f, 223f, float.NaN), ("Cave_Chamber", 74f, 12f, 90f, floorY), ("Cave_SideRoom", 91.0f, 12.0f, 90f, floorY), ("Spur_Descent", 77.3f, 48.6f, 250f, float.NaN) })
@@ -311,4 +342,4 @@ UnityEngine.Physics.SyncTransforms();
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
 return "saved=" + saved + " | removed " + removed + (missing.Count > 0 ? " (not found, likely gone already: " + string.Join(", ", missing) + ")" : "") + " | rail posts " + posts + " | cable runs " + cableRuns + " | bulbs " + bulbs + " | narrow rocks " + narrowRocks
-    + " | rim hedge boxes " + hedgeBoxes + ", brush " + brush + " | usables " + uses + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+    + " | rim hedge boxes " + hedgeBoxes + ", brush " + brush + " | usables " + uses + " | mouth strip trees: " + treeNote + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

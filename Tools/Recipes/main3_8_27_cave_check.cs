@@ -3,16 +3,17 @@
 // RAIL (V1): every post railOff m (within railTol) south of the W1 to cave centre line, its foot within footTol of the tread's height.
 // MOUTH STRIP (doc 2.2): nothing drawn stands more than stripTop over the ground in x 52 to 54.5, z 38 to 46.5 (the overhang above
 //   the opening apart).
-// NICHE (V3): the body stands inside it; the ground over its ceiling is coverMin m or more above it.
+// NICHE (V3): the body stands inside it; the ground over its ceiling is coverMin m or more above it (Wren 2026-10-03: 2.3, was 3.5; the
+//   generator is cold and silent, and 2.3 m of rock over it still reads as cut into rock).
 // CABLE (V3): no collider and no light under Layout827/Cable.
 // TOILET (V4): the lid's top lidMax over the ground, the shovel's top shovelMax; the lid unseen from every W1 to cave point P40 to P84
 //   (eye 1.6, terrain and every collider).
 // KEEP CLEAR (V5, V6): nothing drawn over clearTop in the chamber strip x 71 to the wall face 89.0, z 10.8 to 13.2, or the side-room strip from
-//   its wall face 89.5 (the doorway wall's own thickness is not in either room) to
+//   its wall face 89.5 (the doorway wall's own thickness is not in either room; colliderless decor exempt, Wren 2026-10-03) to
 //   92.4, z 11 to 13.
 // TALK (V5): R7's spot (its head headUp over the shelf) within reach of the talk stand's eye, and within talkCone degrees of its 98 heading.
 // SIDE ROOM (V6): his chair at world yaw 270; the crate flush to the west and north walls; BigBoulders_0 east of the chamber wall; the guest
-//   chair the first hit of the interactor's ray from (91.0, 12.0) facing 90, pitch 15 down.
+//   chair the first hit of the interactor's ray from (91.0, 12.0) aimed at the guest chair's centre (Wren 2026-10-03; was facing 90, 15 down).
 // DEEPER (V9): shut by DeeperClosed; with it lifted for the test, the body walks from the standing point to the inspect point (101.0, 14.0).
 //   PROMPT lines (CaveLayout_Story 23): no prompt at the shut rock; open, none at the opening and `Examine` at the dead end facing 0.
 // NARROW (V10): the row's rock colliders all narrowMin m or more from the tread's centre line, and no gap between neighbours wider than
@@ -34,7 +35,7 @@ var start = pc.transform.position; var startRot = pc.transform.rotation; bool pc
 var ter = UnityEngine.Terrain.activeTerrain; float H(float x, float z) => ter.SampleHeight(V(x, 0f, z)) + ter.transform.position.y;
 var tuning = UnityEditor.AssetDatabase.LoadAssetAtPath<PlayerTuning>("Assets/Settings/PlayerTuning.asset");
 const float dt = 0.02f, arrive = 0.5f, legTime = 200f, eyeH = 1.6f, floorY = -18f;
-const float railOff = 1.2f, railTol = 0.25f, footTol = 0.2f, stripTop = 0.3f, coverMin = 3.5f, lidMax = 0.1f, shovelMax = 0.3f, clearTop = 0.3f, landSpan = 30f, tallStep = 0.25f, wallFace = 88.95f, roomFace = 89.55f, headUp = 1.5f, talkCone = 10f, narrowMin = 1.4f, gapMax = 0.6f, rimStep = 2f;
+const float railOff = 1.2f, railTol = 0.25f, footTol = 0.2f, stripTop = 0.3f, coverMin = 2.3f, lidMax = 0.1f, shovelMax = 0.3f, clearTop = 0.3f, landSpan = 30f, tallStep = 0.25f, wallFace = 88.95f, roomFace = 89.55f, headUp = 1.5f, talkCone = 10f, narrowMin = 1.4f, gapMax = 0.6f, rimStep = 2f;
 var sb = new System.Text.StringBuilder(); int fails = 0; void Line(bool ok, string s) { if (!ok) fails++; sb.Append((ok ? "PASS " : "FAIL ") + s + "\n"); }
 var temps = new System.Collections.Generic.List<UnityEngine.Collider>();
 var cave = Root("Cave") != null ? Root("Cave").transform : null; var L = cave != null ? cave.Find("Layout827") : null; var poiRoot = Root("PointsOfInterest").transform; var trails = Root("Trails").transform;
@@ -130,8 +131,10 @@ try
         }
     }
     // ---- KEEP CLEAR
+    // colliderless decor (the bulb string) does not stop the body, so it is not in the way (Wren 2026-10-03)
+    bool NoBody(UnityEngine.Renderer r) => r.GetComponentInParent<UnityEngine.Collider>() == null && r.GetComponentInChildren<UnityEngine.Collider>() == null;
     {
-        var a = Tall(new UnityEngine.Rect(71f, 10.8f, wallFace - 71f, 2.4f), clearTop, floorY, r => r.bounds.min.y > floorY + 2.0f); var b = Tall(new UnityEngine.Rect(roomFace, 11f, 92.4f - roomFace, 2f), clearTop, floorY, r => r.bounds.min.y > floorY + 2.0f);
+        var a = Tall(new UnityEngine.Rect(71f, 10.8f, wallFace - 71f, 2.4f), clearTop, floorY, r => r.bounds.min.y > floorY + 2.0f || NoBody(r)); var b = Tall(new UnityEngine.Rect(roomFace, 11f, 92.4f - roomFace, 2f), clearTop, floorY, r => r.bounds.min.y > floorY + 2.0f || NoBody(r));
         Line(a.Count == 0 && b.Count == 0, "KEEP CLEAR: chamber strip " + (a.Count == 0 ? "clear" : string.Join(", ", a)) + "; side-room strip " + (b.Count == 0 ? "clear" : string.Join(", ", b)));
     }
     // ---- TALK
@@ -142,16 +145,16 @@ try
     }
     // ---- SIDE ROOM
     {
-        var room = cave.Find("SideRoom"); var tbl = room.Find("RouletteTable"); UnityEngine.Transform his = null, guest = null; if (tbl != null) foreach (UnityEngine.Transform t in tbl) if (t.name.StartsWith("Chair")) { if (t.localPosition.z > 0f) his = t; else guest = t; }
+        var room = cave.Find("SideRoom"); var tbl = room.Find("RouletteTable"); UnityEngine.Transform his = null, guest = null; if (tbl != null) foreach (UnityEngine.Transform t in tbl) if (t.name.StartsWith("Chair") || t.name == "GuestChair") { if (t.localPosition.z > 0f) his = t; else guest = t; }
         UnityEngine.Transform crate = null; foreach (var t in room.GetComponentsInChildren<UnityEngine.Transform>()) if (t.name.StartsWith("C_Crate_Small_1")) crate = t;
         UnityEngine.Transform bb0 = null; foreach (UnityEngine.Transform t in room) if (t.name.StartsWith("BigBoulders_0")) bb0 = t;
         float hisYaw = his != null ? his.eulerAngles.y : float.NaN; var cb = crate != null ? crate.GetComponent<UnityEngine.Collider>().bounds : default; float gapW = crate != null ? cb.min.x - 89.5f : float.NaN, gapN = crate != null ? 15.5f - cb.max.z : float.NaN;
         float bbWest = bb0 != null ? PlaceKit.MeshBounds(bb0.gameObject).min.x : float.NaN;
         var mask = ~0; var pi = UnityEngine.Object.FindFirstObjectByType<PlayerInteractor>(); var mf = typeof(PlayerInteractor).GetField("mask", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance); if (pi != null && mf != null) mask = ((UnityEngine.LayerMask)mf.GetValue(pi)).value;
-        string first = "nothing"; bool guestFirst = false; var eye = V(91.0f, floorY + eyeH, 12.0f); var dir = UnityEngine.Quaternion.Euler(15f, 90f, 0f) * UnityEngine.Vector3.forward;
+        string first = "nothing"; bool guestFirst = false; var eye = V(91.0f, floorY + eyeH, 12.0f); var gc = guest != null && guest.GetComponentInChildren<UnityEngine.Collider>() != null ? guest.GetComponentInChildren<UnityEngine.Collider>().bounds.center : eye + V(1f, -0.4f, 0f); var dir = (gc - eye).normalized;   // at the guest chair's centre, where a player looks (Wren 2026-10-03: the UI doc's heading 90 was a paper figure)
         if (UnityEngine.Physics.Raycast(eye, dir, out var hit, tuning != null ? tuning.interactReach : 2f, mask, UnityEngine.QueryTriggerInteraction.Ignore)) { first = WalkIns.PathOf(hit.collider.transform) + " at " + F(hit.distance) + " m"; guestFirst = guest != null && hit.collider.transform.IsChildOf(guest); }
         Line(UnityEngine.Mathf.Abs(UnityEngine.Mathf.DeltaAngle(hisYaw, 270f)) <= 1f && UnityEngine.Mathf.Abs(gapW) <= 0.02f && UnityEngine.Mathf.Abs(gapN) <= 0.02f && bbWest >= 89.5f && guestFirst,
-            "SIDE ROOM: his chair yaw " + F1(hisYaw) + " (270); the crate " + F(gapW) + " m off the west wall and " + F(gapN) + " m off the north; BigBoulders_0 west edge " + F(bbWest) + " (89.5 or more); from (91.0, 12.0) facing 90, 15 down, the ray meets " + first);
+            "SIDE ROOM: his chair yaw " + F1(hisYaw) + " (270); the crate " + F(gapW) + " m off the west wall and " + F(gapN) + " m off the north; BigBoulders_0 west edge " + F(bbWest) + " (89.5 or more); from (91.0, 12.0) at the guest chair's centre, the ray meets " + first);
     }
     // ---- DEEPER
     {
