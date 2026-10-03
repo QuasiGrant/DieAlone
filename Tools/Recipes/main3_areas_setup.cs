@@ -233,6 +233,31 @@ var camp3Area = new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Ca
         DLO("Snag line piece 4", 83.2f, 7.0f, 159.7f, c3L + "SnagLine/Piece4"), DLO("Snag lantern", 96f, 7.3f, 146.5f, c3D + "SnagLantern"), DLO("hoist", 98.86f, 5.0f, 144.85f, c3L + "Hoist"),
         DL("east rim spot", 94f, 4.5f, 138.5f), DLO("fire", 76.0f, -3.6f, 150.5f, c3D + "Fire"), DLO("tent", 75.0f, -3.2f, 140.7f, c3D + "CS_Tent_Old_2") },
     deckHide = new[] { D("the easel's painted face", 80.3f, -2.8f, 148.8f, c3D + "Easel/TheCanvas/Painting"), D("the faced canvases' faces", 70.3f, -3.4f, 145.95f, c3L + "FacedCanvases/Faces") } };
+// cave (8.27; CaveLayout.md draft 2 section 6, Sable 2026-10-02): places on their objects (main3_8_27_cave.cs builds Cave/Layout827); the
+// interactions with a collider (R7's spot waits for its milestone, as R1's and R3's); the deck must-hide by land rays (C-1, nothing depends
+// on trees); the rim must-hide is the 8.27 check's RIM line. The chamber and side-room floor is -18.
+const string cvL = "Cave/Layout827/";
+var caveArea = new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave and ravine", bounds = new[] { R(40f, 0f, 132f, 72f) }, warps = new[] { "Cave_Mouth", "Cave_Chamber", "Cave_SideRoom", "Spur_Descent" },   // the closed campground is the front's (8.22, Wren 2026-10-02)
+    places = new[] { PO("Mouth", 52f, -6f, 37.9f, 2.25f, "Cave/Mouth"), PO("Boards", 52f, -5.4f, 37.6f, 1.8f, "Cave/Mouth/DayOneBoard"), POn("Bulbs", "PointsOfInterest/POI_Coloured_bulbs", 2.8f),
+        POn("Rope rail", "PointsOfInterest/RopeRail827", 1.0f), PO("Toilet", 47.64f, G, 41.20f, 0.1f, cvL + "Toilet"), PO("Drip", 51.2f, -6f, 28f, 0.3f, cvL + "Drip"), PO("Niche", 54.5f, -6f, 32.5f, 2f, cvL + "Niche"),
+        P("Chamber", 80f, -18f, 12f), PO("Seat shelf", 88.4f, -18f, 6.0f, 0.6f, cvL + "Chamber/SeatShelf"), PO("Sleep", 85f, -18f, 4f, 0.5f, cvL + "Chamber/Sleep"), PO("Food", 73f, -18f, 14.75f, 0.5f, cvL + "Chamber/Food"),
+        PO("Stack", 86.75f, -18f, 18.75f, 3f, cvL + "Chamber/Stack"), PO("Battery bank", 84.5f, -18f, 20.7f, 0.8f, cvL + "Chamber/BatteryBank"), P("Side room", 93.5f, -18f, 11.5f),
+        PO("Guest chair", 92.85f, -18f, 11.5f, 1.0f, "Cave/SideRoom/RouletteTable/Chair"), PO("His chair", 95.05f, -18f, 11.3f, 1.0f, "Cave/SideRoom/RouletteTable"), PO("Deeper opening", 97.75f, -18f, 13.8f, 2.1f, cvL + "Deeper/DeeperClosed") },
+    interactions = new[] { IA("guest chair", "Cave/SideRoom/RouletteTable/Chair", 91.0f, -18f, 12.0f), IA("event 16 (deeper)", cvL + "Deeper/Wall_End", 101.0f, -18f, 14.0f) },
+    frames = new[] { FR("F1 HEADING 222: THE OPENING (FOUND AT 10 M)", V(56.31f, G, 46.60f), Hd(V(56.31f, 0f, 46.60f), 222f, -4.6f)),
+        FR("F2 HEADING 300: THE BULBS", V(91.3f, G, 47.4f), V(82.15f, 6.5f, 52.96f)),
+        FR("F3 HEADING 180: THE LEG 1 OPENING AND THE CABLE", V(52f, -6f + eyeH, 24f), Hd(V(52f, 0f, 24f), 180f, -5.6f)),
+        FR("F4 HEADING 90: STACK, DOORWAY, R7", V(71f, -18f + eyeH, 12f), Hd(V(71f, 0f, 12f), 90f, -16.8f)),
+        FR("F5 THE DOORWAY HEADING 90: THE GUEST CHAIR", V(89.25f, -18f + eyeH, 12f), V(92.85f, -17.4f, 11.5f)),
+        FR("F6 THE STANDING POINT HEADING 270", V(92.0f, -18f + eyeH, 12f), Hd(V(92.0f, 0f, 12f), 270f, -16.6f)),
+        FR("CAVE_SIDEROOM WARP LANDING, FACING 90", V(91.0f, -18f + eyeH, 12f), Hd(V(91.0f, 0f, 12f), 90f, -17.0f)),
+        FR("SPUR_DESCENT WARP LANDING, FACING 250", V(77.3f, G, 48.6f), Hd(V(77.3f, 0f, 48.6f), 250f, -2.0f)) },
+    walkLines = new[] { WL("the descent", V(52f, -6f, 37f), V(52f, -6f, 22f), V(68f, -10f, 22f), V(68f, -10f, 17f), V(52f, -14f, 17f), V(52f, -14f, 12f), V(68f, -18f, 12f), V(71f, -18f, 12f)),
+        WL("the chamber to the side room", V(71f, -18f, 12f), V(89.25f, -18f, 12f), V(92.0f, -18f, 12f)) },
+    playChecks = new[] { "main3_8_27_cave_check.cs" },
+    inventory = new[] { "Cave lights" }, deckListWritten = true, deckSee = none,
+    deckHide = new[] { D("mouth", 52f, -4.5f, 37.9f), D("boards", 52f, -4.4f, 37.6f), D("jamb top", 57.7f, -0.2f, 37.9f), D("bulbs", 82.15f, 6.5f, 52.96f), D("toilet", 47.64f, -5.85f, 41.2f),
+        D("rope rail", 70.9f, 0.7f, 44.0f), D("spur below the rise", 65f, -0.5f, 47.3f), D("ravine floor", 60f, -5.8f, 40f) } };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,
     front,
@@ -240,9 +265,7 @@ var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     northArea,
     camp2Area,
     camp3Area,
-    new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave and ravine", bounds = new[] { R(20f, -20f, 120f, 65f) }, warps = new[] { "Cave_Mouth", "Cave_Chamber" },   // the closed campground is the front's (8.22, Wren 2026-10-02)
-        places = new[] { P("Cave mouth", 52f, G, 40f), P("Chamber", 80f, -18f, 12f), P("Side room", 94f, -18f, 12f), P("Rope handrail", 107f, G, 58f), P("Coloured bulbs", 83f, G, 49f) },
-        inventory = new[] { "Cave lights" }, deckSee = none, deckHide = none },
+    caveArea,
     new Main3AreaSet.Area { id = "burn", task = "8.28", title = "Old burn and forage", bounds = new[] { R(205f, 140f, 335f, 200f) }, warps = new[] { "Old_Burn", "Junction_Jg" },
         places = new[] { P("Old burn", 240f, G, 160f), P("Forage patch A", 240f, G, 163f), P("Jg", 262f, G, 170f) },
         inventory = new string[0], deckSee = none, deckHide = none },
