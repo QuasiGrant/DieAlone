@@ -33,3 +33,19 @@ Gate menu tasks (day/night, warp to Ward): no menu changed by 8.26; not retested
 4. R3 added to the spacing check (his ray against the fire box).
 
 Pim
+
+## Round 2 (2026-10-03)
+Sources: Checks.md (run 05:29) SPACING and PROMPTS lines, REACH AND FOUND; Found_camp3_14; AreaFrames_camp3_12. Words checked against Camp3Layout_UI.md draft 1: all five match.
+
+**Verdict: PASS** (both round-1 fails closed; notes are not blocking).
+
+| Point | Prompt (doc word) | Ray (PROMPT line) | Found | Presses, pad / kb+mouse | Result |
+|---|---|---|---|---|---|
+| Easel | "Study the painting" (match; word still Grant's, M6) | from (79.0, 149.9) facing 130, 8 down: Easel/TheCanvas/CanvasBox at 1.6 m. A level look still meets nothing (SPACING line), so the player tips the view slightly down, which a player at a 1.3 m canvas does anyway | 28.8 m from W1 to Camp 3 (round 1); reads by eye in AreaFrames_12 and F2 | Y / E: 1 | PASS |
+| Dam | "Clear the dam" (match; wording Camp3Layout 8.4) | from (82.6, 147.2) facing 45, 40 down: Layout826/Dam at 1.8 m (new box x 83.2 to 84.0, z 148.2 to 148.8, top -3.6). Margin 0.2 m inside reach | Sink found from W1 to Camp 3, 8.9 m, 44.3 deg off (0.7 inside the bar), 2.5 deg tall; by eye in Found_14 the lip stones show at the pool's near edge | 1 | PASS |
+| Form and table | "Examine" (match) | from (78.6, 148.4) facing 180, 35 down: Layout826/PlankTable at 1.5 m. The prompt is on the whole table, not the sheet; fine while the form is the only thing on it to examine | exempt (Wren); table found 21.5 m | 1 | PASS |
+| Fire | "Sit by the fire" (match) | from (74.6, 151.2) facing 117, 40 down: Dressing/Fire at 0.3 m | 23.9 m from W1 to Camp 3; pit and hanger by eye in AreaFrames_12 | 1 | PASS |
+| R3 | "Talk" (match) | from (75.2, 148.6) at its centre (no facing stated): Resident_Camp3_Spot/StandInBody at 1.6 m; SPACING: his ray from the stand hits himself first, not the fire | a camp point, found with the fire and seat log (23.1 to 23.9 m); the stand-in body is not in any frame (unverified by eye) | 1 | PASS |
+Spacing: 5 points, PASS. Prompts are stand-ins that show every day; the "some days" and "event day" conditions in the UI doc wait on the loop code.
+
+Pim
