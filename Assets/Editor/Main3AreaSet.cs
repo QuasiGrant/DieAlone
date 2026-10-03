@@ -68,6 +68,8 @@ public class Main3AreaSet : ScriptableObject
         public string objectPath;
         [Tooltip("Must-hide pixel check: how high the control lifts the target, metres; 0 is 20. A target under a fir and giant crowns needs a higher one (8.24, SS1).")]
         public float controlRaise;
+        [Tooltip("Hard must-see: passes when any deck eye sees it (Wren 2026-10-02: the tower check is done from anywhere on the deck; the office door, her blanket and bowl), not the share bar.")]
+        public bool anyEye;
     }
 
     [System.Serializable]

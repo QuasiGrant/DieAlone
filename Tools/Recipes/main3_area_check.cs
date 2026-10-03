@@ -19,7 +19,8 @@
 //   or rock are the cover (treeCoverPath): listed here; the CampLayout pixel check itself is main3_deck_pixel_check.cs, which
 //   main3_review_capture.sh --area runs in batches and adds to the summary. Hard must-see targets (8.22, FrontLayout.md 5.4) are tested
 //   against every drawn mesh (temporary exact colliders on the meshes the deck rays cross), the tower's own when the area sets
-//   hardSeesTower (the lake, 8.23 round 2); loose ones are reported, never failed.
+//   hardSeesTower (the lake, 8.23 round 2); a target marked anyEye passes when one deck eye sees it (Wren 2026-10-02: the lake's
+//   blanket and bowl, judged as the office door); loose ones are reported, never failed.
 //   An area with no deck list prints "no deck list" and does
 //   not pass.
 // INVENTORY: the area's items, expected and found; a zero fails.
@@ -319,9 +320,9 @@ try
             var p = Pt(t.point); var own = string.IsNullOrEmpty(t.objectPath) ? null : Main3AreaSet.At(scene, t.objectPath);
             if (t.hard && !string.IsNullOrEmpty(t.objectPath) && own == null) { deckFails++; deckLines.Append("  HIDDEN see " + t.label + ": no object " + t.objectPath + "\n"); continue; }
             int clear = 0; foreach (var e in eyes) if (t.hard ? ClearHard(e, p, own) : Clear(e, p, tower)) clear++;
-            float share = clear / (float)eyes.Count; bool pass = share >= set.mustSeeShare; if (!pass && !t.loose) deckFails++;
+            float share = clear / (float)eyes.Count; bool pass = t.anyEye ? clear > 0 : share >= set.mustSeeShare; if (!pass && !t.loose) deckFails++;
             var centreEye = new UnityEngine.Vector3(tower.position.x, deckTop + set.deckEye, tower.position.z);
-            deckLines.Append("  " + (pass ? "ok   " : t.loose ? "low  " : "HIDDEN ") + "see " + (t.loose ? "(loose) " : t.hard ? "(hard, every mesh) " : "") + t.label + " " + P3(p) + ": " + clear + " of " + eyes.Count + " rays clear (" + (share * 100f).ToString("F0", inv) + " percent, bar " + (set.mustSeeShare * 100f).ToString("F0", inv) + ")" + (pass ? "" : "; from the deck centre the first block is " + (t.hard ? HardBlocker(centreEye, p, own) : Blocker(centreEye, p, tower))) + "\n");
+            deckLines.Append("  " + (pass ? "ok   " : t.loose ? "low  " : "HIDDEN ") + "see " + (t.loose ? "(loose) " : t.hard ? "(hard, every mesh) " : "") + t.label + " " + P3(p) + ": " + clear + " of " + eyes.Count + " rays clear (" + (share * 100f).ToString("F0", inv) + " percent, " + (t.anyEye ? "passes from any deck eye, Wren 2026-10-02" : "bar " + (set.mustSeeShare * 100f).ToString("F0", inv)) + ")" + (pass ? "" : "; from the deck centre the first block is " + (t.hard ? HardBlocker(centreEye, p, own) : Blocker(centreEye, p, tower))) + "\n");
         }
         // the pixel check runs in main3_deck_pixel_check.cs, a batch of eyes per job (one job of every render ran the GPU out of memory);
         // main3_review_capture.sh --area adds its PIXEL lines under this one

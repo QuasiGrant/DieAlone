@@ -21,6 +21,7 @@ Main3AreaSet.Frame FR(string l, UnityEngine.Vector3 eye, UnityEngine.Vector3 loo
 Main3AreaSet.DeckTarget D(string l, float x, float y, float z, string cover = "") => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), treeCoverPath = cover };
 Main3AreaSet.DeckTarget DH(string l, float x, float y, float z, string obj) => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), hard = true, objectPath = obj };   // hard must-see, every mesh (8.22)
 Main3AreaSet.DeckTarget DL(string l, float x, float y, float z) => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), loose = true };   // loose must-see, reported only (8.22)
+Main3AreaSet.DeckTarget DHA(string l, float x, float y, float z, string obj) => new Main3AreaSet.DeckTarget { label = l, point = V(x, y, z), hard = true, objectPath = obj, anyEye = true };   // hard, passes from any deck eye (Wren 2026-10-02: the lake's blanket and bowl, as the office door)
 Main3AreaSet.WalkLine WL(string l, params UnityEngine.Vector3[] pts) => new Main3AreaSet.WalkLine { label = l, points = pts };
 Main3AreaSet.InventoryItem I(string l, string p, string k, string n, int e) => new Main3AreaSet.InventoryItem { label = l, path = p, kind = k, name = n, expected = e };
 // ground Valley.md 8 closes with thicket (as main3_reach_check_8_16a.cs)
@@ -120,7 +121,7 @@ var lakeArea = new Main3AreaSet.Area { id = "lake", task = "8.23", title = "Lake
         FR("THE BOATHOUSE FROM THE SHORE PATH, 20 M OUT", V(252f, G, 70f), V(240f, -3f, 54f)) },
     playChecks = new[] { "main3_8_23_lake_check.cs", "main3_8_23_lake_frames.cs?look=Day_one" },
     inventory = new[] { "Lanterns and lamps" }, deckListWritten = true, hardSeesTower = true,   // Wren 2026-10-02: the lake deck test counts the tower's rails and cab
-    deckSee = new[] { DH("her blanket", 240.5f, -3.6f, 56.62f, "Lake/Boathouse/Dressing/Step/Blanket"), DH("her bowl", 241.2f, -3.7f, 56.5f, "Lake/Boathouse/Dressing/Step/CITW_Bowl_Small"),
+    deckSee = new[] { DHA("her blanket", 240.5f, -3.6f, 56.62f, "Lake/Boathouse/Dressing/Step/Blanket"), DHA("her bowl", 241.2f, -3.7f, 56.5f, "Lake/Boathouse/Dressing/Step/CITW_Bowl_Small"),
         DL("boathouse roof", 240f, -1.0f, 52.4f), DL("pump", 190f, -3.6f, 94.8f), DL("dock end", 190f, -4.3f, 86.4f), DL("mid water", 190f, -5.4f, 60f), DL("reed bed", 241.5f, -4.6f, 62.2f),
         DL("stake line", 240f, -4.8f, 60.4f), DL("rowboat", 226.47f, G, 87.28f), DL("shore path east", 255f, G, 55f) },
     deckHide = new Main3AreaSet.DeckTarget[0] };
