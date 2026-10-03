@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="580mm" height="310mm" viewBox="0 0 580 310" font-family="Arial, sans-serif">
+<style>
+ .t{font-size:3.2px;fill:#222}
+ .s{font-size:2.6px;fill:#333}
+ .h{font-size:5px;font-weight:bold;fill:#111}
+ .burn{fill:#e8d9c0;fill-opacity:0.5;stroke:#a08060;stroke-width:0.4;stroke-dasharray:3 1.5}
+ .drop{fill:#b8b2a6;fill-opacity:0.6;stroke:#c0392b;stroke-width:0.5}
+ .trail{fill:none;stroke:#b07a3a;stroke-width:1.4}
+ .tread{fill:none;stroke:#d9b98a;stroke-width:28;stroke-opacity:0.6}
+ .cl{fill:none;stroke:#b07a3a;stroke-width:0.6;stroke-dasharray:2 1}
+ .bush{fill:#8a3a3a;fill-opacity:0.6;stroke:#5a1a1a;stroke-width:0.4}
+ .trunk{fill:#d8d4cc;stroke:#555;stroke-width:0.5}
+ .act{fill:#f2c98a;stroke:#7a4a10;stroke-width:0.5}
+ .fur{fill:#d9d2c3;stroke:#333;stroke-width:0.4}
+ .hedge{fill:none;stroke:#3d5a2a;stroke-width:1.2;stroke-dasharray:1.5 1}
+ .fir{fill:#3d5a2a;fill-opacity:0.6;stroke:#2a3a1a;stroke-width:0.4}
+ .gone{fill:none;stroke:#c0392b;stroke-width:0.6}
+ .sight{fill:none;stroke:#8e44ad;stroke-width:0.6;stroke-dasharray:3 1.5}
+ .trap{fill:none;stroke:#c0392b;stroke-width:0.8}
+ .frame{fill:none;stroke:#999;stroke-width:0.3}
+ .warp{fill:#2a7fd4;stroke:#123;stroke-width:0.3}
+</style>
+<rect x="0" y="0" width="580" height="310" fill="#fff"/>
+<text class="h" x="20" y="14">BurnLayout.svg, draft 1, 2026-10-02, Sable. Plans: north up, world metres, from Marlow's 828 survey.</text>
+
+<!-- PANEL A: X = 20 + 1.6(x-180), Y = 30 + 1.6(245-z); x 180 to 345, z 100 to 245 -->
+<rect class="frame" x="20" y="30" width="264" height="232"/>
+<text class="h" x="20" y="27">A. The burn and its trails (x 180 to 345, z 100 to 245), 1.6 px = 1 m</text>
+<rect class="burn" x="60" y="102" width="208" height="96"/><text class="s" x="200" y="108">burn scope x 205 to 335, z 140 to 200</text>
+<rect class="fur" x="60" y="102" width="9.6" height="80" fill-opacity="0.4"/><text class="s" x="40" y="100">B6 firebreak (visual)</text>
+<rect class="drop" x="22.4" y="185.2" width="43.2" height="15.2"/><text class="s" x="22" y="212">drop 8.3 m, 2.5 m off the trail</text>
+<rect class="trap" x="28" y="200.4" width="10.4" height="4"/><text class="s" x="40" y="206">B9 pocket fill</text>
+<circle class="trunk" cx="55.2" cy="198" r="7.2"/><text class="s" x="44" y="222">Hollow Giant</text>
+<circle class="act" cx="51.6" cy="191.8" r="1.6"/><text class="s" x="64" y="196">B2 opening, landing, bark roof</text>
+<!-- trails -->
+<polyline class="trail" points="27,176.4 30.1,185.5 33.8,190.5 39.8,192.1 45.6,189.5 51.2,186.3 57.4,184.9 62.9,181.7 67.2,177 72.3,173.2 78.4,173.7 83.8,176.9 89.1,180.6 94.6,183.8 100.6,185.8 106.6,183.9 110.4,178.8 113.3,173.2 117,167.9 121.1,163.3 122.7,157.2 123.7,150.8 125.8,144.9 131.4,143.1 137.4,144.7 143.5,146.8 149.9,147.3 151.2,146.8"/>
+<polyline class="trail" points="151.2,146.8 154.2,141.2 158.9,133 164.96,131.8 170.6,134.5 175.4,138.6 181.1,140.4 186.2,136.7 191.4,132.9 197.3,130.6 203.4,131.8 209.8,133 215.7,135.1 220.5,139.3 223.5,144.9 225.4,151 227.4,157.2 230.2,162.8 235.4,166.2 241.8,165.8 247.5,163.1 253.3,160.2 259,157.7 261.6,151.9 265.9,148.9 272,150.6 275.2,150.2"/>
+<polyline class="trail" points="151.2,146.8 150.7,143.6 147.8,138 145,132.2 145.6,126.2 150.1,121.7 155.5,118.3 161,114.8 164.5,109.7 163.4,103.4 161.1,97.5 160.8,91.3 160.3,84.9 158.6,78.8 158.9,72.4 163.5,68.2 169.4,66 175.7,64.2 181.3,61.2 183,55.3 182.2,48.9 182.2,45.7"/>
+<polyline class="trail" points="210.2,249.5 213.1,246.8 212,240.6 213,234.8 219,233 224.8,230.6 225.8,224.4 225.8,218 230.4,214.5 236.6,213.7 243,212.9 247.8,209.2 248.6,202.8 247.7,196.6 247.4,190.2 250.7,184.9 256.6,182.3 262.7,180.7 269,179.1 274.7,176.2 278.1,171.1 277.8,164.9 276.2,158.6 275.5,152.2"/>
+<text class="t" x="70" y="192">Camp to Jg, 106.5 m</text><text class="t" x="180" y="126">Jg to T, 104.5 m</text><text class="t" x="166" y="90">Jg to Camp 1, 81.2 m</text><text class="t" x="228" y="226">Camp 2 to T</text>
+<line class="gone" x1="99" y1="182" x2="102" y2="189"/><text class="s" x="86" y="196">bed edge m 58</text>
+<rect class="bush" x="112.8" y="158.6" width="5" height="5"/><text class="s" x="96" y="156">B1 forage A</text>
+<circle class="fir" cx="109.6" cy="161.2" r="1.8"/>
+<circle class="act" cx="154.1" cy="149.7" r="1.4"/><line class="gone" x1="155" y1="150.6" x2="157" y2="152.6"/><text class="s" x="140" y="158">B3 Jg post (moved)</text>
+<circle class="trunk" cx="196" cy="140.4" r="6.4"/><text class="s" x="190" y="152">B5 Gate Tree stub</text>
+<rect class="act" x="271.3" y="144.5" width="3" height="3"/><text class="s" x="258" y="142">B4 board + 2 arms</text>
+<circle class="act" cx="255.7" cy="152.9" r="1.2"/><text class="s" x="238" y="158">lot first seen</text>
+<line class="gone" x1="235.7" y1="205.3" x2="238.7" y2="208.3"/><line class="gone" x1="238.7" y1="205.3" x2="235.7" y2="208.3"/><text class="s" x="240" y="210">R snag (verge line)</text>
+<line class="sight" x1="20" y1="159.6" x2="284" y2="190.6"/><text class="s" x="200" y="186">deck to verge tree (hard)</text>
+<line class="sight" x1="20" y1="151.6" x2="282" y2="102"/><text class="s" x="214" y="112">deck to office door (hard)</text>
+<circle class="warp" cx="151.2" cy="153.2" r="1.6"/><circle class="warp" cx="115.4" cy="169.2" r="1.6"/>
+
+<!-- PANEL B: forage A, 20 px per m, x 235 to 246, z 155 to 168. X = 330 + 20(x-235), Y = 30 + 20(168-z) -->
+<rect class="frame" x="330" y="30" width="220" height="260"/>
+<text class="h" x="330" y="27">B. Forage A (x 235 to 246, z 155 to 168), 20 px = 1 m</text>
+<polyline class="tread" points="396,280 442,214 472,187.4 494,156 508,118 514,80"/>
+<polyline class="cl" points="396,280 442,214 472,187.4 494,156 508,118 514,80"/>
+<circle class="bush" cx="434.4" cy="104.2" r="14.8"/><circle class="bush" cx="426.4" cy="156.8" r="14.8"/><circle class="bush" cx="397" cy="142" r="14.8"/><circle class="bush" cx="402" cy="109.4" r="14.8"/><circle class="bush" cx="449.6" cy="133.4" r="14.8"/>
+<text class="s" x="404" y="132">bushes, sphere colliders</text>
+<line class="hedge" x1="346" y1="60" x2="368" y2="240"/><text class="s" x="334" y="250">west hedge</text>
+<circle class="fir" cx="350" cy="130" r="10"/><text class="s" x="334" y="148">B1 deck screen, 3 firs</text>
+<circle class="act" cx="462" cy="177.4" r="3"/><line class="sight" x1="462" y1="177.4" x2="446" y2="150"/><text class="s" x="466" y="184">forage stand, facing 330</text>
+<text class="s" x="452" y="146">1.03</text><text class="s" x="440" y="168">1.23 m off the edge</text>
+<line class="gone" x1="430" y1="165" x2="438" y2="173"/><line class="gone" x1="438" y1="165" x2="430" y2="173"/><text class="s" x="404" y="182">R firewood</text>
+<text class="s" x="476" y="250">tread 1.4 m; keep clear 30 m both ways</text>
+<text class="s" x="20" y="275">Legend: brown line trail; red box drop or pocket; grey circle trunk; dark red bush; green fir or hedge; purple dashed deck line; red X removed; blue dot warp.</text>
+</svg>
