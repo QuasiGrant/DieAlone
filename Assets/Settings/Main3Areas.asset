@@ -57,6 +57,9 @@ MonoBehaviour:
   - Lake/Dock/Rail
   - Lake/Dock/Layout823/RailStops
   - Lake/Boathouse/Layout823/SlipRails
+  - Campsites/Camp_2/StackTop/Layout825/TopRail
+  - Campsites/Camp_2/Layout825/LandingRailN
+  - Campsites/Camp_2/Layout825/Skirts
   colliderSlack: 0.3
   colliderShare: 0.25
   colliderSkipRoots:
@@ -1047,42 +1050,201 @@ MonoBehaviour:
     title: Camp 2
     bounds:
     - serializedVersion: 2
-      x: 255
-      y: 55
-      width: 80
-      height: 110
+      x: 262
+      y: 56
+      width: 83
+      height: 116
     warps:
     - Camp_2
     - Camp_2_Top
     places:
     - label: Camp 2
-      point: {x: 292, y: -999, z: 104}
+      point: {x: 294.3, y: -999, z: 95}
       height: 0
       objectPath: 
-    - label: Stack top
-      point: {x: 294.5, y: 24, z: 107.2}
+    - label: Granite stack (south face)
+      point: {x: 292, y: -999, z: 101.6}
+      height: 20
+      objectPath: Campsites/Camp_2/GraniteStack
+    - label: Ramp foot
+      point: {x: 298.9, y: -999, z: 107.8}
       height: 0
       objectPath: 
+    - label: Landing top
+      point: {x: 298.3, y: 24, z: 107.25}
+      height: 1.05
+      objectPath: Campsites/Camp_2/StackPath/LandingTop
+    - label: His chair on top
+      point: {x: 294.76, y: 24, z: 110.31}
+      height: 1.2
+      objectPath: Campsites/Camp_2/StackTop/Layout825/HisChair
+    - label: Tent
+      point: {x: 288.86, y: 24, z: 108}
+      height: 1.5
+      objectPath: Campsites/Camp_2/StackTop/Layout825/Tent
+    - label: Lamp
+      point: {x: 291.6, y: 24, z: 107.4}
+      height: 1.9
+      objectPath: Campsites/Camp_2/StackTop/Layout825/Lamp
     - label: Payphone
-      point: {x: 298.5, y: -999, z: 99}
-      height: 0
-      objectPath: 
-    - label: Food lockers
-      point: {x: 317, y: -999, z: 136}
-      height: 0
-      objectPath: 
+      point: {x: 300, y: -999, z: 99}
+      height: 3.2
+      objectPath: Campsites/Camp_2/Dressing/Payphone
+    - label: Hook
+      point: {x: 299.63, y: -999, z: 98.4}
+      height: 1.5
+      objectPath: Campsites/Camp_2/Layout825/Handset
+    - label: Card table
+      point: {x: 298.555, y: -999, z: 97.755}
+      height: 0.98
+      objectPath: Campsites/Camp_2/Layout825/CardTable
+    - label: His seat at the table
+      point: {x: 299.4, y: -999, z: 97.76}
+      height: 1.2
+      objectPath: Campsites/Camp_2/Layout825/CardTable/HisChair
+    - label: Your seat
+      point: {x: 297.71, y: -999, z: 97.76}
+      height: 1.2
+      objectPath: Campsites/Camp_2/Layout825/CardTable/YourChair
+    - label: Third place
+      point: {x: 298.55, y: -999, z: 96.91}
+      height: 1.2
+      objectPath: Campsites/Camp_2/Layout825/CardTable/ThirdPlace
+    - label: Barrel
+      point: {x: 291.4, y: -999, z: 101.4}
+      height: 1.19
+      objectPath: Campsites/Camp_2/Layout825/Barrel
     - label: Phone pole
-      point: {x: 273, y: -999, z: 72}
-      height: 0
-      objectPath: 
-    inventory: []
-    deckListWritten: 0
+      point: {x: 272.8, y: -999, z: 72}
+      height: 8
+      objectPath: PointsOfInterest/POI_Phone_pole
+    - label: Food lockers
+      point: {x: 317.2, y: -999, z: 136}
+      height: 1.2
+      objectPath: PointsOfInterest/POI_Food_lockers
+    - label: Start blaze
+      point: {x: 304.4, y: -999, z: 106.4}
+      height: 1.8
+      objectPath: Campsites/Camp_2/Dressing/StartBlaze
+    - label: PS1
+      point: {x: 288.14, y: 24, z: 109.6}
+      height: 0.3
+      objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS1
+    - label: PS2
+      point: {x: 288.8, y: 24, z: 111.2}
+      height: 0.3
+      objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS2
+    - label: PS3
+      point: {x: 285.7, y: -999, z: 109.9}
+      height: 0.3
+      objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS3
+    inventory:
+    - Lanterns and lamps
+    deckListWritten: 1
     hardSeesTower: 0
-    deckSee: []
+    deckSee:
+    - label: lamp core
+      point: {x: 291.6, y: 25.3, z: 107.4}
+      treeCoverPath: 
+      hard: 1
+      loose: 0
+      objectPath: Campsites/Camp_2/StackTop/Layout825/Lamp/LampCore
+      controlRaise: 0
+      anyEye: 0
+    - label: top rail, west faces
+      point: {x: 287.82, y: 24.8, z: 108}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: Campsites/Camp_2/StackTop/Layout825/TopRail
+      controlRaise: 0
+      anyEye: 0
+    - label: his chair on top
+      point: {x: 294.76, y: 24.8, z: 110.31}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: Campsites/Camp_2/StackTop/Layout825/HisChair
+      controlRaise: 0
+      anyEye: 0
+    - label: tent
+      point: {x: 288.86, y: 25, z: 108}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: Campsites/Camp_2/StackTop/Layout825/Tent
+      controlRaise: 0
+      anyEye: 0
+    - label: PS1
+      point: {x: 288.14, y: 24.1, z: 109.6}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: PS2
+      point: {x: 288.8, y: 24.1, z: 111.2}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: PS3
+      point: {x: 285.7, y: 4.5, z: 109.9}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
+    - label: booth hood light
+      point: {x: 299, y: 6.6, z: 99}
+      treeCoverPath: 
+      hard: 0
+      loose: 1
+      objectPath: 
+      controlRaise: 0
+      anyEye: 0
     deckHide: []
-    interactions: []
-    frames: []
-    playChecks: []
+    interactions:
+    - label: hook
+      path: Campsites/Camp_2/Layout825/Handset
+      approach: {x: 299.6, y: -999, z: 99.2}
+    - label: R2 at the table
+      path: Campsites/Camp_2/Layout825/CardTable/HisChair
+      approach: {x: 298.5, y: -999, z: 98.7}
+    - label: R2 on top
+      path: Campsites/Camp_2/StackTop/Layout825/HisChair
+      approach: {x: 293.8, y: 24, z: 109.5}
+    - label: barrel
+      path: Campsites/Camp_2/Layout825/Barrel
+      approach: {x: 292.3, y: -999, z: 100.4}
+    frames:
+    - label: 'F1 HEADING 7: TABLE 13.2 M, BOOTH 14.7 M'
+      eye: {x: 297.2, y: -999, z: 84.6}
+      look: {x: 298.4187, y: 5, z: 94.52546}
+    - label: 'F2 HEADING 337: THE BARREL 12.15 M'
+      eye: {x: 296.1, y: -999, z: 90.2}
+      look: {x: 292.1927, y: 4.8, z: 99.405045}
+    - label: 'F3 FROM THE T LEG HEADING 190: BOOTH AND TABLE'
+      eye: {x: 304, y: -999, z: 114}
+      look: {x: 302.26352, y: 5, z: 104.151924}
+    - label: 'F4 RAMP FOOT HEADING 104: THE BLAZE THROUGH THE OPEN BAY'
+      eye: {x: 298.9, y: -999, z: 107.8}
+      look: {x: 308.60297, y: 5.2, z: 105.38078}
+    - label: 'F5 TOP LANDING HEADING 300: CHAIR, TENT, LAMP'
+      eye: {x: 298.3, y: 25.6, z: 107.25}
+      look: {x: 289.63974, y: 24.8, z: 112.25}
+    - label: F6 THE PHONE POLE FROM THE BOATHOUSE LEG
+      eye: {x: 278.22, y: -999, z: 73.7}
+      look: {x: 272.8, y: 7, z: 72}
+    - label: F7 THE FOOD LOCKERS FROM THE T LEG
+      eye: {x: 310.15, y: -999, z: 129.43}
+      look: {x: 317.2, y: 4.8, z: 136}
+    playChecks:
+    - main3_8_25_camp2_check.cs
   - walkLines: []
     id: camp3
     task: 8.26
@@ -1489,25 +1651,85 @@ MonoBehaviour:
       height: 1.3
       objectPath: Places/NorthRuin/Layout824/ReportPost
     - label: Camp 2
-      point: {x: 292, y: -999, z: 104}
+      point: {x: 294.3, y: -999, z: 95}
       height: 0
       objectPath: 
-    - label: Stack top
-      point: {x: 294.5, y: 24, z: 107.2}
+    - label: Granite stack (south face)
+      point: {x: 292, y: -999, z: 101.6}
+      height: 20
+      objectPath: Campsites/Camp_2/GraniteStack
+    - label: Ramp foot
+      point: {x: 298.9, y: -999, z: 107.8}
       height: 0
       objectPath: 
+    - label: Landing top
+      point: {x: 298.3, y: 24, z: 107.25}
+      height: 1.05
+      objectPath: Campsites/Camp_2/StackPath/LandingTop
+    - label: His chair on top
+      point: {x: 294.76, y: 24, z: 110.31}
+      height: 1.2
+      objectPath: Campsites/Camp_2/StackTop/Layout825/HisChair
+    - label: Tent
+      point: {x: 288.86, y: 24, z: 108}
+      height: 1.5
+      objectPath: Campsites/Camp_2/StackTop/Layout825/Tent
+    - label: Lamp
+      point: {x: 291.6, y: 24, z: 107.4}
+      height: 1.9
+      objectPath: Campsites/Camp_2/StackTop/Layout825/Lamp
     - label: Payphone
-      point: {x: 298.5, y: -999, z: 99}
-      height: 0
-      objectPath: 
-    - label: Food lockers
-      point: {x: 317, y: -999, z: 136}
-      height: 0
-      objectPath: 
+      point: {x: 300, y: -999, z: 99}
+      height: 3.2
+      objectPath: Campsites/Camp_2/Dressing/Payphone
+    - label: Hook
+      point: {x: 299.63, y: -999, z: 98.4}
+      height: 1.5
+      objectPath: Campsites/Camp_2/Layout825/Handset
+    - label: Card table
+      point: {x: 298.555, y: -999, z: 97.755}
+      height: 0.98
+      objectPath: Campsites/Camp_2/Layout825/CardTable
+    - label: His seat at the table
+      point: {x: 299.4, y: -999, z: 97.76}
+      height: 1.2
+      objectPath: Campsites/Camp_2/Layout825/CardTable/HisChair
+    - label: Your seat
+      point: {x: 297.71, y: -999, z: 97.76}
+      height: 1.2
+      objectPath: Campsites/Camp_2/Layout825/CardTable/YourChair
+    - label: Third place
+      point: {x: 298.55, y: -999, z: 96.91}
+      height: 1.2
+      objectPath: Campsites/Camp_2/Layout825/CardTable/ThirdPlace
+    - label: Barrel
+      point: {x: 291.4, y: -999, z: 101.4}
+      height: 1.19
+      objectPath: Campsites/Camp_2/Layout825/Barrel
     - label: Phone pole
-      point: {x: 273, y: -999, z: 72}
-      height: 0
-      objectPath: 
+      point: {x: 272.8, y: -999, z: 72}
+      height: 8
+      objectPath: PointsOfInterest/POI_Phone_pole
+    - label: Food lockers
+      point: {x: 317.2, y: -999, z: 136}
+      height: 1.2
+      objectPath: PointsOfInterest/POI_Food_lockers
+    - label: Start blaze
+      point: {x: 304.4, y: -999, z: 106.4}
+      height: 1.8
+      objectPath: Campsites/Camp_2/Dressing/StartBlaze
+    - label: PS1
+      point: {x: 288.14, y: 24, z: 109.6}
+      height: 0.3
+      objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS1
+    - label: PS2
+      point: {x: 288.8, y: 24, z: 111.2}
+      height: 0.3
+      objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS2
+    - label: PS3
+      point: {x: 285.7, y: -999, z: 109.9}
+      height: 0.3
+      objectPath: Campsites/Camp_2/Layout825/PaperSpots/PS3
     - label: Camp 3
       point: {x: 78, y: -999, z: 146}
       height: 0

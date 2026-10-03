@@ -30,7 +30,8 @@ set.closedZones = new[] { R(346f, -10f, 395f, 99f), R(141f, -10f, 248f, 25f) };
 // stops (Main3AreaSet.stopRoots), set here so the asset follows this file (the asset had kept its first list, without the lake's):
 // 8.23 round 2 adds the dock rails, their RailStops and the slip rails (Marlow 823 finding 1)
 set.stopRoots = new[] { "FrontZone/BrushBands", "FrontZone/ShiftWalls", "FrontZone/Gate/PlayerBlocker", "Ground815/Stops", "Fence", "Lake/WadeLimit", "Lake/Boathouse/Layout823/StakeLine",
-    "Lake/Dock/Rail", "Lake/Dock/Layout823/RailStops", "Lake/Boathouse/Layout823/SlipRails" };
+    "Lake/Dock/Rail", "Lake/Dock/Layout823/RailStops", "Lake/Boathouse/Layout823/SlipRails",
+    "Campsites/Camp_2/StackTop/Layout825/TopRail", "Campsites/Camp_2/Layout825/LandingRailN", "Campsites/Camp_2/Layout825/Skirts" };   // 8.25: the top rail, the landing rail and the stair skirts
 // closed water (8.23 round 2): the lake inside the wade ring, the stake line and the house skirts, filled from mid water
 set.closedFills = new[] { new Main3AreaSet.ClosedFill { label = "lake", seed = new UnityEngine.Vector2(190f, 60f), surface = -5.5f, within = R(133f, 25f, 262f, 130f), cell = 0.5f, body = 0.35f } };
 // inventory (Vesper, Docs/Review/2026-10-02-Meeting/Vesper.md 4): expected counts as built by the runner on 2026-10-02
@@ -153,14 +154,41 @@ var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Ca
     inventory = new[] { "North ruin" }, deckListWritten = true,
     deckSee = new[] { DH("spar top", 284f, 29f, 240f, "Campsites/Camp_1/Dressing/Spar"), DLO("kid's table", 285.2f, 5.8f, 236.5f, "Campsites/Camp_1/Dressing/KidTable"), DLO("tent", 271f, 6.5f, 234.5f, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), DLO("tripod", 276f, 6.3f, 232f, "Campsites/Camp_1/Dressing/Cookfire") },
     deckHide = new[] { D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"), new Main3AreaSet.DeckTarget { label = "SS1", point = V(251.6f, G, 272.0f), treeCoverPath = "Places/NorthLoop/SS1", controlRaise = 60f }, D("SS2", 150.5f, G, 276.5f, "Places/NorthLoop/SS2"), D("SS3", 132.3f, G, 262.3f, "Places/NorthLoop/SS3") } };
+// camp 2 (8.25; Camp2Layout.md draft 2 section 6, Sable 2026-10-02): places on their objects (main3_8_25_camp2.cs builds them under
+// Campsites/Camp_2/Layout825 and StackTop/Layout825); the frames at the doc's eyes and headings; deck must-see hard: the lamp's cold
+// core, every mesh; the rest loose; must-hide none. The top is 24.00, the camp floor about 4.
+const float c2Top = 24f; const string c2L = "Campsites/Camp_2/Layout825/", c2T = "Campsites/Camp_2/StackTop/Layout825/";
+UnityEngine.Vector3 Hd(UnityEngine.Vector3 eye, float heading, float lookY) { float r = heading * UnityEngine.Mathf.Deg2Rad; return V(eye.x + UnityEngine.Mathf.Sin(r) * 10f, lookY, eye.z + UnityEngine.Mathf.Cos(r) * 10f); }
+var c2F5 = V(298.3f, c2Top + eyeH, 107.25f);
+var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Camp 2", bounds = new[] { R(262f, 56f, 345f, 172f) }, warps = new[] { "Camp_2", "Camp_2_Top" },
+    places = new[] { P("Camp 2", 294.3f, G, 95.0f), PO("Granite stack (south face)", 292f, G, 101.6f, 20f, "Campsites/Camp_2/GraniteStack"), P("Ramp foot", 298.9f, G, 107.8f),
+        PO("Landing top", 298.3f, c2Top, 107.25f, 1.05f, "Campsites/Camp_2/StackPath/LandingTop"), PO("His chair on top", 294.76f, c2Top, 110.31f, 1.2f, c2T + "HisChair"),
+        PO("Tent", 288.86f, c2Top, 108.0f, 1.5f, c2T + "Tent"), PO("Lamp", 291.6f, c2Top, 107.4f, 1.9f, c2T + "Lamp"), PO("Payphone", 300f, G, 99f, 3.2f, "Campsites/Camp_2/Dressing/Payphone"),
+        PO("Hook", 299.63f, G, 98.40f, 1.5f, c2L + "Handset"), PO("Card table", 298.555f, G, 97.755f, 0.98f, c2L + "CardTable"),
+        PO("His seat at the table", 299.40f, G, 97.76f, 1.2f, c2L + "CardTable/HisChair"), PO("Your seat", 297.71f, G, 97.76f, 1.2f, c2L + "CardTable/YourChair"), PO("Third place", 298.55f, G, 96.91f, 1.2f, c2L + "CardTable/ThirdPlace"),
+        PO("Barrel", 291.4f, G, 101.4f, 1.19f, c2L + "Barrel"), PO("Phone pole", 272.8f, G, 72f, 8f, "PointsOfInterest/POI_Phone_pole"), PO("Food lockers", 317.2f, G, 136.0f, 1.2f, "PointsOfInterest/POI_Food_lockers"),
+        PO("Start blaze", 304.4f, G, 106.4f, 1.8f, "Campsites/Camp_2/Dressing/StartBlaze"), PO("PS1", 288.14f, c2Top, 109.6f, 0.3f, c2L + "PaperSpots/PS1"), PO("PS2", 288.8f, c2Top, 111.2f, 0.3f, c2L + "PaperSpots/PS2"),
+        PO("PS3", 285.7f, G, 109.9f, 0.3f, c2L + "PaperSpots/PS3") },
+    interactions = new[] { IA("hook", c2L + "Handset", 299.6f, G, 99.2f), IA("R2 at the table", c2L + "CardTable/HisChair", 298.5f, G, 98.7f),
+        IA("R2 on top", c2T + "HisChair", 293.8f, c2Top, 109.5f), IA("barrel", c2L + "Barrel", 292.3f, G, 100.4f) },
+    frames = new[] { FR("F1 HEADING 7: TABLE 13.2 M, BOOTH 14.7 M", V(297.2f, G, 84.6f), Hd(V(297.2f, 0f, 84.6f), 7f, 5.0f)),
+        FR("F2 HEADING 337: THE BARREL 12.15 M", V(296.1f, G, 90.2f), Hd(V(296.1f, 0f, 90.2f), 337f, 4.8f)),
+        FR("F3 FROM THE T LEG HEADING 190: BOOTH AND TABLE", V(304.0f, G, 114.0f), Hd(V(304.0f, 0f, 114.0f), 190f, 5.0f)),
+        FR("F4 RAMP FOOT HEADING 104: THE BLAZE THROUGH THE OPEN BAY", V(298.9f, G, 107.8f), Hd(V(298.9f, 0f, 107.8f), 104f, 5.2f)),
+        FR("F5 TOP LANDING HEADING 300: CHAIR, TENT, LAMP", c2F5, Hd(c2F5, 300f, c2Top + 0.8f)),
+        FR("F6 THE PHONE POLE FROM THE BOATHOUSE LEG", V(278.22f, G, 73.70f), V(272.8f, 7.0f, 72.0f)),
+        FR("F7 THE FOOD LOCKERS FROM THE T LEG", V(310.15f, G, 129.43f), V(317.2f, 4.8f, 136.0f)) },
+    playChecks = new[] { "main3_8_25_camp2_check.cs" },
+    inventory = new[] { "Lanterns and lamps" }, deckListWritten = true,
+    deckSee = new[] { DH("lamp core", 291.6f, 25.3f, 107.4f, c2T + "Lamp/LampCore"), DLO("top rail, west faces", 287.82f, 24.8f, 108.0f, c2T + "TopRail"), DLO("his chair on top", 294.76f, 24.8f, 110.31f, c2T + "HisChair"),
+        DLO("tent", 288.86f, 25.0f, 108.0f, c2T + "Tent"), DL("PS1", 288.14f, 24.1f, 109.6f), DL("PS2", 288.8f, 24.1f, 111.2f), DL("PS3", 285.7f, 4.5f, 109.9f), DL("booth hood light", 299.0f, 6.6f, 99.0f) },
+    deckHide = none };
 var areas = new System.Collections.Generic.List<Main3AreaSet.Area> {
     camp,
     front,
     lakeArea,
     northArea,
-    new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Camp 2", bounds = new[] { R(255f, 55f, 335f, 165f) }, warps = new[] { "Camp_2", "Camp_2_Top" },
-        places = new[] { P("Camp 2", 292f, G, 104f), P("Stack top", 294.5f, 24f, 107.2f), P("Payphone", 298.5f, G, 99f), P("Food lockers", 317f, G, 136f), P("Phone pole", 273f, G, 72f) },
-        inventory = new string[0], deckSee = none, deckHide = none },
+    camp2Area,
     new Main3AreaSet.Area { id = "camp3", task = "8.26", title = "Camp 3 and the west trails", bounds = new[] { R(55f, 60f, 160f, 180f) }, warps = new[] { "Camp_3", "Camp_3_Rim", "Junction_W1" },
         places = new[] { P("Camp 3", 78f, G, 146f), P("Easel", 83.5f, G, 149f), P("Rim", 100f, G, 148f), P("Camper trailer", 89f, G, 112f), P("Stepping stones", 132f, G, 73f), P("Footbridge", 115f, G, 85f), P("Washed-out truck", 156f, G, 92f) },
         inventory = new[] { "Camp 3 tent", "Camp 3 fire", "Camp 3 easel" }, deckSee = none, deckHide = none },

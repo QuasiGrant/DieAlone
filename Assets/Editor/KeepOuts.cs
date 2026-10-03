@@ -37,7 +37,16 @@ public static class KeepOuts
         new Zone("TS1b tower screen", new Vector2(169.0f, 254.0f), 1.5f),   // Wren 2026-10-02: backing fir behind TS1
     };
 
-    public static bool Contains(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return true; return false; }
+    /// Camp2Layout.md draft 2 (PLAN 8.25): K1 the phone wire (no trunk within 1 m of the line, pole to booth), K4 the barrel, K6 the booth.
+    public static readonly Zone[] Camp2 =
+    {
+        new Zone("K1 phone wire", new Vector2(272.8f, 72.0f), new Vector2(300.0f, 99.0f), 1f),
+        new Zone("K4 barrel", new Vector2(291.4f, 101.4f), 2.5f),
+        new Zone("K6 booth", new Vector2(299.2f, 98.2f), 3f),
+    };
+
+    public static bool Contains(Vector2 p) => Which(p) != null;
     public static bool Contains(Vector3 p) => Contains(new Vector2(p.x, p.z));
-    public static string Which(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return z.label; return null; }
+    public static string Which(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return z.label; return WhichCamp2(p); }
+    public static string WhichCamp2(Vector2 p) { foreach (var z in Camp2) if (z.Contains(p)) return z.label; return null; }
 }
