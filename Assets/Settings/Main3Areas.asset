@@ -1379,8 +1379,8 @@ MonoBehaviour:
       path: Campsites/Camp_2/Layout825a/Top/HisChair
       approach: {x: 291.3, y: 9, z: 123.2}
       prompt: Talk
-      facing: 120
-      pitchDown: 0
+      facing: 150
+      pitchDown: 35
     - label: barrel
       path: Campsites/Camp_2/Layout825/Barrel
       approach: {x: 292.3, y: -999, z: 100.4}

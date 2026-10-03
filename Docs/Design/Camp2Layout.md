@@ -6,6 +6,11 @@
 
 Drawing: Camp2Layout.svg. Nothing here is decided until it is a dated line in DECISIONS.md and Grant confirms.
 World metres as Valley.md. Capsule 0.35, step 0.1, jump 0.6, climbable top 0.70, reach 2, slope 45. Props sit at yaw 0, 90, 180 or 270, or carry a box from mesh local bounds.
+## 0. Build notes (Rook, Wren's rulings 2026-10-03)
+- **K2 leg 2** starts at the landing's east edge (288.8, 7.0, 121.26) on the bearing-107 line, not at its centre: 2.0 m over 2.29 m, 41 degrees (under the 45 limit). From the centre its south edge rose 0.2 to 0.3 m over leg 1's end and a walk stopped there. The gully's corridor still runs from the landing's centre. Scramble 9.3 m.
+- **K3 talk stand** (291.3, 123.2) faces 150, the bearing to the chair's centre; at 120 no look met the chair.
+- **Deck lamp:** Forest/Dense/Canopy/RedPine3 (261.6, 134.8) and Forest/Grove_BurnEdge/RedPine2 (268.7, 127.8) removed, each a 4 m keep-out; their crowns stood on every deck line to the lamp's core.
+- **K1 skin** on every face the scramble leaves clear, the west and north faces included.
 ## 1. A Camp 2 day: do, see, feel
 | Leg | Do | See | Feel |
 |---|---|---|---|

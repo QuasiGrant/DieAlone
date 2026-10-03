@@ -187,7 +187,7 @@ var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25a", title = "C
         PO("Start blaze", 304.4f, G, 106.4f, 1.8f, "Campsites/Camp_2/Dressing/StartBlaze"),
         POt("PS1", c2K + "PaperSpots/PaperSpot_K1", 0.3f), POt("PS2", c2K + "PaperSpots/PaperSpot_K2", 0.3f), POt("PS3", c2K + "PaperSpots/PaperSpot_K3", 0.3f) },
     interactions = new[] { IA("hook", "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset", 299.65f, G, 99.05f), IAp("ring box", c2T + "RingBox", 295.6f, c2Top, 120.3f, "Examine", 180f, 31f),
-        IA("R2 at the table", c2L + "CardTable/HisChair", 298.5f, G, 98.7f), IAp("R2 on top", c2T + "HisChair", 291.3f, c2Top, 123.2f, "Talk", 120f), IA("barrel", c2L + "Barrel", 292.3f, G, 100.4f) },
+        IA("R2 at the table", c2L + "CardTable/HisChair", 298.5f, G, 98.7f), IAp("R2 on top", c2T + "HisChair", 291.3f, c2Top, 123.2f, "Talk", 150f, 35f), IA("barrel", c2L + "Barrel", 292.3f, G, 100.4f) },
     frames = new[] { FR("F1 HEADING 7: TABLE 13.2 M, BOOTH 14.7 M", V(297.2f, G, 84.6f), Hd(V(297.2f, 0f, 84.6f), 7f, 5.0f)),
         FR("F2 HEADING 337: THE BARREL 12.15 M", V(296.1f, G, 90.2f), Hd(V(296.1f, 0f, 90.2f), 337f, 4.8f)),
         FR("F3 FROM THE T LEG HEADING 190: BOOTH AND TABLE", V(304.0f, G, 114.0f), Hd(V(304.0f, 0f, 114.0f), 190f, 5.0f)),

@@ -3,14 +3,15 @@
 // absolute places). In the runner after main3_8_25_camp2.cs, whose column (GraniteStack, StackPath, StackTop) this replaces.
 // REMOVALS (doc 3): GraniteStack; StackPath (its ramps, landings, rails and posts); StackTop and everything under it (his spot and the
 //   letters under stones are kept, moved under Layout825a first); from Layout825 the Skirts, LandingRailN, WedgeFill, WedgeFillCorner,
-//   BarrelStand and PaperSpots; Dressing's 8.17 talus (every BigBoulders_); in Forest/Grove_BurnEdge the plants inside the knob and Sequoia1.
+//   BarrelStand and PaperSpots; Dressing's 8.17 talus (every BigBoulders_); in Forest/Grove_BurnEdge the plants inside the knob and Sequoia1;
+//   on the deck lines to the lamp, Forest/Dense/Canopy/RedPine3 (261.6, 134.8) and Grove_BurnEdge/RedPine2 (268.7, 127.8) (Wren 2026-10-03).
 // K1  the knob: footprint x kx0 to kx1, z kz0 to kz1, ground about 4.0, top kTop (9.0). A solid core of rock boxes (cellStep m columns merged
 //     along each row) to kTop, except the gully on leg 2, where each column stops under the ramp. The core's west face is at kx0, flush to
-//     leg 1's east edge. Skinned on its north, east and south faces with BK BigBoulders_0 to 5 (scale skinScale0 up), each placed by its
-//     vertices: its outer face skinOut m past the core face, its top just under kTop, hulled; none in the gully or on the west face.
+//     leg 1's east edge. Skinned on every face (west and north added, Wren 2026-10-03) with BK BigBoulders_0 to 5 (scale skinScale0 up), each placed by its
+//     vertices: its outer face skinOut m past the core face, its top just under kTop, hulled; none in the scramble's walking space.
 // K2  the scramble (the STAIRS RULE): invisible ramp boxes (rampT thick) under owned Boulder_0 to 5 steps (scale stepScale) whose tops sit
 //     stepUnder m under the ramp. Leg 1: the foot (288.0, 114.5) at 4.0 north along x 287.2 to 288.8 to the landing, 1.6 x 1.6 at (288.0,
-//     121.5), 7.0. Leg 2: from the landing's centre at bearing 107 to the head (291.0, 120.6) at 9.0, 1.6 wide. A rock fill under leg 1 and
+//     121.5), 7.0. Leg 2: from the landing's east edge on the bearing-107 line (41 degrees, Wren 2026-10-03) to the head (291.0, 120.6) at 9.0, 1.6 wide. A rock fill under leg 1 and
 //     the landing to the ground. The head's 1.0 m circle stays clear.
 // K3  the top: his chair CS_Chair_2 at (292.0, 122.0) facing 65, a box from its mesh, `Talk`; his spot on it; the talk stand (291.3, 123.2)
 //     facing 120; the tent CS_Tent_Modern_2, door north, its mesh box x 294.5 to 296.75, z 117.3 to 119.33, cut back doorCut short of the door
@@ -57,6 +58,9 @@ UnityEngine.Transform Near(UnityEngine.Transform parent, string name, float x, f
     var grove = kit.Root("Forest").transform.Find("Grove_BurnEdge");
     foreach (var (n, x, z) in new[] { ("Sequoia1", 293.42f, 129.09f), ("Bush3", 289.65f, 122.91f), ("Bush3", 292.80f, 123.55f), ("ThinFern5", 290.44f, 121.55f), ("ThinFern3", 292.57f, 125.26f), ("ThinFern1", 288.65f, 126.55f), ("Bush1", 289.62f, 127.21f) })
     { var t = Near(grove, n, x, z, removeTol); if (t != null) { PlaceKit.Remove(t); removed++; } }
+    // the two pines whose crowns stood on every deck line to the lamp's core (Wren 2026-10-03; their feet are KeepOuts.Camp2 zones)
+    foreach (var (grp, n, x, z) in new[] { ("Dense/Canopy", "RedPine3", 261.6f, 134.8f), ("Grove_BurnEdge", "RedPine2", 268.7f, 127.8f) })
+    { var t = Near(kit.Root("Forest").transform.Find(grp), n, x, z, removeTol); if (t != null) { PlaceKit.Remove(t); removed++; } }
 }
 UnityEngine.Physics.SyncTransforms();
 
@@ -65,14 +69,21 @@ const float kx0 = 288.8f, kx1 = 299f, kz0 = 116f, kz1 = 127f, kTop = 9f, cellSte
 const float skinOut = 0.6f, skinScale0 = 1.0f, skinScaleStep = 0.06f, skinUnderTop = 0.02f, stepScale = 0.35f, stepUnder = 0.02f, stepPitch = 0.9f;
 var foot = V(288.0f, 4.0f, 114.5f); var land = V(288.0f, 7.0f, 121.5f); var head = V(291.0f, kTop, 120.6f); float landHalf = 0.8f;
 var landS = V(land.x, land.y, land.z - landHalf);   // leg 1 ends at the landing's south edge
+// leg 2 starts where its line leaves the landing (its east edge), at 7.0, 41 degrees to the head (Wren 2026-10-03: from the landing's
+// centre its south edge rose 0.2 to 0.3 m over leg 1's end and the walk stopped there); the gully's corridor still runs from the landing's
+// centre, flat at the landing's height back of leg 2's start
+var leg2Dir = (P(head.x, head.z) - P(land.x, land.z)).normalized; var leg2a = V(land.x + landHalf, land.y, land.z + leg2Dir.y * landHalf / leg2Dir.x);
 // the ramp surface's height at a point on a leg (t along it from a to b)
 float Lerp(float a, float b, float t) => a + (b - a) * UnityEngine.Mathf.Clamp01(t);
 float Proj(UnityEngine.Vector2 q, UnityEngine.Vector2 a, UnityEngine.Vector2 b) { var ab = b - a; return UnityEngine.Vector2.Dot(q - a, ab) / UnityEngine.Mathf.Max(1e-4f, ab.sqrMagnitude); }
 float Off(UnityEngine.Vector2 q, UnityEngine.Vector2 a, UnityEngine.Vector2 b) { var ab = b - a; float t = UnityEngine.Mathf.Clamp01(Proj(q, a, b)); return UnityEngine.Vector2.Distance(q, a + ab * t); }
-var A2 = P(land.x, land.z); var H2 = P(head.x, head.z);
-bool InGully(UnityEngine.Vector2 q) { float t = Proj(q, A2, H2); return t >= 0f && t <= 1f && Off(q, A2, H2) <= rampW * 0.5f; }
-float GullyY(UnityEngine.Vector2 q) => Lerp(land.y, head.y, Proj(q, A2, H2));
-int coreBoxes = 0, skinN = 0, stepN = 0;
+var A2 = P(land.x, land.z); var S2 = P(leg2a.x, leg2a.z); var H2 = P(head.x, head.z);
+// the gully runs one cell past the head, its fill there no higher than the ramp's surface at the cell's nearest corner (a full-height core cell
+// straddling the head stood 0.11 m over the ramp's end and stopped the walk)
+bool InGully(UnityEngine.Vector2 q) { float t = Proj(q, A2, H2); return t >= 0f && t <= 1f + cellStep / UnityEngine.Vector2.Distance(A2, H2) && Off(q, A2, H2) <= rampW * 0.5f; }
+// the gully floor's fill top: the landing's height back of leg 2's start, rampT under the ramp after it
+float GullyTop(UnityEngine.Vector2 q) => Proj(q, S2, H2) < 0f ? land.y : Lerp(leg2a.y, head.y, Proj(q, S2, H2)) - rampT;
+int coreBoxes = 0, skinN = 0, stepN = 0; var skinDropped = new System.Collections.Generic.List<string>();   // by design: boulders that would stand in the scramble
 {
     var core = kit.Group("Core", L, L.position, 0f);
     // whole cells by count (the footprint, 10.2 x 11, is no whole number of cells: a float walk to kx1 stepped past it and never closed
@@ -86,19 +97,19 @@ int coreBoxes = 0, skinN = 0, stepN = 0;
             bool edge = ix == nx; float x = edge ? kx1 : kx0 + ix * cellStep, x1c = UnityEngine.Mathf.Min(kx1, x + cellStep), xc = (x + x1c) * 0.5f; bool gully = !edge && InGully(P(xc, zc));
             if (!float.IsNaN(runX0) && (gully || edge)) { float gy = G((runX0 + x) * 0.5f, zc); Slab("Core", core, V((runX0 + x) * 0.5f, (gy - 0.3f + kTop) * 0.5f, zc), V(x - runX0, kTop - gy + 0.3f, dz), knobMat, true); coreBoxes++; runX0 = float.NaN; }
             if (edge) break;
-            if (gully) { float ry = GullyY(P(xc, zc)) - rampT; float gy = G(xc, zc); if (ry - gy > 0.05f) { Slab("GullyFill", core, V(xc, (gy - 0.3f + ry) * 0.5f, zc), V(x1c - x, ry - gy + 0.3f, dz), knobMat, true); coreBoxes++; } continue; }
+            if (gully) { float ry = GullyTop(P(xc, zc)); if (Proj(P(xc, zc), S2, H2) > 1f) { float tMin = float.MaxValue; foreach (var cx in new[] { x, x1c }) foreach (var cz in new[] { z0c, z1c }) tMin = UnityEngine.Mathf.Min(tMin, Proj(P(cx, cz), S2, H2)); ry = Lerp(leg2a.y, head.y, tMin); } float gy = G(xc, zc); if (ry - gy > 0.05f) { Slab("GullyFill", core, V(xc, (gy - 0.3f + ry) * 0.5f, zc), V(x1c - x, ry - gy + 0.3f, dz), knobMat, true); coreBoxes++; } continue; }
             if (float.IsNaN(runX0)) runX0 = x;
         }
     }
     // the flat top: thin slab colliders over the top's own footprint (doc K1), cut round the gully west of the head (one slab over it all
     // roofed the gully: the body stopped under it 2.4 m short of the head); the cut spans the corridor's corners in z
     const float tx0 = 289f, tx1 = 297.5f, tz0 = 117f, tz1 = 125.5f, slabT = 0.1f;
-    var nrm = UnityEngine.Vector3.Cross(UnityEngine.Vector3.up, (head - land).normalized) * (rampW * 0.5f); float gz0 = UnityEngine.Mathf.Min(land.z - UnityEngine.Mathf.Abs(nrm.z), head.z - UnityEngine.Mathf.Abs(nrm.z)), gz1 = UnityEngine.Mathf.Max(land.z + UnityEngine.Mathf.Abs(nrm.z), head.z + UnityEngine.Mathf.Abs(nrm.z));
+    var nrm = UnityEngine.Vector3.Cross(UnityEngine.Vector3.up, V(head.x - land.x, 0f, head.z - land.z).normalized) * (rampW * 0.5f); float gz0 = UnityEngine.Mathf.Min(land.z - UnityEngine.Mathf.Abs(nrm.z), head.z - UnityEngine.Mathf.Abs(nrm.z)), gz1 = UnityEngine.Mathf.Max(land.z + UnityEngine.Mathf.Abs(nrm.z), head.z + UnityEngine.Mathf.Abs(nrm.z));
     void TopSlab(string n, float x0, float x1, float z0, float z1) => kit.Blocker(n, L, L.InverseTransformPoint(V((x0 + x1) * 0.5f, kTop - slabT * 0.5f, (z0 + z1) * 0.5f)), V(x1 - x0, slabT, z1 - z0));
-    TopSlab("TopSlab", tx0, tx1, tz0, gz0); TopSlab("TopSlab_N", tx0, tx1, gz1, tz1); TopSlab("TopSlab_E", head.x, tx1, gz0, gz1);
+    TopSlab("TopSlab", tx0, tx1, tz0, gz0); TopSlab("TopSlab_N", tx0, tx1, gz1, tz1); TopSlab("TopSlab_E", head.x + UnityEngine.Mathf.Abs(nrm.x), tx1, gz0, gz1);   // east of the ramp end's far corner (from head.x it stood 0.15 m over the ramp's last stretch)
     // the ramps: invisible boxes, rampT thick, their tops on the walking line
     void Ramp(string n, UnityEngine.Vector3 a, UnityEngine.Vector3 b) { var d = b - a; var mid = (a + b) * 0.5f; var rot = UnityEngine.Quaternion.LookRotation(d.normalized); var g = kit.Blocker(n, L, UnityEngine.Vector3.zero, V(rampW, rampT, d.magnitude)); g.transform.rotation = rot; g.transform.position = mid - (rot * UnityEngine.Vector3.up) * (rampT * 0.5f); }
-    Ramp("Leg1Ramp", foot, landS); Ramp("Leg2Ramp", land, head);
+    Ramp("Leg1Ramp", foot, landS); Ramp("Leg2Ramp", leg2a, head);
     kit.Blocker("Landing", L, L.InverseTransformPoint(V(land.x, land.y - rampT * 0.5f, land.z)), V(rampW, rampT, landHalf * 2f));
     // the fill under leg 1 and the landing: rock columns to rampT under the walking line
     var fill = kit.Group("ScrambleFill", L, L.position, 0f);
@@ -120,12 +131,14 @@ int coreBoxes = 0, skinN = 0, stepN = 0;
     }
     for (float s = stepPitch * 0.5f; s < UnityEngine.Vector3.Distance(foot, landS); s += stepPitch) Step(UnityEngine.Vector3.Lerp(foot, landS, s / UnityEngine.Vector3.Distance(foot, landS)), foot, landS);
     Step(land, land, land + V(0f, 0f, landHalf));
-    for (float s = landHalf + stepPitch * 0.5f; s < UnityEngine.Vector3.Distance(land, head) - 0.3f; s += stepPitch) Step(UnityEngine.Vector3.Lerp(land, head, s / UnityEngine.Vector3.Distance(land, head)), land, head);
-    // the skin: north, east and south faces, none on the west face or in the gully
+    for (float s = stepPitch * 0.5f; s < UnityEngine.Vector3.Distance(leg2a, head) - 0.3f; s += stepPitch) Step(UnityEngine.Vector3.Lerp(leg2a, head, s / UnityEngine.Vector3.Distance(leg2a, head)), leg2a, head);
+    // the skin: every face, none in the scramble's walking space
     var skin = kit.Group("Skin", L, L.position, 0f); int si = 0;
     // clearUp: the walking space kept clear over the ramp and landing, from clearOver m over their surface (the body's height plus a margin)
     const float clearUp = 2.2f, clearOver = 0.05f; const int skinSizes = 6;
-    var spots = new (char face, float along)[] { ('S', 292.5f), ('S', 296.5f), ('E', 117.5f), ('E', 120.5f), ('E', 123.5f), ('E', 126.0f), ('N', 293.5f), ('N', 296.8f) };
+    // every face (Wren 2026-10-03: the west and north faces read as stacked boxes from the trail end); a boulder in the scramble's walking
+    // space is dropped, so the west face beside leg 1 and the landing stays bare core, flush to the ramp (doc K1 b)
+    var spots = new (char face, float along)[] { ('S', 290.0f), ('S', 292.5f), ('S', 296.5f), ('E', 117.5f), ('E', 120.5f), ('E', 123.5f), ('E', 126.0f), ('N', 290.2f), ('N', 293.5f), ('N', 296.8f), ('W', 117.0f), ('W', 119.5f), ('W', 123.8f), ('W', 126.2f) };
     foreach (var (face, along) in spots)
     {
         var g = kit.Spawn(PlaceKit.BK + "Rocks/BigBoulders_" + (si % 6), skin); if (g == null) continue; PlaceKit.StripColliders(g);
@@ -133,17 +146,18 @@ int coreBoxes = 0, skinN = 0, stepN = 0;
         g.transform.rotation = UnityEngine.Quaternion.Euler(0f, si * 61f, 0f); g.transform.localScale *= skinScale0 + skinScaleStep * (si % skinSizes); var b = Exact(g); float dy = kTop - skinUnderTop - b.max.y;
         if (face == 'E') g.transform.position += V(kx1 + skinOut - b.max.x, dy, along - b.center.z);
         else if (face == 'N') g.transform.position += V(along - b.center.x, dy, kz1 + skinOut - b.max.z);
+        else if (face == 'W') g.transform.position += V(kx0 - skinOut - b.min.x, dy, along - b.center.z);
         else g.transform.position += V(along - b.center.x, dy, kz0 - skinOut - b.min.z);
         b = Exact(g);
         var lodg = g.GetComponentInChildren<UnityEngine.LODGroup>(); var hulls = new System.Collections.Generic.List<UnityEngine.Collider>();
         foreach (var r in g.GetComponentsInChildren<UnityEngine.MeshRenderer>()) { if (lodg != null && lodg.GetLODs().Length > 0 && System.Array.IndexOf(lodg.GetLODs()[0].renderers, r) < 0) continue; var mf = r.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue; var mc = r.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; mc.convex = true; hulls.Add(mc); }
-        UnityEngine.Physics.SyncTransforms(); string why = b.min.x < kx0 ? "the west face" : null;
-        foreach (var (n, a, e) in new[] { ("leg 1", foot, landS), ("the landing", landS, land + V(0f, 0f, landHalf)), ("leg 2", land, head) })
+        UnityEngine.Physics.SyncTransforms(); string why = null;
+        foreach (var (n, a, e) in new[] { ("leg 1", foot, landS), ("the landing", landS, land + V(0f, 0f, landHalf)), ("leg 2", leg2a, head) })
         {
             var d = e - a; var rot = UnityEngine.Quaternion.LookRotation(d.normalized); var c = (a + e) * 0.5f + rot * V(0f, clearUp * 0.5f + clearOver, 0f);
             foreach (var h in UnityEngine.Physics.OverlapBox(c, V(rampW * 0.5f, clearUp * 0.5f, d.magnitude * 0.5f), rot, ~0, UnityEngine.QueryTriggerInteraction.Ignore)) if (hulls.Contains(h)) why = n;
         }
-        if (why != null) { notes.Add("skin " + face + " " + F(along) + " dropped: in " + why); PlaceKit.Remove(g.transform); si++; continue; }
+        if (why != null) { skinDropped.Add(face + " " + F(along) + " in " + why); PlaceKit.Remove(g.transform); si++; continue; }
         si++; skinN++;
     }
 }
@@ -158,7 +172,7 @@ var topG = kit.Group("Top", L, V(293f, kTop, 121f), 0f);
 {
     var chair = kit.On(PlaceKit.CS + "CS_Chair_2", topG, topG.InverseTransformPoint(V(292.0f, kTop, 122.0f)), 65f, 1f, false, null, true); if (chair != null) { chair.name = "HisChair"; PlaceKit.FitExact(chair); Use(chair, "Talk", null); }
     var spot = c2.Find("Resident_Camp2_Spot"); if (spot != null) { spot.position = V(292.0f, kTop + 0.9f, 122.0f); spot.rotation = UnityEngine.Quaternion.Euler(0f, 65f, 0f); } else notes.Add("no Resident_Camp2_Spot");
-    kit.Marker("TalkStand_Top", topG, topG.InverseTransformPoint(V(291.3f, kTop, 123.2f)), 120f);
+    kit.Marker("TalkStand_Top", topG, topG.InverseTransformPoint(V(291.3f, kTop, 123.2f)), 150f);   // facing 150, the chair centre's bearing (Wren 2026-10-03; the doc's 120 met nothing)
     kit.On(PlaceKit.CS + "Drinks/CS_Drink_Thermos_1", topG, topG.InverseTransformPoint(V(292.8f, kTop, 121.3f)), 0f, 1f, false, null, true);
     kit.On(PlaceKit.CS + "Tableware/CS_Tableware_Mug_Metal_1", topG, topG.InverseTransformPoint(V(293.0f, kTop, 121.6f)), 30f, 1f, false, null, true);
     // the tent at yaw 0, door north (at 8.25's yaw 90 it faced east); the door side checked from its flap and net meshes, then placed by its box
@@ -220,4 +234,4 @@ var topG = kit.Group("Top", L, V(293f, kTop, 121f), 0f);
 UnityEngine.Physics.SyncTransforms();
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
 bool saved = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene); UnityEditor.AssetDatabase.SaveAssets();
-return "saved=" + saved + " | removed " + removed + " | core boxes " + coreBoxes + ", skin " + skinN + ", steps " + stepN + " | usables " + uses + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();
+return "saved=" + saved + " | removed " + removed + " | core boxes " + coreBoxes + ", skin " + skinN + (skinDropped.Count > 0 ? " (left out, in the scramble: " + string.Join(", ", skinDropped) + ")" : "") + ", steps " + stepN + " | usables " + uses + " | notes: " + (notes.Count == 0 ? "none" : string.Join("; ", notes)) + " | " + kit.Report();

@@ -44,6 +44,8 @@ public static class KeepOuts
         new Zone("K4 barrel", new Vector2(291.4f, 101.4f), 2.5f),
         new Zone("K6 booth", new Vector2(299.2f, 98.2f), 3f),
         new Zone("K-top", new Vector2(293.0f, 121.0f), 8f),   // Camp2Layout.md draft 4 (PLAN 8.25a): no trunk within 8 m of the knob top
+        new Zone("K-lamp RedPine3", new Vector2(261.6f, 134.8f), 4f),   // Wren 2026-10-03: its crown stood on every deck line to the lamp
+        new Zone("K-lamp RedPine2", new Vector2(268.7f, 127.8f), 4f),
     };
 
     /// Camp3Layout.md draft 2 (PLAN 8.26): K1 the creek, 1.5 m each side of the water (the water 0.6 m each side of its line; the lower run's

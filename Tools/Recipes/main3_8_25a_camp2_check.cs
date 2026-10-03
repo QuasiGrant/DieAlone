@@ -1,7 +1,8 @@
 // Main3 8.25a Camp 2 check (Play mode, Main3; Camp2Layout.md draft 4). In main3_review_capture.sh --area camp2's Play checks; also runs
 // alone. Never saves; restores the player, the camera and every temporary object. Every move is PlayerController.Step (dt 0.02).
 // PROMPTS: from each stand the interactor's ray meets the usable with its word (hook "Lift the receiver", barrel "Take water", R2 at the
-//   table and on top "Talk", ring box "Examine" from the tent door, ringLook degrees down or less); HOOK LOOKS as 8.25.
+//   table and on top "Talk", the top one within talkCone of the stand's facing 150, ring box "Examine" from the tent door, ringLook degrees
+//   down or less); HOOK LOOKS as 8.25.
 // TOP CHAIR: box colliders only; its seat out of a jump's reach (nothing new to climb). CHAIR EDGES (doc 4 gaps): its box chairEdge m or more
 //   inside every edge of the flat top. HEAD CLEAR (K2): nothing over the top within headR m of the scramble head.
 // T3 EDGES: from points edgeIn m inside every edge of the flat top (not the gully), walk, sprint and sprint-jump out at 0 and +-edgeSpread
@@ -55,7 +56,7 @@ try
     var chair = KT.Find("HisChair");
     // ---- PROMPTS
     {
-        const float ringLook = 45f; var phone = cd2 != null ? cd2.Find("Payphone/Telephone_Booth/Handset") : null; var ring = KT.Find("RingBox"); var barrel = L.Find("Barrel"); var tableChair = L.Find("CardTable/HisChair");
+        const float ringLook = 45f, talkFacing = 150f, talkCone = 10f; var phone = cd2 != null ? cd2.Find("Payphone/Telephone_Booth/Handset") : null; var ring = KT.Find("RingBox"); var barrel = L.Find("Barrel"); var tableChair = L.Find("CardTable/HisChair");
         foreach (var (label, t, x, z, floorY, word) in new[] { ("hook", phone, 299.65f, 99.05f, float.NaN, "Lift the receiver"), ("barrel", barrel, 292.3f, 100.4f, float.NaN, "Take water"),
             ("R2 at the table", tableChair, 298.5f, 98.7f, float.NaN, "Talk"), ("R2 on top", chair, talk.x, talk.z, topY, "Talk"), ("ring box", ring, 295.6f, 120.3f, topY, "Examine") })
         {
@@ -64,7 +65,9 @@ try
             string got = "nothing within " + F1(reach) + " m"; bool ok = false;
             if (UnityEngine.Physics.Raycast(eye, (aim - eye).normalized, out var hit, reach, mask, UnityEngine.QueryTriggerInteraction.Ignore)) { var it = hit.collider.GetComponentInParent<Interactable>(); got = WalkIns.PathOf(hit.collider.transform) + " at " + F(hit.distance) + " m, prompt \"" + (it != null ? it.Prompt : "none") + "\""; ok = it != null && it.Prompt == word && hit.collider.transform.IsChildOf(t); }
             var dv = aim - eye; float down = UnityEngine.Mathf.Atan2(-dv.y, new UnityEngine.Vector2(dv.x, dv.z).magnitude) * UnityEngine.Mathf.Rad2Deg; if (label == "ring box" && down > ringLook) ok = false;
-            Line(ok, "PROMPT " + label + " (\"" + word + "\"): from (" + F1(x) + ", " + F1(z) + "), " + F1(down) + " degrees down, the interactor's ray meets " + got);
+            // R2 on top: the stand faces talkFacing (Wren 2026-10-03: the chair centre's bearing; the doc's 120 met nothing); the look to the chair lies within talkCone of it
+            float bearing = (UnityEngine.Mathf.Atan2(dv.x, dv.z) * UnityEngine.Mathf.Rad2Deg + 360f) % 360f; if (label == "R2 on top" && UnityEngine.Mathf.Abs(UnityEngine.Mathf.DeltaAngle(bearing, talkFacing)) > talkCone) ok = false;
+            Line(ok, "PROMPT " + label + " (\"" + word + "\"): from (" + F1(x) + ", " + F1(z) + "), bearing " + F1(bearing) + ", " + F1(down) + " degrees down, the interactor's ray meets " + got);
         }
         const float hookCone = 10f, hookStep = 2f, hookShare = 0.5f; int looks = 0, met = 0; var by = new System.Collections.Generic.SortedDictionary<string, int>();
         if (phone != null)
