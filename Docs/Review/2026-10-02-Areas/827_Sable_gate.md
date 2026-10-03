@@ -23,3 +23,13 @@
 - The toilet exempt from trail-find.
 
 Sable
+
+## Round 2 (2026-10-03, from capture fe701d9)
+| # | Item | Verdict | Evidence |
+|---|---|---|---|
+| 6 | W1 to the mouth | **PASS** | Checks: 108.2 m, 43.0 s at 2.5 m/s (round 1 printed 242.3 s; P84 is off the board). Every cave walk now matches its length |
+| 7 | The descent reads (Pim 4.2) | **PASS** | The new F3 (passage end, heading 180): the far wall is cave rock with its joints showing, not a black square. The pale cable runs along the left (east) wall at the floor toward the leg 1 turn and reads at a glance. The machine check agrees: the cable reads 90 grey against the wall's 19 on day one and 84 against 14 on day two, 71 over the bar of 20, with no light and no collider. The near-black void stays only at the mouth |
+
+**8.27 design check: PASS on every item.** The chamber's darkness and R7's read stay with 11.0 (round 1, item 2).
+
+Sable
