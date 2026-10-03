@@ -133,6 +133,9 @@ var lakeArea = new Main3AreaSet.Area { id = "lake", task = "8.23", title = "Lake
 // rays, as 8.22); the kid's table, tent and tripod loose; the ruin and SS1 to SS3 hidden by the pixel check with its 20 m control (SS1 60 m: it stands under fir and
 // giant crowns that hid a 20 and a 35 m control).
 // Interactions with no collider yet (R1's spot, the cookfire pot) wait for their milestone; the report box and forage C's shrubs have them.
+// Camp 1's deck targets at their meshes' centres, read from the scene (8.24a), with the doc's points as the fallback
+UnityEngine.Vector3 MeshAt(string path, float x, float y, float z) { var t = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), path); return t != null ? PlaceKit.MeshBounds(t.gameObject).center : V(x, y, z); }
+var c1Table = MeshAt("Campsites/Camp_1/Dressing/KidTable", 285.2f, 5.8f, 236.5f); var c1Tent = MeshAt("Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1", 271f, 6.5f, 234.5f); var c1Tripod = MeshAt("Campsites/Camp_1/Dressing/Cookfire", 276f, 6.3f, 232f);
 var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Camp 1 and the north loop", bounds = new[] { R(116f, 200f, 310f, 305f) }, warps = new[] { "Camp_1", "North_Loop_Ruin" },
     places = new[] { P("Camp 1", 282f, G, 238f), PO("Spar", 284f, G, 240f, 24f, "Campsites/Camp_1/Dressing/Spar"), PO("Kid's table", 285.2f, G, 236.5f, 0.8f, "Campsites/Camp_1/Dressing/KidTable"),
         P("R1's spot", 285f, G, 244f), PO("Tent", 271f, G, 234.5f, 3.0f, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), PO("Cookfire", 276f, G, 232f, 1.0f, "Campsites/Camp_1/Dressing/Cookfire"),
@@ -154,7 +157,8 @@ var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Ca
     walkLines = new[] { WL("side path to the ruin", V(168.1f, G, 267.1f), V(169.88f, G, 278.88f)) },   // the report box is found from the side path in (NorthLayout_UI 5)
     playChecks = new[] { "main3_8_24_north_check.cs" },
     inventory = new[] { "North ruin" }, deckListWritten = true,
-    deckSee = new[] { DH("spar top", 284f, 29f, 240f, "Campsites/Camp_1/Dressing/Spar"), DLO("kid's table", 285.2f, 5.8f, 236.5f, "Campsites/Camp_1/Dressing/KidTable"), DLO("tent", 271f, 6.5f, 234.5f, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), DLO("tripod", 276f, 6.3f, 232f, "Campsites/Camp_1/Dressing/Cookfire") },
+    // 8.24a (Grant's walk, 2026-10-03): the tent, the kid's table and the tripod are hard targets, aimed at their meshes' centres from the scene
+    deckSee = new[] { DH("spar top", 284f, 29f, 240f, "Campsites/Camp_1/Dressing/Spar"), DH("kid's table", c1Table.x, c1Table.y, c1Table.z, "Campsites/Camp_1/Dressing/KidTable"), DH("tent", c1Tent.x, c1Tent.y, c1Tent.z, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), DH("tripod", c1Tripod.x, c1Tripod.y, c1Tripod.z, "Campsites/Camp_1/Dressing/Cookfire") },
     deckHide = new[] { D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"), new Main3AreaSet.DeckTarget { label = "SS1", point = V(251.6f, G, 272.0f), treeCoverPath = "Places/NorthLoop/SS1", controlRaise = 60f }, D("SS2", 150.5f, G, 276.5f, "Places/NorthLoop/SS2"), D("SS3", 132.3f, G, 262.3f, "Places/NorthLoop/SS3") } };
 // camp 2 (8.25; Camp2Layout.md draft 2 section 6, Sable 2026-10-02): places on their objects (main3_8_25_camp2.cs builds them under
 // Campsites/Camp_2/Layout825 and StackTop/Layout825); the frames at the doc's eyes and headings; deck must-see hard: the lamp's cold
