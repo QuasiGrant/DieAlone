@@ -20,8 +20,8 @@ const float eyeH = 1.6f, binoFov = 15f, deckIn = 3f, coreAbove = 40f; const int 
 var pc = UnityEngine.Object.FindFirstObjectByType<PlayerController>(); var cc = pc.GetComponent<UnityEngine.CharacterController>();
 var cam = UnityEngine.Camera.main; var camLocal = cam.transform.localPosition; var camRot = cam.transform.localRotation; float camFov = cam.fieldOfView;
 var start = pc.transform.position; var startRot = pc.transform.rotation; bool pcWas = pc.enabled; pc.enabled = false;
-var lamp = Root("Campsites") != null ? Root("Campsites").transform.Find("Camp_2/StackTop/Layout825/Lamp") : null; var cab = Root("Camp") != null ? Root("Camp").transform.Find("Tower/Cab") : null;
-if (lamp == null || cab == null) { pc.enabled = pcWas; return "no Camp_2 Lamp or the tower cab (run main3_8_25_camp2.cs)"; }
+var lamp = Root("Campsites") != null ? Root("Campsites").transform.Find("Camp_2/Layout825a/Top/Lamp") : null; var cab = Root("Camp") != null ? Root("Camp").transform.Find("Tower/Cab") : null;
+if (lamp == null || cab == null) { pc.enabled = pcWas; return "no Camp_2 Lamp or the tower cab (run main3_8_25a_knob.cs)"; }
 System.IO.Directory.CreateDirectory(outDir);
 var urp = (UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline; var grdWas = urp.gpuResidentDrawerMode; urp.gpuResidentDrawerMode = UnityEngine.Rendering.GPUResidentDrawerMode.Disabled;
 var rt = new UnityEngine.RenderTexture(shotW, shotH, 24, UnityEngine.RenderTextureFormat.ARGB32); var shot = new UnityEngine.Texture2D(shotW, shotH, UnityEngine.TextureFormat.RGB24, false);

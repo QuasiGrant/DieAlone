@@ -160,57 +160,58 @@ var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Ca
     // 8.24a (Grant's walk, 2026-10-03): the tent, the kid's table and the tripod are hard targets, aimed at their meshes' centres from the scene
     deckSee = new[] { DH("spar top", 284f, 29f, 240f, "Campsites/Camp_1/Dressing/Spar"), DH("kid's table", c1Table.x, c1Table.y, c1Table.z, "Campsites/Camp_1/Dressing/KidTable"), DH("tent", c1Tent.x, c1Tent.y, c1Tent.z, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), DH("tripod", c1Tripod.x, c1Tripod.y, c1Tripod.z, "Campsites/Camp_1/Dressing/Cookfire") },
     deckHide = new[] { D("north ruin", 172f, 4f, 281f, "Places/NorthRuin"), new Main3AreaSet.DeckTarget { label = "SS1", point = V(251.6f, G, 272.0f), treeCoverPath = "Places/NorthLoop/SS1", controlRaise = 60f }, D("SS2", 150.5f, G, 276.5f, "Places/NorthLoop/SS2"), D("SS3", 132.3f, G, 262.3f, "Places/NorthLoop/SS3") } };
-// camp 2 (8.25; Camp2Layout.md draft 2 section 6, Sable 2026-10-02): places on their objects (main3_8_25_camp2.cs builds them under
-// Campsites/Camp_2/Layout825 and StackTop/Layout825); the frames at the doc's eyes and headings; deck must-see hard: the lamp's cold
-// core, every mesh; the rest loose; must-hide none. The top is 24.00, the camp floor about 4.
-const float c2Top = 24f; const string c2L = "Campsites/Camp_2/Layout825/", c2T = "Campsites/Camp_2/StackTop/Layout825/";
+// camp 2 (8.25a; Camp2Layout.md draft 4 section 6, Sable 2026-10-03): places on their objects (main3_8_25a_knob.cs builds the knob under
+// Campsites/Camp_2/Layout825a; the booth, table and barrel stand from 8.25 under Layout825); the frames at the doc's eyes and headings; deck
+// must-see hard: the lamp's cold core, every mesh; the rest loose; must-hide none. The knob's top is 9.00, the camp floor about 4.
+const float c2Top = 9f; const string c2L = "Campsites/Camp_2/Layout825/", c2K = "Campsites/Camp_2/Layout825a/", c2T = "Campsites/Camp_2/Layout825a/Top/";
 // a place over an object's own collider, read from the scene: its foot at the collider's bottom, its height the collider's (the phone stands
 // 1.2 m up the booth's back wall, so a foot on the ground puts the found lines under it); the ring box's centre for its frame
 Main3AreaSet.Place POb(string l, string obj) { var t = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), obj); var c = t != null ? t.GetComponentInChildren<UnityEngine.Collider>() : null; if (c == null) return new Main3AreaSet.Place { label = l, point = V(0f, G, 0f), objectPath = obj }; var b = c.bounds; return new Main3AreaSet.Place { label = l, point = V(b.center.x, b.min.y, b.center.z), height = b.size.y, objectPath = obj }; }
 // a place at the middle of its object's drawn meshes (a group whose own transform sits elsewhere, as the spur's rope rail at the POI root, 8.27)
 Main3AreaSet.Place POm(string l, string obj, float h) { var t = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), obj); var c = t != null ? PlaceKit.MeshBounds(t.gameObject).center : V(0f, G, 0f); return new Main3AreaSet.Place { label = l, point = V(c.x, G, c.z), height = h, objectPath = obj }; }
+// a place at its object's own position, height and all (8.25a's paper spots: a marker on the top, on a step block, on a boulder)
+Main3AreaSet.Place POt(string l, string obj, float h) { var t = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), obj); var p = t != null ? t.position : V(0f, G, 0f); return new Main3AreaSet.Place { label = l, point = p, height = h, objectPath = obj }; }
 // a place meant to stay hidden from the trails: reached is checked, found is not (Main3AreaSet.Place.hiddenBy)
 Main3AreaSet.Place Hid(Main3AreaSet.Place p, string why) { p.hiddenBy = why; return p; }
-var coreT = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), c2T + "Lamp/LampCore"); var coreAt = coreT != null ? coreT.position : V(291.6f, 25.3f, 107.4f);
-var ringT = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), c2T + "RingBox"); var ringAt = ringT != null ? ringT.position : V(289.3f, c2Top + 0.79f, 108.0f);
+var coreT = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), c2T + "Lamp/LampCore"); var coreAt = coreT != null ? coreT.position : V(297.0f, 10.3f, 121.2f);
+var ringT = Main3AreaSet.At(UnityEngine.SceneManagement.SceneManager.GetActiveScene(), c2T + "RingBox"); var ringAt = ringT != null ? ringT.position : V(295.6f, c2Top + 0.68f, 118.8f);
 UnityEngine.Vector3 Hd(UnityEngine.Vector3 eye, float heading, float lookY) { float r = heading * UnityEngine.Mathf.Deg2Rad; return V(eye.x + UnityEngine.Mathf.Sin(r) * 10f, lookY, eye.z + UnityEngine.Mathf.Cos(r) * 10f); }
-var c2F5 = V(298.3f, c2Top + eyeH, 107.25f);
-var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25", title = "Camp 2", bounds = new[] { R(262f, 56f, 345f, 172f) }, warps = new[] { "Camp_2", "Camp_2_Top" },
-    places = new[] { P("Camp 2", 294.3f, G, 95.0f), PO("Granite stack (south face)", 292f, G, 101.6f, 20f, "Campsites/Camp_2/GraniteStack"), P("Ramp foot", 298.9f, G, 107.8f),
-        PO("Landing top", 298.3f, c2Top, 107.25f, 1.05f, "Campsites/Camp_2/StackPath/LandingTop"), PO("His chair on top", 294.94f, c2Top, 110.30f, 1.2f, c2T + "HisChair"),
-        PO("Tent", 288.86f, c2Top, 108.0f, 1.5f, c2T + "Tent"), PO("Lamp", 291.6f, c2Top, 107.4f, 1.9f, c2T + "Lamp"), PO("Payphone", 300f, G, 99f, 3.2f, "Campsites/Camp_2/Dressing/Payphone"),
-        POb("Hook", "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset"), PO("Card table", 298.555f, G, 97.755f, 0.98f, c2L + "CardTable"),
+var c2Knob = V(294f, 7f, 121.5f);
+var camp2Area = new Main3AreaSet.Area { id = "camp2", task = "8.25a", title = "Camp 2", bounds = new[] { R(262f, 56f, 345f, 172f) }, warps = new[] { "Camp_2", "Camp_2_Top" },
+    places = new[] { P("Camp 2", 294.3f, G, 95.0f), PO("The knob", 294f, G, 121.5f, 5f, c2K + "Core"), P("Scramble foot", 288.0f, G, 114.5f), P("Scramble head", 291.0f, c2Top, 120.6f),
+        PO("His chair on top", 292.0f, c2Top, 122.0f, 1.2f, c2T + "HisChair"), PO("Tent", 295.6f, c2Top, 118.3f, 1.5f, c2T + "Tent"), PO("Lamp", 297.0f, c2Top, 121.2f, 1.9f, c2T + "Lamp"),
+        Hid(PO("Ring box", ringAt.x, ringAt.y, ringAt.z, 0.07f, c2T + "RingBox"), "inside the tent, seen from its door (Camp2Layout K3)"),
+        PO("Payphone", 300f, G, 99f, 3.2f, "Campsites/Camp_2/Dressing/Payphone"), POb("Hook", "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset"), PO("Card table", 298.555f, G, 97.755f, 0.98f, c2L + "CardTable"),
         PO("His seat at the table", 299.40f, G, 97.76f, 1.2f, c2L + "CardTable/HisChair"), PO("Your seat", 297.71f, G, 97.76f, 1.2f, c2L + "CardTable/YourChair"), PO("Third place", 298.55f, G, 96.91f, 1.2f, c2L + "CardTable/ThirdPlace"),
         PO("Barrel", 291.4f, G, 101.4f, 1.19f, c2L + "Barrel"), PO("Phone pole", 272.8f, G, 72f, 8f, "PointsOfInterest/POI_Phone_pole"), PO("Food lockers", 317.2f, G, 136.0f, 1.2f, "PointsOfInterest/POI_Food_lockers"),
-        PO("Start blaze", 304.4f, G, 106.4f, 1.8f, "Campsites/Camp_2/Dressing/StartBlaze"), PO("PS1", 288.14f, c2Top + 1.05f, 109.6f, 0.3f, c2L + "PaperSpots/PS1"), PO("PS2", 288.8f, c2Top + 1.05f, 111.2f, 0.3f, c2L + "PaperSpots/PS2"),
-        PO("PS3", 284.95f, 4.43f, 107.40f, 0.3f, c2L + "PaperSpots/PS3") },
-    interactions = new[] { IA("hook", "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset", 299.65f, G, 99.05f), IA("ring box", c2T + "RingBox", 290.3f, c2Top, 108.0f), IA("R2 at the table", c2L + "CardTable/HisChair", 298.5f, G, 98.7f),
-        IA("R2 on top", c2T + "HisChair", 293.8f, c2Top, 109.5f), IA("barrel", c2L + "Barrel", 292.3f, G, 100.4f) },
+        PO("Start blaze", 304.4f, G, 106.4f, 1.8f, "Campsites/Camp_2/Dressing/StartBlaze"),
+        POt("PS1", c2K + "PaperSpots/PaperSpot_K1", 0.3f), POt("PS2", c2K + "PaperSpots/PaperSpot_K2", 0.3f), POt("PS3", c2K + "PaperSpots/PaperSpot_K3", 0.3f) },
+    interactions = new[] { IA("hook", "Campsites/Camp_2/Dressing/Payphone/Telephone_Booth/Handset", 299.65f, G, 99.05f), IAp("ring box", c2T + "RingBox", 295.6f, c2Top, 120.3f, "Examine", 180f, 29f),
+        IA("R2 at the table", c2L + "CardTable/HisChair", 298.5f, G, 98.7f), IAp("R2 on top", c2T + "HisChair", 291.3f, c2Top, 123.2f, "Talk", 120f), IA("barrel", c2L + "Barrel", 292.3f, G, 100.4f) },
     frames = new[] { FR("F1 HEADING 7: TABLE 13.2 M, BOOTH 14.7 M", V(297.2f, G, 84.6f), Hd(V(297.2f, 0f, 84.6f), 7f, 5.0f)),
         FR("F2 HEADING 337: THE BARREL 12.15 M", V(296.1f, G, 90.2f), Hd(V(296.1f, 0f, 90.2f), 337f, 4.8f)),
         FR("F3 FROM THE T LEG HEADING 190: BOOTH AND TABLE", V(304.0f, G, 114.0f), Hd(V(304.0f, 0f, 114.0f), 190f, 5.0f)),
-        FR("F4 RAMP FOOT HEADING 104: THE BLAZE THROUGH THE OPEN BAY", V(298.9f, G, 107.8f), Hd(V(298.9f, 0f, 107.8f), 104f, 5.2f)),
-        FR("F5 TOP LANDING HEADING 300: CHAIR, TENT, LAMP", c2F5, Hd(c2F5, 300f, c2Top + 0.8f)),
+        FR("F4 THE KNOB FROM THE BOATHOUSE LEG", V(298.0f, G, 104.4f), c2Knob),
+        FR("F5 THE KNOB FROM THE T LEG", V(308.6f, G, 123.6f), c2Knob),
         FR("F6 THE PHONE POLE FROM THE BOATHOUSE LEG", V(278.22f, G, 73.70f), V(272.8f, 7.0f, 72.0f)),
         FR("F7 THE FOOD LOCKERS FROM THE T LEG", V(310.15f, G, 129.43f), V(317.2f, 4.8f, 136.0f)),
+        FR("F8 TRAIL END HEADING 300: THE SCRAMBLE FOOT", V(298.9f, G, 107.8f), Hd(V(298.9f, 0f, 107.8f), 300f, 5.6f)),
+        FR("F9 THE HEAD HEADING 70: THE TOP", V(291.0f, c2Top + eyeH, 120.6f), Hd(V(291.0f, 0f, 120.6f), 70f, c2Top + 0.8f)),
         FR("THE PHONE FROM THE BOOTH MOUTH, FACING THE BACK WALL", V(299.65f, G, 99.05f), V(300.4f, 5.6f, 99.05f)),
-        FR("THE RING BOX FROM THE TENT DOOR, FACING 270", V(290.3f, c2Top + eyeH, 108.0f), ringAt),
+        FR("THE RING BOX FROM THE TENT DOOR, FACING 180", V(295.6f, c2Top + eyeH, 120.3f), ringAt),
         FR("CAMP_2 WARP LANDING, FACING 55", V(294.3f, G, 95.0f), Hd(V(294.3f, 0f, 95.0f), 55f, 5.6f)),
-        FR("CAMP_2_TOP WARP LANDING, FACING 20", V(294.5f, c2Top + eyeH, 107.2f), Hd(V(294.5f, 0f, 107.2f), 20f, c2Top + eyeH)) },
-    // walk lines where no trail runs, for the found rule (doc 4: the ramp foot up the stair to his chair; your seat to the booth door): the
-    // stair, the top round inside its rail, the table to the booth mouth
-    walkLines = new[] { WL("the stair to the top", V(298.9f, G, 107.8f), V(298.9f, 9f, 118.75f), V(300.4f, 9f, 118.75f), V(300.4f, 14f, 107.25f), V(298.9f, 14f, 107.25f), V(298.9f, 19f, 118.75f), V(300.4f, 19f, 118.75f), V(300.4f, c2Top, 107.25f), V(296.0f, c2Top, 107.25f)),
-        WL("round the top", V(295.3f, c2Top, 106.6f), V(292f, c2Top, 104.4f), V(290.3f, c2Top, 105.6f), V(290.3f, c2Top, 110.4f), V(292f, c2Top, 111.6f), V(294.0f, c2Top, 109.6f), V(295.3f, c2Top, 106.6f)),
-        WL("to PS1 on the west rail", V(291.6f, c2Top, 109.7f), V(288.8f, c2Top, 109.7f)), WL("to PS2 at the NW vertex", V(291.6f, c2Top, 111.3f), V(289.4f, c2Top, 111.3f)),
+        FR("CAMP_2_TOP WARP LANDING, FACING 65", V(293.0f, c2Top + eyeH, 123.6f), Hd(V(293.0f, 0f, 123.6f), 65f, c2Top + eyeH)) },
+    // walk lines where no trail runs, for the found rule (doc 4: the trail end across the floor and up the scramble to his chair; your seat to
+    // the booth door): the scramble, the head to PS1 at the top's south-west edge, the table to the booth mouth
+    walkLines = new[] { WL("the trail end up the scramble to his chair", V(298.9f, G, 107.8f), V(288.0f, G, 114.5f), V(288.0f, 7f, 121.5f), V(291.0f, c2Top, 120.6f), V(291.3f, c2Top, 123.2f)),
+        WL("the head to PS1", V(291.0f, c2Top, 120.6f), V(289.8f, c2Top, 117.8f)),
         WL("the table to the booth mouth", V(297.5f, G, 98.6f), V(299.0f, G, 99.0f), V(299.6f, G, 99.2f)) },
     // Wren 2026-10-02: the hook and his table chair stand together by design (Camp2Layout C2: he answers without standing)
-    // Wren 2026-10-03: the stand on the top rail box is the flood's teleport overlap (3424 flood moves from the top floor did not repeat it)
-    acceptedStops = new[] { new Main3AreaSet.AcceptedStop { point = V(293.1f, 25.1f, 112.1f), radius = 0.5f, reason = "flood teleport overlap; 3424 flood-style moves from the top floor never stood there (Wren 2026-10-03)" } },
     spacingExceptions = new[] { new Main3AreaSet.SpacingException { a = "hook", b = "R2 at the table", reason = "he answers the phone from his seat (Camp2Layout C2, Wren 2026-10-02)", maxEdge = 0.5f } },
-    playChecks = new[] { "main3_8_25_camp2_check.cs", "main3_8_25_camp2_frames.cs?look=Day_one", "main3_8_25_camp2_frames.cs?look=Night" },
+    playChecks = new[] { "main3_8_25a_camp2_check.cs", "main3_8_25_camp2_frames.cs?look=Day_one", "main3_8_25_camp2_frames.cs?look=Night" },
     inventory = new[] { "Lanterns and lamps" }, deckListWritten = true,
-    deckSee = new[] { DH("lamp core", coreAt.x, coreAt.y, coreAt.z, c2T + "Lamp"), DLO("top rail, west faces", 287.82f, 24.8f, 108.0f, c2T + "TopRail"), DLO("his chair on top", 294.94f, 24.8f, 110.30f, c2T + "HisChair"),
-        DLO("tent", 288.86f, 25.0f, 108.0f, c2T + "Tent"), DL("PS1", 288.14f, 24.1f, 109.6f), DL("PS2", 288.8f, 24.1f, 111.2f), DL("PS3", 284.95f, 4.6f, 107.40f), DL("booth hood light", 299.0f, 6.6f, 99.0f) },
+    deckSee = new[] { DH("lamp core", coreAt.x, coreAt.y, coreAt.z, c2T + "Lamp"), DLO("his chair on top", 292.0f, c2Top + 0.8f, 122.0f, c2T + "HisChair"),
+        DLO("tent", 295.6f, c2Top + 1.0f, 118.3f, c2T + "Tent"), DL("PS1", 289.4f, c2Top + 0.1f, 117.4f), DL("PS2", 287.0f, 6.0f, 119.0f), DL("PS3", 300.0f, 5.5f, 126.5f), DL("booth hood light", 299.0f, 6.6f, 99.0f) },
     deckHide = none };
 // camp 3 (8.26; Camp3Layout.md draft 2 section 6, Sable 2026-10-02): places on their objects, read from the scene where main3_8_26_camp3.cs
 // builds them (POn: the object's own x, z, ground y); interactions with a collider (R3's spot waits for its milestone, as R1's: no collider);
