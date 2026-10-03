@@ -24,6 +24,15 @@ d. **Filing (logbook), on paper: 4 presses, UNVERIFIED (not built).** Pad: open 
 2. Presses: 13 and 15 exceed 5. Gate.md 4 sets the bar for day/night, warp to the Ward and tasks Grant names; area warps are not named, so this is not a gate fail. Wren to rule if it should be.
 3. UNVERIFIED: the dev panel was not run at 3840 x 1976 after these rows; Warp() sets yaw only, so camera pitch carries over from before the warp (DevMenu.cs line 156).
 
+## Round 2: forage C only (2026-10-02): PASS
+Sources: Found_north_09_FOUND__FORAGE_C_FROM_CAMP_1_TO_J__24.9_M.jpg (single 1920 x 988), AreaFrames_north.jpg F3, Checks.md lines 11, 12, 37, 47, 49, LoopLeg.md lines 21 to 24. No Editor run.
+1. **Found from its trail: PASS.** Found rule (BurnLayout_UI.md 3): Checks.md 24.9 m out, 42.6 deg off travel (bar 45), 2.3 deg tall (bar 1). By eye in Found_09: the magenta ball sits at the tread edge where the trail bends left, clear of trunks, one labelled frame. The shrubs themselves do not read apart from the understory ferns at 25 m; the ball and the bend carry it. Bearing vs bare by eye stays UNVERIFIED (item 2.4 above, no code).
+2. **Prompt position: PASS.** `Forage` fires from 9 of 11 tread-centre points, -2.0 to +2.0 m, looking 0 to 30 deg down at a shrub; the misses at -2.5 and +2.5 m are past the r 1.0 ring and its shrubs, so a miss there is correct, not a gap. The player stays on the tread, looks down at the edge, presses E / Y: 1 press, pad and keyboard. Round 1 hurt (one stand, 0.06 m margin) is closed. Shrubs on the trail line do not stop travel: LoopLeg.md walk and sprint both ways, 0 stops.
+3. **F3 by eye: limited.** F3 is only on the AreaFrames sheet, not a single file; at sheet scale I can see the bend and edge brush but cannot pick bush 1 out. Not needed for 1 or 2; F3 single frame would close it.
+4. Outer reach margin: the -2.0 m point hits at 1.98 of 2.0 m. Margins at the inner points are not in Checks.md (UNVERIFIED); noted, not a fail.
+
+Pim
+
 ## Not judged here
 Trail grey (Jg to Camp 1 diff 20 m 17, Camp 1 to J 16, both FAIL by numbers; by-eye rule not applied) and stops: outside Wren's three items.
 
