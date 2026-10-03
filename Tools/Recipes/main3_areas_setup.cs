@@ -261,9 +261,9 @@ var caveArea = new Main3AreaSet.Area { id = "cave", task = "8.27", title = "Cave
         P("Chamber", 80f, -18f, 12f), PO("Seat shelf", 88.4f, -18f, 6.0f, 0.6f, cvL + "Chamber/SeatShelf"), PO("Sleep", 85f, -18f, 4f, 0.5f, cvL + "Chamber/Sleep"), PO("Food", 73f, -18f, 14.75f, 0.5f, cvL + "Chamber/Food"),
         PO("Stack", 86.75f, -18f, 18.75f, 3f, cvL + "Chamber/Stack"), PO("Battery bank", 84.5f, -18f, 20.7f, 0.8f, cvL + "Chamber/BatteryBank"), P("Side room", 93.5f, -18f, 11.5f),
         PO("Guest chair", 92.85f, -18f, 11.5f, 1.0f, "Cave/SideRoom/RouletteTable/GuestChair"), PO("His chair", 95.05f, -18f, 11.3f, 1.0f, "Cave/SideRoom/RouletteTable"), PO("Deeper opening", 97.75f, -18f, 13.8f, 2.1f, cvL + "Deeper/DeeperClosed") },
-    // prompt words from CaveLayout_UI (1.3 Talk, 1.5 Sit); event 16's inspect word is not fixed yet (UI 1.8 GAP): no PROMPT line until it is
+    // prompt words from CaveLayout_UI (1.3 Talk, 1.5 Sit) and CaveLayout_Story 23 (event 16: `Examine` at the dead end; Quill 2026-10-03)
     interactions = new[] { IAp("guest chair", "Cave/SideRoom/RouletteTable/GuestChair", 92.0f, -18f, 12.0f, "Sit"), IAp("R7", "Cave/Resident_Cave_Spot/StandInBody", 86.9f, -18f, 6.2f, "Talk", 98f, 18f),
-        IA("event 16 (deeper)", cvL + "Deeper/Wall_End", 101.0f, -18f, 14.0f) },
+        IAp("event 16 (deeper)", cvL + "Deeper/DeadEnd", 101.0f, -18f, 14.0f, "Examine", 0f, 0f) },
     frames = new[] { FR("F1 HEADING 222: THE OPENING (FOUND AT 10 M)", V(56.31f, G, 46.60f), Hd(V(56.31f, 0f, 46.60f), 222f, -4.6f)),
         FR("F2 HEADING 300: THE BULBS", V(91.3f, G, 47.4f), V(82.15f, 6.5f, 52.96f)),
         FR("F3 HEADING 180: THE LEG 1 OPENING AND THE CABLE", V(52f, -6f + eyeH, 24f), Hd(V(52f, 0f, 24f), 180f, -5.6f)),

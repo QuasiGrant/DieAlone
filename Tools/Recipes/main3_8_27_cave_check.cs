@@ -13,6 +13,7 @@
 // SIDE ROOM (V6): his chair at world yaw 270; the crate flush to the west and north walls; BigBoulders_0 east of the chamber wall; the guest
 //   chair the first hit of the interactor's ray from (91.0, 12.0) facing 90, pitch 15 down.
 // DEEPER (V9): shut by DeeperClosed; with it lifted for the test, the body walks from the standing point to the inspect point (101.0, 14.0).
+//   PROMPT lines (CaveLayout_Story 23): no prompt at the shut rock; open, none at the opening and `Examine` at the dead end facing 0.
 // NARROW (V10): the row's rock colliders all narrowMin m or more from the tread's centre line, and no gap between neighbours wider than
 //   gapMax (continuous).
 // RIM (V11): from eyes on the band's north side (every rimStep m in x, eye 1.6), no clear line to the mouth's board, void edges or floor
@@ -138,15 +139,30 @@ try
     }
     // ---- DEEPER
     {
+        // the interactor's own test (its mask, triggers ignored, interactReach) from an eye at a heading and pitch: the prompt it would show
+        var piC = UnityEngine.Object.FindFirstObjectByType<PlayerInteractor>(); var maskFC = typeof(PlayerInteractor).GetField("mask", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        int iMask = piC != null && maskFC != null ? ((UnityEngine.LayerMask)maskFC.GetValue(piC)).value : ~0; float iReach = tuning != null ? tuning.interactReach : 2f;
+        string PromptFrom(UnityEngine.Vector3 stand, float yaw, float pitch)
+        {
+            var eye = stand + V(0f, eyeH, 0f); var dir = UnityEngine.Quaternion.Euler(pitch, yaw, 0f) * UnityEngine.Vector3.forward;
+            if (!UnityEngine.Physics.Raycast(eye, dir, out var h, iReach, iMask, UnityEngine.QueryTriggerInteraction.Ignore)) return "none (nothing within " + F1(iReach) + " m)";
+            var it = h.collider.GetComponentInParent<Interactable>(); return (it != null ? "\"" + it.Prompt + "\"" : "none") + " on " + WalkIns.PathOf(h.collider.transform) + " at " + F(h.distance) + " m";
+        }
         closed = L.Find("Deeper/DeeperClosed");
         if (closed == null) Line(false, "DEEPER: no Layout827/Deeper/DeeperClosed");
         else
         {
             Put(V(96.5f, floorY, 13.8f)); float t0 = 0f; bool shut = !Walk(V(101.0f, floorY, 14.0f), ref t0, out float leftShut);
+            string atShut = PromptFrom(V(96.5f, floorY, 13.8f), 90f, 0f);
             closedWas = closed.gameObject.activeSelf; closed.gameObject.SetActive(false); UnityEngine.Physics.SyncTransforms();
             Put(V(96.5f, floorY, 13.8f)); float t1 = 0f; bool open = Walk(V(101.0f, floorY, 13.8f), ref t1, out float leftOpen) && Walk(V(101.0f, floorY, 15.0f), ref t1, out leftOpen);
+            string atOpening = PromptFrom(V(96.5f, floorY, 13.8f), 90f, 0f), atEnd = PromptFrom(V(101.0f, floorY, 14.0f), 0f, 0f);
             closed.gameObject.SetActive(closedWas); UnityEngine.Physics.SyncTransforms();
             Line(shut && open, "DEEPER: shut by DeeperClosed " + shut + " (stops " + F(leftShut) + " m short); open, the body walks to the inspect point and on to the dead end " + open + " (" + F1(t1) + " s)");
+            // CaveLayout_Story 23 (Quill, 2026-10-03): shut days no prompt at the rock; open days none at the opening, `Examine` at the dead end
+            Line(atShut.StartsWith("none"), "PROMPT event 16 shut: from (96.5, 13.8) facing 90 at the shut rock, no prompt: " + atShut);
+            Line(atOpening.StartsWith("none"), "PROMPT event 16 open, the opening: from (96.5, 13.8) facing 90, no prompt: " + atOpening);
+            Line(atEnd.StartsWith("\"Examine\""), "PROMPT event 16 open, the dead end: from (101.0, 14.0) facing 0, \"Examine\": " + atEnd);
         }
     }
     // ---- NARROW

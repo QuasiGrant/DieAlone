@@ -212,7 +212,7 @@ const float bulbDoorH = 1.9f; int bulbs = 0;
 }
 
 // ================= V9: the deeper passage =================
-const float dz0 = 13.2f, dz1 = 14.4f, deepH = 2.1f, dxA0 = 97.5f, dxA1 = 101.6f, dxB0 = 100.4f, dzB1 = 16.1f;
+const float deadH = 1.4f, deadD = 0.3f, dz0 = 13.2f, dz1 = 14.4f, deepH = 2.1f, dxA0 = 97.5f, dxA1 = 101.6f, dxB0 = 100.4f, dzB1 = 16.1f;
 {
     var room = cave.Find("SideRoom"); var fut = room.Find("Wall_E_Future"); var deep = kit.Group("Deeper", L, V(99.5f, floorY, 14f), 0f);
     if (fut != null)
@@ -234,6 +234,9 @@ const float dz0 = 13.2f, dz1 = 14.4f, deepH = 2.1f, dxA0 = 97.5f, dxA1 = 101.6f,
     Rock("Wall_End", deep, V((dxB0 + dxA1) * 0.5f, floorY + deepH * 0.5f, dzB1 + T * 0.5f), V(dxA1 - dxB0, deepH, T));
     Rock("DeeperClosed", deep, V(dxA0 + T * 0.5f, floorY + deepH * 0.5f, (dz0 + dz1) * 0.5f), V(T, deepH, dz1 - dz0));   // shut on other days; event 16 opens it
     kit.Marker("InspectPoint", deep, deep.InverseTransformPoint(V(101.0f, floorY, 14.0f)), 0f);
+    // the dead end's face: a rock slab deadD deep on the end wall, `Examine` (CaveLayout_Story 23, Quill 2026-10-03; open days only, the
+    // passage being shut on others); its face deadD nearer than the wall so the inspect point's ray meets it within reach
+    var deadEnd = Rock("DeadEnd", deep, V((dxB0 + dxA1) * 0.5f, floorY + deadH * 0.5f, dzB1 - deadD * 0.5f), V(dxA1 - dxB0, deadH, deadD)); Use(deadEnd, "Examine", null);
 }
 
 // ================= V10: the narrow =================
