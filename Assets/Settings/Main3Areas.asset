@@ -1152,6 +1152,7 @@ MonoBehaviour:
       look: {x: 172.4, y: 4.5, z: 281.4}
     playChecks:
     - main3_8_24_north_check.cs
+    - main3_8_24a_deck_frames.cs?look=Day_one
   - acceptedStops:
     - point: {x: 293.1, y: 25.1, z: 112.1}
       radius: 0.5

@@ -1,11 +1,11 @@
-// Main3 8.26 frames (Play mode, Main3; the 8.26 gate round 2, Wren 2026-10-03 item 10: a deck binocular frame of the Snag line). Run by
-// main3_review_capture.sh --area camp3 as "main3_8_26_camp3_frames.cs?look=Day_one"; `look` selects that LookPreview row first and asks to
-// be run again so the look applies. Never saves; restores the player, the camera and the GPU Resident Drawer. Frames at Grant's size
-// (shotW x shotH) in outDir: from the deck eye on the cab side nearest the Snag line whose line to a piece (2, 1, 3, 4 in turn) passes every collider
-// and drawn mesh (temporary exact colliders; the line's own meshes do not count), the naked eye and binoculars (binoFov degrees).
-// EYE: some deck eye sees a Snag line piece.
+// Main3 8.24a deck frames (Play mode, Main3; PLAN 8.24a, Grant's walk 2026-10-03: the big-tent camp could not be seen from the tower). Run by
+// main3_review_capture.sh --area north as "main3_8_24a_deck_frames.cs?look=Day_one"; `look` selects that LookPreview row first and asks to be
+// run again so the look applies. Never saves; restores the player, the camera and the GPU Resident Drawer. Frames at Grant's size (shotW x
+// shotH) in outDir: from the first standing deck eye (the grid and the rail eyes, as the area check's DECK) whose line to Camp 1's tent passes
+// every collider and drawn mesh (temporary exact colliders; the tent's own meshes do not count), the naked eye and binoculars (binoFov).
+// EYE: some standing deck eye sees the tent.
 string look = "";
-string outDir = System.IO.Path.GetFullPath("Docs/Captures/Main3Review_camp3");
+string outDir = System.IO.Path.GetFullPath("Docs/Captures/Main3Review_north");
 if (!UnityEngine.Application.isPlaying) return "enter play mode first";
 var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
 if (scene.path != "Assets/Scenes/Main3.unity") return "open Main3 first";
@@ -19,18 +19,15 @@ const float eyeH = 1.6f, binoFov = 15f; const int shotW = 3840, shotH = 1976;
 var pc = UnityEngine.Object.FindFirstObjectByType<PlayerController>(); var cc = pc.GetComponent<UnityEngine.CharacterController>();
 var cam = UnityEngine.Camera.main; var camLocal = cam.transform.localPosition; var camRot = cam.transform.localRotation; float camFov = cam.fieldOfView;
 var start = pc.transform.position; var startRot = pc.transform.rotation; bool pcWas = pc.enabled; pc.enabled = false;
-var line = Root("Campsites") != null ? Root("Campsites").transform.Find("Camp_3/Layout826/SnagLine") : null; var cab = Root("Camp") != null ? Root("Camp").transform.Find("Tower/Cab") : null;
-if (line == null || cab == null) { pc.enabled = pcWas; return "no Camp_3 SnagLine or the tower cab (run main3_8_26_camp3.cs)"; }
+var line = Root("Campsites") != null ? Root("Campsites").transform.Find("Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1") : null; var cab = Root("Camp") != null ? Root("Camp").transform.Find("Tower/Cab") : null;
+if (line == null || cab == null) { pc.enabled = pcWas; return "no Camp_1 tent or the tower cab"; }
 System.IO.Directory.CreateDirectory(outDir);
 var urp = (UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline; var grdWas = urp.gpuResidentDrawerMode; urp.gpuResidentDrawerMode = UnityEngine.Rendering.GPUResidentDrawerMode.Disabled;
 var rt = new UnityEngine.RenderTexture(shotW, shotH, 24, UnityEngine.RenderTextureFormat.ARGB32); var shot = new UnityEngine.Texture2D(shotW, shotH, UnityEngine.TextureFormat.RGB24, false);
 var sb = new System.Text.StringBuilder(); int fails = 0; void Line(bool ok, string s) { if (!ok) fails++; sb.Append((ok ? "PASS " : "FAIL ") + s + "\n"); }
 try
 {
-    // the pieces' centre orders the eyes; the aim is the first piece a deck eye sees
-    var pb = new UnityEngine.Bounds(); bool any = false; for (int i = 1; i <= 4; i++) { var p = line.Find("Piece" + i); if (p == null) continue; var b = PlaceKit.MeshBounds(p.gameObject); if (!any) { pb = b; any = true; } else pb.Encapsulate(b); }
-    if (!any) { Line(false, "EYE: no Snag line pieces"); return "FAILS 1\n" + sb; }
-    var at = pb.center; var aims = new System.Collections.Generic.List<UnityEngine.Vector3>(); foreach (var i in new[] { 2, 1, 3, 4 }) { var p = line.Find("Piece" + i); if (p != null) aims.Add(PlaceKit.MeshBounds(p.gameObject).center); }   // aimed at the first piece an eye sees, the deck's hard pieces first
+    var pb = PlaceKit.MeshBounds(line.gameObject); var at = pb.center; var aims = new System.Collections.Generic.List<UnityEngine.Vector3> { at };   // the tent's centre
     var set = Main3AreaSet.Load(); var toLine = V(at.x - cab.position.x, 0f, at.z - cab.position.z).normalized; UnityEngine.Vector3 eye = V(cab.position.x, cab.position.y + eyeH, cab.position.z); bool clearEye = false;
     var eyes = new System.Collections.Generic.List<UnityEngine.Vector3>(); for (float gx = -set.deckHalf; gx <= set.deckHalf + 0.01f; gx += set.deckGrid) for (float gz = -set.deckHalf; gz <= set.deckHalf + 0.01f; gz += set.deckGrid) eyes.Add(V(cab.position.x + gx, cab.position.y + set.deckEye, cab.position.z + gz));   // standing eyes only (Wren 2026-10-03, B)
     { var rails = cab.parent.Find("DeckRails"); UnityEngine.Bounds RB(string n) { var r = rails != null ? rails.Find(n) : null; var c = r != null ? r.GetComponent<UnityEngine.Collider>() : null; return c != null ? c.bounds : new UnityEngine.Bounds(); } var rw = RB("RailW"); var re = RB("RailE"); var rs = RB("RailS"); var rn = RB("RailN"); float x0 = rw.max.x + set.railEyeInset, x1 = re.min.x - set.railEyeInset, z0 = rs.max.z + set.railEyeInset, z1 = rn.min.z - set.railEyeInset, ry = cab.position.y + set.deckEye; if (rw.size != UnityEngine.Vector3.zero) { for (float x = x0; x <= x1 + 1e-3f; x += set.railEyeStep) { eyes.Add(V(x, ry, z0)); eyes.Add(V(x, ry, z1)); } for (float z = z0 + set.railEyeStep; z < z1 - 1e-3f; z += set.railEyeStep) { eyes.Add(V(x0, ry, z)); eyes.Add(V(x1, ry, z)); } } }   // the rail eyes, as the area check (Wren 2026-10-03)
@@ -46,7 +43,7 @@ try
         foreach (var t in temps) if (t != null) UnityEngine.Object.DestroyImmediate(t); temps.Clear(); UnityEngine.Physics.SyncTransforms();
         if (!blocked) { eye = e; at = a; clearEye = true; break; }
     }
-    Line(clearEye, "EYE: " + (clearEye ? "the deck eye (" + eye.x.ToString("F1") + ", " + eye.y.ToString("F1") + ", " + eye.z.ToString("F1") + ") sees a Snag line piece at (" + at.x.ToString("F1") + ", " + at.y.ToString("F1") + ", " + at.z.ToString("F1") + ")" : "no deck eye sees any Snag line piece past every mesh"));
+    Line(clearEye, "EYE: " + (clearEye ? "the deck eye (" + eye.x.ToString("F1") + ", " + eye.y.ToString("F1") + ", " + eye.z.ToString("F1") + ") sees the tent at (" + at.x.ToString("F1") + ", " + at.y.ToString("F1") + ", " + at.z.ToString("F1") + ")" : "no standing deck eye sees the tent past every mesh"));
     void Pose(UnityEngine.Vector3 e, UnityEngine.Vector3 aim)
     {
         var dir = aim - e; var flat = V(dir.x, 0f, dir.z); cc.enabled = false; pc.transform.rotation = UnityEngine.Quaternion.LookRotation(flat.normalized); pc.transform.position = e - pc.transform.rotation * camLocal;
@@ -58,12 +55,12 @@ try
         UnityEngine.RenderTexture.active = rt; shot.ReadPixels(new UnityEngine.Rect(0, 0, shotW, shotH), 0, 0); shot.Apply(); UnityEngine.RenderTexture.active = null;
         System.IO.File.WriteAllBytes(System.IO.Path.Combine(outDir, file), shot.EncodeToJPG(92));
     }
-    foreach (var bino in new[] { false, true }) { cam.fieldOfView = bino ? binoFov : camFov; Pose(eye, at); Shoot("DeckSnagLine_" + tag + (bino ? "_Binoculars" : "_Eye") + ".jpg"); }
-    sb.Append("frames DeckSnagLine_" + tag + "_Eye.jpg and _Binoculars.jpg\n");
+    foreach (var bino in new[] { false, true }) { cam.fieldOfView = bino ? binoFov : camFov; Pose(eye, at); Shoot("DeckTent_" + tag + (bino ? "_Binoculars" : "_Eye") + ".jpg"); }
+    sb.Append("frames DeckTent_" + tag + "_Eye.jpg and _Binoculars.jpg\n");
 }
 finally
 {
     cam.fieldOfView = camFov; cam.transform.localRotation = camRot; cam.targetTexture = null; urp.gpuResidentDrawerMode = grdWas; rt.Release(); UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(shot);
     cc.enabled = false; pc.transform.position = start; pc.transform.rotation = startRot; cc.enabled = true; pc.enabled = pcWas; UnityEngine.Physics.SyncTransforms(); UnityEngine.Application.runInBackground = false;
 }
-return (fails == 0 ? "ALL PASS" : "FAILS " + fails) + ": the 8.26 Camp 3 frames, " + lookName + " look; frames in " + outDir + "\n" + sb;
+return (fails == 0 ? "ALL PASS" : "FAILS " + fails) + ": the 8.24a deck frames, " + lookName + " look; frames in " + outDir + "\n" + sb;

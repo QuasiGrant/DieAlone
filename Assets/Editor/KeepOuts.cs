@@ -65,6 +65,14 @@ public static class KeepOuts
         new Zone("K5 east rim spot", new Vector2(93f, 138.5f), new Vector2(95f, 138.5f), 2.5f),   // x 92 to 96, z 137 to 140, plus 1 m
     };
 
+    /// PLAN 8.24a (NorthLayout 5.4): the spots main3_8_24a_camp1_deck.cs moved three Grove_C1Ring sequoias from, so the deck sees Camp 1.
+    public static readonly Zone[] Camp1 =
+    {
+        new Zone("C1 deck spot, Sequoia5 west", new Vector2(247.1f, 220.9f), 4f),
+        new Zone("C1 deck spot, Sequoia5 south", new Vector2(253.7f, 211.7f), 4f),
+        new Zone("C1 deck spot, Sequoia3", new Vector2(256.3f, 219.7f), 4f),
+    };
+
     /// CaveLayout.md draft 2 doc 2.2 (PLAN 8.27; Wren 2026-10-03): C1 the mouth strip, x 52 to 54.5, z 38 to 46.5, kept clear of trees.
     public static readonly Zone[] Cave =
     {
@@ -73,8 +81,9 @@ public static class KeepOuts
 
     public static bool Contains(Vector2 p) => Which(p) != null;
     public static bool Contains(Vector3 p) => Contains(new Vector2(p.x, p.z));
-    public static string Which(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return z.label; var c2 = WhichCamp2(p); return c2 ?? WhichCamp3(p) ?? WhichCave(p); }
+    public static string Which(Vector2 p) { foreach (var z in North) if (z.Contains(p)) return z.label; var c2 = WhichCamp2(p); return c2 ?? WhichCamp3(p) ?? WhichCave(p) ?? WhichCamp1(p); }
     public static string WhichCamp2(Vector2 p) { foreach (var z in Camp2) if (z.Contains(p)) return z.label; return null; }
     public static string WhichCamp3(Vector2 p) { foreach (var z in Camp3) if (z.Contains(p)) return z.label; return null; }
     public static string WhichCave(Vector2 p) { foreach (var z in Cave) if (z.Contains(p)) return z.label; return null; }
+    public static string WhichCamp1(Vector2 p) { foreach (var z in Camp1) if (z.Contains(p)) return z.label; return null; }
 }

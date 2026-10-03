@@ -2,7 +2,8 @@
 // Never saves; removes its temporary colliders. For each Camp 1 target (the tent, the kid's table, the tripod: their meshes' centres) and
 // each standing deck eye (Main3AreaSet deckGrid over the deck at deckEye, plus the rail eyes railEyeInset inside each rail every
 // railEyeStep m, as the area check's DECK): the line from eye to target against every collider (Ignore Raycast, the player and the target's
-// own object apart) and every drawn LOD0 mesh it crosses (temporary exact colliders), the tower's own included. Prints, per target: the
+// own object apart) and every drawn LOD0 mesh it crosses (temporary exact colliders, also on meshes with a collider of their own: a tree's
+// trunk capsule is not its crown), the tower's own included. Prints, per target: the
 // standing eyes with a clear line; every blocker on the lines, with the lines it is on and the lines it alone blocks (lines whose only
 // blockers are trees name the trees); and the fewest trees (greedy) whose moving opens one line, with their positions.
 // A blocker is a tree when it sits under Forest/ or a tree root named in treeRoots.
@@ -39,7 +40,7 @@ try
     var rays = new System.Collections.Generic.List<(UnityEngine.Ray r, float len)>(); foreach (var tg in targets) foreach (var e in eyes) { var d = tg.at - e; rays.Add((new UnityEngine.Ray(e, d.normalized), d.magnitude)); }
     foreach (var mr in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshRenderer>(UnityEngine.FindObjectsSortMode.None))
     {
-        if (!mr.enabled || !mr.gameObject.activeInHierarchy || notLod0.Contains(mr) || mr.GetComponent<UnityEngine.Collider>() != null || mr.transform.IsChildOf(pc.transform) || mr.name.Contains("Glass")) continue;
+        if (!mr.enabled || !mr.gameObject.activeInHierarchy || notLod0.Contains(mr) || mr.transform.IsChildOf(pc.transform) || mr.name.Contains("Glass")) continue;   // every drawn mesh, a collider of its own or not: a tree's trunk capsule is not its crown (8.24a: the first run named no tree)
         var mf = mr.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue; var bb = mr.bounds; bool crossed = false;
         foreach (var (r, l) in rays) if (bb.IntersectRay(r, out float dist) && dist <= l) { crossed = true; break; }
         if (!crossed) continue; var mc = mr.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; temps.Add(mc);

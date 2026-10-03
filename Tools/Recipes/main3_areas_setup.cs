@@ -155,7 +155,7 @@ var northArea = new Main3AreaSet.Area { id = "north", task = "8.24", title = "Ca
         FR("F9 FROM SS3 TOWARD THE FALLEN GIANT (VESPER: THE FAR SIDE OF THE LOG)", V(132.3f, G, 262.3f), V(134.4f, 7.6f, 260.1f)),
         FR("THE RUIN FROM ITS DOORWAY", V(169.6f, G, 278.6f), V(172.4f, 4.5f, 281.4f)) },
     walkLines = new[] { WL("side path to the ruin", V(168.1f, G, 267.1f), V(169.88f, G, 278.88f)) },   // the report box is found from the side path in (NorthLayout_UI 5)
-    playChecks = new[] { "main3_8_24_north_check.cs" },
+    playChecks = new[] { "main3_8_24_north_check.cs", "main3_8_24a_deck_frames.cs?look=Day_one" },   // 8.24a: the tent from a clear standing deck eye
     inventory = new[] { "North ruin" }, deckListWritten = true,
     // 8.24a (Grant's walk, 2026-10-03): the tent, the kid's table and the tripod are hard targets, aimed at their meshes' centres from the scene
     deckSee = new[] { DH("spar top", 284f, 29f, 240f, "Campsites/Camp_1/Dressing/Spar"), DH("kid's table", c1Table.x, c1Table.y, c1Table.z, "Campsites/Camp_1/Dressing/KidTable"), DH("tent", c1Tent.x, c1Tent.y, c1Tent.z, "Campsites/Camp_1/Dressing/CS_Tent_Large_Modern_Preset_1"), DH("tripod", c1Tripod.x, c1Tripod.y, c1Tripod.z, "Campsites/Camp_1/Dressing/Cookfire") },

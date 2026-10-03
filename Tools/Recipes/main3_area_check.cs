@@ -375,7 +375,9 @@ try
             foreach (var lod in UnityEngine.Object.FindObjectsByType<UnityEngine.LODGroup>(UnityEngine.FindObjectsSortMode.None)) { var lods = lod.GetLODs(); for (int li = 1; li < lods.Length; li++) foreach (var r in lods[li].renderers) if (r != null) notLod0.Add(r); }
             foreach (var mr in UnityEngine.Object.FindObjectsByType<UnityEngine.MeshRenderer>(UnityEngine.FindObjectsSortMode.None))
             {
-                if (!mr.enabled || !mr.gameObject.activeInHierarchy || notLod0.Contains(mr) || mr.GetComponent<UnityEngine.Collider>() != null || mr.transform.IsChildOf(pc.transform) || mr.name.Contains("Glass")) continue;   // glass is seen through
+                // also a mesh with a collider of its own (8.24a: a tree's trunk capsule let the deck rays through its crown, so the hard must-see passed
+                // on lines Grant could not see down)
+                if (!mr.enabled || !mr.gameObject.activeInHierarchy || notLod0.Contains(mr) || mr.transform.IsChildOf(pc.transform) || mr.name.Contains("Glass")) continue;   // glass is seen through
                 var b = mr.bounds; if (!b.Intersects(span)) continue; var mf = mr.GetComponent<UnityEngine.MeshFilter>(); if (mf == null || mf.sharedMesh == null) continue;
                 bool crossed = false; for (int i = 0; i < hardSegs.Count && !crossed; i++) if (b.IntersectRay(hardSegs[i], out float dist) && dist <= hardLens[i]) crossed = true;
                 if (!crossed) continue; var mc = mr.gameObject.AddComponent<UnityEngine.MeshCollider>(); mc.sharedMesh = mf.sharedMesh; temps.Add(mc); meshTemps++;
