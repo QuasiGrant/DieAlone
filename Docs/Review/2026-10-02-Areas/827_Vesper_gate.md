@@ -22,3 +22,20 @@ Sheets: Docs/Captures/Main3Review_cave (day one look). Layout only, not dressing
 Nothing of the cave seen: **PASS.** Rays 0 of 128 for all eight targets; by eye, Deck_cave_01 to 08 show only trees, lake and slope at every mark.
 
 Vesper
+
+## Round 2 (final), 2026-10-03
+
+Rechecked only my round-1 Ds, from the frames at fe701d9. Layout only.
+
+**Verdict: FAIL.** All four are still D.
+
+| Item | Grade | Frames | Why |
+|---|---|---|---|
+| Entrance passage | **D** | AreaFrames_03, Found_06 | The black void is gone, but in F3 the leg 1 opening now reads as a flat rock-textured wall with tiling seams. You cannot tell there is a way on. The tunnel is still a square box. The niche still does not show: the mark sits on a flat east wall in Found_06. The drip can and the cable still read. |
+| Chamber | **D** | AreaFrames_04, Found_08 | The floor seam is gone, but the floor is now one flat, featureless grey plane over the lower half of F4 (hard line 7). The walls are the same tiled rectangular panels as round 1, and I see no new rock against them: the same two boulders, left and right. The seat shelf and R7 still cannot be read at 20 m. |
+| Dead end (V9) | **D** | CaveFrames_Day_two_V9Open_DeadEnd, _FromSideRoom, _V9Shut_FromChamber | Now seen. From the side room, the opening is a clean rectangular doorway with a pale flat frame. The dead end is a short square box tunnel ending in a flat tiled wall. It reads as a built corridor, not a passage someone found. |
+| Bulb branch | **D** | CaveFrames_Day_one_BulbsTrail, CaveFrames_Day_two_BulbsTrail | The grey capsule is gone: a thin dark post now stands where it was. In the day-two frame no coloured bulbs show. Only a faint line runs from the post, under a red-dark wash. The tree does not read as a dead tree, and the bulbs do not read at all. |
+
+What holds all four back is the same thing as round 1: the cave is built from boxes, and the texture pass has not changed their shapes. The fix stays rock masses against walls, corners and openings, so the outlines stop being rectangles.
+
+Vesper
